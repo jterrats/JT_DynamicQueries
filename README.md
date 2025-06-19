@@ -1,6 +1,11 @@
 # JT_DynamicQueries
 A Utility class that serves a data layer selector to perform dynamic queries based on configurations
 
+<a href="https://githubsfdeploy.herokuapp.com?owner=jterrats&repo=JT_DynamicQueries&ref=main">
+  <img alt="Deploy to Salesforce"
+       src="https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/deploy.png">
+</a>
+
 In order to use this configurable queries, assign the permission set JT Dynamic Queries to your user. It will allow apex / cmdt access.
 
 ## How to Implement Configurable Queries
@@ -24,7 +29,7 @@ Apex
 
 `JT_DynamicSelector.getRecord('Get_Accounts', true);`
 
-This getRecord method takes two parameters: the record name from your CMDT and a boolean value indicating whether the query should execute in >USER ACCESS MODE or >SYSTEM ACCESS MODE.
+This getRecord method takes two parameters: the record name from your CMDT and a boolean value indicating whether the query should execute in `USER ACCESS MODE` or `SYSTEM ACCESS MODE`.
 
 In case you want to pass bindings programatically, by using method overloading you can pass them from your apex code.
 

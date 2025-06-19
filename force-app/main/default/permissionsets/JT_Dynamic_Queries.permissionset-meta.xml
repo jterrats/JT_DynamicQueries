@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <classAccesses>
+        <apexClass>JT_DataSelector</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <customMetadataTypeAccesses>
+        <enabled>true</enabled>
+        <name>JT_DynamicQueryConfiguration__mdt</name>
+    </customMetadataTypeAccesses>
+    <description>Grants access to custom metadata and apex class.</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>JT Dynamic Queries</label>
+</PermissionSet>

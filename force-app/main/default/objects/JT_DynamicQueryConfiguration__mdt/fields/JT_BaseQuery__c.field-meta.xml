@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>JT_BaseQuery__c</fullName>
+    <description>This field host your SOQL query configuration</description>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <inlineHelpText>Example: &quot;SELECT ID, NAME FROM ACCOUNT WHERE NAME =: name&quot;</inlineHelpText>
+    <label>Base Query</label>
+    <length>32768</length>
+    <type>LongTextArea</type>
+    <visibleLines>3</visibleLines>
+</CustomField>

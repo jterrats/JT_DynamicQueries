@@ -2,6 +2,8 @@
 # JT_DynamicQueries
 A Utility class that serves a data layer selector to perform dynamic queries based on configurations
 
+In order to use this configurable queries, assign the permission set JT Dynamic Queries to your user. It will allow apex / cmdt access.
+
 <a href="https://githubsfdeploy.herokuapp.com?owner=jterrats&repo=JT_DynamicQueries&ref=main">
   <img alt="Deploy to Salesforce"
        src="https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/deploy.png">

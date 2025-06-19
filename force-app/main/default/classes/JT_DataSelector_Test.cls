@@ -30,10 +30,29 @@ private class JT_DataSelector_Test {
   }
 
   @isTest
-  static void testGetRecords() {
+  static void testGetRecordsUserAccessMode() {
     Test.startTest();
     List<SObject> results = JT_DataSelector.getRecords(
-      'Test_Record'
+      'Test_Record', true
+    );
+    Test.stopTest();
+
+    System.assertNotEquals(0,
+      results.size(),
+      'The query should return at least one record.'
+    );
+    System.assertEquals(
+      'Test Account',
+      ((Account) results[0]).Name,
+      'The Account name should match.'
+    );
+  }
+
+  @isTest
+  static void testGetRecordsSystemAccessMode() {
+    Test.startTest();
+    List<SObject> results = JT_DataSelector.getRecords(
+      'Test_Record', false
     );
     Test.stopTest();
 

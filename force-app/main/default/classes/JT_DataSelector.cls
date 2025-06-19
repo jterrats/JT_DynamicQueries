@@ -74,4 +74,31 @@ public inherited sharing class JT_DataSelector {
                 AccessLevel.SYSTEM_MODE);
         }
     }
+
+    /**
+    * @description returns a collection of records based on the configuration name provided
+    * @author Jaime Terrats | 06-18-2025
+    * @param devName
+    * @param enforceSecurity
+    * @return List<SObject>
+    **/
+    public static List<SObject> getRecords(String devName, Boolean enforceSecurity, Map<String, Object> bindings) {
+        final JT_DataSelector selectorInstance = JT_DataSelector.getInstance();
+        final JT_DynamicQueryConfiguration__mdt config = selectorInstance.getConfig(devName);
+        if(enforceSecurity) {
+            return Database.queryWithBinds(
+                config.JT_BaseQuery__c,
+                bindings,
+                AccessLevel.USER_MODE
+            );
+        } else {
+            bindings = (Map<String, Object>) JSON.deserializeUntyped(
+            config.JT_Binding__c
+            );
+            return Database.queryWithBinds(
+                config.JT_BaseQuery__c,
+                bindings,
+                AccessLevel.SYSTEM_MODE);
+        }
+    }
 }

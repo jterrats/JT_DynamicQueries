@@ -22,13 +22,36 @@
 @isTest
 private class JT_DataSelector_Test {
 
+/**
+* @description this test setup creates a mock account record and
+user with limited access
+* @author Jaime Terrats | 06-18-2025
+**/
 @testSetup
   static void setupTestData() {
     insert new Account(
       Name = 'Test Account'
     );
+
+    final Profile leastPrivilege = [SELECT Id FROM Profile WHERE Name = 'Minimum Access - Salesforce'];
+    insert new User(
+      FirstName = 'John',
+      LastName = 'Doe',
+      ProfileId = leastPrivilege.Id,
+      Username = 'johndoe@jtdemo.com',
+      Email = 'johndoe@jtdemo.com',
+      Alias = 'jdoe',
+      TimeZoneSidKey = 'GMT',
+      LocaleSidKey = 'en_US',
+      EmailEncodingKey = 'UTF-8',
+      LanguageLocaleKey = 'en_US'
+    );
   }
 
+  /**
+  * @description validates configurable bindings in user access mode
+  * @author Jaime Terrats | 06-18-2025
+  **/
   @isTest
   static void testGetRecordsUserAccessMode() {
     Test.startTest();
@@ -48,6 +71,10 @@ private class JT_DataSelector_Test {
     );
   }
 
+  /**
+  * @description validates configurable bindings in system access mode
+  * @author Jaime Terrats | 06-18-2025
+  **/
   @isTest
   static void testGetRecordsSystemAccessMode() {
     Test.startTest();
@@ -65,5 +92,72 @@ private class JT_DataSelector_Test {
       ((Account) results[0]).Name,
       'The Account name should match.'
     );
+  }
+
+  /**
+  * @description validates system access mode using dynamic bindings from apex or js context
+  * @author Jaime Terrats | 06-18-2025
+  **/
+  @isTest
+  static void testGetRecordsOverloadBindingsSA() {
+    Test.startTest();
+    List<SObject> results = JT_DataSelector.getRecords(
+      'Test_Record', false, new Map<String,Object>{'name' => 'Test Account'}
+    );
+    Test.stopTest();
+
+    System.assertNotEquals(0,
+      results.size(),
+      'The query should return at least one record.'
+    );
+    System.assertEquals(
+      'Test Account',
+      ((Account) results[0]).Name,
+      'The Account name should match.'
+    );
+  }
+
+  /**
+  * @description validates user acces mode using dynamic bindings from apex or js context
+  * @author Jaime Terrats | 06-18-2025
+  **/
+   @isTest
+  static void testGetRecordsOverloadBindingsUAM() {
+    Test.startTest();
+    List<SObject> results = JT_DataSelector.getRecords(
+      'Test_Record', true, new Map<String,Object>{'name' => 'Test Account'}
+    );
+    Test.stopTest();
+
+    System.assertNotEquals(0,
+      results.size(),
+      'The query should return at least one record.'
+    );
+    System.assertEquals(
+      'Test Account',
+      ((Account) results[0]).Name,
+      'The Account name should match.'
+    );
+  }
+
+  /**
+  * @description validates exception to check if user has access to the custom metadata
+  * @author Jaime Terrats | 06-18-2025
+  **/
+  @isTest
+  static void testException() {
+    User testUser = [SELECT Id FROM User WHERE Name = 'John Doe'];
+    System.runAs(testUser) {
+      Test.startTest();
+        try {
+            List<SObject> results = JT_DataSelector.getRecords(
+              'Test_Record', true, new Map<String,Object>{'name' => 'Test Account'}
+            );
+        }
+        catch (Exception e) {
+            System.Assert.isTrue(e instanceof AuraHandledException);
+        }
+      Test.stopTest();
+    }
   }
 }

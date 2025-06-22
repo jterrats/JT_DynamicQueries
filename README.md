@@ -35,7 +35,7 @@ In case you want to pass bindings programatically, by using method overloading y
 
 `JT_DynamicSelector.getRecord('Get_Accounts', true, myBindings)`
 
-Where my bindings follow the **Map** structure in **APEX** {'name'=>'John Doe'}
+Where my bindings follow the **Map** structure in **APEX** `{'name'=>'John Doe'}`
 
 <a href="https://githubsfdeploy.herokuapp.com?owner=jterrats&repo=JT_DynamicQueries&ref=main">
   <img alt="Deploy to Salesforce"

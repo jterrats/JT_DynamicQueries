@@ -2,12 +2,14 @@
  * @description       :
  * @author            : Jaime Terrats
  * @group             :
- * @last modified on  : 06-20-2025
+ * @last modified on  : 07-11-2025
  * @last modified by  : Jaime Terrats
 **/
 public inherited sharing class JT_DataSelector {
+    /** used to validate if there's already an instance of the class */
     private static JT_DataSelector instance;
 
+    @SuppressWarnings('PMD.EmptyStatementBlock')
     private JT_DataSelector() {
         // doesn't require initialization
     }
@@ -39,7 +41,7 @@ public inherited sharing class JT_DataSelector {
             SELECT JT_BaseQuery__c, JT_Binding__c
             FROM JT_DynamicQueryConfiguration__mdt
             WHERE DeveloperName = : devName
-            LIMIT 1
+            WITH USER_MODE LIMIT 1
         ];
     }
 

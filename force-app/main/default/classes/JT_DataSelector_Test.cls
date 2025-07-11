@@ -1,4 +1,5 @@
 /**
+ * @description: provides code coverage to class JT_DataSelector
  * This class contains unit tests for validating the behavior of Apex classes
  * and triggers.
  *
@@ -150,7 +151,7 @@ user with limited access
     System.runAs(testUser) {
       Test.startTest();
         try {
-            List<SObject> results = JT_DataSelector.getRecords(
+            JT_DataSelector.getRecords(
               'Test_Record', true, new Map<String,Object>{'name' => 'Test Account'}
             );
         }

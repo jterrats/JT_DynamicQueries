@@ -10,6 +10,10 @@ public inherited sharing class JT_DataSelector {
     private static JT_DataSelector instance;
 
     @SuppressWarnings('PMD.EmptyStatementBlock')
+    /**
+    * @description class consturctor
+    * @author Jaime Terrats | 06-18-2025
+    **/
     private JT_DataSelector() {
         // doesn't require initialization
     }
@@ -82,6 +86,7 @@ public inherited sharing class JT_DataSelector {
     * @author Jaime Terrats | 06-18-2025
     * @param devName
     * @param enforceSecurity
+    * @param bindings
     * @return List<SObject>
     **/
     public static List<SObject> getRecords(String devName, Boolean enforceSecurity, Map<String, Object> bindings) {

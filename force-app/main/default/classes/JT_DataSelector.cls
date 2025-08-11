@@ -2,7 +2,7 @@
  * @description       :
  * @author            : Jaime Terrats
  * @group             :
- * @last modified on  : 07-11-2025
+ * @last modified on  : 08-11-2025
  * @last modified by  : Jaime Terrats
 **/
 public inherited sharing class JT_DataSelector {
@@ -99,9 +99,6 @@ public inherited sharing class JT_DataSelector {
                 AccessLevel.USER_MODE
             );
         } else {
-            bindings = (Map<String, Object>) JSON.deserializeUntyped(
-            config.JT_Binding__c
-            );
             return Database.queryWithBinds(
                 config.JT_BaseQuery__c,
                 bindings,

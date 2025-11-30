@@ -55,6 +55,10 @@
         <tab>standard-report</tab>
         <visibility>Visible</visibility>
     </tabSettings>
+    <tabSettings>
+        <tab>JT_Support</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
     <objectPermissions>
         <allowCreate>false</allowCreate>
         <allowDelete>false</allowDelete>

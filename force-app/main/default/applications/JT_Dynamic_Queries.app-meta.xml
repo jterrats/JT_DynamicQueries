@@ -15,5 +15,6 @@
     <tabs>JT_Documentation</tabs>
     <tabs>JT_Audit_History</tabs>
     <tabs>standard-report</tabs>
+    <tabs>JT_Support</tabs>
     <uiType>Lightning</uiType>
 </CustomApplication>

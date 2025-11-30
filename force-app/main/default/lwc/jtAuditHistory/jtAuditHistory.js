@@ -25,7 +25,7 @@ export default class JtAuditHistory extends LightningElement {
                     hour12: false
                 },
                 sortable: true,
-                initialWidth: 180
+                initialWidth: 200
             },
             { 
                 label: this.labels.action, 
@@ -34,31 +34,13 @@ export default class JtAuditHistory extends LightningElement {
                 cellAttributes: {
                     class: { fieldName: 'actionClass' }
                 },
-                initialWidth: 120
-            },
-            { 
-                label: this.labels.changedBy, 
-                fieldName: 'changedByName', 
-                type: 'text',
-                initialWidth: 200
-            },
-            { 
-                label: this.labels.username, 
-                fieldName: 'JT_ChangedByUsername__c', 
-                type: 'text',
-                initialWidth: 250
+                initialWidth: 150
             },
             { 
                 label: this.labels.orgType, 
                 fieldName: 'JT_OrgType__c', 
                 type: 'text',
-                initialWidth: 150
-            },
-            { 
-                label: this.labels.ipAddress, 
-                fieldName: 'JT_IPAddress__c', 
-                type: 'text',
-                initialWidth: 150
+                initialWidth: 200
             }
         ];
     }
@@ -69,11 +51,8 @@ export default class JtAuditHistory extends LightningElement {
         const { data, error } = result;
 
         if (data) {
-            this.auditLogs = data.map(log => ({
-                ...log,
-                changedByName: log.JT_ChangedByUsername__c,
-                actionClass: log.JT_Action__c === 'Enabled' ? 'slds-text-color_success' : 'slds-text-color_error'
-            }));
+            // Data is already formatted from Apex
+            this.auditLogs = data;
             this.error = undefined;
         } else if (error) {
             this.error = error;

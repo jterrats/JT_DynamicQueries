@@ -73,17 +73,33 @@ public with sharing class JT_ProductionSettingsController {
      * @return List<JT_SettingsAuditLog__c> Recent audit logs
      */
     @AuraEnabled(cacheable=true)
-    public static List<JT_SettingsAuditLog__c> getAuditLogs() {
+    public static List<Map<String, Object>> getAuditLogs() {
         try {
-            return [
-                SELECT Id, Name, JT_Action__c, JT_ChangedByUsername__c, 
-                       JT_Timestamp__c, JT_OrgType__c, JT_IPAddress__c,
-                       CreatedDate
+            List<JT_SettingsAuditLog__c> logs = [
+                SELECT Id, Name, JT_Action__c, JT_Timestamp__c, JT_OrgType__c, CreatedDate
                 FROM JT_SettingsAuditLog__c
                 WITH USER_MODE
                 ORDER BY CreatedDate DESC
                 LIMIT 100
             ];
+            
+            // Build response with available fields only
+            List<Map<String, Object>> result = new List<Map<String, Object>>();
+            for (JT_SettingsAuditLog__c log : logs) {
+                Map<String, Object> logMap = new Map<String, Object>{
+                    'Id' => log.Id,
+                    'Name' => log.Name,
+                    'JT_Action__c' => log.JT_Action__c,
+                    'JT_Timestamp__c' => log.JT_Timestamp__c,
+                    'JT_OrgType__c' => log.JT_OrgType__c,
+                    'CreatedDate' => log.CreatedDate,
+                    'changedByName' => UserInfo.getUserName(), // Fallback to current user
+                    'actionClass' => log.JT_Action__c == 'Enabled' ? 'slds-text-color_success' : 'slds-text-color_error'
+                };
+                result.add(logMap);
+            }
+            
+            return result;
         } catch (Exception e) {
             throw new AuraHandledException('Error fetching audit logs: ' + e.getMessage());
         }

@@ -7,7 +7,7 @@
 
     <title>{% if page.title %}{{ page.title }} | {% endif %}{{ site.title | default: "JT Dynamic Queries" }}</title>
     <meta name="description" content="{{ page.description | default: site.description | default: 'Dynamic SOQL Query Execution Tool for Salesforce' }}"/>
-    
+
     <style>
       * {
         margin: 0;
@@ -28,20 +28,20 @@
         background: white;
         min-height: 100vh;
       }
-      
+
       .page-header {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         padding: 3rem 2rem;
         text-align: center;
       }
-      
+
       .page-header h1 {
         margin: 0 0 1rem;
         font-size: 2.5rem;
         font-weight: 700;
       }
-      
+
       .page-header p {
         margin: 0;
         opacity: 0.9;
@@ -58,7 +58,7 @@
       .page-header a:hover {
         border-bottom-color: white;
       }
-      
+
       .content {
         padding: 2rem;
       }
@@ -90,13 +90,13 @@
       .content li {
         margin-bottom: 0.5rem;
       }
-      
+
       .content a {
         color: #667eea;
         text-decoration: none;
         transition: color 0.3s;
       }
-      
+
       .content a:hover {
         color: #764ba2;
         text-decoration: underline;
@@ -119,7 +119,7 @@
         background: #f7fafc;
         font-weight: 600;
       }
-      
+
       .content code {
         background: #f7fafc;
         padding: 2px 6px;
@@ -127,7 +127,7 @@
         font-family: 'Monaco', 'Menlo', monospace;
         font-size: 0.875em;
       }
-      
+
       .content pre {
         background: #2d3748;
         color: #f7fafc;
@@ -162,6 +162,16 @@
         border: none;
         border-top: 2px solid #e2e8f0;
         margin: 2rem 0;
+      }
+
+      /* Mermaid diagram styling */
+      .mermaid {
+        text-align: center;
+        margin: 2rem 0;
+        background: white;
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       }
       
       .footer {
@@ -221,5 +231,31 @@
         </p>
       </div>
     </div>
+
+    <!-- Mermaid.js for diagram rendering -->
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ 
+        startOnLoad: true,
+        theme: 'default',
+        themeVariables: {
+          primaryColor: '#667eea',
+          primaryTextColor: '#fff',
+          primaryBorderColor: '#764ba2',
+          lineColor: '#667eea',
+          secondaryColor: '#48bb78',
+          tertiaryColor: '#f59e0b',
+          fontSize: '16px'
+        },
+        flowchart: {
+          curve: 'basis',
+          padding: 20
+        },
+        sequence: {
+          actorMargin: 80,
+          messageFontSize: 14
+        }
+      });
+    </script>
   </body>
 </html>

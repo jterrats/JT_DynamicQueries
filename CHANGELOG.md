@@ -14,6 +14,7 @@ This release represents a complete refactor of the LWC architecture, transitioni
 ### ✨ New Features
 
 #### Component Architecture
+
 - **jtSearchableCombobox**: Generic, reusable searchable dropdown component
   - Real-time client-side filtering
   - Accessible ARIA attributes
@@ -57,6 +58,7 @@ This release represents a complete refactor of the LWC architecture, transitioni
   - Functional programming patterns for data transformation
 
 #### Tooling API Integration
+
 - **Named Credential Setup**: Secure authentication for Tooling API
   - OAuth 2.0 with Client Credentials flow
   - External Credential configuration
@@ -69,6 +71,7 @@ This release represents a complete refactor of the LWC architecture, transitioni
   - Detailed error messages for troubleshooting
 
 #### Documentation
+
 - **TOOLING_API_SETUP.md**: Complete English setup guide
   - Step-by-step Connected App creation
   - External Credential configuration
@@ -83,6 +86,7 @@ This release represents a complete refactor of the LWC architecture, transitioni
 ### 🔧 Improvements
 
 #### UI/UX Enhancements
+
 - **Dropdown Styling**: Fixed alignment issues (removed `left: 0` CSS conflict)
 - **Single Warning Icon**: Removed duplicate emoji, using single yellow SLDS icon
 - **Combobox Filtering**: Client-side real-time filtering with visual feedback
@@ -94,18 +98,21 @@ This release represents a complete refactor of the LWC architecture, transitioni
 - **Tooltips**: Contextual help text for complex features
 
 #### Performance
+
 - **Component Modularity**: Faster rendering with smaller, focused components
 - **Functional Programming**: Pure functions for data transformation reduce side effects
 - **Client-Side Filtering**: No server round-trips for dropdown searches
 - **Lazy Loading**: Components only load when needed
 
 #### Accessibility
+
 - **WCAG 2.1 AA Compliance**: All components meet accessibility standards
 - **Keyboard Navigation**: Full keyboard support for all interactions
 - **Screen Reader Support**: Proper ARIA labels and live regions
 - **Focus Management**: Logical focus order and visible focus indicators
 
 #### Developer Experience
+
 - **Modular Architecture**: Easier to maintain and extend
 - **Reusable Components**: Can be used in other LWC projects
 - **Functional Patterns**: Predictable behavior with pure functions
@@ -113,6 +120,7 @@ This release represents a complete refactor of the LWC architecture, transitioni
 - **Comprehensive Comments**: Detailed JSDoc comments for all methods
 
 ### 🐛 Bug Fixes
+
 - Fixed syntax errors in `JT_ProductionSettingsController_Test.cls`
 - Corrected SOQL `WITH USER_MODE` placement in test classes
 - Fixed dropdown alignment issues in Shadow DOM
@@ -123,6 +131,7 @@ This release represents a complete refactor of the LWC architecture, transitioni
 ### 🧪 Testing
 
 #### E2E Tests: 100% Pass Rate (28/28)
+
 - **Updated Test Selectors**: All tests updated for new component structure
 - **Simplified Assertions**: Focus on core functionality for better reliability
 - **New Test Coverage**:
@@ -137,17 +146,20 @@ This release represents a complete refactor of the LWC architecture, transitioni
   - CSV export functionality
 
 #### Apex Tests: 98% Pass Rate (723 tests)
+
 - All JT_DynamicQueries tests passing
 - Added tests for resilient microservices pattern
 - Added tests for usage tracking functionality
 
 ### 📦 Dependencies
+
 - **Playwright**: E2E testing framework (existing)
 - **ESLint**: Code quality for LWC (existing)
 - **PMD**: Apex code quality (existing)
 - **Prettier**: Code formatting (existing)
 
 ### 🔐 Security
+
 - **Named Credentials**: Secure Tooling API authentication (OAuth 2.0)
 - **External Credentials**: Encrypted client credentials
 - **Permission-Based Access**: Tooling API features gated by permissions
@@ -155,12 +167,14 @@ This release represents a complete refactor of the LWC architecture, transitioni
 - **Without Sharing Context**: Audit log insertion bypasses user permissions (by design)
 
 ### 📚 Documentation Updates
+
 - README: Added Tooling API setup references
 - ARCHITECTURE.md: Updated with new component structure
 - Added 7 new documentation files for architecture and setup
 - All docs translated to multiple languages where applicable
 
 ### ⚠️ Breaking Changes
+
 - **Component Selectors**: E2E tests must update to use new component names
   - `lightning-combobox` → `c-jt-searchable-combobox`
   - `lightning-input` (manual dropdown) → `c-jt-searchable-combobox`
@@ -168,14 +182,17 @@ This release represents a complete refactor of the LWC architecture, transitioni
 - **CSS Classes**: Some custom CSS classes renamed for clarity
 
 ### 🔄 Migration Guide
+
 No migration required for end users. All changes are internal to the component architecture. Existing custom metadata configurations and settings are fully compatible.
 
 For developers extending this project:
+
 1. Update any custom E2E tests to use new component selectors
 2. Review `SEARCHABLE_COMBOBOX_USAGE.md` for new component APIs
 3. Follow `MICROSERVICES_PATTERN.md` for extending with new services
 
 ### 🎯 What's Next (v2.1.0)
+
 - GitHub Actions workflows (E2E tests, Jekyll documentation)
 - Reports and Dashboards for usage analytics
 - Export/Import metadata migration scripts

@@ -33,18 +33,20 @@ The application follows a **layered architecture** with clear separation of conc
 ### Core Components
 
 #### 1. **jtQueryViewer** (Container)
+
 - **Role:** Main orchestrator component
 - **Responsibilities:**
   - Manages overall application state
   - Coordinates child components
   - Handles complex business logic
   - Error boundary for child components
-- **Patterns:** 
+- **Patterns:**
   - Container/Presenter pattern
   - Error boundaries with `errorCallback()`
   - Event-driven communication
 
 #### 2. **jtSearchableCombobox** (Reusable)
+
 - **Role:** Generic searchable dropdown
 - **Responsibilities:**
   - Real-time client-side filtering
@@ -59,14 +61,15 @@ The application follows a **layered architecture** with clear separation of conc
   ```html
   <c-jt-searchable-combobox
     label="Select Configuration"
-    options={configOptions}
-    onselect={handleSelect}
-    onclear={handleClear}
+    options="{configOptions}"
+    onselect="{handleSelect}"
+    onclear="{handleClear}"
     required
   ></c-jt-searchable-combobox>
   ```
 
 #### 3. **jtParameterInputs** (Specialized)
+
 - **Role:** Dynamic parameter input generation
 - **Responsibilities:**
   - Extracts bind variables from SOQL queries
@@ -81,6 +84,7 @@ The application follows a **layered architecture** with clear separation of conc
   - Handles various spacing: `= :var`, `=:var`, `= : var`
 
 #### 4. **jtExecuteButton** (Simple)
+
 - **Role:** Query execution trigger
 - **Responsibilities:**
   - Execute query action
@@ -91,6 +95,7 @@ The application follows a **layered architecture** with clear separation of conc
   - Props-driven behavior
 
 #### 5. **jtConfigModal** (Complex)
+
 - **Role:** Configuration creation/editing
 - **Responsibilities:**
   - SOQL validation
@@ -103,6 +108,7 @@ The application follows a **layered architecture** with clear separation of conc
   - Async operations with loading states
 
 #### 6. **jtUsageModal** (Display)
+
 - **Role:** "Where is this used?" results
 - **Responsibilities:**
   - Display Apex and Flow search results
@@ -113,6 +119,7 @@ The application follows a **layered architecture** with clear separation of conc
   - Structured error handling
 
 #### 7. **jtQueryResults** (Viewer)
+
 - **Role:** Results display with multiple views
 - **Responsibilities:**
   - Table view (desktop)
@@ -126,6 +133,7 @@ The application follows a **layered architecture** with clear separation of conc
   - **View composition** (multiple rendering modes)
 
 #### 8. **jtRunAsSection** (Advanced)
+
 - **Role:** User impersonation for testing
 - **Responsibilities:**
   - User selection with search
@@ -210,45 +218,52 @@ public class JT_DataSelector {
 
 ```apex
 public class JT_UsageFinder {
-    // Inner class for structured responses
-    public class ServiceResponse {
-        @AuraEnabled public Boolean success;
-        @AuraEnabled public List<UsageResult> results;
-        @AuraEnabled public String errorMessage;
-    }
-    
+  // Inner class for structured responses
+  public class ServiceResponse {
     @AuraEnabled
-    public static AggregatedUsageResponse findAllUsagesResilient(String configName) {
-        AggregatedUsageResponse response = new AggregatedUsageResponse();
-        
-        // Service 1: Apex search (no API, always works)
-        try {
-            response.apexResponse = findInApexClassesService(configName);
-        } catch (Exception e) {
-            response.apexResponse.success = false;
-            response.apexResponse.errorMessage = e.getMessage();
-        }
-        
-        // Service 2: Flow search (Tooling API, may fail)
-        try {
-            response.flowResponse = findInFlowsService(configName);
-        } catch (Exception e) {
-            response.flowResponse.success = false;
-            response.flowResponse.errorMessage = e.getMessage();
-        }
-        
-        return response; // Always returns, even with partial failures
+    public Boolean success;
+    @AuraEnabled
+    public List<UsageResult> results;
+    @AuraEnabled
+    public String errorMessage;
+  }
+
+  @AuraEnabled
+  public static AggregatedUsageResponse findAllUsagesResilient(
+    String configName
+  ) {
+    AggregatedUsageResponse response = new AggregatedUsageResponse();
+
+    // Service 1: Apex search (no API, always works)
+    try {
+      response.apexResponse = findInApexClassesService(configName);
+    } catch (Exception e) {
+      response.apexResponse.success = false;
+      response.apexResponse.errorMessage = e.getMessage();
     }
+
+    // Service 2: Flow search (Tooling API, may fail)
+    try {
+      response.flowResponse = findInFlowsService(configName);
+    } catch (Exception e) {
+      response.flowResponse.success = false;
+      response.flowResponse.errorMessage = e.getMessage();
+    }
+
+    return response; // Always returns, even with partial failures
+  }
 }
 ```
 
 **Benefits:**
+
 - ✅ **Fault Isolation**: One service failure doesn't affect others
 - ✅ **Partial Results**: Users get Apex results even if Flow search fails
 - ✅ **Graceful Degradation**: UI adapts to partial data
 - ✅ **Better UX**: Clear error messages for each service
 
 **UI Handling:**
+
 ```javascript
 // jtUsageModal.js
 get usageSummary() {
@@ -338,6 +353,7 @@ get usageSummary() {
 ### jtQueryResults: Functional Data Transformation
 
 **Principles Applied:**
+
 1. **Pure Functions** - No side effects, predictable outputs
 2. **Immutability** - Data is never mutated, only transformed
 3. **Function Composition** - Build complex operations from simple functions
@@ -347,36 +363,41 @@ get usageSummary() {
 ```javascript
 // Pure function - transforms data without side effects
 const transformToTableFormat = (records) => {
-    if (!records || records.length === 0) return { columns: [], data: [] };
-    
-    const columns = Object.keys(records[0]).map(key => ({
-        label: key,
-        fieldName: key,
-        type: inferType(records[0][key])
-    }));
-    
-    return { columns, data: records };
+  if (!records || records.length === 0) return { columns: [], data: [] };
+
+  const columns = Object.keys(records[0]).map((key) => ({
+    label: key,
+    fieldName: key,
+    type: inferType(records[0][key])
+  }));
+
+  return { columns, data: records };
 };
 
 // Pure function - no mutations
 const transformToJSON = (records, metadata) => {
-    return JSON.stringify({
-        metadata: metadata,
-        count: records.length,
-        records: records
-    }, null, 2);
+  return JSON.stringify(
+    {
+      metadata: metadata,
+      count: records.length,
+      records: records
+    },
+    null,
+    2
+  );
 };
 
 // Composition
 const exportData = pipe(
-    validateData,
-    transformToTableFormat,
-    applyPagination,
-    render
+  validateData,
+  transformToTableFormat,
+  applyPagination,
+  render
 );
 ```
 
 **Benefits:**
+
 - ✅ **Testability**: Pure functions easy to unit test
 - ✅ **Predictability**: Same input → same output
 - ✅ **Debugging**: No hidden state mutations
@@ -412,11 +433,13 @@ handleConfigSelect(event) {
 **Note:** State management components (`queryState`, `settingsState`) are included but **optional**. Current implementation uses direct parent-child communication for simplicity.
 
 **When to use state management:**
+
 - Multiple unrelated components need same state
 - Deep component nesting (>3 levels)
 - Complex state synchronization requirements
 
 **When to avoid:**
+
 - Simple parent-child communication (current implementation)
 - Single source of truth in parent component
 

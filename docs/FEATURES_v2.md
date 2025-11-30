@@ -9,6 +9,7 @@
 **Purpose:** Generic, reusable dropdown with real-time filtering
 
 **Features:**
+
 - ✅ Client-side filtering (no server round-trips)
 - ✅ Keyboard navigation (Arrow keys, Enter, Escape)
 - ✅ Accessibility (WCAG 2.1 AA)
@@ -17,14 +18,15 @@
 - ✅ Customizable via @api properties
 
 **Usage Example:**
+
 ```html
 <c-jt-searchable-combobox
-    label="Select Configuration"
-    placeholder="Type to search..."
-    options={configOptions}
-    required
-    onselect={handleSelect}
-    onclear={handleClear}
+  label="Select Configuration"
+  placeholder="Type to search..."
+  options="{configOptions}"
+  required
+  onselect="{handleSelect}"
+  onclear="{handleClear}"
 ></c-jt-searchable-combobox>
 ```
 
@@ -54,6 +56,7 @@
 **Purpose:** Auto-generate input fields from SOQL bind variables
 
 **Features:**
+
 - ✅ Regex extraction of `:variable` from SOQL
 - ✅ Handles various spacing: `= :var`, `=:var`, `= : var`
 - ✅ Contextual tooltips (shows variable usage in query)
@@ -61,6 +64,7 @@
 - ✅ Validation support
 
 **Auto-Detection:**
+
 ```sql
 -- SOQL Query:
 SELECT Id, Name FROM Account WHERE Type = :accountType AND Industry = :industry
@@ -73,6 +77,7 @@ SELECT Id, Name FROM Account WHERE Type = :accountType AND Industry = :industry
 ```
 
 **Tooltip Example:**
+
 ```
 ℹ️ accountType
 Used in query: WHERE Type = :accountType
@@ -89,12 +94,14 @@ Used in query: WHERE Type = :accountType
 **View Modes:**
 
 #### **Table View** (Default)
+
 - Lightning DataTable for desktop
 - Sortable columns
 - Client-side pagination (10 records/page)
 - Always shows column headers (even with 0 results)
 
 #### **JSON View**
+
 - Syntax-highlighted JSON
 - Includes metadata (query, count, timestamp)
 - Copy-friendly formatting
@@ -112,18 +119,21 @@ Used in query: WHERE Type = :accountType
 ```
 
 #### **CSV View**
+
 - Plain text CSV format
 - Downloadable as `.csv` file
 - Includes headers
 - Excel-compatible
 
 #### **Mobile View** (Auto-responsive)
+
 - Expandable cards instead of table
 - Touch-friendly buttons
 - Optimized for small screens
 - Maintains all functionality
 
 **Toggle Buttons:**
+
 ```
 ┌─────────────────────────────────────┐
 │ [Table] [JSON] [CSV]   📥 Export    │
@@ -143,24 +153,28 @@ Used in query: WHERE Type = :accountType
 **Search Scope:**
 
 #### **Apex Classes** (No API consumption)
+
 - Searches all `ApexClass` records via SOQL
 - Looks for: `JT_DataSelector.getRecords('ConfigName')`
 - Shows: Class name + line number
 - **Performance:** ~0 API calls, uses standard SOQL
 
 #### **Flows** (Tooling API - 1-5 API calls)
+
 - Queries Flow metadata via Tooling API
 - Looks for: Configuration name in Flow definitions
 - Shows: Flow API name + type
 - **Performance:** 1-5 API calls per search (based on Flow count)
 
 **Resilient Architecture:**
+
 - ✅ Both searches run independently
 - ✅ Partial results displayed if one fails
 - ✅ Clear error messages for troubleshooting
 - ✅ Apex results always available (no API dependency)
 
 **Example Output:**
+
 ```
 ✓ Apex Search: Complete
 ✓ Flow Search: Complete
@@ -175,6 +189,7 @@ Flow        | Account_Update_Flow     | N/A
 ```
 
 **Error Handling:**
+
 ```
 ✓ Apex Search: Complete
 ⚠️ Flow Search: Failed
@@ -193,12 +208,14 @@ Found 2 references (Apex only):
 **Modes:**
 
 #### **Standard Execution**
+
 - Uses `WITH USER_MODE` in SOQL
 - Validates user has access to required objects
 - Fast execution (no test context overhead)
 - Shows: Results the selected user would see
 
 #### **System.runAs() Mode** (Test Context)
+
 - True impersonation using Apex test context
 - Executes query inside `System.runAs(selectedUser)`
 - Returns JSON with:
@@ -208,15 +225,17 @@ Found 2 references (Apex only):
 - **Note:** Runs in test context (may have slight differences from production)
 
 **User Selection:**
+
 - Searchable dropdown with all active users
 - Excludes current user
 - Client-side filtering for performance
 - Shows: Username + Full Name
 
 **Security Note:**
+
 ```
-⚠️ Note: This validates user permissions but executes 
-with USER_MODE security. Results reflect sharing rules 
+⚠️ Note: This validates user permissions but executes
+with USER_MODE security. Results reflect sharing rules
 and field-level security.
 ```
 
@@ -229,21 +248,25 @@ and field-level security.
 **Features:**
 
 #### **Real-Time Validation**
+
 - SOQL syntax check as you type
 - Error messages for invalid queries
 - Success indicator when valid
 
 #### **Auto-Detection**
+
 - Object name extracted from `FROM` clause
 - Read-only once detected
 - Updates automatically as you edit query
 
 #### **Query Preview**
+
 - Shows formatted SOQL once valid
 - Highlights bind variables
 - Shows extracted object name
 
 #### **Environment Awareness**
+
 - ✅ **Sandbox/Scratch/Developer:** Create button visible
 - ❌ **Production:** Create button hidden
 - ⚠️ **Starter/Free Edition:** Optional checkbox with security warning
@@ -258,18 +281,19 @@ and field-level security.
 | Bindings (JSON) | No | No | ✅ Yes |
 
 **Example Workflow:**
+
 1. Click **+ Create Configuration**
 2. Enter label: `"Active Opportunities"`
 3. Developer name auto-fills: `Active_Opportunities`
 4. Enter query:
    ```sql
-   SELECT Id, Name, Amount FROM Opportunity 
+   SELECT Id, Name, Amount FROM Opportunity
    WHERE StageName = 'Closed Won'
    ```
 5. Object name auto-detects: `Opportunity` (read-only)
 6. (Optional) Add bindings JSON:
    ```json
-   {"stageName": "Prospecting"}
+   { "stageName": "Prospecting" }
    ```
 7. Preview shows formatted query
 8. Click **Save** → Deploys via Tooling API (2-3 API calls)
@@ -281,30 +305,33 @@ and field-level security.
 
 ### Supported Languages (v2.0)
 
-| Language | Code | Status |
-|----------|------|--------|
-| English | `en` | ✅ Complete |
-| Spanish | `es` | ✅ Complete |
-| French | `fr` | ✅ Complete |
-| German | `de` | ✅ Complete |
-| Italian | `it` | ✅ Complete |
-| Japanese | `ja` | ✅ Complete |
-| Portuguese (BR) | `pt_BR` | ✅ Complete |
+| Language             | Code    | Status      |
+| -------------------- | ------- | ----------- |
+| English              | `en`    | ✅ Complete |
+| Spanish              | `es`    | ✅ Complete |
+| French               | `fr`    | ✅ Complete |
+| German               | `de`    | ✅ Complete |
+| Italian              | `it`    | ✅ Complete |
+| Japanese             | `ja`    | ✅ Complete |
+| Portuguese (BR)      | `pt_BR` | ✅ Complete |
 | Chinese (Simplified) | `zh_CN` | ✅ Complete |
 
 ### Translation Strategy
 
 **JavaScript Labels** (`labels.js`):
+
 - All UI text stored in centralized file
 - Detects user locale automatically
 - Falls back to English if locale not supported
 - Dynamic label resolution
 
 **Custom Labels** (Future):
+
 - Plan to migrate to Custom Labels for admin customization
 - Currently using JS for faster iteration
 
 **Object Translations:**
+
 - Custom Metadata: Translated (8 languages)
 - Custom Objects: Translated (8 languages)
 - Custom Settings: Translated (8 languages)
@@ -316,6 +343,7 @@ and field-level security.
 ### Named Credentials (v2.0)
 
 **Why Named Credentials?**
+
 1. ✅ **AppExchange Requirement**: Security Review compliant
 2. ✅ **Credential Encryption**: Client secrets encrypted by Salesforce
 3. ✅ **No Code Changes**: Admin can update credentials without redeployment
@@ -323,6 +351,7 @@ and field-level security.
 5. ✅ **Audit Trail**: All callouts logged
 
 **Setup Required:**
+
 1. Create Connected App
 2. Configure External Credential (OAuth 2.0)
 3. Link Named Credential to External Credential
@@ -334,19 +363,21 @@ and field-level security.
 
 **Features That Consume API Calls:**
 
-| Feature | API Calls | Can Disable? |
-|---------|-----------|--------------|
-| "Where is this used?" (Apex) | 0 | N/A (always available) |
-| "Where is this used?" (Flows) | 1-5 | ✅ Yes (checkbox toggle) |
-| Create Configuration | 2-3 | ✅ Yes (hide button in prod) |
-| Edit Configuration | 2-3 | ✅ Yes (hide button in prod) |
+| Feature                       | API Calls | Can Disable?                 |
+| ----------------------------- | --------- | ---------------------------- |
+| "Where is this used?" (Apex)  | 0         | N/A (always available)       |
+| "Where is this used?" (Flows) | 1-5       | ✅ Yes (checkbox toggle)     |
+| Create Configuration          | 2-3       | ✅ Yes (hide button in prod) |
+| Edit Configuration            | 2-3       | ✅ Yes (hide button in prod) |
 
 **Daily Limits:**
+
 - Varies by org edition
 - Typical range: 15,000 - 100,000 calls/day
 - Monitor in Setup → System Overview
 
 **Audit Logging:**
+
 - All usage searches logged to `JT_SettingsAuditLog__c`
 - Tracks: User, timestamp, config name, result count
 - Filterable in Audit History tab
@@ -358,18 +389,21 @@ and field-level security.
 ### Compliance Features
 
 **Keyboard Navigation:**
+
 - ✅ Tab order logical and complete
 - ✅ All actions accessible via keyboard
 - ✅ Visible focus indicators
 - ✅ No keyboard traps
 
 **Screen Reader Support:**
+
 - ✅ Proper ARIA labels (`aria-label`, `aria-labelledby`)
 - ✅ Live regions for dynamic content (`aria-live`)
 - ✅ Required field indicators (`aria-required`)
 - ✅ Role attributes (`role="combobox"`, `role="listbox"`)
 
 **Visual Accessibility:**
+
 - ✅ Color contrast ratios meet WCAG AA standards
 - ✅ Text resizable up to 200%
 - ✅ Clear visual focus indicators
@@ -377,12 +411,12 @@ and field-level security.
 
 **Component-Specific:**
 
-| Component | Accessibility Features |
-|-----------|------------------------|
-| `jtSearchableCombobox` | ARIA combobox pattern, keyboard nav, screen reader announcements |
-| `jtQueryResults` | Table headers, row/column associations, expand/collapse announcements |
-| `jtConfigModal` | Modal focus trap, ESC key close, required field validation |
-| `jtExecuteButton` | Loading state announced, disabled state communicated |
+| Component              | Accessibility Features                                                |
+| ---------------------- | --------------------------------------------------------------------- |
+| `jtSearchableCombobox` | ARIA combobox pattern, keyboard nav, screen reader announcements      |
+| `jtQueryResults`       | Table headers, row/column associations, expand/collapse announcements |
+| `jtConfigModal`        | Modal focus trap, ESC key close, required field validation            |
+| `jtExecuteButton`      | Loading state announced, disabled state communicated                  |
 
 ---
 
@@ -395,6 +429,7 @@ and field-level security.
 **Solution (v2.0):** Filter options in browser
 
 **Impact:**
+
 - Before: 10 keystrokes = 10 server calls
 - After: 10 keystrokes = 0 server calls
 - **Improvement:** 100% reduction in API calls for filtering
@@ -406,6 +441,7 @@ and field-level security.
 **Solution (v2.0):** Granular component updates
 
 **Impact:**
+
 - Before: Change dropdown → re-render entire 1200-line template
 - After: Change dropdown → re-render 50-line component
 - **Improvement:** ~80% reduction in DOM operations
@@ -417,11 +453,12 @@ and field-level security.
 ```javascript
 // Can safely memoize this - same input always gives same output
 const transformToCSV = memoize((records) => {
-    return records.map(r => Object.values(r).join(',')).join('\n');
+  return records.map((r) => Object.values(r).join(",")).join("\n");
 });
 ```
 
 **Benefits:**
+
 - Avoid redundant computations
 - Predictable performance
 - Easier to optimize with caching
@@ -433,6 +470,7 @@ const transformToCSV = memoize((records) => {
 ### Current Approach: Parent-Driven State
 
 **Architecture:**
+
 ```
 jtQueryViewer (Parent)
   ├─ State: selectedConfig, parameters, results
@@ -441,6 +479,7 @@ jtQueryViewer (Parent)
 ```
 
 **Why This Works:**
+
 - ✅ Simple mental model
 - ✅ Easy to debug (single source of truth)
 - ✅ No external state management library needed
@@ -451,11 +490,13 @@ jtQueryViewer (Parent)
 **Components:** `queryState`, `settingsState`
 
 **When to Use:**
+
 - Multiple unrelated components need same state
 - Deep nesting (>3 levels)
 - Cross-tab communication
 
 **When to Avoid:**
+
 - Current simple parent-child architecture
 - Small to medium component trees
 
@@ -466,23 +507,25 @@ jtQueryViewer (Parent)
 ### Error Boundaries (LWC)
 
 **Implementation:**
+
 ```javascript
 // jtQueryViewer.js
 errorCallback(error, stack) {
     console.error('Component Error:', error);
     console.error('Stack:', stack);
-    
+
     // Show user-friendly message
-    this.showToast('Warning', 
-        'A component failed to load. Other features remain functional.', 
+    this.showToast('Warning',
+        'A component failed to load. Other features remain functional.',
         'warning'
     );
-    
+
     // Continue execution - don't crash entire app
 }
 ```
 
 **Benefits:**
+
 - ✅ Isolated failures
 - ✅ Graceful degradation
 - ✅ User-friendly error messages
@@ -495,6 +538,7 @@ errorCallback(error, stack) {
 **Key Principle:** Independent services that fail independently
 
 **Example - JT_UsageFinder:**
+
 ```apex
 // Service 1: Apex search (always works)
 ServiceResponse apexResponse = findInApexClasses(configName);
@@ -507,6 +551,7 @@ return new AggregatedResponse(apexResponse, flowResponse);
 ```
 
 **UI Handling:**
+
 - If both succeed: Show complete results
 - If Apex succeeds, Flow fails: Show Apex results + error message
 - If both fail: Show clear error message
@@ -517,23 +562,26 @@ return new AggregatedResponse(apexResponse, flowResponse);
 
 ### Breakpoints
 
-| Breakpoint | Width | Layout |
-|------------|-------|--------|
-| Mobile | < 768px | Expandable cards, stacked inputs |
-| Tablet | 768px - 1024px | Hybrid (some cards, some tables) |
-| Desktop | > 1024px | Full tables, side-by-side layout |
+| Breakpoint | Width          | Layout                           |
+| ---------- | -------------- | -------------------------------- |
+| Mobile     | < 768px        | Expandable cards, stacked inputs |
+| Tablet     | 768px - 1024px | Hybrid (some cards, some tables) |
+| Desktop    | > 1024px       | Full tables, side-by-side layout |
 
 ### Mobile-Specific Features
 
 **Query Results:**
+
 - Desktop: `lightning-datatable`
 - Mobile: Expandable cards with toggle buttons
 
 **Forms:**
+
 - Desktop: Multi-column layout (2-3 columns)
 - Mobile: Single column, full-width inputs
 
 **Modals:**
+
 - Desktop: Centered, fixed width
 - Mobile: Full-screen overlay
 
@@ -544,6 +592,7 @@ return new AggregatedResponse(apexResponse, flowResponse);
 ### E2E Tests (Playwright)
 
 **Test Categories:**
+
 1. **Component Loading** (3 tests)
 2. **User Interactions** (8 tests)
 3. **Data Operations** (5 tests)
@@ -553,6 +602,7 @@ return new AggregatedResponse(apexResponse, flowResponse);
 7. **Component Integration** (4 tests)
 
 **Key Features:**
+
 - ✅ No manual login (uses SF CLI session)
 - ✅ Cookie injection for fast authentication
 - ✅ Screenshots and videos on failure
@@ -579,21 +629,22 @@ return new AggregatedResponse(apexResponse, flowResponse);
 
 ### Available Guides
 
-| Document | Language | Topic |
-|----------|----------|-------|
-| [README.md](../README.md) | EN | Overview, quick start, features |
-| [ARCHITECTURE.md](./ARCHITECTURE.md) | EN | System design, patterns, performance |
-| [CHANGELOG.md](../CHANGELOG.md) | EN | Version history, breaking changes |
-| [TOOLING_API_SETUP.md](./TOOLING_API_SETUP.md) | EN | Step-by-step Tooling API setup |
-| [TOOLING_API_SETUP_ES.md](./TOOLING_API_SETUP_ES.md) | ES | Guía de configuración Tooling API |
-| [SEARCHABLE_COMBOBOX_USAGE.md](./SEARCHABLE_COMBOBOX_USAGE.md) | EN | Component API reference |
-| [MICROSERVICES_PATTERN.md](./MICROSERVICES_PATTERN.md) | EN | Resilient architecture |
-| [TRANSLATIONS_ARCHITECTURE.md](./TRANSLATIONS_ARCHITECTURE.md) | EN | i18n implementation |
-| [ACCESSIBILITY.md](../ACCESSIBILITY.md) | EN | WCAG 2.1 compliance details |
+| Document                                                       | Language | Topic                                |
+| -------------------------------------------------------------- | -------- | ------------------------------------ |
+| [README.md](../README.md)                                      | EN       | Overview, quick start, features      |
+| [ARCHITECTURE.md](./ARCHITECTURE.md)                           | EN       | System design, patterns, performance |
+| [CHANGELOG.md](../CHANGELOG.md)                                | EN       | Version history, breaking changes    |
+| [TOOLING_API_SETUP.md](./TOOLING_API_SETUP.md)                 | EN       | Step-by-step Tooling API setup       |
+| [TOOLING_API_SETUP_ES.md](./TOOLING_API_SETUP_ES.md)           | ES       | Guía de configuración Tooling API    |
+| [SEARCHABLE_COMBOBOX_USAGE.md](./SEARCHABLE_COMBOBOX_USAGE.md) | EN       | Component API reference              |
+| [MICROSERVICES_PATTERN.md](./MICROSERVICES_PATTERN.md)         | EN       | Resilient architecture               |
+| [TRANSLATIONS_ARCHITECTURE.md](./TRANSLATIONS_ARCHITECTURE.md) | EN       | i18n implementation                  |
+| [ACCESSIBILITY.md](../ACCESSIBILITY.md)                        | EN       | WCAG 2.1 compliance details          |
 
 ### In-App Documentation
 
 Accessible via **Documentation** tab, includes:
+
 - Overview (translated to 8 languages)
 - How to use (with examples)
 - Security model
@@ -642,11 +693,13 @@ Accessible via **Documentation** tab, includes:
 ## 📞 Support & Contributing
 
 **Need Help?**
+
 - 📖 Check [Documentation tab](./docs/TOOLING_API_SETUP.md)
 - 🐛 [Open an Issue](https://github.com/YOUR_REPO/issues)
 - 💬 [Salesforce Trailblazer Community](https://trailhead.salesforce.com/)
 
 **Want to Contribute?**
+
 - 🔧 Fork the repo
 - 🌿 Create a feature branch
 - ✅ Add tests (E2E + Apex)
@@ -655,7 +708,6 @@ Accessible via **Documentation** tab, includes:
 
 ---
 
-**Version:** 2.0.0  
-**Last Updated:** 2025-11-30  
+**Version:** 2.0.0
+**Last Updated:** 2025-11-30
 **License:** MIT
-

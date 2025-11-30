@@ -25,40 +25,46 @@ Thank you for your interest in contributing! This document provides guidelines a
 ### Setup Development Environment
 
 1. **Clone the repository:**
+
    ```bash
    git clone https://github.com/jterrats/JT_DynamicQueries.git
    cd JT_DynamicQueries
    ```
 
 2. **Install dependencies:**
+
    ```bash
    npm install
    ```
 
 3. **Create or authenticate to a Salesforce org:**
+
    ```bash
    # Option A: Create scratch org
    sf org create scratch --definition-file config/project-scratch-def.json --alias jt-dev --set-default
-   
+
    # Option B: Authenticate to existing org
    sf org login web --alias jt-dev --set-default
    ```
 
 4. **Deploy the project:**
+
    ```bash
    sf project deploy start
    ```
 
 5. **Assign permission set:**
+
    ```bash
    sf org assign permset --name JT_Dynamic_Queries
    ```
 
 6. **Run tests to verify setup:**
+
    ```bash
    # Apex tests
    sf apex run test --test-level RunLocalTests --result-format human
-   
+
    # E2E tests
    npm run test:e2e
    ```
@@ -74,6 +80,7 @@ git checkout -b feature/your-feature-name
 ```
 
 **Branch naming conventions:**
+
 - `feature/` - New features
 - `fix/` - Bug fixes
 - `docs/` - Documentation updates
@@ -85,6 +92,7 @@ git checkout -b feature/your-feature-name
 **Code Guidelines:**
 
 #### Apex Code
+
 - Follow Salesforce Apex Best Practices
 - Use ApexDoc comments for public methods
 - Handle exceptions gracefully (try-catch blocks)
@@ -105,6 +113,7 @@ public static List<SObject> getRecords(String configName) {
 ```
 
 #### Lightning Web Components
+
 - Follow LWC Best Practices
 - Use JSDoc comments for methods
 - Keep components small and focused (< 300 lines)
@@ -120,44 +129,47 @@ public static List<SObject> getRecords(String configName) {
  * @pure This is a pure function with no side effects
  */
 const filterOptions = (options, searchTerm) => {
-    // Implementation
+  // Implementation
 };
 ```
 
 ### 3. Write Tests
 
 **Required:**
+
 - ✅ Apex test methods for new Apex code (aim for 85%+ coverage)
 - ✅ E2E tests for new UI features
 - ✅ Update existing tests if behavior changed
 
 **Apex Test Example:**
+
 ```apex
 @IsTest
 private class YourClass_Test {
-    @IsTest
-    static void testYourMethod() {
-        Test.startTest();
-        // Your test logic
-        Test.stopTest();
-        
-        System.assertEquals(expected, actual, 'Description');
-    }
+  @IsTest
+  static void testYourMethod() {
+    Test.startTest();
+    // Your test logic
+    Test.stopTest();
+
+    System.assertEquals(expected, actual, 'Description');
+  }
 }
 ```
 
 **E2E Test Example:**
+
 ```javascript
-test('should test your feature', async ({ page }) => {
-    // Navigate to component
-    await page.waitForSelector('c-jt-query-viewer');
-    
-    // Interact with UI
-    const button = page.locator('lightning-button').first();
-    await button.click();
-    
-    // Assert outcome
-    await expect(page.locator('.result')).toBeVisible();
+test("should test your feature", async ({ page }) => {
+  // Navigate to component
+  await page.waitForSelector("c-jt-query-viewer");
+
+  // Interact with UI
+  const button = page.locator("lightning-button").first();
+  await button.click();
+
+  // Assert outcome
+  await expect(page.locator(".result")).toBeVisible();
 });
 ```
 
@@ -190,6 +202,7 @@ npm run prettier
 ### 6. Commit Your Changes
 
 **Commit Message Format:**
+
 ```
 <type>(<scope>): <subject>
 
@@ -199,6 +212,7 @@ npm run prettier
 ```
 
 **Types:**
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
@@ -208,6 +222,7 @@ npm run prettier
 - `chore`: Build/config changes
 
 **Example:**
+
 ```
 feat(lwc): add CSV export to query results viewer
 
@@ -226,6 +241,7 @@ git push origin feature/your-feature-name
 ```
 
 Create PR on GitHub with:
+
 - Clear title describing the change
 - Description of what was changed and why
 - Screenshots/videos for UI changes
@@ -239,15 +255,17 @@ Create PR on GitHub with:
 ### E2E Test Best Practices
 
 1. **Use Semantic Selectors:**
+
    ```javascript
    // ❌ Bad - fragile
-   await page.locator('div.class-123').click();
-   
+   await page.locator("div.class-123").click();
+
    // ✅ Good - semantic
-   await page.locator('c-jt-searchable-combobox').locator('input').click();
+   await page.locator("c-jt-searchable-combobox").locator("input").click();
    ```
 
 2. **Wait for Elements:**
+
    ```javascript
    // Always wait for visibility before interacting
    await expect(element).toBeVisible({ timeout: 5000 });
@@ -255,20 +273,25 @@ Create PR on GitHub with:
    ```
 
 3. **Handle Async Operations:**
+
    ```javascript
    // Wait for spinners to disappear
-   await page.waitForSelector('lightning-spinner', { state: 'hidden', timeout: 10000 });
+   await page.waitForSelector("lightning-spinner", {
+     state: "hidden",
+     timeout: 10000
+   });
    ```
 
 4. **Provide Clear Console Logs:**
    ```javascript
-   console.log('✅ Configuration selected successfully');
+   console.log("✅ Configuration selected successfully");
    console.log(`📊 Found ${count} results`);
    ```
 
 ### Apex Test Best Practices
 
 1. **Use Test.startTest() / Test.stopTest():**
+
    ```apex
    Test.startTest();
    // Code that should run with fresh governor limits
@@ -276,6 +299,7 @@ Create PR on GitHub with:
    ```
 
 2. **Create Minimal Test Data:**
+
    ```apex
    // Only create data needed for the test
    Account testAccount = new Account(Name = 'Test');
@@ -302,19 +326,19 @@ Create PR on GitHub with:
 
 ```javascript
 const LABELS = {
-    en: {
-        executeQuery: 'Execute Query',
-        // ... other labels
-    },
-    es: {
-        executeQuery: 'Ejecutar Consulta',
-        // ... other labels
-    },
-    // Add your language here
-    ko: {
-        executeQuery: '쿼리 실행',
-        // ... other labels
-    }
+  en: {
+    executeQuery: "Execute Query"
+    // ... other labels
+  },
+  es: {
+    executeQuery: "Ejecutar Consulta"
+    // ... other labels
+  },
+  // Add your language here
+  ko: {
+    executeQuery: "쿼리 실행"
+    // ... other labels
+  }
 };
 ```
 
@@ -327,7 +351,7 @@ Create folder: `JT_DynamicQueryConfiguration__mdt-ko/`
 **File:** `JT_DynamicQueryConfiguration__mdt-ko.objectTranslation-meta.xml`
 
 ```xml
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
     <label>쿼리 구성</label>
     <fields>
@@ -343,9 +367,9 @@ Create folder: `JT_DynamicQueryConfiguration__mdt-ko/`
 Add test for new language in `queryViewer.spec.js`:
 
 ```javascript
-test('should display Korean labels', async ({ page }) => {
-    // Change browser locale to ko
-    // Verify labels appear in Korean
+test("should display Korean labels", async ({ page }) => {
+  // Change browser locale to ko
+  // Verify labels appear in Korean
 });
 ```
 
@@ -356,6 +380,7 @@ test('should display Korean labels', async ({ page }) => {
 ### Code Comments
 
 **Apex:**
+
 ```apex
 /**
  * @description Brief description
@@ -366,6 +391,7 @@ test('should display Korean labels', async ({ page }) => {
 ```
 
 **JavaScript:**
+
 ```javascript
 /**
  * @description Brief description
@@ -429,6 +455,7 @@ test('should display Korean labels', async ({ page }) => {
 Clear description of what's wrong
 
 **To Reproduce**
+
 1. Go to '...'
 2. Click on '...'
 3. See error
@@ -440,6 +467,7 @@ What should happen
 If applicable
 
 **Environment:**
+
 - Org Type: (Sandbox/Production/Developer)
 - Salesforce Edition: (Enterprise/Unlimited/etc.)
 - Browser: (Chrome/Firefox/Safari)
@@ -482,4 +510,3 @@ By contributing, you agree that your contributions will be licensed under the MI
 Your contributions make this project better for everyone. We appreciate your time and effort!
 
 **Questions?** Open an issue or reach out to the maintainers.
-

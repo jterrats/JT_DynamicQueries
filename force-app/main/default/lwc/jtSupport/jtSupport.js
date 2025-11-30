@@ -22,4 +22,3 @@ export default class JtSupport extends LightningElement {
     window.open(this.githubRepoUrl, "_blank", "noopener,noreferrer");
   }
 }
-

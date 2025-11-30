@@ -56,4 +56,3 @@ module.exports = defineConfig({
     timeout: 15000
   }
 });
-

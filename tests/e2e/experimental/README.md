@@ -17,12 +17,14 @@ This directory contains **experimental** E2E tests that are not part of the main
 - **Coverage**: 25 tests (positive + negative scenarios)
 
 **Why Experimental?**
+
 - Salesforce Lightning pages have unpredictable network activity
 - `networkidle` state is rarely achieved due to background processes
 - Shadow DOM can interfere with some Axe-core rules
 - Timeouts vary significantly between orgs and network conditions
 
 **Running These Tests:**
+
 ```bash
 # Run accessibility tests only
 npx playwright test tests/e2e/experimental/accessibility.spec.js
@@ -38,6 +40,7 @@ npx playwright test tests/e2e/experimental/accessibility.spec.js --timeout=18000
 ## ✅ Main Test Suite
 
 The main E2E test suite is located in `tests/e2e/queryViewer.spec.js` and includes:
+
 - ✅ **28 tests** - All passing
 - ✅ Core functionality validation
 - ✅ Responsive design testing
@@ -51,8 +54,8 @@ The main E2E test suite is located in `tests/e2e/queryViewer.spec.js` and includ
 Once Salesforce Lightning stability improves or we implement better wait strategies, these experimental tests can be promoted to the main suite.
 
 **Potential Solutions:**
+
 - Use custom wait conditions instead of `networkidle`
 - Implement retry logic with exponential backoff
 - Mock Salesforce background requests
 - Run tests in isolated scratch orgs
-

@@ -28,9 +28,7 @@
       aria-live="polite"
       aria-atomic="true"
     >
-      <template if:true={isLoading}>
-        Query is executing, please wait
-      </template>
+      <template if:true={isLoading}> Query is executing, please wait </template>
       <template if:true={isDisabled}>
         <template if:false={selectedConfig}>
           Please select a configuration to enable query execution

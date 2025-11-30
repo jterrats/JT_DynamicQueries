@@ -80,10 +80,14 @@
       </div>
 
       <!-- Mobile Cards -->
-      <div class="mobile-cards" role="list" aria-label="Results as expandable cards">
+      <div
+        class="mobile-cards"
+        role="list"
+        aria-label="Results as expandable cards"
+      >
         <template for:each={paginatedResults} for:item="row">
-          <article 
-            key={row.Id} 
+          <article
+            key={row.Id}
             class="slds-card slds-m-bottom_small"
             role="listitem"
             aria-label="Record {row._rowNumber}"
@@ -102,7 +106,9 @@
                 class="slds-media slds-media_center slds-has-flexi-truncate"
               >
                 <div class="slds-media__figure">
-                  <span class="slds-badge" aria-label="Row number">{row._rowNumber}</span>
+                  <span class="slds-badge" aria-label="Row number"
+                    >{row._rowNumber}</span
+                  >
                 </div>
                 <div class="slds-media__body">
                   <h2 class="slds-card__header-title">
@@ -191,11 +197,11 @@
 
     <!-- Pagination Controls -->
     <template if:true={showPagination}>
-      <nav 
+      <nav
         aria-label="Pagination navigation"
         class="slds-p-top_medium slds-grid slds-grid_align-spread slds-grid_vertical-align-center"
       >
-        <div 
+        <div
           class="slds-text-body_small slds-text-color_weak"
           role="status"
           aria-live="polite"

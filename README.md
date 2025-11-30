@@ -16,28 +16,33 @@ A powerful, enterprise-ready Salesforce solution for executing dynamic, configur
 ## 🆕 What's New in v2.0
 
 ### 🎨 **Modular Component Architecture**
+
 - Refactored monolithic LWC into **8 specialized components**
 - Improved maintainability with clear separation of concerns
 - Reusable components for dropdown, inputs, modals, and results
 
 ### 🔍 **Enhanced Search & Filtering**
+
 - **Searchable Combobox**: Real-time client-side filtering
 - **User Search**: Find and select users instantly (no server round-trips)
 - **Configuration Search**: Filter configurations as you type
 
 ### 📊 **Advanced Results Viewing**
+
 - **Toggle Views**: Switch between Table, JSON, and CSV formats
 - **Mobile Responsive**: Expandable cards for mobile devices
 - **Export to CSV**: Download query results for external analysis
 - **Syntax Highlighting**: JSON view with formatted, readable output
 
 ### 🔐 **Tooling API Integration**
+
 - **"Where is this used?" for Flows**: Search Flow metadata (1-5 API calls)
 - **Named Credentials**: Secure OAuth 2.0 authentication
 - **Resilient Architecture**: Partial results if one service fails
 - **Comprehensive Setup Guides**: English and Spanish documentation
 
 ### ♿ **Accessibility & UX**
+
 - **WCAG 2.1 AA Compliant**: Full accessibility support
 - **Keyboard Navigation**: Complete keyboard-only operation
 - **Screen Reader Support**: Proper ARIA labels and live regions
@@ -45,6 +50,7 @@ A powerful, enterprise-ready Salesforce solution for executing dynamic, configur
 - **Error Boundaries**: Component failures don't crash the app
 
 ### 🧪 **Testing Excellence**
+
 - **100% E2E Pass Rate**: 28 Playwright tests covering all features
 - **98% Apex Pass Rate**: 723 unit tests
 - **Automated CI/CD**: GitHub Actions workflows for E2E and documentation
@@ -109,7 +115,7 @@ A powerful, enterprise-ready Salesforce solution for executing dynamic, configur
   - Resilient microservices pattern (partial results on errors)
 - **Invocable Methods** - Use queries in Flows and Agentforce Actions
 - **Named Credentials** - Secure Tooling API integration with OAuth 2.0
-- **Comprehensive Testing** - 
+- **Comprehensive Testing** -
   - Apex: 98% pass rate (723 tests)
   - E2E: 100% pass rate (28 Playwright tests)
 - **Audit Trail** - Track all production editing and usage search changes
@@ -121,29 +127,29 @@ A powerful, enterprise-ready Salesforce solution for executing dynamic, configur
 
 ### Lightning Web Components
 
-| Component | Purpose | Reusable | Key Features |
-|-----------|---------|----------|--------------|
-| **jtQueryViewer** | Main container | No | Orchestrates all components, error boundaries |
-| **jtSearchableCombobox** | Generic dropdown | ✅ Yes | Client-side filtering, keyboard navigation, ARIA |
-| **jtParameterInputs** | Dynamic inputs | Partial | Auto-generates from SOQL, tooltips |
-| **jtExecuteButton** | Query trigger | ✅ Yes | State-driven disabled logic, loading states |
-| **jtConfigModal** | Create/Edit configs | No | SOQL validation, query preview, Tooling API |
-| **jtUsageModal** | Usage search results | No | Apex + Flow results, resilient display |
-| **jtQueryResults** | Results viewer | ✅ Yes | Table/JSON/CSV toggle, mobile cards, export |
-| **jtRunAsSection** | User impersonation | No | User search, System.runAs() test execution |
-| **jtProjectDocs** | Documentation | No | Multi-language docs, responsive grid |
-| **jtSupport** | GitHub issues link | ✅ Yes | Localized support page |
+| Component                | Purpose              | Reusable | Key Features                                     |
+| ------------------------ | -------------------- | -------- | ------------------------------------------------ |
+| **jtQueryViewer**        | Main container       | No       | Orchestrates all components, error boundaries    |
+| **jtSearchableCombobox** | Generic dropdown     | ✅ Yes   | Client-side filtering, keyboard navigation, ARIA |
+| **jtParameterInputs**    | Dynamic inputs       | Partial  | Auto-generates from SOQL, tooltips               |
+| **jtExecuteButton**      | Query trigger        | ✅ Yes   | State-driven disabled logic, loading states      |
+| **jtConfigModal**        | Create/Edit configs  | No       | SOQL validation, query preview, Tooling API      |
+| **jtUsageModal**         | Usage search results | No       | Apex + Flow results, resilient display           |
+| **jtQueryResults**       | Results viewer       | ✅ Yes   | Table/JSON/CSV toggle, mobile cards, export      |
+| **jtRunAsSection**       | User impersonation   | No       | User search, System.runAs() test execution       |
+| **jtProjectDocs**        | Documentation        | No       | Multi-language docs, responsive grid             |
+| **jtSupport**            | GitHub issues link   | ✅ Yes   | Localized support page                           |
 
 ### Apex Classes
 
-| Class | Purpose | Key Features |
-|-------|---------|--------------|
-| **JT_DataSelector** | Query execution | Singleton, cache, InvocableMethod, USER_MODE |
-| **JT_UsageFinder** | Find config usage | Microservices pattern, Apex + Flow search |
-| **JT_MetadataCreator** | Deploy metadata | Tooling API integration, async deployment |
-| **JT_QueryViewerController** | LWC backend | Config management, environment detection |
-| **JT_RunAsTestExecutor** | User impersonation | System.runAs() in test context, JSON results |
-| **JT_ProductionSettingsController** | Settings management | Audit logging, without sharing insertion |
+| Class                               | Purpose             | Key Features                                 |
+| ----------------------------------- | ------------------- | -------------------------------------------- |
+| **JT_DataSelector**                 | Query execution     | Singleton, cache, InvocableMethod, USER_MODE |
+| **JT_UsageFinder**                  | Find config usage   | Microservices pattern, Apex + Flow search    |
+| **JT_MetadataCreator**              | Deploy metadata     | Tooling API integration, async deployment    |
+| **JT_QueryViewerController**        | LWC backend         | Config management, environment detection     |
+| **JT_RunAsTestExecutor**            | User impersonation  | System.runAs() in test context, JSON results |
+| **JT_ProductionSettingsController** | Settings management | Audit logging, without sharing insertion     |
 
 ---
 

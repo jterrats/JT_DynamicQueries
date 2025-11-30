@@ -2,7 +2,7 @@
  * @description AppExchange Video Generator
  * @author Jaime Terrats
  * @date 2025-11-30
- * 
+ *
  * Captures high-quality demo videos for AppExchange listing
  * Shows complete user flows in action
  */
@@ -29,7 +29,7 @@ async function captureVideos() {
   console.log('📐 Viewport:', `${VIEWPORT.width}x${VIEWPORT.height}`);
   console.log('');
 
-  const browser = await chromium.launch({ 
+  const browser = await chromium.launch({
     headless: false // Visible for verification
   });
 
@@ -37,7 +37,7 @@ async function captureVideos() {
   // VIDEO 1: Complete User Flow (90 seconds)
   // ==================================================================
   console.log('🎥 1/3: Capturing complete user flow...');
-  const context1 = await browser.newContext({ 
+  const context1 = await browser.newContext({
     viewport: VIEWPORT,
     recordVideo: {
       dir: VIDEOS_DIR,
@@ -110,7 +110,7 @@ async function captureVideos() {
   // VIDEO 2: Mobile Responsive Demo (30 seconds)
   // ==================================================================
   console.log('🎥 2/3: Capturing mobile demo...');
-  const context2 = await browser.newContext({ 
+  const context2 = await browser.newContext({
     viewport: { width: 375, height: 667 },
     recordVideo: {
       dir: VIDEOS_DIR,
@@ -152,7 +152,7 @@ async function captureVideos() {
     if (await firstCard.isVisible()) {
       await firstCard.click();
       await page2.waitForTimeout(2000);
-      
+
       // Collapse
       await firstCard.click();
       await page2.waitForTimeout(1000);
@@ -171,7 +171,7 @@ async function captureVideos() {
   // VIDEO 3: Configuration Creation (40 seconds)
   // ==================================================================
   console.log('🎥 3/3: Capturing configuration creation...');
-  const context3 = await browser.newContext({ 
+  const context3 = await browser.newContext({
     viewport: VIEWPORT,
     recordVideo: {
       dir: VIDEOS_DIR,
@@ -231,19 +231,19 @@ async function captureVideos() {
   // Rename videos with descriptive names
   console.log('');
   console.log('📝 Renaming videos...');
-  
+
   const videoFiles = fs.readdirSync(VIDEOS_DIR).filter(f => f.endsWith('.webm'));
   if (videoFiles.length >= 3) {
     fs.renameSync(
-      path.join(VIDEOS_DIR, videoFiles[0]), 
+      path.join(VIDEOS_DIR, videoFiles[0]),
       path.join(VIDEOS_DIR, '01_complete_user_flow.webm')
     );
     fs.renameSync(
-      path.join(VIDEOS_DIR, videoFiles[1]), 
+      path.join(VIDEOS_DIR, videoFiles[1]),
       path.join(VIDEOS_DIR, '02_mobile_responsive.webm')
     );
     fs.renameSync(
-      path.join(VIDEOS_DIR, videoFiles[2]), 
+      path.join(VIDEOS_DIR, videoFiles[2]),
       path.join(VIDEOS_DIR, '03_config_creation.webm')
     );
   }

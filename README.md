@@ -243,60 +243,70 @@ Documentation automatically displays in your browser's language (English, Spanis
 
 ## 🏗️ Architecture
 
+### 📊 Visual Architecture Diagrams
+
+> 🎨 **Interactive Diagrams**: View beautiful, interactive Mermaid diagrams on our [Architecture Diagrams Page](https://jterrats.github.io/JT_DynamicQueries/architecture/diagrams.html)
+
+### Quick Overview
+
+```mermaid
+graph TB
+    subgraph "🎨 UI Layer - Lightning Web Components"
+        QV[jtQueryViewer<br/>Main Orchestrator]
+        CB[jtSearchableCombobox<br/>Config Selector]
+        EB[jtExecuteButton<br/>Smart Button]
+        QR[jtQueryResults<br/>Multi-View Display]
+        CM[jtCacheModal<br/>Cache Manager]
+    end
+
+    subgraph "⚙️ Controller Layer - Apex"
+        QVC[JT_QueryViewerController<br/>Query Execution]
+        MC[JT_MetadataCreator<br/>Config Management]
+        UF[JT_UsageFinder<br/>Usage Search]
+    end
+
+    subgraph "💎 Core Engine"
+        DS[JT_DataSelector<br/>Singleton + Caching]
+    end
+
+    subgraph "💾 Data Layer"
+        MD[(Custom Metadata)]
+        DB[(Salesforce DB)]
+    end
+
+    QV --> CB
+    QV --> EB
+    QV --> QR
+    QV --> CM
+    
+    CB --> QVC
+    EB --> QVC
+    CM --> QVC
+    
+    QVC --> DS
+    MC --> MD
+    UF --> DB
+    
+    DS --> DB
+    DS --> MD
+
+    style QV fill:#667eea,stroke:#333,stroke-width:3px,color:#fff
+    style DS fill:#764ba2,stroke:#333,stroke-width:3px,color:#fff
+    style QVC fill:#48bb78,stroke:#333,stroke-width:2px
 ```
-┌─────────────────────────────────────────────────────────────────────────┐
-│   Lightning Web Components                                              │
-│   ┌─────────────────┐  ┌──────────────────┐  ┌──────────────────┐    │
-│   │ jtQueryViewer   │  │ jtProjectDocs    │  │ jtAuditHistory   │    │
-│   │ - Query Exec    │  │ - Documentation  │  │ - Audit Logs     │    │
-│   │ - Pagination    │  │ - Multi-language │  │ - Change Track   │    │
-│   │ - Run As        │  │ - API Reference  │  │ - i18n           │    │
-│   │ - Usage Finder  │  │ - Responsive     │  │                  │    │
-│   │ - i18n          │  │                  │  │                  │    │
-│   └────────┬────────┘  └──────────────────┘  └──────────────────┘    │
-└────────────┼────────────────────────────────────────────────────────────┘
-             │
-             ↓
-┌─────────────────────────────────────────────────────────────────────────┐
-│   Apex Controllers                                                       │
-│   ┌──────────────────────┐  ┌──────────────────────┐  ┌─────────────┐ │
-│   │ JT_QueryViewController│  │ JT_MetadataCreator  │  │ JT_UsageFinder│
-│   │ - getConfigurations  │  │ - createConfiguration│  │ - findUsage  │ │
-│   │ - executeQuery       │  │ - updateConfiguration│  │ - scanClasses│ │
-│   │ - getAllActiveUsers  │  │ - validateQuery      │  └─────────────┘ │
-│   │ - extractParameters  │  │ - getOrgInfo         │                   │
-│   └──────────┬───────────┘  └──────────────────────┘                   │
-│              │                                                           │
-│   ┌──────────────────────────┐  ┌──────────────────────────────────┐  │
-│   │ JT_ProductionSettingsCtrl│  │ JT_RunAsTestExecutor             │  │
-│   │ - getProductionSetting   │  │ - executeAsUser                  │  │
-│   │ - updateProductionSetting│  │ - getTestResults                 │  │
-│   │ - getAuditLogs           │  │ - Platform Cache integration     │  │
-│   │ - isStarterOrFreeEdition │  └──────────────────────────────────┘  │
-│   └──────────────────────────┘                                          │
-└──────────────┼──────────────────────────────────────────────────────────┘
-               │
-               ↓
-┌─────────────────────────────────────────────────────────────────────────┐
-│   Core Query Engine                                                      │
-│   ┌──────────────────────────────────────────────────────────────────┐ │
-│   │ JT_DataSelector                                                  │ │
-│   │ - Singleton Pattern  │  │ - executeAsUser      │   │
-│   │ - Config Caching     │  │ - getTestResults     │   │
-│   │ - Query Execution    │  │ - Platform Cache     │   │
-│   │ - Security Enforc.   │  │                      │   │
-│   └──────────┬───────────┘  └──────────┬───────────┘   │
-└──────────────┼──────────────────────────┼───────────────┘
-               │                          │
-               ↓                          ↓
-┌──────────────────────────┐  ┌──────────────────────┐
-│ JT_DynamicQuery          │  │ JT_GenericRunAsTest  │
-│ Configuration__mdt       │  │ - System.runAs       │
-│ - Base Query             │  │ - Test Context       │
-│ - Bindings               │  │ - JSON Serialization │
-│ - Object Name            │  │                      │
-└──────────────────────────┘  └──────────────────────┘
-```
+
+### 📚 Detailed Architecture Documentation
+
+For comprehensive architecture details including:
+- 🔄 Query execution flow diagrams
+- 🛡️ Security architecture with USER_MODE
+- 🔍 Microservices pattern (Usage Finder)
+- 💾 Cache strategy (4 layers)
+- 🌐 i18n architecture
+- 📱 Responsive design strategy
+- 🧪 Testing pyramid
+
+**👉 See:** [Complete Architecture Diagrams](https://jterrats.github.io/JT_DynamicQueries/architecture/diagrams.html)
 
 ## 📦 Components
 

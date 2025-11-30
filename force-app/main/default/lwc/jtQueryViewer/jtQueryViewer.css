@@ -246,6 +246,19 @@ a.slds-assistive-text:focus {
     border-left: 3px solid #0070d2;
 }
 
+/* Force black text in info boxes for readability */
+.slds-theme_info,
+.slds-theme_info *,
+.slds-box.slds-theme_info,
+.slds-box.slds-theme_info * {
+    color: #080707 !important;
+}
+
+/* Ensure warning icons are always yellow */
+lightning-icon[icon-name="utility:warning"] {
+    --slds-c-icon-color-foreground: #ffb75d !important;
+}
+
 /* Badge styling */
 lightning-badge {
     vertical-align: middle;
@@ -281,5 +294,40 @@ lightning-badge {
 
 .usage-link lightning-icon {
     flex-shrink: 0;
+}
+
+/* Query Preview in Create Modal */
+.query-preview {
+    background-color: #f3f3f3;
+    border-left: 3px solid #4caf50;
+}
+
+.query-preview-content {
+    background-color: #ffffff;
+    padding: 0.75rem;
+    border-radius: 0.25rem;
+    border: 1px solid #dddbda;
+    white-space: pre-wrap;
+    word-break: break-all;
+    line-height: 1.6;
+    color: #080707;
+}
+
+/* Clickable input wrapper for dropdowns */
+.clickable-input-wrapper {
+    cursor: pointer;
+}
+
+/* Prevent icon from moving on click */
+.dropdown-button {
+    position: absolute;
+    right: 0.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none; /* Let clicks go through to wrapper */
+}
+
+.dropdown-button lightning-icon {
+    pointer-events: none;
 }
 

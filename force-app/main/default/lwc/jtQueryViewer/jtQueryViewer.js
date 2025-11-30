@@ -716,7 +716,7 @@ export default class JtQueryViewer extends LightningElement {
             .catch(error => {
                 this.queryValidation = {
                     isValid: false,
-                    message: error.body?.message || 'Validation error'
+                    message: error.body?.message || 'Invalid SOQL query. Please check syntax and try again.'
                 };
             });
     }

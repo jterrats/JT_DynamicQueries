@@ -358,18 +358,35 @@ public static JT_DataSelector getInstance() {
 // Get singleton instance
 JT_DataSelector selector = JT_DataSelector.getInstance();
 
-// Get records with predefined config
-List&lt;SObject&gt; records = JT_DataSelector.getRecords('ConfigName');
+// Example 1: Use predefined bindings from metadata
+List&lt;SObject&gt; records = JT_DataSelector.getRecords('ConfigName', true);
 
-// Get records with custom bindings
+// Example 2: Override with custom bindings from Apex
 Map&lt;String, Object&gt; bindings = new Map&lt;String, Object&gt;{
-    'accountId' => '0015g00000XXXXXX'
+    'accountId' => '0015g00000XXXXXX',
+    'status' => 'Active'
 };
-List&lt;SObject&gt; records = JT_DataSelector.getRecords('ConfigName', bindings);
+List&lt;SObject&gt; records = JT_DataSelector.getRecords('ConfigName', true, bindings);
 
-// Get config (cached)
-JT_DynamicQueryConfiguration__mdt config = selector.getConfig('ConfigName');
+// Example 3: Mix predefined + runtime bindings
+// Metadata has: {"accountType": "Customer"}
+// Apex adds: {"region": "North America"}
+// Final query uses BOTH sets of bindings
+Map&lt;String, Object&gt; additionalBindings = new Map&lt;String, Object&gt;{
+    'region' => 'North America',
+    'createdDate' => Date.today().addMonths(-1)
+};
+List&lt;SObject&gt; records = JT_DataSelector.getRecords('MixedConfig', true, additionalBindings);
+// Query example: SELECT Id, Name FROM Account WHERE Type = :accountType AND Region__c = :region
+
+// Example 4: Invocable method (for Flows/Agentforce)
+// Access via Flow Builder or Agentforce Agent Builder as an Apex Action
                 </pre>
+                
+                <div class="alert-info">
+                    <p><strong>Tip:</strong> When you pass bindings from Apex, they are merged with the predefined bindings from metadata. 
+                    If the same key exists in both, the Apex-provided value takes precedence.</p>
+                </div>
 
                 <h4>JT_QueryViewerController</h4>
                 <pre>

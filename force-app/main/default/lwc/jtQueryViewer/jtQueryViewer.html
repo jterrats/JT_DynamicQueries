@@ -56,7 +56,7 @@
                             <!-- Advanced Override for Starter/Free Editions -->
                             <div class="slds-box slds-box_x-small slds-theme_alert-texture slds-m-top_small">
                                 <h3 class="slds-text-heading_small slds-m-bottom_small">
-                                    <lightning-icon icon-name="utility:warning" size="xx-small" class="slds-m-right_xx-small"></lightning-icon>
+                                    <lightning-icon icon-name="utility:warning" size="xx-small" variant="warning" class="slds-m-right_xx-small"></lightning-icon>
                                     <strong>Advanced Option (Starter/Free Editions Only)</strong>
                                 </h3>
                                 <p class="slds-text-body_small slds-m-bottom_small">
@@ -105,7 +105,9 @@
                         <div class="slds-form-element__control">
                             <div class="slds-combobox_container">
                                 <div class={configComboboxClass} role="combobox" aria-expanded={showConfigDropdown} aria-haspopup="listbox">
-                                    <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                                    <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right clickable-input-wrapper" 
+                                         role="none"
+                                         onclick={handleConfigToggle}>
                                         <lightning-input
                                             type="text"
                                             name="configuration"
@@ -118,11 +120,11 @@
                                             required
                                             class="custom-combobox-input">
                                         </lightning-input>
-                                        <button class="slds-button slds-button_icon slds-input__icon slds-input__icon_right"
+                                        <button class="slds-button slds-button_icon slds-input__icon slds-input__icon_right dropdown-button"
                                                 title="Show configurations"
                                                 onclick={handleConfigToggle}
                                                 tabindex="-1">
-                                            <lightning-icon icon-name="utility:down" size="x-small" alternative-text="Show options"></lightning-icon>
+                                            <lightning-icon icon-name="utility:down" size="small" alternative-text="Show options"></lightning-icon>
                                         </button>
                                     </div>
                                     <div class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid" role="listbox">
@@ -160,7 +162,7 @@
                     <!-- Where is this used? Link (only when config selected) -->
                     <template if:true={selectedConfig}>
                         <div class="slds-m-top_x-small slds-m-left_small">
-                            <a href="javascript:void(0);" 
+                            <a href="javascript:void(0);"
                                onclick={handleShowUsageModal}
                                class="usage-link"
                                title="Find where this configuration is used in Apex code">
@@ -210,7 +212,7 @@
                                     </div>
                                     <div class="slds-media__body">
                                         <p class="slds-text-body_regular">
-                                            <strong>Note:</strong> This validates user permissions but executes with USER_MODE security. Results reflect sharing rules and field-level security.
+                                            <strong>Note:</strong> This validates user permissions but executes with <strong>USER_MODE</strong> security. Results reflect sharing rules and field-level security.
                                         </p>
                                     </div>
                                 </div>
@@ -226,7 +228,9 @@
                                 <div class="slds-form-element__control">
                                     <div class="slds-combobox_container">
                                         <div class={userComboboxClass} role="combobox" aria-expanded={showUserDropdown} aria-haspopup="listbox">
-                                            <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                                            <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right clickable-input-wrapper" 
+                                                 role="none"
+                                                 onclick={handleUserToggle}>
                                                 <lightning-input
                                                     type="text"
                                                     name="runAsUser"
@@ -239,12 +243,12 @@
                                                     disabled={isLoadingUsers}
                                                     class="custom-combobox-input">
                                                 </lightning-input>
-                                                <button class="slds-button slds-button_icon slds-input__icon slds-input__icon_right"
+                                                <button class="slds-button slds-button_icon slds-input__icon slds-input__icon_right dropdown-button"
                                                         title="Show users"
                                                         onclick={handleUserToggle}
                                                         tabindex="-1"
                                                         disabled={isLoadingUsers}>
-                                                    <lightning-icon icon-name="utility:down" size="x-small" alternative-text="Show options"></lightning-icon>
+                                                    <lightning-icon icon-name="utility:down" size="small" alternative-text="Show options"></lightning-icon>
                                                 </button>
                                             </div>
                                             <div class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid" role="listbox">
@@ -562,7 +566,7 @@
                             <template if:true={newConfig.baseQuery}>
                                 <div class="slds-p-top_x-small">
                                     <template if:true={queryValidation.isValid}>
-                                        <div class="slds-text-color_success slds-text-body_small">
+                                        <div class="slds-text-color_success slds-text-body_small slds-m-bottom_small">
                                             <lightning-icon icon-name="utility:success" size="xx-small" variant="success"></lightning-icon>
                                             {queryValidation.message}
                                             <template if:true={queryValidation.objectName}>
@@ -570,6 +574,17 @@
                                                     <strong>Object:</strong> {queryValidation.objectName}
                                                 </span>
                                             </template>
+                                        </div>
+
+                                        <!-- Query Preview -->
+                                        <div class="slds-box slds-theme_shade slds-m-top_small query-preview">
+                                            <div class="slds-text-heading_small slds-m-bottom_x-small">
+                                                <lightning-icon icon-name="utility:preview" size="xx-small" class="slds-m-right_xx-small"></lightning-icon>
+                                                Query Preview
+                                            </div>
+                                            <div class="slds-text-body_small slds-text-font_monospace query-preview-content">
+                                                {newConfig.baseQuery}
+                                            </div>
                                         </div>
                                     </template>
                                     <template if:false={queryValidation.isValid}>
@@ -603,8 +618,8 @@
                                 data-field="bindings"
                                 onchange={handleNewConfigChange}
                                 rows="3"
-                                placeholder="JSON format: name, value pairs"
-                                field-level-help="Default bind variables in JSON format">
+                                placeholder='Example: {"accountName": "ACME Corp", "status": "Active"}'
+                                field-level-help="Default bind variables in JSON format (optional)">
                             </lightning-textarea>
                         </lightning-layout-item>
 
@@ -707,7 +722,7 @@
                                         This configuration is not currently referenced in any Apex class.
                                     </p>
                                     <p class="slds-text-body_small slds-m-top_x-small">
-                                        <strong>This means:</strong> The configuration exists but isn't being used in your codebase yet. 
+                                        <strong>This means:</strong> The configuration exists but isn't being used in your codebase yet.
                                         You can safely use it by calling <code>JT_DataSelector.getRecords('{selectedConfig}')</code> in your Apex code.
                                     </p>
                                 </div>

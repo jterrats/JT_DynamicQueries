@@ -643,28 +643,31 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 ## 🗺️ Roadmap
 
 ### ✅ Completed in v2.0
-- [x] Export results to CSV ✅
-- [x] Query configuration UI (Create/Edit via modal) ✅
-- [x] Multi-language support (6 languages) ✅
-- [x] Advanced filtering (Searchable dropdown) ✅
-- [x] Cache management ✅
+
+- Export results to CSV
+- Query configuration UI (Create/Edit via modal)
+- Multi-language support (6 languages)
+- Advanced filtering (Searchable dropdown)
+- Cache management
 
 ### 🎯 Planned for v3.0
-- [ ] Visual SOQL Builder (Drag & drop field selector)
-- [ ] Query history and favorites
-- [ ] Bulk query execution (multiple configs at once)
-- [ ] Advanced result filtering (column filters, search)
-- [ ] Query templates library
-- [ ] Real-time query validation (as you type)
-- [ ] Performance analytics dashboard
-- [ ] Additional language support (Korean, Portuguese)
+
+- Visual SOQL Builder (Drag & drop field selector)
+- Query history and favorites
+- Bulk query execution (multiple configs at once)
+- Advanced result filtering (column filters, search)
+- Query templates library
+- Real-time query validation (as you type)
+- Performance analytics dashboard
+- Additional language support (Korean, Portuguese)
 
 ### 💡 Future Considerations
-- [ ] GraphQL support
-- [ ] Scheduled query execution
-- [ ] Result comparison tool
-- [ ] Query optimization suggestions
-- [ ] Integration with External Objects
+
+- GraphQL support
+- Scheduled query execution
+- Result comparison tool
+- Query optimization suggestions
+- Integration with External Objects
 
 ---
 

@@ -17,18 +17,21 @@
   <lightning-card title="Dynamic Query Viewer" icon-name="custom:custom63">
     <!-- Card Header Actions -->
     <div slot="actions">
-      <template if:true={canCreateMetadata}>
-        <div class="slds-grid slds-grid_vertical-align-center slds-grid_align-end">
-          <lightning-button
-            label={labels.clearCache}
-            title="Clear cache and refresh data"
-            onclick={handleOpenCacheModal}
-            variant="neutral"
-            icon-name="utility:refresh"
-            class="slds-m-right_x-small"
-            aria-label="Open cache management modal"
-          >
-          </lightning-button>
+      <div class="slds-grid slds-grid_vertical-align-center slds-grid_align-end">
+        <!-- Clear Cache Button (Always visible - non-destructive operation) -->
+        <lightning-button
+          label={labels.clearCache}
+          title="Clear cache and refresh data"
+          onclick={handleOpenCacheModal}
+          variant="neutral"
+          icon-name="utility:refresh"
+          class="slds-m-right_x-small"
+          aria-label="Open cache management modal"
+        >
+        </lightning-button>
+
+        <!-- Create Configuration Button (Sandbox/Scratch only) -->
+        <template if:true={canCreateMetadata}>
           <lightning-button
             label="Create Configuration"
             title="Create a new query configuration"
@@ -44,19 +47,23 @@
             class="slds-m-left_xx-small slds-m-right_small"
           >
           </lightning-helptext>
+        </template>
+
+        <!-- Org Badge -->
+        <template if:true={canCreateMetadata}>
           <lightning-badge
             label={orgTypeBadge}
             title={orgTypeBadgeTitle}
           ></lightning-badge>
-        </div>
-      </template>
-      <template if:true={isProduction}>
-        <lightning-badge
-          label="Production"
-          variant="inverse"
-          title="Read-only mode in Production"
-        ></lightning-badge>
-      </template>
+        </template>
+        <template if:true={isProduction}>
+          <lightning-badge
+            label="Production"
+            variant="inverse"
+            title="Read-only mode in Production"
+          ></lightning-badge>
+        </template>
+      </div>
     </div>
 
     <!-- Main Content Region -->

@@ -48,7 +48,7 @@
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
-        <tab>JT_Audit_History</tab>
+        <tab>JT_SettingsAuditLog__c</tab>
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>

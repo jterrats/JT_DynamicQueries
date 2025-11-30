@@ -71,6 +71,7 @@ export default class JtQueryViewer extends LightningElement {
     @track originalDevName = ''; // For edit mode
     @track queryValidation = { isValid: false, message: '' };
     @track isSaving = false;
+    @track developerNameManuallyEdited = false; // Track if user manually edited dev name
 
     configurationOptions = [];
     wiredConfigurationsResult;
@@ -328,7 +329,7 @@ export default class JtQueryViewer extends LightningElement {
             this.filteredConfigs = [];
             return;
         }
-        
+
         if (!term) {
             this.filteredConfigs = [...this.configurationOptions];
         } else {
@@ -433,7 +434,7 @@ export default class JtQueryViewer extends LightningElement {
             this.filteredUsers = [];
             return;
         }
-        
+
         if (!term) {
             this.filteredUsers = [...this.allUsers];
         } else {
@@ -635,6 +636,7 @@ export default class JtQueryViewer extends LightningElement {
             objectName: ''
         };
         this.queryValidation = { isValid: false, message: '' };
+        this.developerNameManuallyEdited = false;
     }
 
     // Show usage modal
@@ -686,11 +688,17 @@ export default class JtQueryViewer extends LightningElement {
         const field = event.target.dataset.field;
         this.newConfig[field] = event.target.value;
 
-        // Auto-generate developer name from label
-        if (field === 'label' && !this.newConfig.developerName) {
+        // Track if developer name was manually edited
+        if (field === 'developerName') {
+            this.developerNameManuallyEdited = true;
+        }
+
+        // Auto-generate developer name from label (only if not manually edited)
+        if (field === 'label' && !this.developerNameManuallyEdited) {
             this.newConfig.developerName = event.target.value
                 .replace(/[^a-zA-Z0-9]/g, '_')
-                .replace(/^([^a-zA-Z])/, 'Config_$1');
+                .replace(/^([^a-zA-Z])/, 'Config_$1')
+                .substring(0, 40); // Salesforce API name limit
         }
 
         // Validate query when it changes

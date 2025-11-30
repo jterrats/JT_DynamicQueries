@@ -3,7 +3,6 @@
     <fullName>JT_ChangedBy__c</fullName>
     <deleteConstraint>SetNull</deleteConstraint>
     <description>User who made the change</description>
-    <externalId>false</externalId>
     <label>Changed By</label>
     <referenceTo>User</referenceTo>
     <relationshipName>SettingsAuditLogs</relationshipName>
@@ -11,4 +10,3 @@
     <trackTrending>false</trackTrending>
     <type>Lookup</type>
 </CustomField>
-

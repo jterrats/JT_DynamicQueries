@@ -382,9 +382,9 @@ List&lt;SObject&gt; records = JT_DataSelector.getRecords('MixedConfig', true, ad
 // Example 4: Invocable method (for Flows/Agentforce)
 // Access via Flow Builder or Agentforce Agent Builder as an Apex Action
                 </pre>
-                
+
                 <div class="alert-info">
-                    <p><strong>Tip:</strong> When you pass bindings from Apex, they are merged with the predefined bindings from metadata. 
+                    <p><strong>Tip:</strong> When you pass bindings from Apex, they are merged with the predefined bindings from metadata.
                     If the same key exists in both, the Apex-provided value takes precedence.</p>
                 </div>
 

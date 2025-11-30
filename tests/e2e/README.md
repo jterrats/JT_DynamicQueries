@@ -40,11 +40,11 @@ await page.goto(session.instanceUrl);
 
 ### Beneficios
 
-✅ **Sin login manual** - Usa la sesión del CLI  
-✅ **Más rápido** - Salta el flujo de login  
-✅ **Más confiable** - No depende de credenciales en código  
-✅ **Más seguro** - No almacena passwords  
-✅ **Multi-org** - Cambia con `sf config set target-org`  
+✅ **Sin login manual** - Usa la sesión del CLI
+✅ **Más rápido** - Salta el flujo de login
+✅ **Más confiable** - No depende de credenciales en código
+✅ **Más seguro** - No almacena passwords
+✅ **Multi-org** - Cambia con `sf config set target-org`
 
 ---
 

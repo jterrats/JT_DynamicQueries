@@ -8,21 +8,21 @@ String userId = UserInfo.getUserId();
 String permSetName = 'JT_Dynamic_Queries';
 
 List<PermissionSetAssignment> existingAssignments = [
-    SELECT Id 
-    FROM PermissionSetAssignment 
-    WHERE PermissionSet.Name = :permSetName 
-    AND AssigneeId = :userId 
+    SELECT Id
+    FROM PermissionSetAssignment
+    WHERE PermissionSet.Name = :permSetName
+    AND AssigneeId = :userId
     LIMIT 1
 ];
 
 if (existingAssignments.isEmpty()) {
     PermissionSet ps = [
-        SELECT Id, Name 
-        FROM PermissionSet 
-        WHERE Name = :permSetName 
+        SELECT Id, Name
+        FROM PermissionSet
+        WHERE Name = :permSetName
         LIMIT 1
     ];
-    
+
     insert new PermissionSetAssignment(
         PermissionSetId = ps.Id,
         AssigneeId = userId
@@ -35,9 +35,9 @@ if (existingAssignments.isEmpty()) {
 // 2. Create test Account for "Test Record" configuration
 String testAccountName = 'Test Account';
 List<Account> existingAccounts = [
-    SELECT Id, Name 
-    FROM Account 
-    WHERE Name = :testAccountName 
+    SELECT Id, Name
+    FROM Account
+    WHERE Name = :testAccountName
     LIMIT 1
 ];
 
@@ -73,22 +73,22 @@ for (Integer i = 1; i <= 15; i++) {
 
 // Check if test accounts already exist
 Integer existingTestCount = [
-    SELECT COUNT() 
-    FROM Account 
+    SELECT COUNT()
+    FROM Account
     WHERE Name LIKE 'Dynamic Test Account%'
 ];
 
 if (existingTestCount < 15) {
     // Delete old test accounts if any
     List<Account> oldTestAccounts = [
-        SELECT Id 
-        FROM Account 
+        SELECT Id
+        FROM Account
         WHERE Name LIKE 'Dynamic Test Account%' OR Name LIKE 'Pagination Test Account%'
     ];
     if (!oldTestAccounts.isEmpty()) {
         delete oldTestAccounts;
     }
-    
+
     // Insert new ones
     insert paginationAccounts;
     System.debug('✅ Created 15 test Accounts with various Types and Industries');

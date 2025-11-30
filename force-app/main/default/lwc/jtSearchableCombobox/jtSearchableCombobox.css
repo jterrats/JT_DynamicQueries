@@ -1,0 +1,42 @@
+.slds-has-focus {
+    background-color: #f3f2f2;
+}
+
+.slds-dropdown {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.slds-listbox__option:hover {
+    background-color: #f3f2f2;
+    cursor: pointer;
+}
+
+/* Accessibility */
+.slds-listbox__option:focus {
+    outline: 2px solid #0176d3;
+    outline-offset: -2px;
+}
+
+/* Fix button position and spacing */
+.slds-combobox__form-element {
+    position: relative;
+}
+
+.slds-combobox__input {
+    padding-right: 2.5rem !important;
+}
+
+.slds-input__icon_right {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: auto;
+}
+
+/* Ensure validation message doesn't affect button position */
+.slds-form-element__help {
+    margin-top: 0.25rem;
+}
+

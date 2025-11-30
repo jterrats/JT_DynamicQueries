@@ -6,6 +6,20 @@
 public with sharing class JT_ProductionSettingsController {
 
     /**
+     * @description Inner class to handle audit log creation without sharing restrictions
+     * Allows system to insert audit logs regardless of user permissions
+     */
+    private without sharing class AuditLogCreator {
+        /**
+         * @description Inserts an audit log record
+         * @param log The audit log record to insert
+         */
+        public void insertLog(JT_SettingsAuditLog__c log) {
+            insert log;
+        }
+    }
+
+    /**
      * @description Gets current production editing setting
      * @return Boolean Current setting value
      */
@@ -47,6 +61,7 @@ public with sharing class JT_ProductionSettingsController {
 
     /**
      * @description Creates an audit log entry for setting changes
+     * Uses without sharing inner class to ensure audit logs are always created
      * @param enabled Whether production editing was enabled or disabled
      */
     private static void createAuditLog(Boolean enabled) {
@@ -61,7 +76,9 @@ public with sharing class JT_ProductionSettingsController {
                 JT_OrgType__c = org.OrganizationType
             );
 
-            insert log;
+            // Use without sharing to ensure audit log is created
+            AuditLogCreator creator = new AuditLogCreator();
+            creator.insertLog(log);
         } catch (Exception e) {
             // Don't fail the setting update if audit log fails
             System.debug('Failed to create audit log: ' + e.getMessage());

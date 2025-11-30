@@ -11,4 +11,3 @@
     <masterLabel>JT Query Viewer</masterLabel>
     <description>Dynamic Query Viewer component to execute and visualize configurable SOQL queries</description>
 </LightningComponentBundle>
-

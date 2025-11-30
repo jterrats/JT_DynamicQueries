@@ -95,7 +95,7 @@ test.describe('Dynamic Query Viewer E2E Tests', () => {
 
     test('should select a configuration and display query preview', async ({ page }) => {
         await page.waitForTimeout(2000);
-        
+
         // Select a configuration
         const configInput = page.locator('c-jt-query-viewer lightning-input').first();
         await configInput.click();
@@ -105,13 +105,13 @@ test.describe('Dynamic Query Viewer E2E Tests', () => {
         // Query preview should appear
         const queryPreview = page.locator('.query-preview');
         const hasPreview = await queryPreview.isVisible({ timeout: 5000 }).catch(() => false);
-        
+
         console.log(`Query preview displayed: ${hasPreview ? 'Yes' : 'No'}`);
-        
+
         // ❌ NEGATIVE TEST: Dynamic inputs should NOT appear for configs with predefined bindings
         const dynamicInputsSection = page.locator('div').filter({ hasText: /Query Parameters:/i }).first();
         const hasDynamicInputs = await dynamicInputsSection.isVisible({ timeout: 2000 }).catch(() => false);
-        
+
         if (hasPreview) {
             // "Test Record" has predefined bindings, so dynamic inputs should NOT show
             expect(hasDynamicInputs).toBe(false);
@@ -205,32 +205,32 @@ test.describe('Dynamic Query Viewer E2E Tests', () => {
 
     test('should show Run As User section if authorized and hide buttons when no user selected', async ({ page }) => {
         await page.waitForTimeout(2000);
-        
+
         const runAsSection = page.locator('.run-as-container').first();
         const isVisible = await runAsSection.isVisible({ timeout: 5000 }).catch(() => false);
 
         if (isVisible) {
             console.log('✅ Run As section visible - user has permissions');
-            
+
             // Verify important note is prominent
             const noteBox = page.locator('.run-as-note').first();
             const hasNote = await noteBox.isVisible({ timeout: 2000 }).catch(() => false);
-            
+
             if (hasNote) {
                 console.log('✅ Run As note prominently displayed');
             }
-            
+
             // ❌ NEGATIVE TEST: Buttons should NOT be visible without user selection
             const clearButton = page.locator('lightning-button').filter({ hasText: /Clear Selection/i });
             const clearVisible = await clearButton.isVisible({ timeout: 1000 }).catch(() => false);
-            
+
             const runAsTestButton = page.locator('lightning-button').filter({ hasText: /Execute with System\.runAs/i });
             const runAsTestVisible = await runAsTestButton.isVisible({ timeout: 1000 }).catch(() => false);
-            
+
             // These buttons should NOT be visible without user selection
             expect(clearVisible).toBe(false);
             expect(runAsTestVisible).toBe(false);
-            
+
             console.log('✅ Buttons correctly hidden when no user selected');
             console.log('✅ Run As section test passed');
         } else {
@@ -274,12 +274,12 @@ test.describe('Dynamic Query Viewer E2E Tests', () => {
 
     test('should enforce production safeguard for metadata creation', async ({ page }) => {
         const isProduction = !session.instanceUrl.toLowerCase().includes('sandbox');
-        
+
         console.log(`Org Type: ${isProduction ? '🏢 PRODUCTION' : '🧪 SANDBOX'}`);
-        
+
         const createButton = page.locator('lightning-button').filter({ hasText: /Create Configuration/i });
         const isButtonVisible = await createButton.isVisible({ timeout: 3000 }).catch(() => false);
-        
+
         const sandboxBadge = page.locator('lightning-badge').filter({ hasText: /Sandbox/i });
         const badgeVisible = await sandboxBadge.isVisible({ timeout: 3000 }).catch(() => false);
 
@@ -503,38 +503,38 @@ test.describe('Dynamic Query Viewer E2E Tests', () => {
     test('should show dynamic inputs ONLY for configs without bindings', async ({ page }) => {
         console.log('🧪 Testing dynamic input visibility conditions...');
         await page.waitForTimeout(2000);
-        
+
         // Test 1: Config WITH predefined bindings (Test Record)
         const configInput1 = page.locator('c-jt-query-viewer lightning-input').first();
         await configInput1.locator('input').fill('Test Record');
         await page.waitForTimeout(2000);
-        
+
         const dynamicInputs1 = page.locator('div').filter({ hasText: /^Query Parameters:$/i }).first();
         const hasInputs1 = await dynamicInputs1.isVisible({ timeout: 2000 }).catch(() => false);
-        
+
         // ❌ Should NOT show dynamic inputs
         expect(hasInputs1).toBe(false);
         console.log('✅ Dynamic inputs correctly hidden for "Test Record" (has bindings)');
-        
+
         // Test 2: Config WITHOUT bindings (Dynamic Input Test)
         await configInput1.locator('input').fill('');
         await configInput1.locator('input').fill('Dynamic Input Test');
         await page.waitForTimeout(3000);
-        
+
         const dynamicInputs2 = page.locator('div').filter({ hasText: /Query Parameters/i }).first();
         const hasInputs2 = await dynamicInputs2.isVisible({ timeout: 5000 }).catch(() => false);
-        
+
         // ✅ Should show dynamic inputs
         expect(hasInputs2).toBe(true);
         console.log('✅ Dynamic inputs correctly shown for "Dynamic Input Test" (no bindings)');
-        
+
         // Verify specific inputs exist
         const accountTypeInput = page.locator('lightning-input').filter({ hasText: /accountType/i }).first();
         const industryInput = page.locator('lightning-input').filter({ hasText: /industry/i }).first();
-        
+
         const hasAccountType = await accountTypeInput.isVisible({ timeout: 3000 }).catch(() => false);
         const hasIndustry = await industryInput.isVisible({ timeout: 3000 }).catch(() => false);
-        
+
         expect(hasAccountType || hasIndustry).toBe(true);
         console.log('✅ Expected input fields are visible');
     });
@@ -542,27 +542,27 @@ test.describe('Dynamic Query Viewer E2E Tests', () => {
     test('should show "Predefined Bindings" message ONLY when bindings exist', async ({ page }) => {
         console.log('🧪 Testing predefined bindings message visibility...');
         await page.waitForTimeout(2000);
-        
+
         // Test 1: Config WITH bindings - message should show
         const configInput1 = page.locator('c-jt-query-viewer lightning-input').first();
         await configInput1.locator('input').fill('Test Record');
         await page.waitForTimeout(2000);
-        
+
         const bindingsMsg1 = page.locator('div').filter({ hasText: /Predefined Bindings/i }).first();
         const hasMsg1 = await bindingsMsg1.isVisible({ timeout: 3000 }).catch(() => false);
-        
+
         // ✅ Should show message
         expect(hasMsg1).toBe(true);
         console.log('✅ "Predefined Bindings" message shown for "Test Record"');
-        
+
         // Test 2: Config WITHOUT bindings - message should NOT show
         await configInput1.locator('input').fill('');
         await configInput1.locator('input').fill('Dynamic Input Test');
         await page.waitForTimeout(3000);
-        
+
         const bindingsMsg2 = page.locator('div').filter({ hasText: /Predefined Bindings/i }).first();
         const hasMsg2 = await bindingsMsg2.isVisible({ timeout: 2000 }).catch(() => false);
-        
+
         // ❌ Should NOT show message
         expect(hasMsg2).toBe(false);
         console.log('✅ "Predefined Bindings" message correctly hidden for "Dynamic Input Test"');
@@ -571,30 +571,30 @@ test.describe('Dynamic Query Viewer E2E Tests', () => {
     test('should show results table columns even with 0 results', async ({ page }) => {
         console.log('🧪 Testing empty results table...');
         await page.waitForTimeout(2000);
-        
+
         // Select config and execute with impossible filter
         const configInput = page.locator('c-jt-query-viewer lightning-input').first();
         await configInput.locator('input').fill('Dynamic Input Test');
         await page.waitForTimeout(3000);
-        
+
         // Fill inputs with values that won't return results
         const inputs = page.locator('c-jt-query-viewer lightning-input[data-param]');
         const inputCount = await inputs.count();
-        
+
         if (inputCount > 0) {
             for (let i = 0; i < inputCount; i++) {
                 await inputs.nth(i).locator('input').fill('NonExistent12345');
             }
-            
+
             // Execute query
             const executeButton = page.locator('lightning-button').filter({ hasText: /Execute Query/i }).first();
             await executeButton.click({ timeout: 10000 });
             await page.waitForTimeout(5000);
-            
+
             // Table should exist (even with 0 rows)
             const datatable = page.locator('lightning-datatable').first();
             const tableVisible = await datatable.isVisible({ timeout: 10000 }).catch(() => false);
-            
+
             if (tableVisible) {
                 console.log('✅ Datatable visible with 0 results (columns should be shown)');
                 expect(tableVisible).toBe(true);

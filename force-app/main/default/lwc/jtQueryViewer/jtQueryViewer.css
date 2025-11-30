@@ -313,6 +313,23 @@ lightning-badge {
     color: #080707;
 }
 
+/* Modal close button - Better visibility */
+.slds-modal__close {
+    background-color: #ffffff !important;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease-in-out;
+}
+
+.slds-modal__close:hover {
+    background-color: #f3f3f3 !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.slds-modal__close lightning-icon {
+    color: #080707 !important;
+}
+
 /* Clickable input wrapper for dropdowns */
 .clickable-input-wrapper {
     cursor: pointer;

@@ -39,7 +39,7 @@ public inherited sharing class JT_DataSelector {
     public class InvocableRequest {
         @InvocableVariable(label='Configuration Name' description='The developer name of the query configuration' required=true)
         public String configName;
-        
+
         @InvocableVariable(label='Binding Parameters (JSON)' description='Optional JSON string with bind variable values' required=false)
         public String bindingsJson;
     }
@@ -50,13 +50,13 @@ public inherited sharing class JT_DataSelector {
     public class InvocableResult {
         @InvocableVariable(label='Records' description='List of records returned by the query')
         public List<SObject> records;
-        
+
         @InvocableVariable(label='Record Count' description='Number of records returned')
         public Integer recordCount;
-        
+
         @InvocableVariable(label='Success' description='Whether the query executed successfully')
         public Boolean success;
-        
+
         @InvocableVariable(label='Error Message' description='Error message if query failed')
         public String errorMessage;
     }
@@ -67,21 +67,21 @@ public inherited sharing class JT_DataSelector {
      * @return List<InvocableResult> Results for each request
      */
     @InvocableMethod(
-        label='Execute Dynamic Query' 
+        label='Execute Dynamic Query'
         description='Execute a pre-configured SOQL query with optional bind parameters'
         category='Data'
         iconName='slds:standard:record_lookup'
     )
     public static List<InvocableResult> executeQuery(List<InvocableRequest> requests) {
         List<InvocableResult> results = new List<InvocableResult>();
-        
+
         for (InvocableRequest request : requests) {
             InvocableResult result = new InvocableResult();
             result.success = false;
-            
+
             try {
                 List<SObject> records;
-                
+
                 if (String.isNotBlank(request.bindingsJson)) {
                     // Execute with bindings
                     Map<String, Object> bindings = (Map<String, Object>) JSON.deserializeUntyped(request.bindingsJson);
@@ -90,20 +90,20 @@ public inherited sharing class JT_DataSelector {
                     // Execute without bindings
                     records = getRecords(request.configName, true);
                 }
-                
+
                 result.records = records;
                 result.recordCount = records != null ? records.size() : 0;
                 result.success = true;
-                
+
             } catch (Exception e) {
                 result.errorMessage = e.getMessage();
                 result.records = new List<SObject>();
                 result.recordCount = 0;
             }
-            
+
             results.add(result);
         }
-        
+
         return results;
     }
 

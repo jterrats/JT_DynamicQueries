@@ -114,7 +114,7 @@ public with sharing class JT_QueryViewerController {
             // Normalize query: remove extra spaces around : for consistent parsing
             // Handles = :, =:, = : , etc.
             String normalizedQuery = query.replaceAll('\\s*:\\s*', ':');
-            
+
             // Match patterns like :paramName (bind variables)
             // After normalization, all bind variables will be in format :paramName
             Pattern bindPattern = Pattern.compile(':([a-zA-Z_][a-zA-Z0-9_]*)');

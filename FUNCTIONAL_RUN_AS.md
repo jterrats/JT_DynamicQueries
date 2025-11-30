@@ -88,8 +88,8 @@ public static TestResult executeAsUser(String userId, String configName) {
 ```apex
 @AuraEnabled
 public static TestExecutionResult executeAsUser(
-    String userId, 
-    String configName, 
+    String userId,
+    String configName,
     String bindingsJson
 ) {
     return pipe(
@@ -112,7 +112,7 @@ public static TestExecutionResult executeAsUser(
 @isTest
 static void executeRunAsTest() {
     TestParameters params = getTestParameters();
-    
+
     // Functional pipeline
     User targetUser = validateUser(params);
     QueryResult queryResult = executeInUserContext(targetUser, params);
@@ -128,7 +128,7 @@ private class TestParameters {
     public final String userId;        // Inmutable
     public final String configName;    // Inmutable
     public final String bindingsJson;  // Inmutable
-    
+
     public TestParameters(String userId, String configName, String bindingsJson) {
         this.userId = userId;
         this.configName = configName;
@@ -206,7 +206,7 @@ public class RunAsTestQueueable implements Queueable {
 @isTest
 static void executeRunAsTest() {
     User targetUser = validateUser(params);
-    
+
     System.runAs(targetUser) {  // ✅ Verdadera impersonación
         Test.startTest();
         List<SObject> results = JT_DataSelector.getRecords(...);
@@ -231,7 +231,7 @@ Cache.Org.put('RunAsTestResult_' + userId, new Map<String, Object>{
 // Polling funcional
 const pollResults = async () => {
     const result = await getTestResults({ userId: selectedUserId });
-    
+
     if (result.success) {
         displayResults(result);
     } else if (!result.message.includes('No results')) {
@@ -320,7 +320,7 @@ if (execution.success) {
 pollForResults() {
     const pollInterval = setInterval(async () => {
         const result = await getTestResults({ userId: this.selectedUserId });
-        
+
         if (result.success || result.errorMessage) {
             clearInterval(pollInterval);
             this.handleResults(result);
@@ -402,7 +402,7 @@ Si bien Apex tiene limitaciones para programación funcional pura (no true gener
 
 ---
 
-**Autor**: Jaime Terrats  
-**Fecha**: 29 de Noviembre, 2025  
+**Autor**: Jaime Terrats
+**Fecha**: 29 de Noviembre, 2025
 **Versión**: 1.0
 

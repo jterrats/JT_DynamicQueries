@@ -56,7 +56,7 @@ export default class JtQueryViewer extends LightningElement {
 ```html
 <!-- Only visible in Sandbox/Scratch Orgs -->
 <template if:true={showCreateButton}>
-    <lightning-button 
+    <lightning-button
         label="Create New Configuration"
         onclick={handleOpenModal}>
     </lightning-button>
@@ -220,7 +220,7 @@ public static MetadataCreationResult createConfiguration(...) {
 
 ```apex
 Organization org = [
-    SELECT 
+    SELECT
         Id,
         Name,
         IsSandbox,              // ← true en Sandbox

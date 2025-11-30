@@ -7,15 +7,15 @@ const path = require('path');
 function setupTestData() {
     try {
         console.log('🔧 Setting up test data and permissions...');
-        
+
         const scriptPath = path.join(__dirname, '../../../scripts/setup-test-data.apex');
         const command = `sf apex run --file "${scriptPath}"`;
-        
+
         const result = execSync(command, {
             encoding: 'utf-8',
             stdio: 'pipe'
         });
-        
+
         if (result.includes('✅')) {
             console.log('✅ Test data setup complete');
             return true;

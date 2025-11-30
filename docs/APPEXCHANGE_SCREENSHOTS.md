@@ -1,10 +1,12 @@
-# AppExchange Screenshots Guide
+# AppExchange Media Guide (Screenshots & Videos)
 
 ## 📸 Overview
 
-This guide explains how to generate professional screenshots for the AppExchange listing.
+This guide explains how to generate professional screenshots and demo videos for the AppExchange listing.
 
 ## 🎯 Requirements
+
+### **Screenshots**
 
 **Salesforce AppExchange Screenshot Requirements:**
 - **Dimensions**: Minimum 1280x800px (recommended: 1920x1080px)
@@ -14,9 +16,28 @@ This guide explains how to generate professional screenshots for the AppExchange
 - **Content**: Show real functionality, no lorem ipsum
 - **Branding**: Clean, professional, no watermarks
 
+### **Videos**
+
+**Salesforce AppExchange Video Requirements:**
+- **Duration**: 30-120 seconds per video
+- **Format**: MP4, WebM, or MOV
+- **Resolution**: 1280x800px minimum (HD preferred)
+- **Size**: <50MB per video
+- **Content**: Show real user flows, no mock data
+- **Audio**: Optional (music/voiceover)
+
+**Benefits of Videos:**
+- ✅ Show complete user workflows
+- ✅ Demonstrate responsive design
+- ✅ Highlight key features in action
+- ✅ Increase engagement (+40% vs screenshots only)
+- ✅ Better for complex features
+
 ---
 
-## 🚀 Automated Screenshot Generation
+## 🚀 Automated Media Generation
+
+### **Screenshots**
 
 ### **Method 1: Using Playwright Script (Recommended)**
 
@@ -156,7 +177,49 @@ If you prefer to take screenshots manually for better control:
 
 ---
 
+### **Videos**
+
+#### **Method 1: Using Playwright Script (Recommended)**
+
+```bash
+# Generate demo videos automatically
+node tests/screenshots/captureAppExchangeVideos.js
+```
+
+**Output:**
+- `videos/appexchange/01_complete_user_flow.webm` (~90 seconds)
+- `videos/appexchange/02_mobile_responsive.webm` (~30 seconds)
+- `videos/appexchange/03_config_creation.webm` (~40 seconds)
+
+**Videos Include:**
+1. **Complete User Flow**: Search → Select → Execute → View Results
+2. **Mobile Responsive**: Touch interaction and card expansion
+3. **Config Creation**: Modal workflow demonstration
+
+#### **Method 2: Convert WebM to MP4 (if needed)**
+
+```bash
+# Using FFmpeg
+ffmpeg -i videos/appexchange/01_complete_user_flow.webm \
+       -c:v libx264 -preset slow -crf 22 \
+       videos/appexchange/01_complete_user_flow.mp4
+
+# Batch convert all
+for file in videos/appexchange/*.webm; do
+  ffmpeg -i "$file" -c:v libx264 -preset slow -crf 22 "${file%.webm}.mp4"
+done
+```
+
+**FFmpeg Installation:**
+- **Mac**: `brew install ffmpeg`
+- **Linux**: `sudo apt install ffmpeg`
+- **Windows**: Download from https://ffmpeg.org/
+
+---
+
 ## 🎨 Post-Processing Tips
+
+### **Screenshots**
 
 ### **Optimization Tools:**
 - **ImageOptim** (Mac): https://imageoptim.com/
@@ -225,14 +288,49 @@ Before uploading to AppExchange:
 
 ---
 
-## 🚀 Quick Command
+### **Videos**
+
+#### **Editing Tools:**
+- **OpenShot** (Free, Cross-platform): https://www.openshot.org/
+- **DaVinci Resolve** (Free, Professional): https://www.blackmagicdesign.com/products/davinciresolve
+- **iMovie** (Mac): Built-in
+- **Kdenlive** (Linux): https://kdenlive.org/
+
+#### **Optimization:**
+1. **Trim**: Remove unnecessary pauses
+2. **Speed Up**: 1.25x-1.5x for longer flows
+3. **Add Captions**: Highlight key actions
+4. **Compress**: Keep under 50MB
+5. **Add Branding**: Optional watermark/logo
+
+#### **Video Tips:**
+- ✅ Show real data (anonymized if needed)
+- ✅ Smooth mouse movements
+- ✅ Clear, purposeful interactions
+- ✅ Consistent pacing
+- ✅ Professional quality
+
+#### **What to Avoid:**
+- ❌ Shaky cursor movements
+- ❌ Long waits/loading screens
+- ❌ Errors or bugs
+- ❌ Exposed sensitive data
+- ❌ Audio glitches
+
+---
+
+## 🚀 Quick Commands
 
 ```bash
-# Generate all screenshots in one command
+# Generate all screenshots
 npm run screenshots:appexchange
 
-# Or manually
+# Generate demo videos
+npm run videos:appexchange
+
+# Or run manually
 node tests/screenshots/captureAppExchangeScreenshots.js
+node tests/screenshots/captureAppExchangeVideos.js
 ```
 
 ---
@@ -250,17 +348,31 @@ screenshots/
     ├── 06_mobile_view.png
     ├── 07_create_config_modal.png
     └── 08_support_page.png
+
+videos/
+└── appexchange/
+    ├── 01_complete_user_flow.webm (or .mp4)
+    ├── 02_mobile_responsive.webm (or .mp4)
+    └── 03_config_creation.webm (or .mp4)
 ```
 
 ---
 
 ## 🎯 Next Steps
 
-1. **Run script**: `node tests/screenshots/captureAppExchangeScreenshots.js`
+### **For Screenshots:**
+1. **Run script**: `npm run screenshots:appexchange`
 2. **Review**: Check each screenshot for quality
 3. **Optimize**: Compress images if needed
 4. **Upload**: Add to AppExchange listing
 5. **Describe**: Add descriptions for each image
+
+### **For Videos:**
+1. **Run script**: `npm run videos:appexchange`
+2. **Review**: Watch each video for quality
+3. **Convert**: WebM to MP4 if needed (see FFmpeg commands)
+4. **Edit**: Trim/optimize if needed
+5. **Upload**: Add to AppExchange or embed in README
 
 ---
 

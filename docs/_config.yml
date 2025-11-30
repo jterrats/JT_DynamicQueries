@@ -72,15 +72,9 @@ navigation:
   - title: Gallery
     url: /gallery.html
 
-# GitHub metadata
+# GitHub metadata (simplified to avoid build issues)
 github:
   repository_url: https://github.com/jterrats/JT_DynamicQueries
-  repository_nwo: jterrats/JT_DynamicQueries
-  owner_url: https://github.com/jterrats
-  owner_name: jterrats
   project_title: JT Dynamic Queries
   project_tagline: Dynamic SOQL Query Execution Tool for Salesforce
-  show_downloads: true
-  zip_url: https://github.com/jterrats/JT_DynamicQueries/archive/refs/heads/main.zip
-  tar_url: https://github.com/jterrats/JT_DynamicQueries/archive/refs/heads/main.tar.gz
 

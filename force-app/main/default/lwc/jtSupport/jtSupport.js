@@ -11,14 +11,15 @@ export default class JtSupport extends LightningElement {
   githubRepoUrl = "https://github.com/jterrats/JT_DynamicQueries";
 
   handleNavigateToIssues() {
-    window.open(this.githubIssuesUrl, "_blank");
+    window.open(this.githubIssuesUrl, "_blank", "noopener,noreferrer");
   }
 
   handleNavigateToNewIssue() {
-    window.open(this.githubNewIssueUrl, "_blank");
+    window.open(this.githubNewIssueUrl, "_blank", "noopener,noreferrer");
   }
 
   handleNavigateToRepo() {
-    window.open(this.githubRepoUrl, "_blank");
+    window.open(this.githubRepoUrl, "_blank", "noopener,noreferrer");
   }
 }
+

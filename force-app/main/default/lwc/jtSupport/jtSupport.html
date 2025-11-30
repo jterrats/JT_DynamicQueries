@@ -31,7 +31,13 @@
         </p>
         <div class="slds-text-body_small">
           <strong>{labels.githubRepo}:</strong>
-          <a href={githubRepoUrl} target="_blank" class="slds-m-left_x-small">
+          <a
+            href={githubRepoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="GitHub repository: JT Dynamic Queries (opens in new tab)"
+            class="slds-m-left_x-small"
+          >
             jterrats/JT_DynamicQueries
           </a>
         </div>
@@ -68,6 +74,7 @@
                 onclick={handleNavigateToNewIssue}
                 icon-name="utility:new"
                 class="slds-m-top_small"
+                aria-label="Report a bug - Opens GitHub issue form in new tab"
               >
               </lightning-button>
             </div>
@@ -103,6 +110,7 @@
                 onclick={handleNavigateToIssues}
                 icon-name="utility:open"
                 class="slds-m-top_small"
+                aria-label="View all issues - Opens GitHub issues page in new tab"
               >
               </lightning-button>
             </div>
@@ -138,6 +146,7 @@
                 onclick={handleNavigateToNewIssue}
                 icon-name="utility:add"
                 class="slds-m-top_small"
+                aria-label="Request a feature - Opens GitHub issue form in new tab"
               >
               </lightning-button>
             </div>
@@ -202,3 +211,4 @@
     </div>
   </lightning-card>
 </template>
+

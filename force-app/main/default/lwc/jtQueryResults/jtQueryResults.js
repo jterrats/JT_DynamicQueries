@@ -144,6 +144,18 @@ export default class JtQueryResults extends LightningElement {
     this.records = [...this.records]; // Immutable update trigger
   }
 
+  /**
+   * @description Handles keyboard events for card toggle (Enter/Space)
+   * @param {KeyboardEvent} event - The keyboard event
+   */
+  handleCardKeyPress(event) {
+    // Handle Enter or Space key
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      this.handleCardToggle(event);
+    }
+  }
+
   handleCopyJson() {
     this.copyToClipboard(this.jsonOutput)
       .then(() => this.showToast("success", "Success", "JSON copied"))

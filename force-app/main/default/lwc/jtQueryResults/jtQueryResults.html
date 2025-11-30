@@ -1,11 +1,11 @@
 <template>
-  <div class="results-container">
+  <div class="results-container" role="region" aria-label="Query Results">
     <!-- Header with View Toggle -->
     <div class="slds-grid slds-grid_align-spread slds-p-bottom_small">
-      <div class="slds-text-heading_small">
+      <div class="slds-text-heading_small" id="results-heading">
         Results ({recordCount} {recordCountLabel}):
       </div>
-      <lightning-button-group>
+      <lightning-button-group aria-label="View mode selection">
         <lightning-button
           label="Table"
           icon-name="utility:table"
@@ -13,6 +13,8 @@
           onclick={handleViewChange}
           data-view="table"
           title="View as Table"
+          aria-label="View results as table"
+          aria-pressed={isTableActive}
         ></lightning-button>
         <lightning-button
           label="JSON"
@@ -21,6 +23,8 @@
           onclick={handleViewChange}
           data-view="json"
           title="View as JSON (LLM-friendly)"
+          aria-label="View results as JSON format"
+          aria-pressed={isJsonActive}
         ></lightning-button>
         <lightning-button
           label="CSV"
@@ -29,6 +33,8 @@
           onclick={handleViewChange}
           data-view="csv"
           title="Download as CSV"
+          aria-label="Download results as CSV file"
+          aria-pressed={isCsvActive}
         ></lightning-button>
       </lightning-button-group>
     </div>
@@ -74,19 +80,29 @@
       </div>
 
       <!-- Mobile Cards -->
-      <div class="mobile-cards">
+      <div class="mobile-cards" role="list" aria-label="Results as expandable cards">
         <template for:each={paginatedResults} for:item="row">
-          <article key={row.Id} class="slds-card slds-m-bottom_small">
+          <article 
+            key={row.Id} 
+            class="slds-card slds-m-bottom_small"
+            role="listitem"
+            aria-label="Record {row._rowNumber}"
+          >
             <div
               class="slds-card__header slds-grid"
               onclick={handleCardToggle}
               data-id={row.Id}
+              role="button"
+              tabindex="0"
+              aria-expanded={row._expanded}
+              aria-label="Toggle details for {row._displayName}"
+              onkeypress={handleCardKeyPress}
             >
               <header
                 class="slds-media slds-media_center slds-has-flexi-truncate"
               >
                 <div class="slds-media__figure">
-                  <span class="slds-badge">{row._rowNumber}</span>
+                  <span class="slds-badge" aria-label="Row number">{row._rowNumber}</span>
                 </div>
                 <div class="slds-media__body">
                   <h2 class="slds-card__header-title">
@@ -175,18 +191,25 @@
 
     <!-- Pagination Controls -->
     <template if:true={showPagination}>
-      <div
+      <nav 
+        aria-label="Pagination navigation"
         class="slds-p-top_medium slds-grid slds-grid_align-spread slds-grid_vertical-align-center"
       >
-        <div class="slds-text-body_small slds-text-color_weak">
+        <div 
+          class="slds-text-body_small slds-text-color_weak"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+        >
           Showing {firstRecordIndex} - {lastRecordIndex} of {recordCount}
         </div>
-        <div>
+        <div role="group" aria-label="Pagination controls">
           <lightning-button
             label="Previous"
             onclick={handlePreviousPage}
             disabled={disablePrevious}
             variant="neutral"
+            aria-label="Go to previous page"
           ></lightning-button>
           <lightning-button
             label="Next"
@@ -194,9 +217,10 @@
             disabled={disableNext}
             variant="neutral"
             class="slds-m-left_x-small"
+            aria-label="Go to next page"
           ></lightning-button>
         </div>
-      </div>
+      </nav>
     </template>
   </div>
 </template>

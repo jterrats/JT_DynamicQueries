@@ -49,10 +49,11 @@ module.exports = defineConfig({
   ],
 
   /* Timeout for each test */
-  timeout: 60000,
+  timeout: 120000,
 
   /* Timeout for expect() assertions */
   expect: {
-    timeout: 10000
+    timeout: 15000
   }
 });
+

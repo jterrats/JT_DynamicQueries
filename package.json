@@ -22,6 +22,7 @@
     "precommit": "npm run prettier && npm run lint:staged"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.0",
     "@lwc/eslint-plugin-lwc": "^1.1.2",
     "@playwright/test": "^1.48.0",
     "@prettier/plugin-xml": "^3.2.2",

@@ -40,6 +40,21 @@ export default class JtExecuteButton extends LightningElement {
     return this.isLoading;
   }
 
+  // Accessibility attributes
+  get ariaLabel() {
+    if (this.isLoading) {
+      return `${this.label} - Executing query, please wait`;
+    }
+    if (!this.selectedConfig) {
+      return `${this.label} - Disabled: Select a configuration first`;
+    }
+    return this.label;
+  }
+
+  get ariaDescribedBy() {
+    return "execute-button-status";
+  }
+
   // Event Handler
   handleClick() {
     if (!this.isDisabled) {

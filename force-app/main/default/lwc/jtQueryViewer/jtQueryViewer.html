@@ -1,0 +1,731 @@
+<template>
+    <!-- Skip Link for Accessibility -->
+    <a href="#main-content" class="slds-assistive-text slds-p-around_xxx-small">Skip to main content</a>
+
+    <!-- Live Region for Screen Reader Announcements -->
+    <div class="slds-assistive-text" role="status" aria-live="polite" aria-atomic="true">
+        {srAnnouncement}
+    </div>
+
+    <lightning-card title="Dynamic Query Viewer" icon-name="custom:custom63">
+        <!-- Card Header Actions -->
+        <div slot="actions">
+            <lightning-button
+                label="Where is this used?"
+                title="Find where this configuration is used in Apex code"
+                onclick={handleShowUsageModal}
+                variant="neutral"
+                icon-name="utility:search"
+                disabled={selectedConfigEmpty}
+                class="slds-m-right_x-small"
+                aria-label="Find configuration usage">
+            </lightning-button>
+            <template if:true={canCreateMetadata}>
+                <div class="slds-grid slds-grid_vertical-align-center">
+                    <lightning-button
+                        label="Create Configuration"
+                        title="Create a new query configuration"
+                        onclick={handleShowCreateModal}
+                        variant="brand"
+                        icon-name="utility:add"
+                        aria-label="Create new query configuration">
+                    </lightning-button>
+                    <lightning-helptext
+                        content="Create a new query configuration with a SOQL query (SELECT fields FROM object WHERE condition), optional bind variables in JSON format, and field mappings."
+                        icon-variant="inverse"
+                        class="slds-m-left_xx-small slds-m-right_small">
+                    </lightning-helptext>
+                    <lightning-badge label={orgTypeBadge} title={orgTypeBadgeTitle}></lightning-badge>
+                </div>
+            </template>
+            <template if:true={isProduction}>
+                <lightning-badge label="Production" variant="inverse" title="Read-only mode in Production"></lightning-badge>
+            </template>
+        </div>
+
+        <!-- Main Content Region -->
+        <div id="main-content" class="slds-p-around_medium" role="main" aria-label="Query Viewer Main Content">
+
+            <!-- Production Warning Banner with Override Option -->
+            <template if:true={isProduction}>
+                <div class="slds-m-bottom_medium">
+                    <div class="slds-notify slds-notify_alert slds-alert_warning" role="alert">
+                        <span class="slds-assistive-text">warning</span>
+                        <span class="slds-icon_container slds-icon-utility-warning slds-m-right_small">
+                            <lightning-icon icon-name="utility:warning" size="small" variant="warning" alternative-text="Warning"></lightning-icon>
+                        </span>
+                        <div>
+                            <h2 class="slds-m-bottom_small">
+                                <strong>Production Environment Detected</strong>
+                            </h2>
+                            <p class="slds-text-body_regular slds-m-bottom_medium">
+                                Metadata creation and editing are disabled for safety. These features are only available in
+                                <strong>development/test environments</strong>: Sandbox, Scratch Org, Developer Edition, or Trial.
+                            </p>
+
+                            <!-- Advanced Override for Starter/Free Editions -->
+                            <div class="slds-box slds-box_x-small slds-theme_alert-texture slds-m-top_small">
+                                <h3 class="slds-text-heading_small slds-m-bottom_small">
+                                    <lightning-icon icon-name="utility:warning" size="xx-small" class="slds-m-right_xx-small"></lightning-icon>
+                                    <strong>Advanced Option (Starter/Free Editions Only)</strong>
+                                </h3>
+                                <p class="slds-text-body_small slds-m-bottom_small">
+                                    If you're using <strong>Starter or Free Edition</strong> (which don't include sandbox),
+                                    you can enable editing <strong>at your own risk</strong>:
+                                </p>
+                                <div class="slds-m-bottom_small">
+                                    <lightning-input
+                                        type="checkbox"
+                                        label="Enable metadata editing in this production environment"
+                                        checked={productionOverrideEnabled}
+                                        onchange={handleProductionOverrideChange}
+                                        disabled={isUpdatingSettings}
+                                        class="production-override-checkbox">
+                                    </lightning-input>
+                                </div>
+                                <div class="slds-scoped-notification slds-media slds-media_center slds-scoped-notification_light" role="status">
+                                    <div class="slds-media__figure">
+                                        <lightning-icon icon-name="utility:ban" size="small" variant="error" alternative-text="Danger"></lightning-icon>
+                                    </div>
+                                    <div class="slds-media__body">
+                                        <p class="slds-text-body_small">
+                                            <strong>⚠️ SECURITY WARNING:</strong><br/>
+                                            • Changes are immediate (no deployment process)<br/>
+                                            • Affects all users in this production org<br/>
+                                            • No rollback mechanism<br/>
+                                            • Could expose sensitive data if misconfigured<br/>
+                                            • Recommended: Use Setup UI instead (Setup → Custom Metadata Types)
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Configuration Selection -->
+            <lightning-layout multiple-rows>
+                <lightning-layout-item size="12" class="slds-p-bottom_medium">
+                    <div class="slds-form-element">
+                        <label for="config-selector" class="slds-form-element__label">
+                            <strong>Select Query Configuration</strong>
+                            <span class="slds-required" title="Required">*</span>
+                        </label>
+                        <div class="slds-form-element__control">
+                            <div class="slds-combobox_container">
+                                <div class={configComboboxClass} role="combobox" aria-expanded={showConfigDropdown} aria-haspopup="listbox">
+                                    <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                                        <lightning-input
+                                            type="text"
+                                            name="configuration"
+                                            variant="label-hidden"
+                                            value={configSearchTerm}
+                                            placeholder="Type to search configurations..."
+                                            oninput={handleConfigInput}
+                                            onfocus={handleConfigFocus}
+                                            onblur={handleConfigBlur}
+                                            required
+                                            class="custom-combobox-input">
+                                        </lightning-input>
+                                        <button class="slds-button slds-button_icon slds-input__icon slds-input__icon_right"
+                                                title="Show configurations"
+                                                onclick={handleConfigToggle}
+                                                tabindex="-1">
+                                            <lightning-icon icon-name="utility:down" size="x-small" alternative-text="Show options"></lightning-icon>
+                                        </button>
+                                    </div>
+                                    <div class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid" role="listbox">
+                                        <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                            <template if:true={hasFilteredConfigs}>
+                                                <template for:each={filteredConfigs} for:item="config">
+                                                    <li key={config.value} role="presentation" class="slds-listbox__item">
+                                                        <div class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small"
+                                                             role="option"
+                                                             data-value={config.value}
+                                                             onclick={handleConfigSelect}>
+                                                            <span class="slds-media__body">
+                                                                <span class="slds-truncate">{config.label}</span>
+                                                            </span>
+                                                        </div>
+                                                    </li>
+                                                </template>
+                                            </template>
+                                            <template if:false={hasFilteredConfigs}>
+                                                <li role="presentation" class="slds-listbox__item">
+                                                    <div class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small" role="option">
+                                                        <span class="slds-media__body">
+                                                            <span class="slds-truncate">No results found</span>
+                                                        </span>
+                                                    </div>
+                                                </li>
+                                            </template>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </lightning-layout-item>
+
+                <!-- Run As User (Admin Only) - Enhanced Accessibility & UX -->
+                <template if:true={showRunAs}>
+                    <lightning-layout-item size="12" class="slds-p-bottom_medium">
+                        <section
+                            class="run-as-container slds-box slds-theme_shade"
+                            role="region"
+                            aria-labelledby="run-as-heading"
+                            aria-describedby="run-as-note">
+
+                            <!-- Heading with emphasis -->
+                            <h3 id="run-as-heading" class="slds-text-heading_small slds-p-bottom_small">
+                                <lightning-icon
+                                    icon-name="utility:user"
+                                    size="x-small"
+                                    alternative-text=""
+                                    title="User impersonation feature"
+                                    class="slds-m-right_x-small">
+                                </lightning-icon>
+                                <strong>Run As User (Advanced)</strong>
+                            </h3>
+
+                            <!-- Important Note - Visually Emphasized -->
+                            <div
+                                id="run-as-note"
+                                class="run-as-note slds-box slds-box_x-small slds-m-bottom_medium"
+                                role="note"
+                                aria-label="Important security information">
+                                <div class="slds-media slds-media_center">
+                                    <div class="slds-media__figure">
+                                        <lightning-icon
+                                            icon-name="utility:info"
+                                            size="small"
+                                            variant="warning"
+                                            alternative-text="Important"
+                                            title="Important information">
+                                        </lightning-icon>
+                                    </div>
+                                    <div class="slds-media__body">
+                                        <p class="slds-text-body_regular">
+                                            <strong>Note:</strong> This validates user permissions but executes with USER_MODE security. Results reflect sharing rules and field-level security.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- User Selection - Enhanced Label (Optional) -->
+                            <div class="slds-form-element">
+                                <label
+                                    for="user-selector"
+                                    class="slds-form-element__label">
+                                    <strong>Select User to Impersonate (Optional)</strong>
+                                </label>
+                                <div class="slds-form-element__control">
+                                    <div class="slds-combobox_container">
+                                        <div class={userComboboxClass} role="combobox" aria-expanded={showUserDropdown} aria-haspopup="listbox">
+                                            <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                                                <lightning-input
+                                                    type="text"
+                                                    name="runAsUser"
+                                                    variant="label-hidden"
+                                                    value={userSearchTerm}
+                                                    placeholder="Type to search users... (leave blank to run as current user)"
+                                                    oninput={handleUserInput}
+                                                    onfocus={handleUserFocus}
+                                                    onblur={handleUserBlur}
+                                                    disabled={isLoadingUsers}
+                                                    class="custom-combobox-input">
+                                                </lightning-input>
+                                                <button class="slds-button slds-button_icon slds-input__icon slds-input__icon_right"
+                                                        title="Show users"
+                                                        onclick={handleUserToggle}
+                                                        tabindex="-1"
+                                                        disabled={isLoadingUsers}>
+                                                    <lightning-icon icon-name="utility:down" size="x-small" alternative-text="Show options"></lightning-icon>
+                                                </button>
+                                            </div>
+                                            <div class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid" role="listbox">
+                                                <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                                    <template if:true={hasFilteredUsers}>
+                                                        <template for:each={filteredUsers} for:item="user">
+                                                            <li key={user.value} role="presentation" class="slds-listbox__item">
+                                                                <div class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small"
+                                                                     role="option"
+                                                                     data-value={user.value}
+                                                                     onclick={handleUserSelect}>
+                                                                    <span class="slds-media__body">
+                                                                        <span class="slds-truncate">{user.label}</span>
+                                                                    </span>
+                                                                </div>
+                                                            </li>
+                                                        </template>
+                                                    </template>
+                                                    <template if:false={hasFilteredUsers}>
+                                                        <li role="presentation" class="slds-listbox__item">
+                                                            <div class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small" role="option">
+                                                                <span class="slds-media__body">
+                                                                    <span class="slds-truncate">No users found</span>
+                                                                </span>
+                                                            </div>
+                                                        </li>
+                                                    </template>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <template if:true={isLoadingUsers}>
+                                <div
+                                    class="slds-text-body_small slds-text-color_weak slds-m-bottom_small"
+                                    role="status"
+                                    aria-live="polite"
+                                    aria-label="Loading users">
+                                    <lightning-spinner alternative-text="Loading users" size="small"></lightning-spinner>
+                                    <span>Loading users...</span>
+                                </div>
+                            </template>
+                            <template if:true={runAsUserId}>
+                                <div class="slds-p-top_x-small slds-grid slds-grid_align-spread" role="group" aria-label="User impersonation actions">
+                                    <lightning-button
+                                        label="Clear Selection"
+                                        title="Clear selected user"
+                                        onclick={handleClearRunAs}
+                                        variant="neutral"
+                                        icon-name="utility:clear"
+                                        aria-label="Clear selected user for Run As"
+                                        size="small">
+                                    </lightning-button>
+                                    <template if:true={showRunAsTest}>
+                                        <lightning-button
+                                            label="Execute with System.runAs (Test)"
+                                            title="Execute query in test context"
+                                            onclick={handleExecuteAsUserTest}
+                                            variant="brand"
+                                            icon-name="utility:shield"
+                                            disabled={isRunningTest}
+                                            aria-label="Execute query with System.runAs in test context"
+                                            class="slds-m-left_small">
+                                        </lightning-button>
+                                    </template>
+                                </div>
+                            </template>
+                            <template if:true={isRunningTest}>
+                                <div
+                                    class="slds-p-top_small slds-align_absolute-center"
+                                    role="status"
+                                    aria-live="polite"
+                                    aria-label="Test execution in progress">
+                                    <lightning-spinner alternative-text="Running System.runAs test" size="small"></lightning-spinner>
+                                    <div class="slds-text-body_small slds-m-top_x-small">
+                                        Executing test with System.runAs()...
+                                    </div>
+                                </div>
+                            </template>
+                        </section>
+                    </lightning-layout-item>
+                </template>
+
+                <!-- Query Preview -->
+                <template if:true={baseQuery}>
+                    <lightning-layout-item size="12" class="slds-p-bottom_medium">
+                        <div class="query-preview-container">
+                            <div class="slds-text-heading_small slds-p-bottom_x-small">Query Preview:</div>
+                            <div class="query-preview slds-box slds-theme_shade">
+                                <pre class="slds-text-body_small">{queryPreview}</pre>
+                            </div>
+                        </div>
+                    </lightning-layout-item>
+                </template>
+
+                <!-- Dynamic Parameters Input -->
+                <template if:true={hasParameters}>
+                    <lightning-layout-item size="12" class="slds-p-bottom_medium">
+                        <div class="parameters-container">
+                            <div class="slds-text-heading_small slds-p-bottom_small">
+                                <strong>Query Parameters:</strong>
+                            </div>
+                            <lightning-layout multiple-rows>
+                                <template for:each={parameters} for:item="param">
+                                    <lightning-layout-item key={param.name} size="12" medium-device-size="6" class="slds-p-right_small slds-p-bottom_small">
+                                        <lightning-input
+                                            type="text"
+                                            label={param.label}
+                                            value={param.value}
+                                            data-param={param.name}
+                                            onchange={handleParameterChange}
+                                            placeholder={param.name}>
+                                        </lightning-input>
+                                    </lightning-layout-item>
+                                </template>
+                            </lightning-layout>
+                        </div>
+                    </lightning-layout-item>
+                </template>
+
+                <!-- Configuration Bindings Info -->
+                <template if:true={hasBindings}>
+                    <template if:false={hasParameters}>
+                        <lightning-layout-item size="12" class="slds-p-bottom_medium">
+                            <div class="info-box-readable slds-box slds-text-body_small">
+                                <strong class="info-title">
+                                    <lightning-icon icon-name="utility:info" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                                    {labels.predefinedBindings}
+                                </strong>
+                                <div class="slds-m-top_x-small">
+                                    {labels.predefinedBindingsDesc}
+                                </div>
+                            </div>
+                        </lightning-layout-item>
+                    </template>
+                </template>
+
+                <!-- Execute Button -->
+                <lightning-layout-item size="12" class="slds-p-bottom_medium">
+                    <lightning-button
+                        variant="brand"
+                        label="Execute Query"
+                        onclick={handleExecuteQuery}
+                        disabled={isLoading}
+                        icon-name="utility:database"
+                        class="slds-m-right_small">
+                    </lightning-button>
+                    <template if:true={isLoading}>
+                        <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+                    </template>
+                </lightning-layout-item>
+
+                <!-- Test Assert Message -->
+                <template if:true={testAssertMessage}>
+                    <lightning-layout-item size="12" class="slds-p-bottom_medium">
+                        <div class="slds-box slds-theme_success slds-text-body_regular">
+                            <lightning-icon icon-name="utility:success" size="small" variant="success" class="slds-m-right_small"></lightning-icon>
+                            <strong>Test Assertion:</strong> {testAssertMessage}
+                        </div>
+                    </lightning-layout-item>
+                </template>
+
+                <!-- Error Message -->
+                <template if:true={showError}>
+                    <lightning-layout-item size="12" class="slds-p-bottom_medium">
+                        <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+                            <span class="slds-assistive-text">error</span>
+                            <lightning-icon icon-name="utility:error" size="small" variant="error" class="slds-m-right_small"></lightning-icon>
+                            <h2>{errorMessage}</h2>
+                        </div>
+                    </lightning-layout-item>
+                </template>
+
+                <!-- Results Section -->
+                <template if:true={showResults}>
+                    <lightning-layout-item size="12">
+                        <div class="results-container">
+                            <div class="slds-text-heading_small slds-p-bottom_small">
+                                Results ({recordCount} {recordCountLabel}):
+                            </div>
+                            <lightning-datatable
+                                key-field="Id"
+                                data={paginatedResults}
+                                columns={columns}
+                                hide-checkbox-column
+                                show-row-number-column
+                                class="slds-max-medium-table_stacked">
+                            </lightning-datatable>
+
+                            <!-- Pagination Controls -->
+                            <template if:true={showPagination}>
+                                <div class="slds-p-top_medium slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                                    <div class="slds-text-body_small slds-text-color_weak">
+                                        {labels.showing} {firstRecordIndex} - {lastRecordIndex} {labels.of} {recordCount}
+                                    </div>
+                                    <div class="slds-button-group">
+                                        <lightning-button
+                                            icon-name="utility:chevronleft"
+                                            variant="neutral"
+                                            onclick={handlePreviousPage}
+                                            disabled={isFirstPage}
+                                            title={labels.previous}>
+                                        </lightning-button>
+                                        <lightning-button
+                                            label={currentPageDisplay}
+                                            variant="neutral"
+                                            disabled>
+                                        </lightning-button>
+                                        <lightning-button
+                                            icon-name="utility:chevronright"
+                                            variant="neutral"
+                                            onclick={handleNextPage}
+                                            disabled={isLastPage}
+                                            title={labels.next}>
+                                        </lightning-button>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </lightning-layout-item>
+                </template>
+
+                <!-- No Results Message -->
+                <template if:true={hasResults}>
+                    <template if:false={showResults}>
+                        <lightning-layout-item size="12" class="slds-p-top_medium">
+                            <div class="slds-align_absolute-center">
+                                <lightning-icon icon-name="utility:search" size="large"></lightning-icon>
+                                <div class="slds-text-heading_small slds-p-top_small">
+                                    No records found
+                                </div>
+                            </div>
+                        </lightning-layout-item>
+                    </template>
+                </template>
+
+            </lightning-layout>
+        </div>
+    </lightning-card>
+
+    <!-- Create Configuration Modal -->
+    <template if:true={showCreateModal}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+
+                <!-- Modal Header -->
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                            title="Close"
+                            onclick={handleCloseCreateModal}>
+                        <lightning-icon icon-name="utility:close" alternative-text="close" size="small"></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 class="slds-text-heading_medium slds-hyphenate">Create New Configuration</h2>
+                    <div class="slds-m-top_small slds-box slds-theme_warning slds-p-around_small">
+                        <p class="slds-grid slds-grid_vertical-align-center">
+                            <lightning-icon
+                                icon-name="utility:warning"
+                                size="xx-small"
+                                variant="warning"
+                                class="slds-m-right_xx-small">
+                            </lightning-icon>
+                            <span class="slds-text-body_small" style="color: #080707;">
+                                <strong>Only available in Sandbox/Scratch/Developer Orgs. Use Setup UI in Production.</strong>
+                            </span>
+                        </p>
+                    </div>
+                </header>
+
+                <!-- Modal Body -->
+                <div class="slds-modal__content slds-p-around_medium">
+                    <lightning-layout multiple-rows>
+
+                        <!-- Label -->
+                        <lightning-layout-item size="12" class="slds-p-bottom_small">
+                            <lightning-input
+                                type="text"
+                                label="Label"
+                                value={newConfig.label}
+                                data-field="label"
+                                onchange={handleNewConfigChange}
+                                required
+                                placeholder="e.g., Get Active Accounts">
+                            </lightning-input>
+                        </lightning-layout-item>
+
+                        <!-- Developer Name -->
+                        <lightning-layout-item size="12" class="slds-p-bottom_small">
+                            <lightning-input
+                                type="text"
+                                label="Developer Name"
+                                value={newConfig.developerName}
+                                data-field="developerName"
+                                onchange={handleNewConfigChange}
+                                required
+                                placeholder="e.g., Get_Active_Accounts"
+                                field-level-help="API name (auto-generated from label)">
+                            </lightning-input>
+                        </lightning-layout-item>
+
+                        <!-- Base Query -->
+                        <lightning-layout-item size="12" class="slds-p-bottom_small">
+                            <lightning-textarea
+                                label="Base Query (SOQL)"
+                                value={newConfig.baseQuery}
+                                data-field="baseQuery"
+                                onchange={handleNewConfigChange}
+                                required
+                                rows="4"
+                                placeholder="SELECT Id, Name FROM Account WHERE IsActive__c = true">
+                            </lightning-textarea>
+
+                            <!-- Query Validation Indicator -->
+                            <template if:true={newConfig.baseQuery}>
+                                <div class="slds-p-top_x-small">
+                                    <template if:true={queryValidation.isValid}>
+                                        <div class="slds-text-color_success slds-text-body_small">
+                                            <lightning-icon icon-name="utility:success" size="xx-small" variant="success"></lightning-icon>
+                                            {queryValidation.message}
+                                            <template if:true={queryValidation.objectName}>
+                                                <span class="slds-m-left_small">
+                                                    <strong>Object:</strong> {queryValidation.objectName}
+                                                </span>
+                                            </template>
+                                        </div>
+                                    </template>
+                                    <template if:false={queryValidation.isValid}>
+                                        <div class="slds-text-color_error slds-text-body_small">
+                                            <lightning-icon icon-name="utility:error" size="xx-small" variant="error"></lightning-icon>
+                                            {queryValidation.message}
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+                        </lightning-layout-item>
+
+                        <!-- Object Name (auto-detected, read-only) -->
+                        <lightning-layout-item size="12" medium-device-size="6" class="slds-p-bottom_small slds-p-right_small">
+                            <lightning-input
+                                type="text"
+                                label="Object Name"
+                                value={newConfig.objectName}
+                                placeholder="Auto-detected from query"
+                                field-level-help="Automatically extracted from the SOQL query"
+                                disabled
+                                readonly>
+                            </lightning-input>
+                        </lightning-layout-item>
+
+                        <!-- Bindings (optional) -->
+                        <lightning-layout-item size="12" medium-device-size="6" class="slds-p-bottom_small">
+                            <lightning-textarea
+                                label="Bindings (JSON - Optional)"
+                                value={newConfig.bindings}
+                                data-field="bindings"
+                                onchange={handleNewConfigChange}
+                                rows="3"
+                                placeholder="JSON format: name, value pairs"
+                                field-level-help="Default bind variables in JSON format">
+                            </lightning-textarea>
+                        </lightning-layout-item>
+
+                        <!-- Info Box -->
+                        <lightning-layout-item size="12" class="slds-p-top_small">
+                            <div class="slds-box slds-theme_info slds-text-body_small">
+                                <lightning-icon icon-name="utility:info" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                                <strong>Note:</strong> This creates a Custom Metadata record via Tooling API.
+                                The configuration will be immediately available for use.
+                            </div>
+                        </lightning-layout-item>
+
+                    </lightning-layout>
+                </div>
+
+                <!-- Modal Footer -->
+                <footer class="slds-modal__footer">
+                    <lightning-button
+                        label="Cancel"
+                        onclick={handleCloseCreateModal}
+                        class="slds-m-right_small">
+                    </lightning-button>
+                    <lightning-button
+                        variant="brand"
+                        label="Save Configuration"
+                        onclick={handleSaveConfiguration}
+                        disabled={isSaving}
+                        icon-name="utility:save">
+                    </lightning-button>
+                    <template if:true={isSaving}>
+                        <lightning-spinner alternative-text="Saving..." size="small" class="slds-m-left_small"></lightning-spinner>
+                    </template>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+    <!-- Usage Finder Modal -->
+    <template if:true={showUsageModal}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_large">
+            <div class="slds-modal__container">
+
+                <!-- Modal Header -->
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                            title="Close"
+                            onclick={handleCloseUsageModal}>
+                        <lightning-icon icon-name="utility:close" alternative-text="close" size="small"></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 class="slds-text-heading_medium slds-hyphenate">Where is "{selectedConfig}" used?</h2>
+                    <p class="slds-m-top_x-small slds-text-body_small slds-text-color_weak">
+                        <lightning-icon icon-name="utility:info" size="xx-small" class="slds-m-right_xx-small"></lightning-icon>
+                        Searching Apex classes for references to this configuration
+                    </p>
+                </header>
+
+                <!-- Modal Body -->
+                <div class="slds-modal__content slds-p-around_medium" style="min-height: 200px;">
+
+                    <!-- Loading State -->
+                    <template if:true={isLoadingUsage}>
+                        <div class="slds-align_absolute-center slds-m-vertical_xx-large">
+                            <lightning-spinner alternative-text="Searching..." size="medium"></lightning-spinner>
+                            <p class="slds-m-top_small slds-text-body_small">Searching Apex classes...</p>
+                        </div>
+                    </template>
+
+                    <!-- Results Table -->
+                    <template if:false={isLoadingUsage}>
+                        <template if:true={hasUsageResults}>
+                            <div class="slds-m-bottom_small">
+                                <p class="slds-text-body_small slds-text-color_weak">
+                                    Found {usageResults.length} reference(s) in Apex code
+                                </p>
+                            </div>
+                            <lightning-datatable
+                                key-field="classId"
+                                data={usageResults}
+                                columns={usageColumns}
+                                hide-checkbox-column>
+                            </lightning-datatable>
+                        </template>
+
+                        <!-- No Results -->
+                        <template if:false={hasUsageResults}>
+                            <div class="slds-align_absolute-center slds-m-vertical_large">
+                                <div class="slds-text-align_center">
+                                    <lightning-icon
+                                        icon-name="utility:info"
+                                        size="large"
+                                        variant="warning"
+                                        alternative-text="No usage found">
+                                    </lightning-icon>
+                                    <p class="slds-text-heading_small slds-m-top_small">
+                                        No usage found
+                                    </p>
+                                    <p class="slds-text-body_small slds-text-color_weak slds-m-top_x-small">
+                                        This configuration is not currently referenced in any Apex class.
+                                    </p>
+                                    <p class="slds-text-body_small slds-m-top_x-small">
+                                        <strong>This means:</strong> The configuration exists but isn't being used in your codebase yet. 
+                                        You can safely use it by calling <code>JT_DataSelector.getRecords('{selectedConfig}')</code> in your Apex code.
+                                    </p>
+                                </div>
+                            </div>
+                        </template>
+                    </template>
+
+                </div>
+
+                <!-- Modal Footer -->
+                <footer class="slds-modal__footer">
+                    <lightning-button
+                        label="Close"
+                        variant="neutral"
+                        onclick={handleCloseUsageModal}>
+                    </lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+</template>
+

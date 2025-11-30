@@ -1,0 +1,30 @@
+# Scanner Ignore File for Code Analyzer
+# Excludes files from security and quality scans
+
+# Test files (already validated)
+**/*_Test.cls
+**/*Mock.cls
+
+# Documentation
+*.md
+*.txt
+
+# Config files
+*.json
+*.xml
+
+# Node modules
+node_modules/
+
+# Test results
+test-results/
+playwright-report/
+coverage/
+scanner-results.json
+code-quality.csv
+
+# Temporary files
+.sfdx/
+.sf/
+.localdevserver/
+

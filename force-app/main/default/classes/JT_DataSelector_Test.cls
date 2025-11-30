@@ -20,12 +20,15 @@
  *
  * See the Apex Language Reference for more information about Testing and Code Coverage.
  */
+/**
+* @description Test class for JT_DataSelector
+* @author Jaime Terrats | 06-18-2025
+**/
 @isTest
 private class JT_DataSelector_Test {
 
 /**
-* @description this test setup creates a mock account record and
-user with limited access
+* @description This test setup creates a mock account record and user with limited access
 * @author Jaime Terrats | 06-18-2025
 **/
 @testSetup

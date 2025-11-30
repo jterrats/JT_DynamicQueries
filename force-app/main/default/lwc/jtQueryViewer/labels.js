@@ -39,6 +39,28 @@ const LABELS = {
     cancel: "Cancel",
     save: "Save",
     label: "Label",
+    // Cache Management
+    clearCache: "Clear Cache",
+    clearCacheTitle: "Clear Cache & Refresh Data",
+    clearCacheDescription:
+      "Select which cached data you want to clear. This will force a refresh from the server.",
+    clearCacheButton: "Clear Selected",
+    clearCacheWarning:
+      "Selected data will be cleared and refreshed from the server.",
+    clearConfigurationsLabel: "Query Configurations",
+    clearConfigurationsHelp:
+      "Refresh the list of available query configurations from metadata",
+    clearResultsLabel: "Query Results",
+    clearResultsHelp: "Clear current query results and reset the view",
+    clearUsersLabel: "User List",
+    clearUsersHelp:
+      "Refresh the list of active users for Run As functionality",
+    clearRecentLabel: "Recent Selections",
+    clearRecentHelp:
+      "Clear recently selected configurations and user preferences",
+    selectAll: "Select All",
+    cacheCleared: "Cache cleared successfully",
+    cacheClearedDetail: "Cleared: {0}",
     developerName: "Developer Name",
     baseQuery: "Base Query (SOQL)",
     objectName: "Object Name",
@@ -89,6 +111,28 @@ const LABELS = {
   es: {
     selectConfiguration: "Seleccionar Configuración de Consulta",
     chooseConfiguration: "Elige una configuración...",
+    // Cache Management
+    clearCache: "Limpiar Caché",
+    clearCacheTitle: "Limpiar Caché y Refrescar Datos",
+    clearCacheDescription:
+      "Selecciona qué datos en caché deseas limpiar. Esto forzará una actualización desde el servidor.",
+    clearCacheButton: "Limpiar Seleccionados",
+    clearCacheWarning:
+      "Los datos seleccionados se limpiarán y actualizarán desde el servidor.",
+    clearConfigurationsLabel: "Configuraciones de Consulta",
+    clearConfigurationsHelp:
+      "Actualizar la lista de configuraciones disponibles desde metadatos",
+    clearResultsLabel: "Resultados de Consulta",
+    clearResultsHelp: "Limpiar resultados actuales y reiniciar la vista",
+    clearUsersLabel: "Lista de Usuarios",
+    clearUsersHelp:
+      "Actualizar la lista de usuarios activos para funcionalidad Run As",
+    clearRecentLabel: "Selecciones Recientes",
+    clearRecentHelp:
+      "Limpiar configuraciones seleccionadas recientemente y preferencias",
+    selectAll: "Seleccionar Todos",
+    cacheCleared: "Caché limpiado exitosamente",
+    cacheClearedDetail: "Limpiado: {0}",
     runAsUser: "Ejecutar Como Usuario (Avanzado)",
     runAsNote:
       "Nota: Esto valida permisos de usuario pero ejecuta con seguridad USER_MODE. Los resultados reflejan reglas de uso compartido y seguridad a nivel de campo.",

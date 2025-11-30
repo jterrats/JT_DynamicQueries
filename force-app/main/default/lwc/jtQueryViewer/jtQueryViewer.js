@@ -78,6 +78,11 @@ export default class JtQueryViewer extends LightningElement {
   @track originalDevName = ""; // For edit mode
   @track queryValidation = { isValid: false, message: "" };
   @track isSaving = false;
+  @track showCacheModal = false;
+  
+  // Store wired results for refreshing
+  wiredConfigsResult;
+  wiredUsersResult;
   @track developerNameManuallyEdited = false; // Track if user manually edited dev name
 
   configurationOptions = [];
@@ -728,6 +733,72 @@ export default class JtQueryViewer extends LightningElement {
   handleCloseUsageModal() {
     this.showUsageModal = false;
     this.usageResults = [];
+  }
+
+  // ============================================
+  // Cache Management
+  // ============================================
+  handleOpenCacheModal() {
+    this.showCacheModal = true;
+  }
+
+  handleCloseCacheModal() {
+    this.showCacheModal = false;
+  }
+
+  async handleClearCache(event) {
+    const { configurations, results, users, recent } = event.detail;
+    const cleared = [];
+
+    try {
+      // Clear configurations
+      if (configurations) {
+        await refreshApex(this.wiredConfigurationsResult);
+        cleared.push(this.labels.clearConfigurationsLabel);
+      }
+
+      // Clear results
+      if (results) {
+        this.queryResults = [];
+        this.hasResults = false;
+        this.recordCount = 0;
+        this.currentPage = 1;
+        this.jsonOutput = "";
+        cleared.push(this.labels.clearResultsLabel);
+      }
+
+      // Clear users
+      if (users) {
+        this.userOptions = [];
+        await this.loadUsers(true); // Force refresh
+        cleared.push(this.labels.clearUsersLabel);
+      }
+
+      // Clear recent selections
+      if (recent) {
+        this.selectedConfig = "";
+        this.baseQuery = "";
+        this.parameters = [];
+        this.parameterValues = {};
+        this.runAsUserId = "";
+        this.runAsUserName = "";
+        cleared.push(this.labels.clearRecentLabel);
+      }
+
+      // Show success toast
+      if (cleared.length > 0) {
+        this.showToast(
+          this.labels.cacheCleared,
+          this.labels.cacheClearedDetail.replace("{0}", cleared.join(", ")),
+          "success"
+        );
+      }
+    } catch (error) {
+      this.showErrorToast(
+        "Error",
+        "Error clearing cache: " + error.body.message
+      );
+    }
   }
 
   get hasUsageResults() {

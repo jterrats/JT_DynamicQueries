@@ -18,7 +18,17 @@
     <!-- Card Header Actions -->
     <div slot="actions">
       <template if:true={canCreateMetadata}>
-        <div class="slds-grid slds-grid_vertical-align-center">
+        <div class="slds-grid slds-grid_vertical-align-center slds-grid_align-end">
+          <lightning-button
+            label={labels.clearCache}
+            title="Clear cache and refresh data"
+            onclick={handleOpenCacheModal}
+            variant="neutral"
+            icon-name="utility:refresh"
+            class="slds-m-right_x-small"
+            aria-label="Open cache management modal"
+          >
+          </lightning-button>
           <lightning-button
             label="Create Configuration"
             title="Create a new query configuration"
@@ -669,6 +679,15 @@
       onsave={handleSaveConfiguration}
       oncancel={handleCloseCreateModal}
     ></c-jt-config-modal>
+  </template>
+
+  <!-- Cache Management Modal -->
+  <template if:true={showCacheModal}>
+    <c-jt-cache-modal
+      labels={labels}
+      onclearcache={handleClearCache}
+      onclose={handleCloseCacheModal}
+    ></c-jt-cache-modal>
   </template>
 
   <!-- Usage Finder Modal -->

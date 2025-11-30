@@ -136,7 +136,7 @@ MIT License - See [LICENSE](https://github.com/jterrats/JT_DynamicQueries/blob/m
 
 ---
 
-**Last Updated:** November 30, 2025  
-**Version:** 2.0  
+**Last Updated:** November 30, 2025
+**Version:** 2.0
 **Status:** Production Ready ✅
 

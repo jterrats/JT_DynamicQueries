@@ -361,18 +361,29 @@ videos/
 ## 🎯 Next Steps
 
 ### **For Screenshots:**
-1. **Run script**: `npm run screenshots:appexchange`
-2. **Review**: Check each screenshot for quality
-3. **Optimize**: Compress images if needed
-4. **Upload**: Add to AppExchange listing
-5. **Describe**: Add descriptions for each image
+1. **Manual Capture**: Use browser DevTools (Cmd+Shift+M) for best results
+2. **Automated**: `npm run screenshots:appexchange` (may timeout on some flows)
+3. **Review**: Check each screenshot for quality
+4. **Optimize**: Compress images if needed
+5. **Upload**: Add to AppExchange listing
+
+**Tip:** Manual capture gives better control over timing and ensures buttons are enabled.
 
 ### **For Videos:**
-1. **Run script**: `npm run videos:appexchange`
-2. **Review**: Watch each video for quality
-3. **Convert**: WebM to MP4 if needed (see FFmpeg commands)
-4. **Edit**: Trim/optimize if needed
-5. **Upload**: Add to AppExchange or embed in README
+1. **Manual Capture**: Use browser screen recording for smooth flows
+2. **Automated**: `npm run videos:appexchange` (may need retry for timing)
+3. **Review**: Watch each video for quality
+4. **Convert**: WebM to MP4 if needed (see FFmpeg commands)
+5. **Edit**: Trim/optimize if needed
+6. **Upload**: Add to AppExchange or embed in README
+
+**Tip:** Automated videos work best for simple flows. Complex workflows benefit from manual capture.
+
+## 🌐 View in GitHub Pages
+
+See the gallery in action: [Gallery](gallery.html)
+
+Live screenshots and videos are available in the GitHub Pages documentation.
 
 ---
 

@@ -13,7 +13,6 @@
     <navType>Standard</navType>
     <tabs>JT_Query_Viewer</tabs>
     <tabs>JT_Documentation</tabs>
-    <tabs>JT_SettingsAuditLog__c</tabs>
     <tabs>standard-report</tabs>
     <tabs>JT_Support</tabs>
     <uiType>Lightning</uiType>

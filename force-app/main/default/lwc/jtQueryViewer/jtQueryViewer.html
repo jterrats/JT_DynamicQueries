@@ -10,16 +10,6 @@
     <lightning-card title="Dynamic Query Viewer" icon-name="custom:custom63">
         <!-- Card Header Actions -->
         <div slot="actions">
-            <lightning-button
-                label="Where is this used?"
-                title="Find where this configuration is used in Apex code"
-                onclick={handleShowUsageModal}
-                variant="neutral"
-                icon-name="utility:search"
-                disabled={selectedConfigEmpty}
-                class="slds-m-right_x-small"
-                aria-label="Find configuration usage">
-            </lightning-button>
             <template if:true={canCreateMetadata}>
                 <div class="slds-grid slds-grid_vertical-align-center">
                     <lightning-button
@@ -166,6 +156,19 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Where is this used? Link (only when config selected) -->
+                    <template if:true={selectedConfig}>
+                        <div class="slds-m-top_x-small slds-m-left_small">
+                            <a href="javascript:void(0);" 
+                               onclick={handleShowUsageModal}
+                               class="usage-link"
+                               title="Find where this configuration is used in Apex code">
+                                <lightning-icon icon-name="utility:search" size="xx-small" class="slds-m-right_xx-small"></lightning-icon>
+                                Where is this used?
+                            </a>
+                        </div>
+                    </template>
                 </lightning-layout-item>
 
                 <!-- Run As User (Admin Only) - Enhanced Accessibility & UX -->

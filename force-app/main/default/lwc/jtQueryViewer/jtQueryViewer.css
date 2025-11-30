@@ -259,3 +259,27 @@ lightning-badge {
     gap: 0.25rem;
 }
 
+/* Usage link styling */
+.usage-link {
+    color: #0176d3;
+    text-decoration: none;
+    font-size: 0.875rem;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    transition: color 0.1s ease-in-out;
+}
+
+.usage-link:hover {
+    color: #014486;
+    text-decoration: underline;
+}
+
+.usage-link:active {
+    color: #001639;
+}
+
+.usage-link lightning-icon {
+    flex-shrink: 0;
+}
+

@@ -23,6 +23,7 @@ All interactive elements are fully keyboard accessible:
 - ✅ **Focus Indicators**: Visible focus ring on all interactive elements
 
 **Example:**
+
 ```javascript
 // jtSearchableCombobox - Keyboard handler
 handleKeyDown(event) {
@@ -50,34 +51,34 @@ handleKeyDown(event) {
 Comprehensive ARIA implementation across all components:
 
 #### **jtSearchableCombobox**
+
 ```html
 <input
   role="combobox"
   aria-autocomplete="list"
-  aria-expanded={isOpen}
+  aria-expanded="{isOpen}"
   aria-haspopup="listbox"
   aria-controls="dropdown-options"
-  aria-activedescendant={highlightedOptionId}
+  aria-activedescendant="{highlightedOptionId}"
 />
 
 <ul role="listbox" id="dropdown-options">
-  <li role="option" aria-selected={isSelected}>
-    {option.label}
-  </li>
+  <li role="option" aria-selected="{isSelected}">{option.label}</li>
 </ul>
 ```
 
 #### **jtExecuteButton**
+
 ```html
 <lightning-button
-  aria-label={ariaLabel}
-  aria-busy={isLoading}
+  aria-label="{ariaLabel}"
+  aria-busy="{isLoading}"
   aria-describedby="execute-button-status"
 />
 
-<div 
+<div
   id="execute-button-status"
-  role="status" 
+  role="status"
   aria-live="polite"
   aria-atomic="true"
 >
@@ -86,13 +87,14 @@ Comprehensive ARIA implementation across all components:
 ```
 
 #### **jtQueryResults** (Mobile Cards)
+
 ```html
-<div 
+<div
   role="button"
   tabindex="0"
-  aria-expanded={isExpanded}
+  aria-expanded="{isExpanded}"
   aria-label="Expand record details"
-  onkeypress={handleKeyPress}
+  onkeypress="{handleKeyPress}"
 >
   {cardContent}
 </div>
@@ -103,6 +105,7 @@ Comprehensive ARIA implementation across all components:
 ### 3. **Screen Reader Support**
 
 #### **Live Regions**
+
 ```html
 <!-- Query Results Announcements -->
 <div role="status" aria-live="polite" aria-atomic="true">
@@ -116,6 +119,7 @@ Comprehensive ARIA implementation across all components:
 ```
 
 #### **Descriptive Labels**
+
 ```javascript
 get ariaLabel() {
   if (this.isLoading) {
@@ -133,19 +137,21 @@ get ariaLabel() {
 ### 4. **Form Accessibility**
 
 All form inputs include:
+
 - ✅ **Visible Labels**: All inputs have associated `<label>` elements
 - ✅ **Field-level Help**: Tooltips via `field-level-help` attribute
 - ✅ **Error Messages**: `aria-invalid` and `aria-describedby` for errors
 - ✅ **Required Fields**: Marked with `required` and `aria-required`
 
 **Example:**
+
 ```html
 <lightning-input
   label="Configuration Name"
-  value={configName}
+  value="{configName}"
   required
   field-level-help="Enter a unique name for this query configuration"
-  error-message={errorMessage}
+  error-message="{errorMessage}"
 />
 ```
 
@@ -154,12 +160,13 @@ All form inputs include:
 ### 5. **Focus Management**
 
 #### **Modal Focus Trap**
+
 ```javascript
 // jtConfigModal - Focus trap implementation
 connectedCallback() {
   this.firstFocusableElement = this.template.querySelector('input');
   this.lastFocusableElement = this.template.querySelector('button:last-of-type');
-  
+
   this.template.addEventListener('keydown', (event) => {
     if (event.key === 'Tab') {
       if (event.shiftKey && document.activeElement === this.firstFocusableElement) {
@@ -179,11 +186,13 @@ connectedCallback() {
 ### 6. **Mobile Accessibility**
 
 #### **Touch Targets**
+
 - ✅ Minimum 44x44px touch targets (WCAG 2.5.5)
 - ✅ Adequate spacing between interactive elements
 - ✅ Mobile-optimized card layout
 
 #### **Expandable Cards**
+
 ```javascript
 handleKeyPress(event) {
   // Allow Enter or Space to toggle cards
@@ -199,6 +208,7 @@ handleKeyPress(event) {
 ### 7. **Color & Contrast**
 
 All text meets WCAG AA contrast ratios:
+
 - ✅ **Normal Text**: 4.5:1 minimum
 - ✅ **Large Text**: 3:1 minimum
 - ✅ **Icons**: 3:1 minimum
@@ -210,9 +220,10 @@ Uses SLDS (Salesforce Lightning Design System) tokens for consistent, accessible
 ### 8. **External Links Security**
 
 All external links include proper attributes:
+
 ```html
-<a 
-  href={githubRepoUrl}
+<a
+  href="{githubRepoUrl}"
   target="_blank"
   rel="noopener noreferrer"
   aria-label="GitHub repository: JT Dynamic Queries (opens in new tab)"
@@ -236,13 +247,14 @@ Tests implemented using **Axe-core** and **Playwright**:
 ```javascript
 // Example: Axe accessibility scan
 const accessibilityScanResults = await new AxeBuilder({ page })
-  .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+  .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
   .analyze();
 
 expect(accessibilityScanResults.violations).toEqual([]);
 ```
 
 **Test Coverage:**
+
 - ✅ ARIA attributes validation
 - ✅ Keyboard navigation flows
 - ✅ Color contrast checks
@@ -269,17 +281,17 @@ expect(accessibilityScanResults.violations).toEqual([]);
 
 ## 📊 Components Accessibility Matrix
 
-| Component | Keyboard Nav | ARIA | Screen Reader | Focus Mgmt | Mobile |
-|-----------|-------------|------|---------------|------------|--------|
-| **jtQueryViewer** | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **jtSearchableCombobox** | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **jtExecuteButton** | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **jtQueryResults** | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **jtConfigModal** | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **jtUsageModal** | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **jtRunAsSection** | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **jtParameterInputs** | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **jtSupport** | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Component                | Keyboard Nav | ARIA | Screen Reader | Focus Mgmt | Mobile |
+| ------------------------ | ------------ | ---- | ------------- | ---------- | ------ |
+| **jtQueryViewer**        | ✅           | ✅   | ✅            | ✅         | ✅     |
+| **jtSearchableCombobox** | ✅           | ✅   | ✅            | ✅         | ✅     |
+| **jtExecuteButton**      | ✅           | ✅   | ✅            | ✅         | ✅     |
+| **jtQueryResults**       | ✅           | ✅   | ✅            | ✅         | ✅     |
+| **jtConfigModal**        | ✅           | ✅   | ✅            | ✅         | ✅     |
+| **jtUsageModal**         | ✅           | ✅   | ✅            | ✅         | ✅     |
+| **jtRunAsSection**       | ✅           | ✅   | ✅            | ✅         | ✅     |
+| **jtParameterInputs**    | ✅           | ✅   | ✅            | ✅         | ✅     |
+| **jtSupport**            | ✅           | ✅   | ✅            | ✅         | ✅     |
 
 ---
 
@@ -296,6 +308,7 @@ expect(accessibilityScanResults.violations).toEqual([]);
 ## 📝 Future Enhancements
 
 Potential AAA (Level AAA) improvements:
+
 - [ ] Enhanced color contrast (7:1 ratio)
 - [ ] No timing requirements
 - [ ] Reading level (lower Flesch score)
@@ -307,12 +320,12 @@ Potential AAA (Level AAA) improvements:
 ## 🏆 Certification
 
 This implementation follows:
+
 - ✅ WCAG 2.1 Level AA
 - ✅ Section 508 Standards
 - ✅ EN 301 549 (European Standard)
 - ✅ Salesforce Accessibility Guidelines
 
-**Last Updated:** November 30, 2025  
-**Tested By:** Automated (Axe-core) + Manual QA  
+**Last Updated:** November 30, 2025
+**Tested By:** Automated (Axe-core) + Manual QA
 **Next Review:** Q1 2026
-

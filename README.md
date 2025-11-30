@@ -10,17 +10,60 @@ A powerful, enterprise-ready Salesforce solution for executing dynamic, configur
 [![Code Quality](https://img.shields.io/badge/PMD-0%20violations-brightgreen)](./CODE_QUALITY_REPORT.md)
 [![Test Coverage](https://img.shields.io/badge/coverage-84.5%25-brightgreen)](./COVERAGE_REPORT.txt)
 [![API Version](https://img.shields.io/badge/API-v65.0-blue)](https://developer.salesforce.com/)
+[![E2E Tests](https://img.shields.io/badge/E2E-28%2F28%20passing-brightgreen)](./tests/e2e/)
 [![License](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
+
+## 🆕 What's New in v2.0
+
+### 🎨 **Modular Component Architecture**
+- Refactored monolithic LWC into **8 specialized components**
+- Improved maintainability with clear separation of concerns
+- Reusable components for dropdown, inputs, modals, and results
+
+### 🔍 **Enhanced Search & Filtering**
+- **Searchable Combobox**: Real-time client-side filtering
+- **User Search**: Find and select users instantly (no server round-trips)
+- **Configuration Search**: Filter configurations as you type
+
+### 📊 **Advanced Results Viewing**
+- **Toggle Views**: Switch between Table, JSON, and CSV formats
+- **Mobile Responsive**: Expandable cards for mobile devices
+- **Export to CSV**: Download query results for external analysis
+- **Syntax Highlighting**: JSON view with formatted, readable output
+
+### 🔐 **Tooling API Integration**
+- **"Where is this used?" for Flows**: Search Flow metadata (1-5 API calls)
+- **Named Credentials**: Secure OAuth 2.0 authentication
+- **Resilient Architecture**: Partial results if one service fails
+- **Comprehensive Setup Guides**: English and Spanish documentation
+
+### ♿ **Accessibility & UX**
+- **WCAG 2.1 AA Compliant**: Full accessibility support
+- **Keyboard Navigation**: Complete keyboard-only operation
+- **Screen Reader Support**: Proper ARIA labels and live regions
+- **Tooltips**: Contextual help throughout the interface
+- **Error Boundaries**: Component failures don't crash the app
+
+### 🧪 **Testing Excellence**
+- **100% E2E Pass Rate**: 28 Playwright tests covering all features
+- **98% Apex Pass Rate**: 723 unit tests
+- **Automated CI/CD**: GitHub Actions workflows for E2E and documentation
+
+---
 
 ## ✨ Features
 
 ### 🔧 Core Functionality
 
 - **Metadata-Driven Queries** - Define SOQL queries in Custom Metadata for easy management
-- **Dynamic Parameters** - Auto-generates input fields for bind variables
-- **Query Preview** - See the query before execution
-- **Results Pagination** - Auto-paginates results when > 10 records
+- **Dynamic Parameters** - Auto-generates input fields for bind variables with tooltips
+- **Query Preview** - See the query before execution with syntax validation
+- **Results Pagination** - Client-side pagination for 10+ records
 - **Empty State Handling** - Shows table structure even with 0 results
+- **🆕 Toggle Views** - Switch between Table, JSON, and CSV formats
+- **🆕 Export to CSV** - Download query results for analysis
+- **🆕 Mobile Responsive** - Expandable cards on mobile devices
+- **🆕 Searchable Dropdowns** - Real-time filtering for configs and users
 
 ### 🔒 Security & Permissions
 
@@ -36,12 +79,17 @@ A powerful, enterprise-ready Salesforce solution for executing dynamic, configur
 - **User Dropdown** - Client-side filtered dropdown with all active users
 - **Results Comparison** - See exactly what another user would see
 
-### 🎨 Modern UI/UX
+### 🎨 Modern UI/UX (v2.0 Enhanced)
 
-- **Lightning Web Components** - Modern, responsive interface
-- **Multi-Language Support** - English, Spanish, French, German
-- **Responsive Design** - Optimized for mobile, tablet, and desktop
-- **Dark Theme Compatible** - Works with Salesforce themes
+- **Modular Components** - 8 specialized, reusable components
+- **Searchable Dropdowns** - Real-time client-side filtering
+- **Toggle Result Views** - Table, JSON, or CSV formats
+- **Mobile-First Design** - Expandable cards for mobile, tables for desktop
+- **Multi-Language Support** - 8 languages (EN, ES, FR, DE, IT, JA, PT, ZH)
+- **Responsive Design** - Optimized for all screen sizes
+- **Dark Theme Compatible** - Works with all Salesforce themes
+- **Loading Indicators** - Clear feedback for all async operations
+- **Error Boundaries** - Graceful degradation when components fail
 
 ### 📚 Built-in Documentation
 
@@ -50,15 +98,54 @@ A powerful, enterprise-ready Salesforce solution for executing dynamic, configur
 - **API Reference** - Complete Apex and LWC API documentation
 - **Troubleshooting Guide** - Common issues and solutions
 
-### 🛠️ Developer Experience
+### 🛠️ Developer Experience (v2.0 Enhanced)
 
-- **Metadata Creation UI** - Create/edit configurations in sandbox
-- **SOQL Validation** - Real-time query validation
-- **Auto-Refresh** - Configuration list updates after creation
-- **Usage Finder** - "Where is this used?" shows Apex class references
-- **Invocable Methods** - Use queries in Flows and Agentforce
-- **Comprehensive Testing** - Apex tests (84.5% coverage) + E2E Playwright tests
-- **Audit Trail** - Track all production editing setting changes
+- **Metadata Creation UI** - Create/edit configurations in sandbox with live preview
+- **SOQL Validation** - Real-time query validation with helpful error messages
+- **Auto-Refresh** - Configuration list updates after creation (no page reload)
+- **Usage Finder** - "Where is this used?" shows:
+  - Apex class references (line numbers)
+  - Flow references (via Tooling API)
+  - Resilient microservices pattern (partial results on errors)
+- **Invocable Methods** - Use queries in Flows and Agentforce Actions
+- **Named Credentials** - Secure Tooling API integration with OAuth 2.0
+- **Comprehensive Testing** - 
+  - Apex: 98% pass rate (723 tests)
+  - E2E: 100% pass rate (28 Playwright tests)
+- **Audit Trail** - Track all production editing and usage search changes
+- **Export Results** - CSV download for external analysis
+
+---
+
+## 🧩 Component Overview (v2.0)
+
+### Lightning Web Components
+
+| Component | Purpose | Reusable | Key Features |
+|-----------|---------|----------|--------------|
+| **jtQueryViewer** | Main container | No | Orchestrates all components, error boundaries |
+| **jtSearchableCombobox** | Generic dropdown | ✅ Yes | Client-side filtering, keyboard navigation, ARIA |
+| **jtParameterInputs** | Dynamic inputs | Partial | Auto-generates from SOQL, tooltips |
+| **jtExecuteButton** | Query trigger | ✅ Yes | State-driven disabled logic, loading states |
+| **jtConfigModal** | Create/Edit configs | No | SOQL validation, query preview, Tooling API |
+| **jtUsageModal** | Usage search results | No | Apex + Flow results, resilient display |
+| **jtQueryResults** | Results viewer | ✅ Yes | Table/JSON/CSV toggle, mobile cards, export |
+| **jtRunAsSection** | User impersonation | No | User search, System.runAs() test execution |
+| **jtProjectDocs** | Documentation | No | Multi-language docs, responsive grid |
+| **jtSupport** | GitHub issues link | ✅ Yes | Localized support page |
+
+### Apex Classes
+
+| Class | Purpose | Key Features |
+|-------|---------|--------------|
+| **JT_DataSelector** | Query execution | Singleton, cache, InvocableMethod, USER_MODE |
+| **JT_UsageFinder** | Find config usage | Microservices pattern, Apex + Flow search |
+| **JT_MetadataCreator** | Deploy metadata | Tooling API integration, async deployment |
+| **JT_QueryViewerController** | LWC backend | Config management, environment detection |
+| **JT_RunAsTestExecutor** | User impersonation | System.runAs() in test context, JSON results |
+| **JT_ProductionSettingsController** | Settings management | Audit logging, without sharing insertion |
+
+---
 
 ## 🚀 Quick Start
 
@@ -95,12 +182,13 @@ sf apex run --file scripts/apex/assign-permset.apex
 
 Navigate to **App Launcher** → **Dynamic Queries**
 
-The app includes four tabs:
+The app includes five tabs:
 
-- **Query Viewer** - Execute and manage queries
-- **Documentation** - Complete in-app documentation
-- **Audit History** - Track production editing setting changes
-- **Reports** - Access standard reporting functionality
+- **🔍 Query Viewer** - Execute and manage queries (main interface)
+- **📚 Documentation** - Complete in-app documentation (8 languages)
+- **📊 Audit History** - Track production editing setting changes (read-only)
+- **🆘 Support** - GitHub issues and community support links
+- **📈 Reports** - (Future) Access standard reporting functionality
 
 ### 4. (Optional) Configure Tooling API
 

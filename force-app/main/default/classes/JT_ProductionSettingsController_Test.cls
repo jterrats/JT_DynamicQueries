@@ -14,11 +14,7 @@ private class JT_ProductionSettingsController_Test {
     Boolean result = JT_ProductionSettingsController.getProductionEditingSetting();
     Test.stopTest();
 
-    System.assertEquals(
-      false,
-      result,
-      'Default setting should be false'
-    );
+    System.assertEquals(false, result, 'Default setting should be false');
   }
 
   /**
@@ -32,19 +28,11 @@ private class JT_ProductionSettingsController_Test {
     );
     Test.stopTest();
 
-    System.assertEquals(
-      true,
-      updateResult,
-      'Update should succeed'
-    );
+    System.assertEquals(true, updateResult, 'Update should succeed');
 
     // Verify setting was updated
     Boolean currentValue = JT_ProductionSettingsController.getProductionEditingSetting();
-    System.assertEquals(
-      true,
-      currentValue,
-      'Setting should be enabled'
-    );
+    System.assertEquals(true, currentValue, 'Setting should be enabled');
 
     // Verify audit log was created
     List<JT_SettingsAuditLog__c> logs = [
@@ -54,11 +42,7 @@ private class JT_ProductionSettingsController_Test {
       LIMIT 1
     ];
 
-    System.assertEquals(
-      1,
-      logs.size(),
-      'Audit log should be created'
-    );
+    System.assertEquals(1, logs.size(), 'Audit log should be created');
     System.assertEquals(
       'Enabled',
       logs[0].JT_Action__c,
@@ -80,18 +64,10 @@ private class JT_ProductionSettingsController_Test {
     );
     Test.stopTest();
 
-    System.assertEquals(
-      true,
-      updateResult,
-      'Update should succeed'
-    );
+    System.assertEquals(true, updateResult, 'Update should succeed');
 
     Boolean currentValue = JT_ProductionSettingsController.getProductionEditingSetting();
-    System.assertEquals(
-      false,
-      currentValue,
-      'Setting should be disabled'
-    );
+    System.assertEquals(false, currentValue, 'Setting should be disabled');
   }
 
   /**
@@ -112,15 +88,8 @@ private class JT_ProductionSettingsController_Test {
     ];
     Test.stopTest();
 
-    System.assertNotEquals(
-      null,
-      logs,
-      'Logs should not be null'
-    );
-    System.assert(
-      logs.size() >= 2,
-      'Should have at least 2 audit log entries'
-    );
+    System.assertNotEquals(null, logs, 'Logs should not be null');
+    System.assert(logs.size() >= 2, 'Should have at least 2 audit log entries');
   }
 
   /**
@@ -134,11 +103,7 @@ private class JT_ProductionSettingsController_Test {
 
     // In test context, this will depend on org type
     // Just verify it doesn't throw an error
-    System.assertNotEquals(
-      null,
-      isStarter,
-      'Should return a boolean value'
-    );
+    System.assertNotEquals(null, isStarter, 'Should return a boolean value');
   }
 
   /**
@@ -180,11 +145,7 @@ private class JT_ProductionSettingsController_Test {
     Test.stopTest();
 
     // Should return false on any error, not throw exception
-    System.assertNotEquals(
-      null,
-      result,
-      'Should return a value even on error'
-    );
+    System.assertNotEquals(null, result, 'Should return a value even on error');
   }
 
   /**
@@ -214,18 +175,10 @@ private class JT_ProductionSettingsController_Test {
     );
     Test.stopTest();
 
-    System.assertEquals(
-      true,
-      updateResult,
-      'Update should succeed'
-    );
+    System.assertEquals(true, updateResult, 'Update should succeed');
 
     Boolean currentValue = JT_ProductionSettingsController.getUsageTrackingSetting();
-    System.assertEquals(
-      true,
-      currentValue,
-      'Usage tracking should be enabled'
-    );
+    System.assertEquals(true, currentValue, 'Usage tracking should be enabled');
   }
 
   /**
@@ -244,9 +197,6 @@ private class JT_ProductionSettingsController_Test {
       WITH USER_MODE
     ];
 
-    System.assert(
-      logs.size() > 0,
-      'Usage search should be logged'
-    );
+    System.assert(logs.size() > 0, 'Usage search should be logged');
   }
 }

@@ -1,0 +1,200 @@
+<template>
+  <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+    <div class="slds-modal__container">
+      <!-- Modal Header -->
+      <header class="slds-modal__header">
+        <button
+          class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse modal-close-button"
+          title="Close"
+          onclick={handleCancel}
+        >
+          <lightning-icon
+            icon-name="utility:close"
+            alternative-text="close"
+            size="small"
+          ></lightning-icon>
+          <span class="slds-assistive-text">Close</span>
+        </button>
+        <h2 class="slds-text-heading_medium slds-hyphenate">{title}</h2>
+
+        <!-- Warning (only for create mode in non-dev environments) -->
+        <template if:true={canCreateMetadata}>
+          <div
+            class="slds-m-top_small slds-box slds-theme_warning slds-p-around_small"
+          >
+            <p class="slds-grid slds-grid_vertical-align-center">
+              <lightning-icon
+                icon-name="utility:warning"
+                size="xx-small"
+                variant="warning"
+                class="slds-m-right_xx-small"
+              ></lightning-icon>
+              <span class="slds-text-body_small" style="color: #080707">
+                <strong>{sandboxWarning}</strong>
+              </span>
+            </p>
+          </div>
+        </template>
+      </header>
+
+      <!-- Modal Body -->
+      <div class="slds-modal__content slds-p-around_medium">
+        <lightning-layout multiple-rows>
+          <!-- Label -->
+          <lightning-layout-item size="12" class="slds-p-bottom_small">
+            <lightning-input
+              type="text"
+              label={labelField}
+              value={_config.label}
+              data-field="label"
+              onchange={handleFieldChange}
+              required
+              placeholder="e.g., Get Active Accounts"
+            ></lightning-input>
+          </lightning-layout-item>
+
+          <!-- Developer Name -->
+          <lightning-layout-item size="12" class="slds-p-bottom_small">
+            <lightning-input
+              type="text"
+              label={developerNameField}
+              value={_config.developerName}
+              data-field="developerName"
+              onchange={handleFieldChange}
+              required
+              placeholder="e.g., Get_Active_Accounts"
+              field-level-help="API name (auto-generated from label)"
+            ></lightning-input>
+          </lightning-layout-item>
+
+          <!-- Base Query -->
+          <lightning-layout-item size="12" class="slds-p-bottom_small">
+            <lightning-textarea
+              label={baseQueryField}
+              value={_config.baseQuery}
+              data-field="baseQuery"
+              onchange={handleFieldChange}
+              required
+              rows="4"
+              placeholder="SELECT Id, Name FROM Account WHERE IsActive__c = true"
+            ></lightning-textarea>
+
+            <!-- Query Validation -->
+            <template if:true={_config.baseQuery}>
+              <div class="slds-p-top_x-small">
+                <template if:true={queryValidation.isValid}>
+                  <div
+                    class="slds-text-color_success slds-text-body_small slds-m-bottom_small"
+                  >
+                    <lightning-icon
+                      icon-name="utility:success"
+                      size="xx-small"
+                      variant="success"
+                    ></lightning-icon>
+                    {queryValidation.message}
+                    <template if:true={showObjectName}>
+                      <span class="slds-m-left_small">
+                        <strong>{objectLabel}:</strong>
+                        {queryValidation.objectName}
+                      </span>
+                    </template>
+                  </div>
+
+                  <!-- Query Preview -->
+                  <template if:true={showQueryPreview}>
+                    <div class="slds-box slds-theme_shade slds-m-top_small">
+                      <div
+                        class="slds-text-heading_small slds-m-bottom_x-small"
+                      >
+                        <lightning-icon
+                          icon-name="utility:preview"
+                          size="xx-small"
+                          class="slds-m-right_xx-small"
+                        ></lightning-icon>
+                        {queryPreviewLabel}
+                      </div>
+                      <pre class="query-preview-text">{_config.baseQuery}</pre>
+                    </div>
+                  </template>
+                </template>
+
+                <template if:false={queryValidation.isValid}>
+                  <template if:true={queryValidation.message}>
+                    <div class="slds-text-color_error slds-text-body_small">
+                      <lightning-icon
+                        icon-name="utility:error"
+                        size="xx-small"
+                        variant="error"
+                      ></lightning-icon>
+                      {queryValidation.message}
+                    </div>
+                  </template>
+                </template>
+              </div>
+            </template>
+          </lightning-layout-item>
+
+          <!-- Object Name (Auto-detected, read-only) -->
+          <lightning-layout-item size="12" class="slds-p-bottom_small">
+            <lightning-input
+              type="text"
+              label={objectNameField}
+              value={_config.objectName}
+              readonly
+              placeholder={autoDetectedPlaceholder}
+            ></lightning-input>
+          </lightning-layout-item>
+
+          <!-- Bindings -->
+          <lightning-layout-item size="12" class="slds-p-bottom_small">
+            <lightning-textarea
+              label={bindingsField}
+              value={_config.bindings}
+              data-field="bindings"
+              onchange={handleFieldChange}
+              rows="3"
+              placeholder='Example: {"accountName": "ACME Corp", "status": "Active"}'
+              field-level-help="Default bind variables in JSON format (optional)"
+            ></lightning-textarea>
+          </lightning-layout-item>
+
+          <!-- Info Box -->
+          <lightning-layout-item size="12" class="slds-p-top_small">
+            <div class="slds-box slds-theme_info slds-text-body_small">
+              <lightning-icon
+                icon-name="utility:info"
+                size="x-small"
+                class="slds-m-right_xx-small"
+              ></lightning-icon>
+              <strong>Note:</strong> {toolingNote}
+            </div>
+          </lightning-layout-item>
+        </lightning-layout>
+      </div>
+
+      <!-- Modal Footer -->
+      <footer class="slds-modal__footer">
+        <lightning-button
+          label={cancelLabel}
+          onclick={handleCancel}
+          class="slds-m-right_small"
+        ></lightning-button>
+        <lightning-button
+          variant="brand"
+          label={saveButtonLabel}
+          onclick={handleSave}
+          disabled={saveDisabled}
+          icon-name="utility:save"
+        ></lightning-button>
+        <template if:true={isSaving}>
+          <lightning-spinner
+            alternative-text="Saving..."
+            size="small"
+            class="slds-m-left_small"
+          ></lightning-spinner>
+        </template>
+      </footer>
+    </div>
+  </section>
+  <div class="slds-backdrop slds-backdrop_open"></div>
+</template>

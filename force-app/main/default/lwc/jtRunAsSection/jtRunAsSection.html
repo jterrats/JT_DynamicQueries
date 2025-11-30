@@ -1,0 +1,109 @@
+<template>
+  <div class="slds-box slds-box_x-small slds-theme_shade slds-m-bottom_medium">
+    <div class="slds-media slds-media_center slds-m-bottom_small">
+      <div class="slds-media__figure">
+        <lightning-icon
+          icon-name="utility:user"
+          size="small"
+          alternative-text="User"
+        ></lightning-icon>
+      </div>
+      <div class="slds-media__body">
+        <h3 class="slds-text-heading_small">
+          <strong>{title}</strong>
+        </h3>
+      </div>
+    </div>
+
+    <!-- Info Note -->
+    <div class="slds-box slds-box_xx-small slds-theme_info slds-m-bottom_small">
+      <div class="slds-media slds-media_small">
+        <div class="slds-media__figure">
+          <lightning-icon
+            icon-name="utility:info"
+            size="xx-small"
+            variant="info"
+          ></lightning-icon>
+        </div>
+        <div class="slds-media__body">
+          <p class="slds-text-body_regular">{noteText}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Selection -->
+    <c-jt-searchable-combobox
+      label={selectUserLabel}
+      placeholder={selectUserPlaceholder}
+      options={userOptions}
+      icon-name="standard:user"
+      disabled={isLoadingUsers}
+      onselect={handleUserSelect}
+      onclear={handleUserClear}
+    ></c-jt-searchable-combobox>
+
+    <!-- Loading Users -->
+    <template if:true={isLoadingUsers}>
+      <div
+        class="slds-text-body_small slds-text-color_weak slds-m-top_small"
+        role="status"
+        aria-live="polite"
+        aria-label="Loading users"
+      >
+        <lightning-spinner
+          alternative-text={loadingUsersText}
+          size="small"
+        ></lightning-spinner>
+        <span>{loadingUsersText}</span>
+      </div>
+    </template>
+
+    <!-- Action Buttons (when user selected) -->
+    <template if:true={showButtons}>
+      <div
+        class="slds-p-top_x-small slds-grid slds-grid_align-spread"
+        role="group"
+        aria-label="User impersonation actions"
+      >
+        <lightning-button
+          label={clearLabel}
+          title={clearLabel}
+          onclick={handleClearSelection}
+          variant="neutral"
+          icon-name="utility:clear"
+          size="small"
+        ></lightning-button>
+
+        <template if:true={showRunAsTest}>
+          <lightning-button
+            label={executeAsUserLabel}
+            title={executeAsUserLabel}
+            onclick={handleExecuteAsUser}
+            variant="brand"
+            icon-name="utility:shield"
+            disabled={isRunningTest}
+            class="slds-m-left_small"
+          ></lightning-button>
+        </template>
+      </div>
+    </template>
+
+    <!-- Running Test Indicator -->
+    <template if:true={isRunningTest}>
+      <div
+        class="slds-m-top_small slds-align_absolute-center"
+        role="status"
+        aria-live="polite"
+        aria-label="Test execution in progress"
+      >
+        <lightning-spinner
+          alternative-text={executingTestText}
+          size="small"
+        ></lightning-spinner>
+        <div class="slds-text-body_small slds-m-top_x-small">
+          {executingTestText}
+        </div>
+      </div>
+    </template>
+  </div>
+</template>

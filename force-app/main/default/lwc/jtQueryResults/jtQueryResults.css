@@ -1,0 +1,131 @@
+/* Results Container */
+.results-container {
+  margin-top: 1rem;
+  border-top: 2px solid #dddbda;
+  padding-top: 1rem;
+}
+
+/* View Toggle */
+.slds-button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+/* JSON View */
+.json-view {
+  max-height: 600px;
+  overflow: auto;
+}
+
+.json-content {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  margin: 0;
+  padding: 1rem;
+  background-color: #f4f6f9;
+  border-radius: 0.25rem;
+}
+
+@media (min-width: 48rem) {
+  .json-content {
+    font-size: 0.875rem;
+  }
+}
+
+/* CSV View */
+.csv-view {
+  min-height: 300px;
+}
+
+/* Desktop Table */
+.desktop-table {
+  display: none;
+  overflow-x: auto;
+}
+
+@media (min-width: 48rem) {
+  .desktop-table {
+    display: block;
+  }
+}
+
+.desktop-table table {
+  width: 100%;
+}
+
+.desktop-table th,
+.desktop-table td {
+  padding: 0.5rem;
+  text-align: left;
+  border: 1px solid #dddbda;
+}
+
+.desktop-table thead th {
+  background-color: #f3f3f3;
+  font-weight: 700;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.desktop-table tbody tr:hover {
+  background-color: #fafaf9;
+}
+
+/* Mobile Cards */
+.mobile-cards {
+  display: block;
+}
+
+@media (min-width: 48rem) {
+  .mobile-cards {
+    display: none;
+  }
+}
+
+.mobile-cards .slds-card__header {
+  cursor: pointer;
+  user-select: none;
+  padding: 0.75rem;
+}
+
+.mobile-cards .slds-card__header:hover {
+  background-color: #f3f3f3;
+}
+
+.mobile-cards .slds-badge {
+  background-color: #1589ee;
+  color: white;
+  font-weight: 700;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.mobile-cards .slds-card__body {
+  padding: 0.75rem;
+  background-color: #fafaf9;
+}
+
+.mobile-cards .slds-item_detail {
+  display: grid;
+  grid-template-columns: minmax(100px, 40%) 1fr;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #dddbda;
+}
+
+.mobile-cards .slds-item_detail:last-child {
+  border-bottom: none;
+}
+
+.mobile-cards .slds-item_label {
+  font-weight: 700;
+}
+
+.mobile-cards .slds-item_detail dd {
+  word-break: break-word;
+}

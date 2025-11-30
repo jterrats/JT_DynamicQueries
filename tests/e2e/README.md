@@ -28,11 +28,13 @@ Los tests **NO requieren login manual**. Usan la sesión ya autenticada del SF C
 const session = getSFSession(); // sf org display --json
 
 // 2. Inyecta el accessToken directamente
-await page.context().addCookies([{
-    name: 'sid',
-    value: session.accessToken,  // ← Token del CLI
+await page.context().addCookies([
+  {
+    name: "sid",
+    value: session.accessToken, // ← Token del CLI
     domain: salesforceUrl
-}]);
+  }
+]);
 
 // 3. Navega directo a la org (ya autenticado)
 await page.goto(session.instanceUrl);
@@ -51,18 +53,21 @@ await page.goto(session.instanceUrl);
 ## 📋 Pre-requisitos
 
 ### 1. Node.js y npm instalados
+
 ```bash
 node --version  # v18 o superior
 npm --version
 ```
 
 ### 2. Dependencias instaladas
+
 ```bash
 npm install --legacy-peer-deps
 npx playwright install chromium
 ```
 
 ### 3. Sesión activa del SF CLI
+
 ```bash
 # Ver orgs disponibles
 sf org list
@@ -81,26 +86,31 @@ sf org display
 ## 🚀 Ejecutar Tests
 
 ### Todos los tests (headless)
+
 ```bash
 npm run test:e2e
 ```
 
 ### Con UI visible (headed mode)
+
 ```bash
 npm run test:e2e:ui
 ```
 
 ### Test específico
+
 ```bash
 npx playwright test tests/e2e/queryViewer.spec.js
 ```
 
 ### Con debug
+
 ```bash
 npx playwright test --debug
 ```
 
 ### Ver reporte después de ejecución
+
 ```bash
 npx playwright show-report
 ```
@@ -132,40 +142,44 @@ npx playwright show-report
 ## 🔧 Configuración
 
 ### playwright.config.js
+
 ```javascript
 module.exports = {
-    testDir: './tests/e2e',
-    timeout: 60000,
-    retries: 1,
-    workers: 1, // Un worker para evitar conflictos
-    use: {
-        baseURL: 'https://login.salesforce.com',
-        screenshot: 'only-on-failure',
-        video: 'retain-on-failure',
-        trace: 'on-first-retry'
-    }
+  testDir: "./tests/e2e",
+  timeout: 60000,
+  retries: 1,
+  workers: 1, // Un worker para evitar conflictos
+  use: {
+    baseURL: "https://login.salesforce.com",
+    screenshot: "only-on-failure",
+    video: "retain-on-failure",
+    trace: "on-first-retry"
+  }
 };
 ```
 
 ### utils/sfAuth.js
+
 ```javascript
 // Obtiene sesión del SF CLI (NO login manual)
 function getSFSession() {
-    const orgInfo = execSync('sf org display --json');
-    return {
-        instanceUrl: result.instanceUrl,
-        accessToken: result.accessToken,  // ← Token del CLI
-        username: result.username
-    };
+  const orgInfo = execSync("sf org display --json");
+  return {
+    instanceUrl: result.instanceUrl,
+    accessToken: result.accessToken, // ← Token del CLI
+    username: result.username
+  };
 }
 
 // Inyecta sesión directamente
 async function injectSFSession(page, session) {
-    await page.context().addCookies([{
-        name: 'sid',
-        value: session.accessToken,
-        domain: new URL(session.instanceUrl).hostname
-    }]);
+  await page.context().addCookies([
+    {
+      name: "sid",
+      value: session.accessToken,
+      domain: new URL(session.instanceUrl).hostname
+    }
+  ]);
 }
 ```
 
@@ -205,6 +219,7 @@ test-results/
 ```
 
 ### Ver trace (debugging visual):
+
 ```bash
 npx playwright show-trace test-results/test-1.zip
 ```
@@ -214,21 +229,25 @@ npx playwright show-trace test-results/test-1.zip
 ## 🐛 Debugging
 
 ### 1. Modo Debug (paso a paso)
+
 ```bash
 npx playwright test --debug
 ```
 
 ### 2. Inspector de Playwright
+
 ```bash
 PWDEBUG=1 npx playwright test
 ```
 
 ### 3. Console logs
+
 ```bash
 npx playwright test --reporter=line
 ```
 
 ### 4. Ver el browser (headed)
+
 ```bash
 npx playwright test --headed
 ```
@@ -238,6 +257,7 @@ npx playwright test --headed
 ## ⚠️ Troubleshooting
 
 ### Error: "No default org found"
+
 ```bash
 # Solución: Configura una org default
 sf config set target-org myuser@example.com
@@ -245,6 +265,7 @@ sf org display  # Verifica que funciona
 ```
 
 ### Error: "Timeout waiting for selector"
+
 ```bash
 # Causa: La org puede estar lenta o el componente no cargó
 # Solución: Aumenta timeout en playwright.config.js
@@ -252,6 +273,7 @@ timeout: 90000  # 90 segundos
 ```
 
 ### Tests fallan en CI/CD
+
 ```bash
 # Solución: Asegura que SF CLI está instalado y autenticado
 sf org login jwt --client-id $CLIENT_ID \
@@ -261,6 +283,7 @@ sf org login jwt --client-id $CLIENT_ID \
 ```
 
 ### Error: "Cannot find module @playwright/test"
+
 ```bash
 # Solución: Reinstala dependencias
 npm install --legacy-peer-deps
@@ -272,34 +295,39 @@ npx playwright install chromium
 ## 🎓 Mejores Prácticas
 
 ### 1. ✅ Usa la sesión del CLI
+
 ```javascript
 // BIEN: Usa getSFSession()
 const session = getSFSession();
 
 // MAL: Hardcodear credenciales
-const session = { username: 'hardcoded@example.com' };
+const session = { username: "hardcoded@example.com" };
 ```
 
 ### 2. ✅ Un worker para evitar conflictos
+
 ```javascript
 // playwright.config.js
-workers: 1  // Tests corren secuencialmente
+workers: 1; // Tests corren secuencialmente
 ```
 
 ### 3. ✅ Espera específica, no genérica
+
 ```javascript
 // BIEN: Espera específica
-await page.waitForSelector('c-jt-query-viewer');
+await page.waitForSelector("c-jt-query-viewer");
 
 // MAL: Timeout fijo
 await page.waitForTimeout(5000);
 ```
 
 ### 4. ✅ Maneja timeouts gracefully
+
 ```javascript
 // Catch timeout errors
-await page.waitForSelector('.optional-element', { timeout: 3000 })
-          .catch(() => console.log('Optional element not found'));
+await page
+  .waitForSelector(".optional-element", { timeout: 3000 })
+  .catch(() => console.log("Optional element not found"));
 ```
 
 ---
@@ -307,11 +335,13 @@ await page.waitForSelector('.optional-element', { timeout: 3000 })
 ## 📚 Recursos
 
 ### Documentación
+
 - [Playwright Docs](https://playwright.dev)
 - [SF CLI Reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/)
 - [E2E Test Scenarios](./E2E_TEST_SCENARIOS.md)
 
 ### Comandos útiles
+
 ```bash
 # Ver ayuda de Playwright
 npx playwright --help

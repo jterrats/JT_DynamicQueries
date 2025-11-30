@@ -1,0 +1,199 @@
+<template>
+  <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+    <div class="slds-modal__container">
+      <!-- Modal Header -->
+      <header class="slds-modal__header">
+        <button
+          class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+          title="Close"
+          onclick={handleClose}
+        >
+          <lightning-icon
+            icon-name="utility:close"
+            alternative-text="close"
+            size="small"
+          ></lightning-icon>
+          <span class="slds-assistive-text">Close</span>
+        </button>
+        <h2 class="slds-text-heading_medium">{title}</h2>
+        <p class="slds-m-top_x-small slds-text-body_small slds-text-color_weak">
+          {usageSummary}
+        </p>
+      </header>
+
+      <!-- Modal Body -->
+      <div
+        class="slds-modal__content slds-p-around_medium"
+        style="min-height: 200px"
+      >
+        <!-- Loading State -->
+        <template if:true={isLoading}>
+          <div class="slds-align_absolute-center slds-m-vertical_xx-large">
+            <lightning-spinner
+              alternative-text="Searching..."
+              size="medium"
+            ></lightning-spinner>
+            <p class="slds-m-top_small slds-text-body_small">{searchingText}</p>
+          </div>
+        </template>
+
+        <!-- Results Table -->
+        <template if:false={isLoading}>
+          <!-- Service Status (Partial Results Warning) -->
+          <template if:true={hasPartialResults}>
+            <div
+              class="slds-notify slds-notify_alert slds-alert_warning slds-m-bottom_medium"
+            >
+              <div class="slds-media slds-media_center">
+                <div class="slds-media__figure">
+                  <lightning-icon
+                    icon-name="utility:warning"
+                    size="small"
+                    variant="warning"
+                  ></lightning-icon>
+                </div>
+                <div class="slds-media__body">
+                  <h4 class="slds-text-heading_small slds-m-bottom_small">
+                    <strong>⚠️ Partial Results</strong>
+                  </h4>
+                  <p class="slds-text-body_small slds-m-bottom_x-small">
+                    Some searches failed. Showing available results only.
+                  </p>
+
+                  <!-- Apex Service Status -->
+                  <div
+                    class="slds-grid slds-grid_vertical-align-center slds-m-top_x-small"
+                  >
+                    <lightning-icon
+                      icon-name={apexStatusIcon}
+                      size="xx-small"
+                      variant={apexStatusVariant}
+                      class="slds-m-right_xx-small"
+                    ></lightning-icon>
+                    <span class="slds-text-body_small">
+                      <strong>Apex Classes:</strong>
+                      <template if:true={apexSuccess}>
+                        <span class="slds-text-color_success">
+                          ✓ Available</span
+                        >
+                      </template>
+                      <template if:false={apexSuccess}>
+                        <span class="slds-text-color_error">
+                          ✗ Failed - {apexError}</span
+                        >
+                      </template>
+                    </span>
+                  </div>
+
+                  <!-- Flow Service Status -->
+                  <div
+                    class="slds-grid slds-grid_vertical-align-center slds-m-top_xx-small"
+                  >
+                    <lightning-icon
+                      icon-name={flowStatusIcon}
+                      size="xx-small"
+                      variant={flowStatusVariant}
+                      class="slds-m-right_xx-small"
+                    ></lightning-icon>
+                    <span class="slds-text-body_small">
+                      <strong>Flows (Tooling API):</strong>
+                      <template if:true={flowSuccess}>
+                        <span class="slds-text-color_success">
+                          ✓ Available</span
+                        >
+                      </template>
+                      <template if:false={flowSuccess}>
+                        <span class="slds-text-color_error">
+                          ✗ Failed - {flowError}</span
+                        >
+                      </template>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </template>
+
+          <template if:true={hasUsage}>
+            <table
+              class="slds-table slds-table_cell-buffer slds-table_bordered"
+            >
+              <thead>
+                <tr class="slds-line-height_reset">
+                  <th class="" scope="col">
+                    <div class="slds-truncate" title={typeColumn}>
+                      {typeColumn}
+                    </div>
+                  </th>
+                  <th class="" scope="col">
+                    <div class="slds-truncate" title={nameColumn}>
+                      {nameColumn}
+                    </div>
+                  </th>
+                  <th class="" scope="col">
+                    <div class="slds-truncate" title={lineColumn}>
+                      {lineColumn}
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <template for:each={_usageData} for:item="usage">
+                  <tr key={usage.id} class="slds-hint-parent">
+                    <td data-label="Type">
+                      <div class="slds-truncate">
+                        <lightning-icon
+                          icon-name={usage.icon}
+                          size="x-small"
+                          class="slds-m-right_xx-small"
+                        ></lightning-icon>
+                        {usage.type}
+                      </div>
+                    </td>
+                    <td data-label="Name">
+                      <div class="slds-truncate" title={usage.name}>
+                        {usage.name}
+                      </div>
+                    </td>
+                    <td data-label="Line">
+                      <div class="slds-truncate" title={usage.lineNumber}>
+                        {usage.lineNumber}
+                      </div>
+                    </td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </template>
+
+          <!-- No Results -->
+          <template if:false={hasUsage}>
+            <div class="slds-align_absolute-center slds-m-vertical_xx-large">
+              <lightning-icon
+                icon-name="utility:search"
+                size="large"
+                class="slds-m-bottom_small"
+              ></lightning-icon>
+              <p class="slds-text-heading_small">{noUsageFoundText}</p>
+              <p
+                class="slds-text-body_small slds-text-color_weak slds-m-top_x-small"
+              >
+                {noUsageMessage}
+              </p>
+            </div>
+          </template>
+        </template>
+      </div>
+
+      <!-- Modal Footer -->
+      <footer class="slds-modal__footer">
+        <lightning-button
+          label={closeLabel}
+          variant="brand"
+          onclick={handleClose}
+        ></lightning-button>
+      </footer>
+    </div>
+  </section>
+  <div class="slds-backdrop slds-backdrop_open"></div>
+</template>

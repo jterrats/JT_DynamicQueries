@@ -1,0 +1,17 @@
+/* Config Modal Styles */
+
+.modal-close-button {
+  background-color: white !important;
+}
+
+.query-preview-text {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: "Courier New", monospace;
+  font-size: 0.875rem;
+  color: #080707;
+  margin: 0;
+  padding: 0.5rem;
+  background: #f3f3f3;
+  border-radius: 0.25rem;
+}

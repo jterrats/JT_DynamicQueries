@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fields>
+        <name>JT_Action__c</name>
+        <label>Aktion</label>
+    </fields>
+    <fields>
+        <name>JT_ChangedBy__c</name>
+        <label>Geändert Von</label>
+    </fields>
+    <fields>
+        <name>JT_ChangedByUsername__c</name>
+        <label>Benutzername</label>
+    </fields>
+    <fields>
+        <name>JT_IPAddress__c</name>
+        <label>IP-Adresse</label>
+    </fields>
+    <fields>
+        <name>JT_OrgType__c</name>
+        <label>Organisationstyp</label>
+    </fields>
+    <fields>
+        <name>JT_Timestamp__c</name>
+        <label>Zeitstempel</label>
+    </fields>
+    <caseValues>
+        <caseType>Nominative</caseType>
+        <plural>false</plural>
+        <value>Einstellungs-Audit-Protokoll</value>
+    </caseValues>
+    <caseValues>
+        <caseType>Nominative</caseType>
+        <plural>true</plural>
+        <value>Einstellungs-Audit-Protokolle</value>
+    </caseValues>
+    <gender>Neuter</gender>
+    <nameFieldLabel>Protokollname</nameFieldLabel>
+</CustomObjectTranslation>

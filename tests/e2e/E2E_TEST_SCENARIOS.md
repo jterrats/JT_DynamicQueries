@@ -14,16 +14,19 @@
 ### 1. **Component Loading & UI** (3 tests)
 
 #### 1.1 `should load the Query Viewer component`
+
 - ✅ Verifies LWC loads correctly
 - ✅ Validates card title is visible
 - ✅ Confirms component structure
 
 #### 1.2 `should load and display query configurations`
+
 - ✅ Combobox loads with options
 - ✅ Configurations retrieved from backend
 - ✅ At least one config available
 
 #### 1.3 `should navigate between tabs in the app`
+
 - ✅ Query Viewer tab is visible
 - ✅ Can navigate to Home tab
 - ✅ Can navigate back to Query Viewer
@@ -34,12 +37,14 @@
 ### 2. **Query Execution** (3 tests)
 
 #### 2.1 `should select a configuration and display query preview`
+
 - ✅ Selects first configuration
 - ✅ Query preview displays
 - ✅ Contains valid SELECT statement
 - ✅ Shows preview text in console
 
 #### 2.2 `should execute query and display results`
+
 - ✅ Executes query successfully
 - ✅ Shows loading spinner
 - ✅ Displays datatable OR "No records found"
@@ -47,6 +52,7 @@
 - ✅ Handles empty results gracefully
 
 #### 2.3 `should handle query with dynamic parameters`
+
 - ✅ Detects parameter inputs
 - ✅ Fills parameters with test data
 - ✅ Executes query with parameters
@@ -58,6 +64,7 @@
 ### 3. **Error Handling** (1 test)
 
 #### 3.1 `should display error for invalid configuration`
+
 - ✅ Executes without selecting config
 - ✅ Shows error toast
 - ✅ Validates error handling
@@ -67,6 +74,7 @@
 ### 4. **Run As User Feature** (3 tests)
 
 #### 4.1 `should show Run As User section for authorized users`
+
 - ✅ Detects user permissions
 - ✅ Shows Run As container if authorized
 - ✅ Warning message about USER_MODE present
@@ -74,6 +82,7 @@
 - ✅ Skips gracefully if no permissions
 
 #### 4.2 `should search and select a Run As user if authorized`
+
 - ✅ Validates permissions first
 - ✅ Types in search field
 - ✅ Waits for debounce (1.5s)
@@ -81,6 +90,7 @@
 - ✅ Auto-skips without permissions
 
 #### 4.3 `should execute query with Run As user if selected`
+
 - ✅ Validates permissions
 - ✅ Selects configuration
 - ✅ Executes in Run As context
@@ -92,6 +102,7 @@
 ### 5. **Create Configuration** (5 tests) 🆕
 
 #### 5.1 `should enforce production safeguard - hide Create Configuration in Production` ⭐ NEW
+
 - ✅ **Detects org type from URL** (sandbox URLs contain "sandbox")
 - ✅ **Simple & fast detection** (no navigation needed)
 - ✅ **IN PRODUCTION: Validates button is HIDDEN**
@@ -101,6 +112,7 @@
 - ✅ **Enforces production safeguard feature**
 
 #### 5.2 `should open and close Create Configuration modal`
+
 - ✅ Skips if Production (auto-detect)
 - ✅ Opens modal on button click
 - ✅ Modal title is correct
@@ -108,6 +120,7 @@
 - ✅ Cancel button closes modal
 
 #### 5.3 `should validate required fields in Create Configuration`
+
 - ✅ Skips if Production
 - ✅ Opens modal
 - ✅ Tries to save empty form
@@ -115,6 +128,7 @@
 - ✅ Toast or field error appears
 
 #### 5.4 `should create a new configuration successfully`
+
 - ✅ Skips if Production
 - ✅ Opens modal
 - ✅ Fills all fields with valid data
@@ -126,6 +140,7 @@
 - ✅ **Verifies refreshApex() works** (new config appears in list)
 
 #### 5.5 `should handle invalid SOQL in Create Configuration`
+
 - ✅ Skips if Production
 - ✅ Opens modal
 - ✅ Fills with invalid SOQL
@@ -137,35 +152,37 @@
 
 ## 🎯 Feature Coverage Matrix
 
-| Feature | Tests | Coverage | Production Safe |
-|---------|-------|----------|-----------------|
-| **UI Loading** | 3 | ✅ 100% | N/A |
-| **Query Execution** | 3 | ✅ 100% | ✅ Yes |
-| **Error Handling** | 1 | ✅ 100% | ✅ Yes |
-| **Run As User** | 3 | ✅ 100% | ✅ Yes (permission-gated) |
-| **Create Config** | 5 | ✅ 100% | ✅ **Yes (environment-gated)** |
-| **Production Safeguard** | 1 | ✅ 100% | ✅ **Explicitly tested** |
+| Feature                  | Tests | Coverage | Production Safe                |
+| ------------------------ | ----- | -------- | ------------------------------ |
+| **UI Loading**           | 3     | ✅ 100%  | N/A                            |
+| **Query Execution**      | 3     | ✅ 100%  | ✅ Yes                         |
+| **Error Handling**       | 1     | ✅ 100%  | ✅ Yes                         |
+| **Run As User**          | 3     | ✅ 100%  | ✅ Yes (permission-gated)      |
+| **Create Config**        | 5     | ✅ 100%  | ✅ **Yes (environment-gated)** |
+| **Production Safeguard** | 1     | ✅ 100%  | ✅ **Explicitly tested**       |
 
 ---
 
 ## 🔒 Security & Safeguard Tests
 
 ### Production Safeguard ⭐
+
 ```javascript
 // Simple & fast detection from URL
-const isProduction = !session.instanceUrl.toLowerCase().includes('sandbox');
+const isProduction = !session.instanceUrl.toLowerCase().includes("sandbox");
 
 // Sandbox URLs: https://domain--name.sandbox.my.salesforce.com
 // Production URLs: https://domain.my.salesforce.com
 
 // Test explicitly validates that Create Configuration is hidden in Production
 if (isProduction) {
-    expect(isButtonVisible).toBeFalsy(); // MUST be false
-    expect(buttonCount).toBe(0);         // MUST not exist in DOM
+  expect(isButtonVisible).toBeFalsy(); // MUST be false
+  expect(buttonCount).toBe(0); // MUST not exist in DOM
 }
 ```
 
 ### Permission-Based Features
+
 - Run As User: Only shown if user has permissions
 - All features respect org security settings
 
@@ -174,21 +191,25 @@ if (isProduction) {
 ## 🚀 Running the Tests
 
 ### All Tests
+
 ```bash
 npm run test:e2e
 ```
 
 ### Interactive Mode (UI)
+
 ```bash
 npm run test:e2e:ui
 ```
 
 ### Specific Test File
+
 ```bash
 npx playwright test queryViewer.spec.js
 ```
 
 ### With Debug
+
 ```bash
 npx playwright test --debug
 ```
@@ -198,6 +219,7 @@ npx playwright test --debug
 ## 📊 Expected Results
 
 ### Sandbox/Scratch Org
+
 ```
 Running 15 tests using 1 worker
 
@@ -221,6 +243,7 @@ Running 15 tests using 1 worker
 ```
 
 ### Production Org
+
 ```
 Running 15 tests using 1 worker
 
@@ -248,23 +271,28 @@ Running 15 tests using 1 worker
 ## 🎓 Test Design Principles
 
 ### 1. **Environment Awareness**
+
 - Tests adapt to Production vs Sandbox
 - Auto-skip features not available in current environment
 
 ### 2. **Permission Awareness**
+
 - Tests detect user permissions
 - Gracefully skip unauthorized features
 
 ### 3. **Data Awareness**
+
 - Handle cases with/without data
 - Don't assume specific records exist
 
 ### 4. **Robust Waiting**
+
 - Use proper `waitForSelector` with timeouts
 - Add strategic waits for async operations
 - Don't rely on fixed delays alone
 
 ### 5. **Clear Logging**
+
 - Console logs explain what's happening
 - Easy to debug failures
 - Shows environment detection results
@@ -274,23 +302,26 @@ Running 15 tests using 1 worker
 ## 💡 Key Testing Features
 
 ### ✅ No Manual Login Required
+
 ```javascript
 session = getSFSession(); // Uses active SF CLI session
 await injectSFSession(page, session);
 ```
 
 ### ✅ Smart App Navigation
+
 ```javascript
 const currentApp = await getCurrentApp(page);
 if (!currentApp.includes(TARGET_APP_NAME)) {
-    await navigateToApp(page, TARGET_APP_NAME);
+  await navigateToApp(page, TARGET_APP_NAME);
 }
 ```
 
 ### ✅ Environment Detection (Simple & Fast)
+
 ```javascript
 // NEW: Detects Production vs Sandbox from URL
-const isProduction = !session.instanceUrl.toLowerCase().includes('sandbox');
+const isProduction = !session.instanceUrl.toLowerCase().includes("sandbox");
 
 // Examples:
 // Sandbox: https://mycompany--dev.sandbox.my.salesforce.com
@@ -298,11 +329,12 @@ const isProduction = !session.instanceUrl.toLowerCase().includes('sandbox');
 ```
 
 ### ✅ Adaptive Assertions
+
 ```javascript
 if (isProduction) {
-    expect(createButton).not.toBeVisible(); // Production
+  expect(createButton).not.toBeVisible(); // Production
 } else {
-    expect(createButton).toBeVisible();     // Sandbox
+  expect(createButton).toBeVisible(); // Sandbox
 }
 ```
 
@@ -311,21 +343,25 @@ if (isProduction) {
 ## 🐛 Debugging Failed Tests
 
 ### View Last Run Report
+
 ```bash
 npx playwright show-report
 ```
 
 ### Run with Screenshots
+
 ```bash
 npx playwright test --screenshot=on
 ```
 
 ### Run with Video
+
 ```bash
 npx playwright test --video=on
 ```
 
 ### Headed Mode (see browser)
+
 ```bash
 npx playwright test --headed
 ```
@@ -335,19 +371,22 @@ npx playwright test --headed
 ## 📝 Test Maintenance
 
 ### Adding New Tests
+
 1. Add test to `queryViewer.spec.js`
 2. Update this documentation
 3. Run locally to verify
 4. Commit changes
 
 ### Updating Selectors
+
 If UI changes, update locators:
+
 ```javascript
 // Before
-page.locator('lightning-button[label="Execute"]')
+page.locator('lightning-button[label="Execute"]');
 
 // After (if label changes)
-page.locator('lightning-button[label="Run Query"]')
+page.locator('lightning-button[label="Run Query"]');
 ```
 
 ---
@@ -355,6 +394,7 @@ page.locator('lightning-button[label="Run Query"]')
 ## ✅ AppExchange Compliance
 
 ### E2E Testing Requirements
+
 - ✅ All core features tested
 - ✅ Error handling validated
 - ✅ Permission checks verified
@@ -363,6 +403,7 @@ page.locator('lightning-button[label="Run Query"]')
 - ✅ Edge cases handled
 
 ### Security Testing
+
 - ✅ Production safeguards enforced
 - ✅ Permission-based feature access
 - ✅ Invalid input handling
@@ -373,6 +414,7 @@ page.locator('lightning-button[label="Run Query"]')
 ## 🎉 Summary
 
 **15 comprehensive E2E tests** covering:
+
 - ✅ UI loading and navigation
 - ✅ Query execution (with/without parameters)
 - ✅ Error handling
@@ -388,4 +430,3 @@ page.locator('lightning-button[label="Run Query"]')
 **Test Framework**: Playwright v1.40+
 **Status**: ✅ Complete & Production Ready
 **Production Safe**: ✅ **Explicitly Validated**
-

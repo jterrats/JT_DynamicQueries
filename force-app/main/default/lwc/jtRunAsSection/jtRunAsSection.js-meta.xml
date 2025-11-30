@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <isExposed>false</isExposed>
+    <masterLabel>Run As Section</masterLabel>
+    <description
+  >Complete section for Run As User functionality. Phase 4 refactor.</description>
+</LightningComponentBundle>

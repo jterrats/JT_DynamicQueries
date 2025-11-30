@@ -4,17 +4,18 @@
  * @date 2025-11-29
  */
 
-const LOCALE = Intl.DateTimeFormat().resolvedOptions().locale || 'en-US';
-const LANG = LOCALE.split('-')[0];
+const LOCALE = Intl.DateTimeFormat().resolvedOptions().locale || "en-US";
+const LANG = LOCALE.split("-")[0];
 
 const DOCS = {
-    'en': {
-        title: 'Dynamic Query Viewer - Documentation',
-        tableOfContents: 'Table of Contents',
-        overview: {
-            title: 'Overview',
-            description: 'Dynamic Query Viewer is a powerful Salesforce Lightning component that enables users to execute predefined SOQL queries with dynamic parameters and advanced security features.',
-            content: `
+  en: {
+    title: "Dynamic Query Viewer - Documentation",
+    tableOfContents: "Table of Contents",
+    overview: {
+      title: "Overview",
+      description:
+        "Dynamic Query Viewer is a powerful Salesforce Lightning component that enables users to execute predefined SOQL queries with dynamic parameters and advanced security features.",
+      content: `
                 <p><strong>Key Benefits:</strong></p>
                 <ul>
                     <li>Execute predefined queries securely with USER_MODE enforcement</li>
@@ -25,10 +26,10 @@ const DOCS = {
                     <li>Responsive design for mobile and desktop</li>
                 </ul>
             `
-        },
-        features: {
-            title: 'Features',
-            content: `
+    },
+    features: {
+      title: "Features",
+      content: `
                 <h3>1. Query Execution</h3>
                 <ul>
                     <li><strong>Predefined Configurations:</strong> Select from custom metadata-based query configurations</li>
@@ -61,10 +62,10 @@ const DOCS = {
                     <li>Fallback to English for unsupported locales</li>
                 </ul>
             `
-        },
-        usage: {
-            title: 'How to Use',
-            content: `
+    },
+    usage: {
+      title: "How to Use",
+      content: `
                 <h3>Basic Query Execution</h3>
                 <ol>
                     <li><strong>Select Configuration:</strong> Choose a predefined query from the dropdown</li>
@@ -104,10 +105,10 @@ const DOCS = {
                     <li><strong>Save:</strong> Configuration is deployed via Tooling API</li>
                 </ol>
             `
-        },
-        configuration: {
-            title: 'Configuration',
-            content: `
+    },
+    configuration: {
+      title: "Configuration",
+      content: `
                 <h3>Custom Metadata Type: JT_DynamicQueryConfiguration__mdt</h3>
                 <p>Query configurations are stored as Custom Metadata records with the following fields:</p>
 
@@ -167,10 +168,10 @@ Object Name: Contact
                     <p><strong>Best Practice:</strong> Use descriptive labels and developer names for easy identification.</p>
                 </div>
             `
-        },
-        runAs: {
-            title: 'Run As User Feature',
-            content: `
+    },
+    runAs: {
+      title: "Run As User Feature",
+      content: `
                 <h3>Understanding Run As</h3>
                 <p>The Run As feature allows administrators to test queries in the context of other users, validating:</p>
                 <ul>
@@ -211,10 +212,10 @@ Object Name: Contact
                     <p><strong>Permissions Required:</strong> User must have "Modify All Data" OR "View All Data" permission to use Run As.</p>
                 </div>
             `
-        },
-        metadata: {
-            title: 'Metadata Creation',
-            content: `
+    },
+    metadata: {
+      title: "Metadata Creation",
+      content: `
                 <h3>Creating Configurations via UI</h3>
                 <p>In sandbox and scratch orgs, you can create and edit configurations directly from the UI.</p>
 
@@ -255,10 +256,10 @@ POST /services/data/v65.0/tooling/sobjects/CustomMetadata
                     <p><strong>Refresh Behavior:</strong> After creating a configuration, the dropdown automatically refreshes using refreshApex().</p>
                 </div>
             `
-        },
-        security: {
-            title: 'Security & Permissions',
-            content: `
+    },
+    security: {
+      title: "Security & Permissions",
+      content: `
                 <h3>Permission Set: JT_Dynamic_Queries</h3>
                 <p>Users need the JT_Dynamic_Queries permission set to access the application.</p>
 
@@ -299,10 +300,10 @@ public static JT_DataSelector getInstance() {
                     <li><strong>ApexDoc:</strong> All public methods documented</li>
                 </ul>
             `
-        },
-        troubleshooting: {
-            title: 'Troubleshooting',
-            content: `
+    },
+    troubleshooting: {
+      title: "Troubleshooting",
+      content: `
                 <h3>Common Issues</h3>
 
                 <h4>1. "No configurations found"</h4>
@@ -347,10 +348,10 @@ public static JT_DataSelector getInstance() {
                     <p><strong>Debug Tip:</strong> Check the browser console (F12) for JavaScript errors and review Salesforce debug logs for Apex errors.</p>
                 </div>
             `
-        },
-        api: {
-            title: 'API Reference',
-            content: `
+    },
+    api: {
+      title: "API Reference",
+      content: `
                 <h3>Apex Classes</h3>
 
                 <h4>JT_DataSelector</h4>
@@ -502,20 +503,21 @@ public static QueryValidationResult validateQuery(String query)
                     </tbody>
                 </table>
             `
-        },
-        footer: {
-            version: 'Version 1.0.0 | API v65.0',
-            author: 'Created by Jaime Terrats',
-            license: 'Open Source | MIT License'
-        }
     },
-    'es': {
-        title: 'Visor de Consultas Dinámicas - Documentación',
-        tableOfContents: 'Tabla de Contenidos',
-        overview: {
-            title: 'Descripción General',
-            description: 'El Visor de Consultas Dinámicas es un potente componente Lightning de Salesforce que permite a los usuarios ejecutar consultas SOQL predefinidas con parámetros dinámicos y características avanzadas de seguridad.',
-            content: `
+    footer: {
+      version: "Version 1.0.0 | API v65.0",
+      author: "Created by Jaime Terrats",
+      license: "Open Source | MIT License"
+    }
+  },
+  es: {
+    title: "Visor de Consultas Dinámicas - Documentación",
+    tableOfContents: "Tabla de Contenidos",
+    overview: {
+      title: "Descripción General",
+      description:
+        "El Visor de Consultas Dinámicas es un potente componente Lightning de Salesforce que permite a los usuarios ejecutar consultas SOQL predefinidas con parámetros dinámicos y características avanzadas de seguridad.",
+      content: `
                 <p><strong>Beneficios Clave:</strong></p>
                 <ul>
                     <li>Ejecuta consultas predefinidas de forma segura con aplicación USER_MODE</li>
@@ -526,10 +528,10 @@ public static QueryValidationResult validateQuery(String query)
                     <li>Diseño responsivo para móvil y escritorio</li>
                 </ul>
             `
-        },
-        features: {
-            title: 'Características',
-            content: `
+    },
+    features: {
+      title: "Características",
+      content: `
                 <h3>1. Ejecución de Consultas</h3>
                 <ul>
                     <li><strong>Configuraciones Predefinidas:</strong> Selecciona de configuraciones de consulta basadas en metadatos personalizados</li>
@@ -562,10 +564,10 @@ public static QueryValidationResult validateQuery(String query)
                     <li>Fallback a Inglés para locales no soportados</li>
                 </ul>
             `
-        },
-        usage: {
-            title: 'Cómo Usar',
-            content: `
+    },
+    usage: {
+      title: "Cómo Usar",
+      content: `
                 <h3>Ejecución Básica de Consultas</h3>
                 <ol>
                     <li><strong>Seleccionar Configuración:</strong> Elige una consulta predefinida del dropdown</li>
@@ -605,10 +607,10 @@ public static QueryValidationResult validateQuery(String query)
                     <li><strong>Guardar:</strong> La configuración se despliega vía Tooling API</li>
                 </ol>
             `
-        },
-        configuration: {
-            title: 'Configuración',
-            content: `
+    },
+    configuration: {
+      title: "Configuración",
+      content: `
                 <h3>Tipo de Metadato Personalizado: JT_DynamicQueryConfiguration__mdt</h3>
                 <p>Las configuraciones de consulta se almacenan como registros de Metadatos Personalizados con los siguientes campos:</p>
 
@@ -668,10 +670,10 @@ Nombre del Objeto: Contact
                     <p><strong>Mejor Práctica:</strong> Usa etiquetas y nombres de desarrollador descriptivos para fácil identificación.</p>
                 </div>
             `
-        },
-        runAs: {
-            title: 'Función Ejecutar Como Usuario',
-            content: `
+    },
+    runAs: {
+      title: "Función Ejecutar Como Usuario",
+      content: `
                 <h3>Entendiendo Run As</h3>
                 <p>La función Run As permite a los administradores probar consultas en el contexto de otros usuarios, validando:</p>
                 <ul>
@@ -712,10 +714,10 @@ Nombre del Objeto: Contact
                     <p><strong>Permisos Requeridos:</strong> El usuario debe tener permiso "Modify All Data" O "View All Data" para usar Run As.</p>
                 </div>
             `
-        },
-        metadata: {
-            title: 'Creación de Metadatos',
-            content: `
+    },
+    metadata: {
+      title: "Creación de Metadatos",
+      content: `
                 <h3>Creando Configuraciones vía UI</h3>
                 <p>En orgs sandbox y scratch, puedes crear y editar configuraciones directamente desde la UI.</p>
 
@@ -756,10 +758,10 @@ POST /services/data/v65.0/tooling/sobjects/CustomMetadata
                     <p><strong>Comportamiento de Actualización:</strong> Después de crear una configuración, el dropdown se actualiza automáticamente usando refreshApex().</p>
                 </div>
             `
-        },
-        security: {
-            title: 'Seguridad y Permisos',
-            content: `
+    },
+    security: {
+      title: "Seguridad y Permisos",
+      content: `
                 <h3>Conjunto de Permisos: JT_Dynamic_Queries</h3>
                 <p>Los usuarios necesitan el conjunto de permisos JT_Dynamic_Queries para acceder a la aplicación.</p>
 
@@ -800,10 +802,10 @@ public static JT_DataSelector getInstance() {
                     <li><strong>ApexDoc:</strong> Todos los métodos públicos documentados</li>
                 </ul>
             `
-        },
-        troubleshooting: {
-            title: 'Solución de Problemas',
-            content: `
+    },
+    troubleshooting: {
+      title: "Solución de Problemas",
+      content: `
                 <h3>Problemas Comunes</h3>
 
                 <h4>1. "No se encontraron configuraciones"</h4>
@@ -848,10 +850,10 @@ public static JT_DataSelector getInstance() {
                     <p><strong>Consejo de Depuración:</strong> Revisa la consola del navegador (F12) para errores de JavaScript y revisa los logs de depuración de Salesforce para errores de Apex.</p>
                 </div>
             `
-        },
-        api: {
-            title: 'Referencia API',
-            content: `
+    },
+    api: {
+      title: "Referencia API",
+      content: `
                 <h3>Clases Apex</h3>
 
                 <h4>JT_DataSelector</h4>
@@ -874,63 +876,64 @@ JT_DynamicQueryConfiguration__mdt config = selector.getConfig('ConfigName');
 
                 <p><strong>Para más detalles, consulta la sección API en la versión en inglés.</strong></p>
             `
-        },
-        footer: {
-            version: 'Versión 1.0.0 | API v65.0',
-            author: 'Creado por Jaime Terrats',
-            license: 'Código Abierto | Licencia MIT'
-        }
+    },
+    footer: {
+      version: "Versión 1.0.0 | API v65.0",
+      author: "Creado por Jaime Terrats",
+      license: "Código Abierto | Licencia MIT"
     }
+  }
 };
 
 // Add French and German (abbreviated for space - similar structure)
-DOCS['fr'] = {
-    title: 'Visualiseur de Requêtes Dynamiques - Documentation',
-    tableOfContents: 'Table des Matières',
-    overview: {
-        title: 'Aperçu',
-        description: 'Le Visualiseur de Requêtes Dynamiques est un composant Salesforce Lightning puissant qui permet aux utilisateurs d\'exécuter des requêtes SOQL prédéfinies avec des paramètres dynamiques et des fonctionnalités de sécurité avancées.',
-        content: DOCS['en'].overview.content // Use English content for brevity
-    },
-    features: DOCS['en'].features,
-    usage: DOCS['en'].usage,
-    configuration: DOCS['en'].configuration,
-    runAs: DOCS['en'].runAs,
-    metadata: DOCS['en'].metadata,
-    security: DOCS['en'].security,
-    troubleshooting: DOCS['en'].troubleshooting,
-    api: DOCS['en'].api,
-    footer: {
-        version: 'Version 1.0.0 | API v65.0',
-        author: 'Créé par Jaime Terrats',
-        license: 'Open Source | Licence MIT'
-    }
+DOCS["fr"] = {
+  title: "Visualiseur de Requêtes Dynamiques - Documentation",
+  tableOfContents: "Table des Matières",
+  overview: {
+    title: "Aperçu",
+    description:
+      "Le Visualiseur de Requêtes Dynamiques est un composant Salesforce Lightning puissant qui permet aux utilisateurs d'exécuter des requêtes SOQL prédéfinies avec des paramètres dynamiques et des fonctionnalités de sécurité avancées.",
+    content: DOCS["en"].overview.content // Use English content for brevity
+  },
+  features: DOCS["en"].features,
+  usage: DOCS["en"].usage,
+  configuration: DOCS["en"].configuration,
+  runAs: DOCS["en"].runAs,
+  metadata: DOCS["en"].metadata,
+  security: DOCS["en"].security,
+  troubleshooting: DOCS["en"].troubleshooting,
+  api: DOCS["en"].api,
+  footer: {
+    version: "Version 1.0.0 | API v65.0",
+    author: "Créé par Jaime Terrats",
+    license: "Open Source | Licence MIT"
+  }
 };
 
-DOCS['de'] = {
-    title: 'Dynamischer Abfrage-Viewer - Dokumentation',
-    tableOfContents: 'Inhaltsverzeichnis',
-    overview: {
-        title: 'Überblick',
-        description: 'Der Dynamische Abfrage-Viewer ist eine leistungsstarke Salesforce Lightning-Komponente, die es Benutzern ermöglicht, vordefinierte SOQL-Abfragen mit dynamischen Parametern und erweiterten Sicherheitsfunktionen auszuführen.',
-        content: DOCS['en'].overview.content
-    },
-    features: DOCS['en'].features,
-    usage: DOCS['en'].usage,
-    configuration: DOCS['en'].configuration,
-    runAs: DOCS['en'].runAs,
-    metadata: DOCS['en'].metadata,
-    security: DOCS['en'].security,
-    troubleshooting: DOCS['en'].troubleshooting,
-    api: DOCS['en'].api,
-    footer: {
-        version: 'Version 1.0.0 | API v65.0',
-        author: 'Erstellt von Jaime Terrats',
-        license: 'Open Source | MIT-Lizenz'
-    }
+DOCS["de"] = {
+  title: "Dynamischer Abfrage-Viewer - Dokumentation",
+  tableOfContents: "Inhaltsverzeichnis",
+  overview: {
+    title: "Überblick",
+    description:
+      "Der Dynamische Abfrage-Viewer ist eine leistungsstarke Salesforce Lightning-Komponente, die es Benutzern ermöglicht, vordefinierte SOQL-Abfragen mit dynamischen Parametern und erweiterten Sicherheitsfunktionen auszuführen.",
+    content: DOCS["en"].overview.content
+  },
+  features: DOCS["en"].features,
+  usage: DOCS["en"].usage,
+  configuration: DOCS["en"].configuration,
+  runAs: DOCS["en"].runAs,
+  metadata: DOCS["en"].metadata,
+  security: DOCS["en"].security,
+  troubleshooting: DOCS["en"].troubleshooting,
+  api: DOCS["en"].api,
+  footer: {
+    version: "Version 1.0.0 | API v65.0",
+    author: "Erstellt von Jaime Terrats",
+    license: "Open Source | MIT-Lizenz"
+  }
 };
 
 export function getDocumentation() {
-    return DOCS[LANG] || DOCS['en'];
+  return DOCS[LANG] || DOCS["en"];
 }
-

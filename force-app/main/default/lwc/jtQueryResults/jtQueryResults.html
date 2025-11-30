@@ -1,0 +1,202 @@
+<template>
+  <div class="results-container">
+    <!-- Header with View Toggle -->
+    <div class="slds-grid slds-grid_align-spread slds-p-bottom_small">
+      <div class="slds-text-heading_small">
+        Results ({recordCount} {recordCountLabel}):
+      </div>
+      <lightning-button-group>
+        <lightning-button
+          label="Table"
+          icon-name="utility:table"
+          variant={isTableView}
+          onclick={handleViewChange}
+          data-view="table"
+          title="View as Table"
+        ></lightning-button>
+        <lightning-button
+          label="JSON"
+          icon-name="utility:file"
+          variant={isJsonView}
+          onclick={handleViewChange}
+          data-view="json"
+          title="View as JSON (LLM-friendly)"
+        ></lightning-button>
+        <lightning-button
+          label="CSV"
+          icon-name="utility:download"
+          variant={isCsvView}
+          onclick={handleViewChange}
+          data-view="csv"
+          title="Download as CSV"
+        ></lightning-button>
+      </lightning-button-group>
+    </div>
+
+    <!-- Table View -->
+    <template if:true={viewMode.table}>
+      <!-- Desktop Table -->
+      <div class="desktop-table">
+        <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+          <thead>
+            <tr class="slds-line-height_reset">
+              <th
+                scope="col"
+                class="slds-text-align_center"
+                style="width: 3rem"
+              >
+                #
+              </th>
+              <template for:each={columns} for:item="col">
+                <th key={col.fieldName} scope="col">
+                  <div class="slds-truncate" title={col.label}>{col.label}</div>
+                </th>
+              </template>
+            </tr>
+          </thead>
+          <tbody>
+            <template for:each={paginatedResults} for:item="row">
+              <tr key={row.Id} class="slds-hint-parent">
+                <th scope="row" class="slds-text-align_center">
+                  {row._rowNumber}
+                </th>
+                <template for:each={row._cells} for:item="cell">
+                  <td key={cell.key} data-label={cell.label}>
+                    <div class="slds-truncate" title={cell.value}>
+                      {cell.value}
+                    </div>
+                  </td>
+                </template>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile Cards -->
+      <div class="mobile-cards">
+        <template for:each={paginatedResults} for:item="row">
+          <article key={row.Id} class="slds-card slds-m-bottom_small">
+            <div
+              class="slds-card__header slds-grid"
+              onclick={handleCardToggle}
+              data-id={row.Id}
+            >
+              <header
+                class="slds-media slds-media_center slds-has-flexi-truncate"
+              >
+                <div class="slds-media__figure">
+                  <span class="slds-badge">{row._rowNumber}</span>
+                </div>
+                <div class="slds-media__body">
+                  <h2 class="slds-card__header-title">
+                    <span class="slds-truncate">{row._displayName}</span>
+                  </h2>
+                </div>
+                <div class="slds-no-flex">
+                  <lightning-icon
+                    icon-name={row._expandIcon}
+                    size="x-small"
+                    alternative-text={row._expandLabel}
+                  ></lightning-icon>
+                </div>
+              </header>
+            </div>
+            <template if:true={row._expanded}>
+              <div class="slds-card__body slds-card__body_inner">
+                <dl class="slds-list_horizontal slds-wrap">
+                  <template for:each={row._cells} for:item="cell">
+                    <div
+                      key={cell.key}
+                      class="slds-item_detail slds-m-bottom_x-small"
+                      style="width: 100%"
+                    >
+                      <dt
+                        class="slds-item_label slds-text-color_weak slds-truncate"
+                        title={cell.label}
+                      >
+                        {cell.label}:
+                      </dt>
+                      <dd
+                        class="slds-item_detail slds-truncate"
+                        title={cell.value}
+                      >
+                        {cell.value}
+                      </dd>
+                    </div>
+                  </template>
+                </dl>
+              </div>
+            </template>
+          </article>
+        </template>
+      </div>
+    </template>
+
+    <!-- JSON View -->
+    <template if:true={viewMode.json}>
+      <div class="json-view slds-box slds-theme_shade slds-m-bottom_medium">
+        <div class="slds-grid slds-grid_align-spread slds-p-bottom_x-small">
+          <div class="slds-text-heading_small">JSON Output</div>
+          <lightning-button
+            label="Copy"
+            icon-name="utility:copy"
+            onclick={handleCopyJson}
+            variant="neutral"
+          ></lightning-button>
+        </div>
+        <pre class="json-content">{jsonOutput}</pre>
+      </div>
+    </template>
+
+    <!-- CSV Download -->
+    <template if:true={viewMode.csv}>
+      <div
+        class="csv-view slds-box slds-theme_info slds-text-align_center slds-p-around_large"
+      >
+        <lightning-icon
+          icon-name="utility:download"
+          size="large"
+          alternative-text="Download CSV"
+        ></lightning-icon>
+        <h3 class="slds-text-heading_medium slds-p-top_small">Download CSV</h3>
+        <p class="slds-text-body_regular slds-p-top_small">
+          Your CSV file is ready with {recordCount} records.
+        </p>
+        <lightning-button
+          label="Download CSV File"
+          icon-name="utility:download"
+          onclick={handleDownloadCsv}
+          variant="brand"
+          class="slds-m-top_medium"
+        ></lightning-button>
+      </div>
+    </template>
+
+    <!-- Pagination Controls -->
+    <template if:true={showPagination}>
+      <div
+        class="slds-p-top_medium slds-grid slds-grid_align-spread slds-grid_vertical-align-center"
+      >
+        <div class="slds-text-body_small slds-text-color_weak">
+          Showing {firstRecordIndex} - {lastRecordIndex} of {recordCount}
+        </div>
+        <div>
+          <lightning-button
+            label="Previous"
+            onclick={handlePreviousPage}
+            disabled={disablePrevious}
+            variant="neutral"
+          ></lightning-button>
+          <lightning-button
+            label="Next"
+            onclick={handleNextPage}
+            disabled={disableNext}
+            variant="neutral"
+            class="slds-m-left_x-small"
+          ></lightning-button>
+        </div>
+      </div>
+    </template>
+  </div>
+</template>

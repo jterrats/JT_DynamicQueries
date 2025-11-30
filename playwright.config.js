@@ -1,10 +1,10 @@
-const { defineConfig, devices } = require('@playwright/test');
+const { defineConfig, devices } = require("@playwright/test");
 
 /**
  * @see https://playwright.dev/docs/test-configuration
  */
 module.exports = defineConfig({
-  testDir: './tests/e2e',
+  testDir: "./tests/e2e",
 
   /* Run tests in files in parallel */
   fullyParallel: false,
@@ -19,10 +19,7 @@ module.exports = defineConfig({
   workers: process.env.CI ? 1 : 1,
 
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: [
-    ['html', { outputFolder: 'playwright-report' }],
-    ['list']
-  ],
+  reporter: [["html", { outputFolder: "playwright-report" }], ["list"]],
 
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
@@ -30,25 +27,25 @@ module.exports = defineConfig({
     baseURL: process.env.SF_INSTANCE_URL,
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
+    trace: "on-first-retry",
 
     /* Screenshot on failure */
-    screenshot: 'only-on-failure',
+    screenshot: "only-on-failure",
 
     /* Video on failure */
-    video: 'retain-on-failure',
+    video: "retain-on-failure",
 
     /* Default timeout */
     actionTimeout: 15000,
-    navigationTimeout: 30000,
+    navigationTimeout: 30000
   },
 
   /* Configure projects for major browsers */
   projects: [
     {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    },
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"] }
+    }
   ],
 
   /* Timeout for each test */
@@ -59,4 +56,3 @@ module.exports = defineConfig({
     timeout: 10000
   }
 });
-

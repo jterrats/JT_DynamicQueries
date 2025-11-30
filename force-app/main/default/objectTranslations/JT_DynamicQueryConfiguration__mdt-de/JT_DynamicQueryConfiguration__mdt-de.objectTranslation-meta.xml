@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fields>
+        <name>JT_BaseQuery__c</name>
+        <label>Basisabfrage (SOQL)</label>
+        <help
+    >Die auszuführende SOQL-Abfrage. Verwenden Sie Bindungsvariablen mit Doppelpunkt-Syntax (z.B.: :kontoName) für dynamische Parameter.</help>
+    </fields>
+    <fields>
+        <name>JT_Binding__c</name>
+        <label>Bindungen (JSON)</label>
+        <help
+    >Optionales JSON-Objekt mit vordefinierten Bindungsvariablenwerten. Beispiel: {"kontoName":"ACME Corp","status":"Aktiv"}</help>
+    </fields>
+    <fields>
+        <name>JT_ObjectName__c</name>
+        <label>Objektname</label>
+        <help
+    >Das abgefragte Salesforce-Objekt (z.B. Account, Contact, Opportunity).</help>
+    </fields>
+    <caseValues>
+        <caseType>Nominative</caseType>
+        <plural>false</plural>
+        <value>Dynamische Abfragenkonfiguration</value>
+    </caseValues>
+    <caseValues>
+        <caseType>Nominative</caseType>
+        <plural>true</plural>
+        <value>Dynamische Abfragenkonfigurationen</value>
+    </caseValues>
+    <gender>Feminine</gender>
+    <nameFieldLabel>Konfigurationsname</nameFieldLabel>
+</CustomObjectTranslation>

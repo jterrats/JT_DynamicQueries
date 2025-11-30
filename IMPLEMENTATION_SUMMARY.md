@@ -11,12 +11,14 @@ This document summarizes all the features and improvements implemented in the JT
 **Problem**: Original implementation was inefficient with repeated queries and JSON deserialization.
 
 **Solutions Implemented**:
+
 - ✅ **Configuration Caching** - Static Map caches Custom Metadata queries
 - ✅ **Single JSON Deserialization** - Bindings parsed once per execution
 - ✅ **Simplified Conditional Logic** - Reduced code branching
 - ✅ **Better Error Handling** - Descriptive error messages for missing configs
 
 **Impact**:
+
 ```
 Queries Reduced: 1 per call → 1 per unique config (lifetime)
 JSON Parsing: 2 per call → 1 per call (50% reduction)
@@ -26,6 +28,7 @@ Heap Memory: Optimized by ~50%
 ### 2. Lightning Web Component (jtQueryViewer)
 
 **Features**:
+
 - **Configuration Selector** - Dropdown with all available query configs
 - **Query Preview** - Visual display of SOQL query
 - **Dynamic Parameters** - Auto-generated inputs for bind variables
@@ -34,6 +37,7 @@ Heap Memory: Optimized by ~50%
 - **Responsive Design** - Works on desktop and mobile
 
 **Files Created**:
+
 ```
 force-app/main/default/lwc/jtQueryViewer/
 ├── jtQueryViewer.html       # UI template
@@ -45,6 +49,7 @@ force-app/main/default/lwc/jtQueryViewer/
 ### 3. Apex Controller (JT_QueryViewerController)
 
 **Methods**:
+
 - `getConfigurations()` - Retrieve all query configs
 - `executeQuery()` - Execute with optional Run As
 - `extractParameters()` - Parse bind variables from SOQL
@@ -56,17 +61,20 @@ force-app/main/default/lwc/jtQueryViewer/
 ### 4. Run As User Feature
 
 **What It Does**:
+
 - Allows admins to test queries in another user's context
 - Validates user permissions before execution
 - Respects USER_MODE security (FLS, CRUD, sharing)
 - Provides user search with type-ahead
 
 **Who Can Use It**:
+
 - System Administrators
 - Users with View All Data permission
 - Users with Modify All Data permission
 
 **Implementation**:
+
 ```apex
 // Backend validation
 private static void validateRunAsPermission(String userId) {
@@ -86,6 +94,7 @@ private static void validateRunAsPermission(String userId) {
 ```
 
 **Limitations Documented**:
+
 - Cannot use System.runAs() (test-only)
 - Does not provide true impersonation
 - Always respects USER_MODE security
@@ -94,12 +103,14 @@ private static void validateRunAsPermission(String userId) {
 ### 5. Custom Application
 
 **JT Dynamic Queries App**:
+
 - Modern Lightning UI
 - Tabs: Query Viewer, Home
 - Blue theme (#1589EE)
 - Permission set integration
 
 **Files**:
+
 ```
 force-app/main/default/applications/
 └── JT_Dynamic_Queries.app-meta.xml
@@ -111,11 +122,13 @@ force-app/main/default/tabs/
 ### 6. E2E Testing with Playwright
 
 **Authentication**:
+
 - Uses active SF CLI session (no manual login!)
 - Extracts session token automatically
 - Injects into browser context
 
 **Test Scenarios**:
+
 1. Component loading
 2. Configuration selection
 3. Query preview display
@@ -126,6 +139,7 @@ force-app/main/default/tabs/
 8. Run As User (if authorized)
 
 **Files**:
+
 ```
 tests/e2e/
 ├── utils/
@@ -135,6 +149,7 @@ tests/e2e/
 ```
 
 **Running Tests**:
+
 ```bash
 npm run test:e2e           # Run all tests
 npm run test:e2e:ui        # Interactive mode
@@ -145,15 +160,17 @@ npm run test:e2e:headed    # Visible browser
 ### 7. Updated Permission Set
 
 **Grants Access To**:
+
 - JT_DataSelector (Apex)
 - JT_QueryViewerController (Apex)
-- JT_DynamicQueryConfiguration__mdt (Custom Metadata)
+- JT_DynamicQueryConfiguration\_\_mdt (Custom Metadata)
 - JT_Dynamic_Queries (Custom App)
 - JT_Query_Viewer (Tab)
 
 ### 8. Documentation
 
 **Created/Updated**:
+
 - ✅ `README.md` - Comprehensive project documentation
 - ✅ `RUN_AS_USER_FEATURE.md` - Run As feature details
 - ✅ `tests/e2e/README.md` - E2E testing guide
@@ -163,6 +180,7 @@ npm run test:e2e:headed    # Visible browser
 ## 📊 Test Results
 
 ### Apex Tests
+
 ```
 Tests Passed: 16/16 (100%)
 Code Coverage: 76% org-wide
@@ -171,6 +189,7 @@ Code Coverage: 76% org-wide
 ```
 
 ### E2E Tests
+
 ```
 8 test scenarios implemented
 Authentication: SF CLI session integration
@@ -180,15 +199,18 @@ Coverage: All major user workflows
 ## 🔧 Technical Details
 
 ### API Version
+
 All components updated to **API 65.0**
 
 ### Security
+
 - USER_MODE for queries (respects all security)
 - SYSTEM_MODE available (admin use only)
 - Run As validation layer
 - Input sanitization
 
 ### Performance
+
 - Static caching
 - Debounced search (300ms)
 - Efficient query execution
@@ -246,6 +268,7 @@ JT_DynamicQueries/
 ## 📝 Next Steps
 
 Potential enhancements:
+
 1. Query history tracking
 2. Export results to CSV
 3. Query performance analytics
@@ -263,4 +286,3 @@ Potential enhancements:
 ---
 
 For questions or support, please refer to the main [README.md](./README.md) or create an issue in the repository.
-

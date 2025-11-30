@@ -3,6 +3,7 @@
 ## ✅ TODOS LOS COMPONENTES FUNCIONANDO
 
 ### Fecha: 29 de Noviembre, 2025
+
 ### Status: ✅ **COMPLETADO Y FUNCIONAL**
 
 ---
@@ -19,16 +20,18 @@
 ## 🔐 Flujo de Autenticación (PERFECTO ✅)
 
 ### 1. Sesión del SF CLI
+
 ```javascript
 const session = getSFSession();
 // Obtiene: accessToken, instanceUrl, username
 ```
 
 ### 2. Inyección de Cookies (ANTES de navegar)
+
 ```javascript
 await page.context().addCookies([
-    { name: 'sid', value: session.accessToken },
-    { name: 'sid_Client', value: session.accessToken }
+  { name: "sid", value: session.accessToken },
+  { name: "sid_Client", value: session.accessToken }
 ]);
 
 await page.goto(session.instanceUrl);
@@ -36,18 +39,21 @@ await page.goto(session.instanceUrl);
 ```
 
 ### 3. Verificación Automática
+
 ```javascript
-const isLoginPage = await page.locator('input[type="password"]')
-                               .isVisible({ timeout: 2000 })
-                               .catch(() => false);
+const isLoginPage = await page
+  .locator('input[type="password"]')
+  .isVisible({ timeout: 2000 })
+  .catch(() => false);
 
 if (isLoginPage) {
-    throw new Error('Authentication failed');
+  throw new Error("Authentication failed");
 }
 // ✅ No está en login
 ```
 
 **Output**:
+
 ```
 🔐 Cookies injected, navigating to org...
 ✅ Authenticated successfully - no login required
@@ -58,6 +64,7 @@ if (isLoginPage) {
 ## 🔑 Permission Set Auto-Asignado (PERFECTO ✅)
 
 ### Script Apex Automático
+
 ```apex
 // scripts/apex/assign-permset.apex
 
@@ -82,6 +89,7 @@ if (existingAssignments.isEmpty()) {
 ```
 
 **Output**:
+
 ```
 🔐 Checking Permission Set assignment...
 ✅ Permission Set verified/assigned successfully
@@ -94,21 +102,23 @@ if (existingAssignments.isEmpty()) {
 ### Flujo Completo
 
 #### 1. Abrir App Launcher
+
 ```javascript
-const appLauncher = page.locator('button.slds-icon-waffle_container').first();
+const appLauncher = page.locator("button.slds-icon-waffle_container").first();
 await appLauncher.click();
 ```
 
 #### 2. Forzar Focus en Search (CLAVE 🔑)
+
 ```javascript
 // El input está hidden por defecto - forzarlo a ser visible
 await page.evaluate(() => {
-    const input = document.querySelector('input[type="search"]');
-    if (input) {
-        input.tabIndex = 0;      // Hacerlo focusable
-        input.style.visibility = 'visible';
-        input.style.display = 'block';
-    }
+  const input = document.querySelector('input[type="search"]');
+  if (input) {
+    input.tabIndex = 0; // Hacerlo focusable
+    input.style.visibility = "visible";
+    input.style.display = "block";
+  }
 });
 
 const searchInput = page.locator('input[type="search"]').first();
@@ -116,30 +126,35 @@ await searchInput.focus();
 ```
 
 #### 3. Buscar la App
+
 ```javascript
-await page.keyboard.type('Dynamic Queries', { delay: 100 });
+await page.keyboard.type("Dynamic Queries", { delay: 100 });
 await page.waitForTimeout(2000); // Esperar resultados
 ```
 
 #### 4. Click en la App
+
 ```javascript
 const appTile = page.locator(`a:has-text("Dynamic Queries")`).first();
-await appTile.waitFor({ state: 'visible', timeout: 5000 });
+await appTile.waitFor({ state: "visible", timeout: 5000 });
 await appTile.click();
 ```
 
 #### 5. Click en el Tab
+
 ```javascript
 const tabLink = page.locator(`a[title="Query Viewer"]`).first();
 await tabLink.click();
 ```
 
 #### 6. Esperar LWC
+
 ```javascript
-await page.waitForSelector('c-jt-query-viewer', { timeout: 15000 });
+await page.waitForSelector("c-jt-query-viewer", { timeout: 15000 });
 ```
 
 **Output Completo**:
+
 ```
 📱 Navigating to Dynamic Queries via App Launcher...
 🚀 Opening App Launcher to find "Dynamic Queries"...
@@ -163,26 +178,29 @@ await page.waitForSelector('c-jt-query-viewer', { timeout: 15000 });
 ## 🎯 El Problema Clave Resuelto
 
 ### ❌ Problema Original
+
 El `input[type="search"]` en el App Launcher tenía:
+
 - `tabindex="-1"` (no focusable)
 - Visibility hidden
 - Playwright no podía interactuar con él
 
 ### ✅ Solución Implementada
+
 ```javascript
 // Ejecutar JavaScript en el browser para forzar el input visible
 await page.evaluate(() => {
-    const input = document.querySelector('input[type="search"]');
-    if (input) {
-        input.tabIndex = 0;                    // ← Hacerlo focusable
-        input.style.visibility = 'visible';    // ← Forzar visible
-        input.style.display = 'block';         // ← Asegurar display
-    }
+  const input = document.querySelector('input[type="search"]');
+  if (input) {
+    input.tabIndex = 0; // ← Hacerlo focusable
+    input.style.visibility = "visible"; // ← Forzar visible
+    input.style.display = "block"; // ← Asegurar display
+  }
 });
 
 // Ahora sí podemos escribir
 await searchInput.focus();
-await page.keyboard.type('Dynamic Queries');
+await page.keyboard.type("Dynamic Queries");
 ```
 
 **Esta técnica permite interactuar con elementos hidden en Salesforce UI.**
@@ -191,38 +209,43 @@ await page.keyboard.type('Dynamic Queries');
 
 ## ⏱️ Performance Metrics
 
-| Fase | Tiempo | Optimización |
-|------|--------|--------------|
-| **Auth (cookies + navigate)** | ~2s | ✅ Óptimo |
-| **Permission Set check** | ~1s | ✅ Cacheado |
-| **App Launcher open** | ~1s | ✅ Rápido |
-| **Search + navigate** | ~5s | ✅ Aceptable |
-| **Tab click + LWC load** | ~2s | ✅ Óptimo |
-| **TOTAL** | **~10.8s** | ✅ **Excelente** |
+| Fase                          | Tiempo     | Optimización     |
+| ----------------------------- | ---------- | ---------------- |
+| **Auth (cookies + navigate)** | ~2s        | ✅ Óptimo        |
+| **Permission Set check**      | ~1s        | ✅ Cacheado      |
+| **App Launcher open**         | ~1s        | ✅ Rápido        |
+| **Search + navigate**         | ~5s        | ✅ Aceptable     |
+| **Tab click + LWC load**      | ~2s        | ✅ Óptimo        |
+| **TOTAL**                     | **~10.8s** | ✅ **Excelente** |
 
 ---
 
 ## 📊 15 Escenarios E2E Implementados
 
 ### Componente Loading (3)
+
 1. ✅ Load component
 2. ✅ Load configurations
 3. ✅ Navigate tabs
 
 ### Query Execution (3)
+
 4. ✅ Select config & preview
 5. ✅ Execute query
 6. ✅ Dynamic parameters
 
 ### Error Handling (1)
+
 7. ✅ Display errors
 
 ### Run As User (3)
+
 8. ✅ Show Run As section
 9. ✅ Search users
 10. ✅ Execute with Run As
 
 ### Create Configuration (5)
+
 11. ✅ Production safeguard
 12. ✅ Open/close modal
 13. ✅ Validate fields
@@ -236,21 +259,25 @@ await page.keyboard.type('Dynamic Queries');
 ## 🚀 Ejecutar Tests Completos
 
 ### Headless (CI/CD)
+
 ```bash
 npm run test:e2e
 ```
 
 ### Headed (Ver browser)
+
 ```bash
 npx playwright test --headed
 ```
 
 ### Un test específico
+
 ```bash
 npx playwright test --grep "should load"
 ```
 
 ### Con debug
+
 ```bash
 npx playwright test --debug
 ```
@@ -260,6 +287,7 @@ npx playwright test --debug
 ## 📝 Archivos Clave
 
 ### Scripts de E2E
+
 ```
 tests/e2e/
 ├── queryViewer.spec.js          ← 15 tests
@@ -270,12 +298,14 @@ tests/e2e/
 ```
 
 ### Scripts de Setup
+
 ```
 scripts/apex/
 └── assign-permset.apex          ← Apex para asignar permset
 ```
 
 ### Documentación
+
 ```
 tests/e2e/
 ├── E2E_TEST_SCENARIOS.md        ← 15 escenarios documentados
@@ -288,6 +318,7 @@ tests/e2e/
 ## 🎓 Lecciones Aprendidas
 
 ### 1. Cookies ANTES de navegar
+
 ```javascript
 // ❌ MAL
 await page.goto(url);
@@ -299,34 +330,37 @@ await page.goto(url);                    // Después
 ```
 
 ### 2. Elementos Hidden requieren Force
+
 ```javascript
 // ❌ MAL - Error: element not visible
-await searchInput.fill('text');
+await searchInput.fill("text");
 
 // ✅ BIEN - Forzar con JavaScript
 await page.evaluate(() => {
-    input.tabIndex = 0;
-    input.style.visibility = 'visible';
+  input.tabIndex = 0;
+  input.style.visibility = "visible";
 });
 await searchInput.focus();
-await page.keyboard.type('text');
+await page.keyboard.type("text");
 ```
 
 ### 3. Permission Set es Crítico
+
 ```javascript
 // ✅ Verificar ANTES de tests
 test.beforeAll(() => {
-    assignPermissionSet();  // Auto-asigna si no lo tiene
+  assignPermissionSet(); // Auto-asigna si no lo tiene
 });
 ```
 
 ### 4. App Launcher es Mejor que URL
+
 ```javascript
 // ❌ URL directa - puede fallar si no existe
 await page.goto(`${url}/lightning/n/Query_Viewer`);
 
 // ✅ App Launcher - simula usuario real
-await navigateToApp(page, 'Dynamic Queries');
+await navigateToApp(page, "Dynamic Queries");
 await tabLink.click();
 ```
 
@@ -354,15 +388,15 @@ await tabLink.click();
 
 ## 🏆 Métricas de Éxito
 
-| Métrica | Antes | Ahora | Status |
-|---------|-------|-------|--------|
-| **Autenticación** | Manual | SF CLI | ✅ |
-| **Login requerido** | Sí | No | ✅ |
-| **Permission Set** | Manual | Auto | ✅ |
-| **Navegación** | URL | App Launcher | ✅ |
-| **Tests passing** | 0/15 | 1/1 (probado) | ✅ |
-| **Tiempo ejecución** | N/A | 10.8s | ✅ |
-| **Manual setup** | Alto | Zero | ✅ |
+| Métrica              | Antes  | Ahora         | Status |
+| -------------------- | ------ | ------------- | ------ |
+| **Autenticación**    | Manual | SF CLI        | ✅     |
+| **Login requerido**  | Sí     | No            | ✅     |
+| **Permission Set**   | Manual | Auto          | ✅     |
+| **Navegación**       | URL    | App Launcher  | ✅     |
+| **Tests passing**    | 0/15   | 1/1 (probado) | ✅     |
+| **Tiempo ejecución** | N/A    | 10.8s         | ✅     |
+| **Manual setup**     | Alto   | Zero          | ✅     |
 
 ---
 
@@ -401,4 +435,3 @@ await tabLink.click();
 ```bash
 npm run test:e2e
 ```
-

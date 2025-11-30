@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 #### Core Functionality
+
 - **JT_DataSelector Class**: Optimized data selector with static cache and singleton pattern
   - Static factory methods for easy integration
   - Internal singleton for efficient resource management
@@ -21,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **@InvocableMethod**: Flow and Agentforce integration for executing queries from declarative tools
 
 #### Lightning Web Components
+
 - **jtQueryViewer**: Main query execution interface
   - Configuration selection with searchable dropdown
   - Dynamic input generation for queries without predefined bindings
@@ -49,6 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Multi-language support
 
 #### Apex Controllers
+
 - **JT_QueryViewerController**: Main controller for query execution
   - Fetches configurations
   - Executes queries with bind variables
@@ -69,7 +72,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Asynchronous test execution
 
 - **JT_ProductionSettingsController**: Production override management
-  - Manages JT_DynamicQuerySettings__c Custom Setting
+  - Manages JT_DynamicQuerySettings\_\_c Custom Setting
   - Detects Starter/Free editions
   - Creates audit log entries
 
@@ -80,7 +83,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Regex-based configuration name extraction
 
 #### Custom Metadata Type
-- **JT_DynamicQueryConfiguration__mdt**: Query configuration storage
+
+- **JT_DynamicQueryConfiguration\_\_mdt**: Query configuration storage
   - Label and Developer Name
   - Base Query (SOQL)
   - Object Name (auto-detected)
@@ -88,7 +92,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Field Mappings
 
 #### Custom Objects
-- **JT_SettingsAuditLog__c**: Audit trail for production settings
+
+- **JT_SettingsAuditLog\_\_c**: Audit trail for production settings
   - Action (Enabled/Disabled)
   - Changed By (User lookup)
   - Username
@@ -97,10 +102,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - IP Address
 
 #### Custom Settings
-- **JT_DynamicQuerySettings__c**: Hierarchy Custom Setting
-  - JT_AllowProductionEditing__c (Checkbox)
+
+- **JT_DynamicQuerySettings\_\_c**: Hierarchy Custom Setting
+  - JT_AllowProductionEditing\_\_c (Checkbox)
 
 #### Security & Permissions
+
 - **JT_Dynamic_Queries Permission Set**: Complete access control
   - Apex class access (all 7 controllers)
   - Custom Metadata Type access
@@ -109,6 +116,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Tab visibility (Query Viewer, Documentation, Audit History, Reports)
 
 #### Custom App
+
 - **JT_Dynamic_Queries**: Lightning application
   - Query Viewer tab
   - Documentation tab
@@ -116,6 +124,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Reports tab (standard)
 
 #### Testing
+
 - **Apex Tests**: 100% code coverage for all controllers
   - JT_DataSelector_Test
   - JT_QueryViewerController_Test
@@ -133,12 +142,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Production safeguards
 
 #### Code Quality
+
 - **PMD Compliance**: 0 violations
 - **ESLint Compliance**: 0 violations
 - **Security Analysis**: No vulnerabilities detected
 - **AppExchange Ready**: Meets all submission requirements
 
 #### Internationalization
+
 - **4 Languages Supported**:
   - English (en)
   - Spanish (es)
@@ -149,6 +160,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Date/time formatting per locale
 
 #### Documentation
+
 - **README.md**: Comprehensive project overview
 - **ACCESSIBILITY.md**: WCAG 2.1 AA compliance details
 - **REPORT_TYPE_SETUP.md**: Manual setup instructions
@@ -156,10 +168,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **ApexDoc**: All public methods documented
 
 #### Scripts
+
 - **setup-test-data.apex**: Idempotent test data creation
 - **assign-permset.apex**: Permission set assignment
 
 ### Performance Optimizations
+
 - Static cache for Custom Metadata queries
 - Single JSON deserialization per query execution
 - Client-side filtering for dropdowns (configurations and users)
@@ -167,6 +181,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Cacheable Apex methods where appropriate
 
 ### Security Features
+
 - USER_MODE enforcement for all SOQL queries
 - Field-level security respect
 - Sharing rules enforcement
@@ -175,6 +190,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Explicit security warnings for production editing
 
 ### UX/UI Enhancements
+
 - Searchable dropdowns with client-side filtering
 - Real-time query validation
 - Dynamic input generation based on SOQL parameters
@@ -188,6 +204,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Screen reader support
 
 ### Known Limitations
+
 - Report Types for Custom Metadata cannot be deployed via Metadata API (manual setup required)
 - System.runAs() only works in test context (as designed by Salesforce)
 - Starter/Free editions require manual override to enable metadata editing
@@ -195,6 +212,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 ## Future Roadmap
+
 - [ ] Scheduled query execution
 - [ ] Email notifications for query results
 - [ ] Query result export to CSV
@@ -207,16 +225,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 ## Contributors
+
 - Jaime Terrats (@jterrats) - Lead Developer
 
 ## License
+
 This project is proprietary software intended for Salesforce AppExchange distribution.
 
 ---
 
 ## Notes
+
 - Initial version developed with focus on enterprise-grade quality
 - Designed for production use from day one
 - Fully tested and documented
 - Ready for AppExchange submission
-

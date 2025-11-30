@@ -1,0 +1,631 @@
+<template>
+  <!-- Skip Link for Accessibility -->
+  <a href="#main-content" class="slds-assistive-text slds-p-around_xxx-small"
+    >Skip to main content</a
+  >
+
+  <!-- Live Region for Screen Reader Announcements -->
+  <div
+    class="slds-assistive-text"
+    role="status"
+    aria-live="polite"
+    aria-atomic="true"
+  >
+    {srAnnouncement}
+  </div>
+
+  <lightning-card title="Dynamic Query Viewer" icon-name="custom:custom63">
+    <!-- Card Header Actions -->
+    <div slot="actions">
+      <template if:true={canCreateMetadata}>
+        <div class="slds-grid slds-grid_vertical-align-center">
+          <lightning-button
+            label="Create Configuration"
+            title="Create a new query configuration"
+            onclick={handleShowCreateModal}
+            variant="brand"
+            icon-name="utility:add"
+            aria-label="Create new query configuration"
+          >
+          </lightning-button>
+          <lightning-helptext
+            content="Create a new query configuration with a SOQL query (SELECT fields FROM object WHERE condition), optional bind variables in JSON format, and field mappings."
+            icon-variant="inverse"
+            class="slds-m-left_xx-small slds-m-right_small"
+          >
+          </lightning-helptext>
+          <lightning-badge
+            label={orgTypeBadge}
+            title={orgTypeBadgeTitle}
+          ></lightning-badge>
+        </div>
+      </template>
+      <template if:true={isProduction}>
+        <lightning-badge
+          label="Production"
+          variant="inverse"
+          title="Read-only mode in Production"
+        ></lightning-badge>
+      </template>
+    </div>
+
+    <!-- Main Content Region -->
+    <div
+      id="main-content"
+      class="slds-p-around_medium"
+      role="main"
+      aria-label="Query Viewer Main Content"
+    >
+      <!-- Production Warning Banner with Override Option -->
+      <template if:true={isProduction}>
+        <div class="slds-m-bottom_medium">
+          <div
+            class="slds-notify slds-notify_alert slds-alert_warning"
+            role="alert"
+          >
+            <span class="slds-assistive-text">warning</span>
+            <span
+              class="slds-icon_container slds-icon-utility-warning slds-m-right_small"
+            >
+              <lightning-icon
+                icon-name="utility:warning"
+                size="small"
+                variant="warning"
+                alternative-text="Warning"
+              ></lightning-icon>
+            </span>
+            <div>
+              <h2 class="slds-m-bottom_small">
+                <strong>Production Environment Detected</strong>
+              </h2>
+              <p class="slds-text-body_regular slds-m-bottom_medium">
+                Metadata creation and editing are disabled for safety. These
+                features are only available in
+                <strong>development/test environments</strong>: Sandbox, Scratch
+                Org, Developer Edition, or Trial.
+              </p>
+
+              <!-- Advanced Override for Starter/Free Editions -->
+              <div
+                class="slds-box slds-box_x-small slds-theme_alert-texture slds-m-top_small"
+              >
+                <h3 class="slds-text-heading_small slds-m-bottom_small">
+                  <lightning-icon
+                    icon-name="utility:warning"
+                    size="xx-small"
+                    variant="warning"
+                    class="slds-m-right_xx-small"
+                  ></lightning-icon>
+                  <strong>Advanced Option (Starter/Free Editions Only)</strong>
+                </h3>
+                <p class="slds-text-body_small slds-m-bottom_small">
+                  If you're using
+                  <strong>Starter or Free Edition</strong> (which don't include
+                  sandbox), you can enable editing
+                  <strong>at your own risk</strong>:
+                </p>
+                <div class="slds-m-bottom_small">
+                  <lightning-input
+                    type="checkbox"
+                    label="Enable metadata editing in this production environment"
+                    checked={productionOverrideEnabled}
+                    onchange={handleProductionOverrideChange}
+                    disabled={isUpdatingSettings}
+                    class="production-override-checkbox"
+                  >
+                  </lightning-input>
+                </div>
+                <div
+                  class="slds-scoped-notification slds-media slds-media_center slds-scoped-notification_light"
+                  role="status"
+                >
+                  <div class="slds-media__figure">
+                    <lightning-icon
+                      icon-name="utility:ban"
+                      size="small"
+                      variant="error"
+                      alternative-text="Danger"
+                    ></lightning-icon>
+                  </div>
+                  <div class="slds-media__body">
+                    <p class="slds-text-body_small">
+                      <strong>⚠️ SECURITY WARNING:</strong><br />
+                      • Changes are immediate (no deployment process)<br />
+                      • Affects all users in this production org<br />
+                      • No rollback mechanism<br />
+                      • Could expose sensitive data if misconfigured<br />
+                      • Recommended: Use Setup UI instead (Setup → Custom
+                      Metadata Types)
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <!-- Configuration Selection -->
+      <lightning-layout multiple-rows>
+        <lightning-layout-item size="12" class="slds-p-bottom_medium">
+          <!-- Phase 1 Refactor: Generic Searchable Combobox -->
+          <c-jt-searchable-combobox
+            label={labels.selectConfiguration}
+            placeholder={labels.searchConfigsPlaceholder}
+            options={configurationOptions}
+            no-results-text={labels.noResults}
+            error-text={labels.selectOption}
+            clear-button-title={labels.clear}
+            show-options-title={labels.chooseConfiguration}
+            required
+            onselect={handleConfigSelect}
+            onclear={handleConfigClear}
+          ></c-jt-searchable-combobox>
+
+          <!-- Where is this used? Link (only when config selected AND enabled) -->
+          <template if:true={showUsageLink}>
+            <div class="slds-m-top_x-small slds-m-left_small">
+              <a
+                href="javascript:void(0);"
+                onclick={handleShowUsageModal}
+                class="usage-link"
+                title="Find where this configuration is used in Apex code and Flows"
+              >
+                <lightning-icon
+                  icon-name="utility:search"
+                  size="xx-small"
+                  class="slds-m-right_xx-small"
+                ></lightning-icon>
+                Where is this used?
+              </a>
+            </div>
+          </template>
+        </lightning-layout-item>
+
+        <!-- API-Consuming Features Settings -->
+        <lightning-layout-item size="12" class="slds-p-bottom_medium">
+          <section
+            class="api-settings-container slds-box slds-theme_shade slds-m-top_medium slds-m-bottom_medium"
+            role="region"
+            aria-labelledby="api-settings-heading"
+          >
+            <h3
+              id="api-settings-heading"
+              class="slds-text-heading_small slds-p-bottom_small"
+            >
+              <lightning-icon
+                icon-name="utility:settings"
+                size="x-small"
+                alternative-text=""
+                class="slds-m-right_x-small"
+              ></lightning-icon>
+              <strong>API Features & Tooling API</strong>
+            </h3>
+
+            <!-- Global API Disclaimer -->
+            <div
+              class="slds-box slds-box_x-small slds-theme_warning slds-m-bottom_medium"
+              role="alert"
+              aria-label="Tooling API consumption warning"
+            >
+              <div class="slds-media slds-media_center">
+                <div class="slds-media__figure">
+                  <lightning-icon
+                    icon-name="utility:warning"
+                    size="small"
+                    variant="warning"
+                    alternative-text="Warning"
+                  ></lightning-icon>
+                </div>
+                <div class="slds-media__body">
+                  <p class="slds-text-body_small">
+                    <strong>⚠️ Tooling API Required:</strong> This application uses Salesforce Tooling API for:
+                  </p>
+                  <ul class="slds-list_dotted slds-m-top_xx-small slds-m-left_medium">
+                    <li><strong>"Where is this used?"</strong> - Searches Flows (1-5 API calls per search)</li>
+                    <template if:true={canCreateMetadata}>
+                      <li><strong>Create/Edit Configurations</strong> - Deploys metadata (2-3 API calls per operation)</li>
+                    </template>
+                  </ul>
+                  <p class="slds-text-body_small slds-m-top_xx-small">
+                    <strong>Setup Required:</strong> Named Credential must be configured. See <a href="#" onclick={handleGoToDocumentation}>Documentation → Tooling API Setup</a> for details.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Usage Tracking Toggle -->
+            <div class="slds-m-bottom_medium">
+              <lightning-input
+                type="checkbox"
+                label='Enable "Where is this used?" search'
+                checked={usageTrackingEnabled}
+                onchange={handleUsageTrackingChange}
+                disabled={isUpdatingSettings}
+                field-level-help='When enabled, searches for configuration references in Apex and Flows. Consumes API calls for Flow searches.'
+              ></lightning-input>
+            </div>
+          </section>
+        </lightning-layout-item>
+
+        <!-- Run As User (Admin Only) -->
+        <template if:true={showRunAs}>
+          <lightning-layout-item size="12" class="slds-p-bottom_medium">
+            <c-jt-run-as-section
+              title={labels.runAsUser}
+              note-text={labels.runAsNote}
+              select-user-label={labels.selectUser}
+              select-user-placeholder={labels.searchUsersPlaceholder}
+              clear-label={labels.clear}
+              execute-as-user-label={labels.executeSystemRunAs}
+              executing-test-text={labels.executingTest}
+              loading-users-text={labels.loadingUsers}
+              user-options={userOptions}
+              is-loading-users={isLoadingUsers}
+              run-as-user-id={runAsUserId}
+              show-run-as-test={showRunAsTest}
+              is-running-test={isRunningTest}
+              onuserselect={handleUserSelect}
+              onuserclear={handleUserClear}
+              onclearselection={handleClearRunAs}
+              onexecuteasuser={handleExecuteAsUserTest}
+            ></c-jt-run-as-section>
+          </lightning-layout-item>
+        </template>
+
+        <!-- Query Preview -->
+        <template if:true={baseQuery}>
+          <lightning-layout-item size="12" class="slds-p-bottom_medium">
+            <div class="query-preview-container">
+              <div class="slds-text-heading_small slds-p-bottom_x-small">
+                Query Preview:
+              </div>
+              <div class="query-preview slds-box slds-theme_shade">
+                <pre class="slds-text-body_small">{queryPreview}</pre>
+              </div>
+            </div>
+          </lightning-layout-item>
+        </template>
+
+        <!-- Dynamic Parameters Input -->
+        <template if:true={hasParameters}>
+          <lightning-layout-item size="12" class="slds-p-bottom_medium">
+            <c-jt-parameter-inputs
+              parameters={parameters}
+              title={labels.queryParameters}
+              no-parameters-text={labels.noParametersRequired}
+              onchange={handleParameterChange}
+            ></c-jt-parameter-inputs>
+          </lightning-layout-item>
+        </template>
+
+        <!-- Configuration Bindings Info -->
+        <template if:true={hasBindings}>
+          <template if:false={hasParameters}>
+            <lightning-layout-item size="12" class="slds-p-bottom_medium">
+              <div class="info-box-readable slds-box slds-text-body_small">
+                <strong class="info-title">
+                  <lightning-icon
+                    icon-name="utility:info"
+                    size="x-small"
+                    class="slds-m-right_x-small"
+                  ></lightning-icon>
+                  {labels.predefinedBindings}
+                </strong>
+                <div class="slds-m-top_x-small">
+                  {labels.predefinedBindingsDesc}
+                </div>
+              </div>
+            </lightning-layout-item>
+          </template>
+        </template>
+
+        <!-- Execute Button -->
+        <!-- Phase 3 Refactor: Extracted to jtExecuteButton -->
+        <lightning-layout-item size="12" class="slds-p-bottom_medium">
+          <c-jt-execute-button
+            label={labels.executeQuery}
+            variant="brand"
+            icon-name="utility:database"
+            selected-config={selectedConfig}
+            has-parameters={hasParameters}
+            is-loading={isLoading}
+            onexecute={handleExecuteQuery}
+          ></c-jt-execute-button>
+        </lightning-layout-item>
+
+        <!-- Test Assert Message -->
+        <template if:true={testAssertMessage}>
+          <lightning-layout-item size="12" class="slds-p-bottom_medium">
+            <div class="slds-box slds-theme_success slds-text-body_regular">
+              <lightning-icon
+                icon-name="utility:success"
+                size="small"
+                variant="success"
+                class="slds-m-right_small"
+              ></lightning-icon>
+              <strong>Test Assertion:</strong> {testAssertMessage}
+            </div>
+          </lightning-layout-item>
+        </template>
+
+        <!-- Error Message -->
+        <template if:true={showError}>
+          <lightning-layout-item size="12" class="slds-p-bottom_medium">
+            <div
+              class="slds-notify slds-notify_alert slds-alert_error"
+              role="alert"
+            >
+              <span class="slds-assistive-text">error</span>
+              <lightning-icon
+                icon-name="utility:error"
+                size="small"
+                variant="error"
+                class="slds-m-right_small"
+              ></lightning-icon>
+              <h2>{errorMessage}</h2>
+            </div>
+          </lightning-layout-item>
+        </template>
+
+        <!-- Results Section -->
+        <template if:true={showResults}>
+          <lightning-layout-item size="12">
+            <div class="results-container">
+              <!-- Results Header with View Toggle -->
+              <div class="slds-grid slds-grid_align-spread slds-p-bottom_small">
+                <div class="slds-text-heading_small">
+                  Results ({recordCount} {recordCountLabel}):
+                </div>
+                <lightning-button-group>
+                  <lightning-button
+                    label="Table"
+                    icon-name="utility:table"
+                    variant={isTableView}
+                    onclick={handleViewChange}
+                    data-view="table"
+                    title="View as Table"
+                  ></lightning-button>
+                  <lightning-button
+                    label="JSON"
+                    icon-name="utility:file"
+                    variant={isJsonView}
+                    onclick={handleViewChange}
+                    data-view="json"
+                    title="View as JSON (LLM-friendly)"
+                  ></lightning-button>
+                  <lightning-button
+                    label="CSV"
+                    icon-name="utility:download"
+                    variant={isCsvView}
+                    onclick={handleViewChange}
+                    data-view="csv"
+                    title="Download as CSV"
+                  ></lightning-button>
+                </lightning-button-group>
+              </div>
+
+              <!-- Table View (Default) -->
+              <template if:true={viewMode.table}>
+                <!-- Desktop: Traditional Table -->
+                <div class="desktop-table">
+                  <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                    <thead>
+                      <tr class="slds-line-height_reset">
+                        <th scope="col" class="slds-text-align_center" style="width: 3rem;">#</th>
+                        <template for:each={columns} for:item="col">
+                          <th key={col.fieldName} scope="col">
+                            <div class="slds-truncate" title={col.label}>{col.label}</div>
+                          </th>
+                        </template>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <template for:each={paginatedResults} for:item="row" for:index="index">
+                        <tr key={row.Id} class="slds-hint-parent">
+                          <th scope="row" class="slds-text-align_center">{row._rowNumber}</th>
+                          <template for:each={row._cells} for:item="cell">
+                            <td key={cell.key} data-label={cell.label}>
+                              <div class="slds-truncate" title={cell.value}>{cell.value}</div>
+                            </td>
+                          </template>
+                        </tr>
+                      </template>
+                    </tbody>
+                  </table>
+                </div>
+
+                <!-- Mobile: Expandable Cards -->
+                <div class="mobile-cards">
+                  <template for:each={paginatedResults} for:item="row" for:index="index">
+                    <article key={row.Id} class="slds-card slds-m-bottom_small">
+                      <div class="slds-card__header slds-grid" onclick={handleCardToggle} data-id={row.Id}>
+                        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                          <div class="slds-media__figure">
+                            <span class="slds-badge">{row._rowNumber}</span>
+                          </div>
+                          <div class="slds-media__body">
+                            <h2 class="slds-card__header-title">
+                              <span class="slds-truncate">{row._displayName}</span>
+                            </h2>
+                          </div>
+                          <div class="slds-no-flex">
+                            <lightning-icon
+                              icon-name={row._expandIcon}
+                              size="x-small"
+                              alternative-text={row._expandLabel}
+                            ></lightning-icon>
+                          </div>
+                        </header>
+                      </div>
+                      <template if:true={row._expanded}>
+                        <div class="slds-card__body slds-card__body_inner">
+                          <dl class="slds-list_horizontal slds-wrap">
+                            <template for:each={row._cells} for:item="cell">
+                              <div key={cell.key} class="slds-item_detail slds-m-bottom_x-small" style="width: 100%;">
+                                <dt class="slds-item_label slds-text-color_weak slds-truncate" title={cell.label}>
+                                  {cell.label}:
+                                </dt>
+                                <dd class="slds-item_detail slds-truncate" title={cell.value}>
+                                  {cell.value}
+                                </dd>
+                              </div>
+                            </template>
+                          </dl>
+                        </div>
+                      </template>
+                    </article>
+                  </template>
+                </div>
+              </template>
+
+              <!-- JSON View -->
+              <template if:true={viewMode.json}>
+                <div class="json-view slds-box slds-theme_shade slds-m-bottom_medium">
+                  <div class="slds-grid slds-grid_align-spread slds-p-bottom_x-small">
+                    <div class="slds-text-heading_small">JSON Output</div>
+                    <lightning-button
+                      label="Copy"
+                      icon-name="utility:copy"
+                      onclick={handleCopyJson}
+                      variant="neutral"
+                      class="slds-m-left_x-small"
+                    ></lightning-button>
+                  </div>
+                  <pre class="json-content">{jsonOutput}</pre>
+                </div>
+              </template>
+
+              <!-- CSV Download -->
+              <template if:true={viewMode.csv}>
+                <div class="csv-view slds-box slds-theme_info slds-text-align_center slds-p-around_large">
+                  <lightning-icon
+                    icon-name="utility:download"
+                    size="large"
+                    alternative-text="Download CSV"
+                  ></lightning-icon>
+                  <h3 class="slds-text-heading_medium slds-p-top_small">Download CSV</h3>
+                  <p class="slds-text-body_regular slds-p-top_small">
+                    Your CSV file has been generated with {recordCount} records.
+                  </p>
+                  <lightning-button
+                    label="Download CSV File"
+                    icon-name="utility:download"
+                    onclick={handleDownloadCsv}
+                    variant="brand"
+                    class="slds-m-top_medium"
+                  ></lightning-button>
+                </div>
+              </template>
+
+              <!-- Pagination Controls -->
+              <template if:true={showPagination}>
+                <div
+                  class="slds-p-top_medium slds-grid slds-grid_align-spread slds-grid_vertical-align-center"
+                >
+                  <div class="slds-text-body_small slds-text-color_weak">
+                    {labels.showing} {firstRecordIndex} - {lastRecordIndex}
+                    {labels.of} {recordCount}
+                  </div>
+                  <div class="slds-button-group">
+                    <lightning-button
+                      icon-name="utility:chevronleft"
+                      variant="neutral"
+                      onclick={handlePreviousPage}
+                      disabled={isFirstPage}
+                      title={labels.previous}
+                    >
+                    </lightning-button>
+                    <lightning-button
+                      label={currentPageDisplay}
+                      variant="neutral"
+                      disabled
+                    >
+                    </lightning-button>
+                    <lightning-button
+                      icon-name="utility:chevronright"
+                      variant="neutral"
+                      onclick={handleNextPage}
+                      disabled={isLastPage}
+                      title={labels.next}
+                    >
+                    </lightning-button>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </lightning-layout-item>
+        </template>
+
+        <!-- No Results Message -->
+        <template if:true={hasResults}>
+          <template if:false={showResults}>
+            <lightning-layout-item size="12" class="slds-p-top_medium">
+              <div class="slds-align_absolute-center">
+                <lightning-icon
+                  icon-name="utility:search"
+                  size="large"
+                ></lightning-icon>
+                <div class="slds-text-heading_small slds-p-top_small">
+                  No records found
+                </div>
+              </div>
+            </lightning-layout-item>
+          </template>
+        </template>
+      </lightning-layout>
+    </div>
+  </lightning-card>
+
+  <!-- Create Configuration Modal -->
+  <!-- Config Creation/Edit Modal -->
+  <template if:true={showCreateModal}>
+    <c-jt-config-modal
+      mode="create"
+      is-saving={isSaving}
+      can-create-metadata={canCreateMetadata}
+      config={newConfig}
+      query-validation={queryValidation}
+      create-title={labels.createNewConfiguration}
+      edit-title={labels.editConfiguration}
+      save-label={labels.save}
+      update-label={labels.updateConfiguration}
+      cancel-label={labels.cancel}
+      label-field={labels.label}
+      developer-name-field={labels.developerName}
+      base-query-field={labels.baseQuery}
+      object-name-field={labels.objectName}
+      bindings-field={labels.bindings}
+      valid-syntax={labels.validSOQLSyntax}
+      object-label={labels.object}
+      query-preview-label={labels.queryPreviewTitle}
+      auto-detected-placeholder={labels.autoDetectedFromQuery}
+      tooling-note={labels.toolingAPINote}
+      sandbox-warning={labels.sandboxOnlyWarning}
+      onconfigchange={handleNewConfigChange}
+      onsave={handleSaveConfiguration}
+      oncancel={handleCloseCreateModal}
+    ></c-jt-config-modal>
+  </template>
+
+  <!-- Usage Finder Modal -->
+  <template if:true={showUsageModal}>
+    <c-jt-usage-modal
+      config-name={selectedConfig}
+      is-loading={isLoadingUsage}
+      usage-data={usageResults}
+      title-prefix={labels.whereIsThisUsed}
+      title-suffix="used?"
+      searching-text={labels.searchingFlows}
+      no-usage-found-text={labels.noUsageFound}
+      no-usage-message={labels.noReferencesFound}
+      found-references-text={labels.foundReferences}
+      close-label={labels.cancel}
+      type-column={labels.type}
+      name-column={labels.name}
+      line-column={labels.line}
+      onclose={handleCloseUsageModal}
+    ></c-jt-usage-modal>
+  </template>
+</template>
+

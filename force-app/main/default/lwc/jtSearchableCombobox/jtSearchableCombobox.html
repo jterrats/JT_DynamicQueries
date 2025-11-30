@@ -1,91 +1,124 @@
 <template>
-    <div class="slds-form-element" role="combobox" aria-expanded={isOpen} aria-haspopup="listbox">
-        <!-- Label -->
-        <template if:true={label}>
-            <template if:false={variant}>
-                <label class="slds-form-element__label" for="combobox-input">
-                    {label}
-                    <template if:true={required}>
-                        <abbr class="slds-required" title="required">*</abbr>
-                    </template>
-                </label>
-            </template>
+  <div class="slds-form-element">
+    <!-- Label -->
+    <template if:true={showLabel}>
+      <label class={labelClass} for="combobox-input">
+        <template if:true={required}>
+          <abbr class="slds-required" title="required">* </abbr>
         </template>
+        <strong>{label}</strong>
+      </label>
+    </template>
 
-        <!-- Input Container -->
-        <div class="slds-form-element__control">
-            <div class={comboboxClass} role="combobox" aria-controls="listbox-id" aria-expanded={isOpen}>
-                <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
-                    <input
-                        type="text"
-                        id="combobox-input"
-                        class="slds-input slds-combobox__input"
-                        aria-autocomplete="list"
-                        aria-controls="listbox-id"
-                        autocomplete="off"
-                        role="textbox"
-                        placeholder={placeholder}
-                        value={searchTerm}
-                        disabled={disabled}
-                        required={required}
-                        onfocus={handleInputFocus}
-                        oninput={handleInputChange}
-                        onkeydown={handleInputKeyDown}
-                        onblur={handleBlur}
-                    />
+    <!-- Combobox Control -->
+    <div class="slds-form-element__control">
+      <div class="slds-combobox_container">
+        <div
+          class={comboboxClass}
+          aria-expanded={showDropdown}
+          aria-haspopup="listbox"
+          role="combobox"
+        >
+          <!-- Input with Icon -->
+          <div
+            class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right"
+          >
+            <input
+              type="text"
+              class={inputClass}
+              id="combobox-input"
+              aria-controls="listbox-id"
+              aria-autocomplete="list"
+              role="textbox"
+              placeholder={placeholder}
+              value={searchTerm}
+              disabled={disabled}
+              oninput={handleInput}
+              onfocus={handleFocus}
+              onblur={handleBlur}
+              autocomplete="off"
+            />
 
-                    <!-- Clear Button -->
-                    <template if:true={showClearButton}>
-                        <button
-                            class="slds-button slds-button_icon slds-input__icon slds-input__icon_right"
-                            title="Clear selection"
-                            onclick={handleClear}
-                            tabindex="-1">
-                            <lightning-icon icon-name="utility:clear" size="x-small" alternative-text="Clear"></lightning-icon>
-                            <span class="slds-assistive-text">Clear</span>
-                        </button>
-                    </template>
+            <!-- Clear or Dropdown Icon -->
+            <template if:true={showClearButton}>
+              <button
+                class="slds-button slds-button_icon slds-input__icon slds-input__icon_right"
+                title={clearButtonTitle}
+                onclick={handleClear}
+                tabindex="-1"
+              >
+                <lightning-icon
+                  icon-name="utility:clear"
+                  alternative-text={clearButtonTitle}
+                  size="x-small"
+                ></lightning-icon>
+              </button>
+            </template>
+            <template if:false={showClearButton}>
+              <button
+                class="slds-button slds-button_icon slds-input__icon slds-input__icon_right"
+                title={showOptionsTitle}
+                onclick={handleToggle}
+                tabindex="-1"
+              >
+                <lightning-icon
+                  icon-name="utility:down"
+                  alternative-text={showOptionsTitle}
+                  size="x-small"
+                ></lightning-icon>
+              </button>
+            </template>
+          </div>
 
-                    <!-- Dropdown Icon -->
-                    <template if:false={showClearButton}>
-                        <span class="slds-icon_container slds-icon-utility-down slds-input__icon slds-input__icon_right">
-                            <lightning-icon icon-name="utility:down" size="x-small" alternative-text=""></lightning-icon>
+          <!-- Dropdown List (Template Iteration - Simpler) -->
+          <div id="listbox-id" class={dropdownClass} role="listbox">
+            <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+              <!-- Options -->
+              <template if:true={hasOptions}>
+                <template for:each={filteredOptions} for:item="option">
+                  <li
+                    key={option.value}
+                    role="presentation"
+                    class="slds-listbox__item"
+                  >
+                    <div
+                      class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small"
+                      role="option"
+                      data-value={option.value}
+                      onclick={handleOptionSelect}
+                      tabindex="0"
+                    >
+                      <span class="slds-media__body">
+                        <span class="slds-truncate" title={option.label}>
+                          {option.label}
                         </span>
-                    </template>
-                </div>
+                      </span>
+                    </div>
+                  </li>
+                </template>
+              </template>
 
-                <!-- Dropdown Menu -->
-                <div id="listbox-id" class={dropdownClass} role="listbox">
-                    <ul class="slds-listbox slds-listbox_vertical" role="presentation">
-                        <template if:true={hasOptions}>
-                            <template for:each={filteredOptions} for:item="option" for:index="index">
-                                <li key={option.value} role="presentation" class={option.class}>
-                                    <div
-                                        data-value={option.value}
-                                        class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small"
-                                        role="option"
-                                        tabindex="-1"
-                                        onclick={handleOptionClick}>
-                                        <span class="slds-media__body">
-                                            <span class="slds-truncate" title={option.label}>{option.label}</span>
-                                        </span>
-                                    </div>
-                                </li>
-                            </template>
-                        </template>
-                        <template if:false={hasOptions}>
-                            <li role="presentation">
-                                <div class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small" role="option">
-                                    <span class="slds-media__body">
-                                        <span class="slds-truncate">No results found</span>
-                                    </span>
-                                </div>
-                            </li>
-                        </template>
-                    </ul>
-                </div>
-            </div>
+              <!-- No results -->
+              <template if:false={hasOptions}>
+                <li role="presentation" class="slds-listbox__item">
+                  <div class="slds-listbox__option slds-listbox__option_plain">
+                    <span class="slds-truncate slds-text-color_weak">
+                      {noResultsText}
+                    </span>
+                  </div>
+                </li>
+              </template>
+            </ul>
+          </div>
         </div>
+      </div>
     </div>
-</template>
 
+    <!-- Error message -->
+    <template if:true={showErrorMessage}>
+      <div class="slds-form-element__help slds-text-color_error" role="alert">
+        {errorText}
+      </div>
+    </template>
+  </div>
+</template>

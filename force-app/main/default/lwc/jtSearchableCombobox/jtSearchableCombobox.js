@@ -1,178 +1,232 @@
-import { LightningElement, api, track } from 'lwc';
+/**
+ * @description Generic Searchable Combobox (Functional Component)
+ * @author Jaime Terrats
+ * @date 2025-11-30
+ * @pattern Pure Presentation Component
+ * @reusable For configs, users, picklists, etc.
+ *
+ * @fires select - When an option is selected
+ * @fires clear - When selection is cleared
+ *
+ * @example
+ * <c-jt-searchable-combobox
+ *   label="Select Configuration"
+ *   placeholder="Type to search..."
+ *   options={configOptions}
+ *   required
+ *   icon-name="standard:configuration"
+ *   onselect={handleConfigSelect}
+ *   onclear={handleConfigClear}
+ * ></c-jt-searchable-combobox>
+ */
+import { LightningElement, api, track } from "lwc";
 
 export default class JtSearchableCombobox extends LightningElement {
-    @api label = '';
-    @api placeholder = 'Type to search...';
-    @api required = false;
-    @api disabled = false;
-    @api value = '';
-    @api variant = 'standard'; // 'standard' or 'label-hidden'
+  // Public API
+  @api label = "";
+  @api placeholder = "Type to search...";
+  @api required = false;
+  @api iconName = ""; // Optional icon for options
+  @api disabled = false;
+  @api variant = "standard"; // standard | label-hidden
+  @api debugMode = false; // Force dropdown open for CSS debugging
 
-    @track searchTerm = '';
-    @track isOpen = false;
-    @track highlightedIndex = -1;
+  // Translatable texts (passed from parent)
+  @api noResultsText = "No results found";
+  @api errorText = "Please select an option";
+  @api clearButtonTitle = "Clear selection";
+  @api showOptionsTitle = "Show options";
 
-    _options = [];
+  // Options: [{ value, label, ...otherData }]
+  @track _options = [];
 
-    @api
-    get options() {
-        return this._options;
+  @api
+  get options() {
+    return this._options;
+  }
+
+  set options(value) {
+    this._options = value || [];
+    this.filterOptions();
+  }
+
+  // Internal state
+  @track searchTerm = "";
+  @track filteredOptions = [];
+  @track showDropdown = false;
+  @track selectedValue = null;
+  @track selectedLabel = "";
+  @track hasBlurred = false; // Track if user has interacted and left the field
+
+  // Computed properties
+  get hasOptions() {
+    return this.filteredOptions && this.filteredOptions.length > 0;
+  }
+
+  get dropdownClass() {
+    const isOpen = this.debugMode || this.showDropdown;
+    return `slds-dropdown slds-dropdown_fluid ${isOpen ? "slds-is-open" : ""}`;
+  }
+
+  get comboboxClass() {
+    return `slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click ${
+      this.showDropdown ? "slds-is-open" : ""
+    }`;
+  }
+
+  get inputClass() {
+    let classes = "slds-input slds-combobox__input";
+    // Only show error if field has been touched (blurred) and is still invalid
+    if (this.required && !this.selectedValue && this.hasBlurred) {
+      classes += " slds-has-error";
+    }
+    return classes;
+  }
+
+  get showErrorMessage() {
+    return this.required && !this.selectedValue && this.hasBlurred;
+  }
+
+  get showClearButton() {
+    return this.searchTerm.length > 0 || this.selectedValue;
+  }
+
+  get showLabel() {
+    return this.variant !== "label-hidden";
+  }
+
+  get labelClass() {
+    return `slds-form-element__label ${this.required ? "slds-required" : ""}`;
+  }
+
+  // Lifecycle
+  connectedCallback() {
+    this.filterOptions();
+  }
+
+  // Event Handlers (Pure - No side effects, just emit events)
+  handleInput(event) {
+    this.searchTerm = event.target.value;
+    this.filterOptions();
+    this.showDropdown = true;
+    // Clear error state when user starts typing
+    if (this.hasBlurred && this.searchTerm) {
+      this.hasBlurred = false;
+    }
+  }
+
+  handleFocus() {
+    this.filterOptions();
+    this.showDropdown = true;
+    // Clear error state when field gains focus
+    this.hasBlurred = false;
+  }
+
+  handleBlur() {
+    // Mark as touched for validation
+    this.hasBlurred = true;
+
+    // Delay to allow option click
+    setTimeout(() => {
+      this.showDropdown = false;
+    }, 250);
+  }
+
+  handleToggle(event) {
+    event.stopPropagation();
+    this.showDropdown = !this.showDropdown;
+
+    if (this.showDropdown) {
+      this.filterOptions();
+      // Focus input
+      const input = this.template.querySelector("input");
+      if (input) {
+        setTimeout(() => input.focus(), 50);
+      }
+    }
+  }
+
+  handleClear(event) {
+    event.stopPropagation();
+    this.reset();
+
+    // Emit clear event
+    this.dispatchEvent(new CustomEvent("clear"));
+  }
+
+  handleOptionSelect(event) {
+    const value = event.currentTarget.dataset.value;
+    const selected = this._options.find((opt) => opt.value === value);
+
+    if (selected) {
+      this.selectedValue = selected.value;
+      this.selectedLabel = selected.label;
+      this.searchTerm = selected.label;
+      this.showDropdown = false;
+      this.hasBlurred = false; // Clear error state on valid selection
+
+      // Emit selection event with ALL data from option
+      this.dispatchEvent(
+        new CustomEvent("select", {
+          detail: {
+            value: selected.value,
+            label: selected.label,
+            data: selected // Pass entire object for flexibility
+          }
+        })
+      );
+    }
+  }
+
+  // Helper Methods (Pure Functions)
+  filterOptions() {
+    const term = (this.searchTerm || "").toLowerCase().trim();
+
+    if (!this._options || this._options.length === 0) {
+      this.filteredOptions = [];
+      return;
     }
 
-    set options(value) {
-        this._options = value || [];
+    if (!term) {
+      this.filteredOptions = [...this._options];
+    } else {
+      this.filteredOptions = this._options.filter((opt) => {
+        const label = (opt.label || "").toLowerCase();
+        const value = (opt.value || "").toLowerCase();
+        return label.includes(term) || value.includes(term);
+      });
     }
+  }
 
-    get filteredOptions() {
-        if (!this.searchTerm) {
-            return this._options;
-        }
-
-        const term = this.searchTerm.toLowerCase();
-        return this._options.filter(opt =>
-            opt.label.toLowerCase().includes(term) ||
-            (opt.value && opt.value.toLowerCase().includes(term))
-        );
+  // Public API Methods
+  @api
+  validate() {
+    if (this.required && !this.selectedValue) {
+      return {
+        valid: false,
+        message: "Please select an option"
+      };
     }
+    return { valid: true };
+  }
 
-    get hasOptions() {
-        return this.filteredOptions && this.filteredOptions.length > 0;
-    }
+  @api
+  reset() {
+    this.searchTerm = "";
+    this.selectedValue = null;
+    this.selectedLabel = "";
+    this.showDropdown = false;
+    this.hasBlurred = false; // Reset validation state
+    this.filterOptions();
+  }
 
-    get selectedLabel() {
-        if (!this.value) return '';
-        const selected = this._options.find(opt => opt.value === this.value);
-        return selected ? selected.label : '';
-    }
+  @api
+  getValue() {
+    return this.selectedValue;
+  }
 
-    get showClearButton() {
-        return this.value && !this.disabled;
-    }
-
-    get dropdownClass() {
-        return `slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid ${this.isOpen ? 'slds-is-open' : ''}`;
-    }
-
-    get comboboxClass() {
-        return `slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click ${this.isOpen ? 'slds-is-open' : ''}`;
-    }
-
-    handleInputFocus(event) {
-        this.isOpen = true;
-
-        // Clear validation state when input receives focus
-        if (this.required && event.target) {
-            event.target.setCustomValidity('');
-        }
-    }
-
-    handleInputChange(event) {
-        this.searchTerm = event.target.value;
-        this.isOpen = true;
-        this.highlightedIndex = 0;
-
-        // Clear validation state when user types
-        if (this.required && event.target) {
-            event.target.setCustomValidity('');
-        }
-    }
-
-    handleInputKeyDown(event) {
-        if (!this.isOpen) {
-            if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
-                this.isOpen = true;
-                event.preventDefault();
-                return;
-            }
-        }
-
-        const options = this.filteredOptions;
-
-        switch(event.key) {
-            case 'ArrowDown':
-                event.preventDefault();
-                this.highlightedIndex = Math.min(this.highlightedIndex + 1, options.length - 1);
-                this.scrollToHighlighted();
-                break;
-            case 'ArrowUp':
-                event.preventDefault();
-                this.highlightedIndex = Math.max(this.highlightedIndex - 1, 0);
-                this.scrollToHighlighted();
-                break;
-            case 'Enter':
-                event.preventDefault();
-                if (this.highlightedIndex >= 0 && options[this.highlightedIndex]) {
-                    this.selectOption(options[this.highlightedIndex]);
-                }
-                break;
-            case 'Escape':
-                this.isOpen = false;
-                break;
-        }
-    }
-
-    scrollToHighlighted() {
-        setTimeout(() => {
-            const highlighted = this.template.querySelector('.slds-has-focus');
-            if (highlighted) {
-                highlighted.scrollIntoView({ block: 'nearest' });
-            }
-        }, 0);
-    }
-
-    handleOptionClick(event) {
-        const value = event.currentTarget.dataset.value;
-        const option = this._options.find(opt => opt.value === value);
-        if (option) {
-            this.selectOption(option);
-        }
-    }
-
-    selectOption(option) {
-        this.value = option.value;
-        this.searchTerm = option.label;
-        this.isOpen = false;
-
-        // Dispatch change event
-        this.dispatchEvent(new CustomEvent('change', {
-            detail: { value: option.value }
-        }));
-    }
-
-    handleClear() {
-        this.value = '';
-        this.searchTerm = '';
-        this.isOpen = false;
-
-        // Dispatch change event
-        this.dispatchEvent(new CustomEvent('change', {
-            detail: { value: '' }
-        }));
-
-        // Focus back on input
-        const input = this.template.querySelector('input');
-        if (input) {
-            input.focus();
-        }
-    }
-
-    handleBlur() {
-        // Delay to allow click on option
-        setTimeout(() => {
-            this.isOpen = false;
-
-            // If no value selected, clear search term
-            if (!this.value) {
-                this.searchTerm = '';
-            } else {
-                // Restore selected label if user didn't select anything
-                this.searchTerm = this.selectedLabel;
-            }
-        }, 200);
-    }
-
-    getOptionClass(index) {
-        return `slds-listbox__item ${index === this.highlightedIndex ? 'slds-has-focus' : ''}`;
-    }
+  @api
+  getLabel() {
+    return this.selectedLabel;
+  }
 }
-

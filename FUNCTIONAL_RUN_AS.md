@@ -7,6 +7,7 @@ Este documento explica el enfoque funcional para ejecutar queries con `System.ru
 ## ¿Por qué Programación Funcional?
 
 ### Problemas del Enfoque Imperativo:
+
 ```apex
 // ❌ Imperativo: complejo, mutable, propenso a errores
 public static void executeAsUser(String userId) {
@@ -20,6 +21,7 @@ public static void executeAsUser(String userId) {
 ```
 
 **Desventajas**:
+
 - Requiere Named Credentials
 - Código complejo y difícil de mantener
 - Difícil de testear
@@ -27,6 +29,7 @@ public static void executeAsUser(String userId) {
 - Alto acoplamiento
 
 ### Ventajas del Enfoque Funcional:
+
 ```apex
 // ✅ Funcional: simple, inmutable, composable
 public static TestResult executeAsUser(String userId, String configName) {
@@ -40,6 +43,7 @@ public static TestResult executeAsUser(String userId, String configName) {
 ```
 
 **Ventajas**:
+
 - Código declarativo y legible
 - Fácil de testear (funciones puras)
 - Composición de operaciones
@@ -79,12 +83,14 @@ public static TestResult executeAsUser(String userId, String configName) {
 ### 1. JT_RunAsTestExecutor (Orquestador)
 
 **Responsabilidades**:
+
 - Validación funcional de permisos
 - Paso de datos inmutable via Platform Cache
 - Ejecución asíncrona con Queueable
 - Recuperación funcional de resultados
 
 **Código clave**:
+
 ```apex
 @AuraEnabled
 public static TestExecutionResult executeAsUser(
@@ -103,11 +109,13 @@ public static TestExecutionResult executeAsUser(
 ### 2. JT_GenericRunAsTest (Ejecutor)
 
 **Responsabilidades**:
+
 - Lectura funcional de parámetros
 - Ejecución con `System.runAs()` **real**
 - Almacenamiento inmutable de resultados
 
 **Código clave**:
+
 ```apex
 @isTest
 static void executeRunAsTest() {
@@ -123,21 +131,23 @@ static void executeRunAsTest() {
 ### 3. Functional Patterns Usados
 
 #### a) Immutable Data Classes
+
 ```apex
 private class TestParameters {
-    public final String userId;        // Inmutable
-    public final String configName;    // Inmutable
-    public final String bindingsJson;  // Inmutable
+  public final String userId; // Inmutable
+  public final String configName; // Inmutable
+  public final String bindingsJson; // Inmutable
 
-    public TestParameters(String userId, String configName, String bindingsJson) {
-        this.userId = userId;
-        this.configName = configName;
-        this.bindingsJson = bindingsJson;
-    }
+  public TestParameters(String userId, String configName, String bindingsJson) {
+    this.userId = userId;
+    this.configName = configName;
+    this.bindingsJson = bindingsJson;
+  }
 }
 ```
 
 #### b) Pure Functions
+
 ```apex
 // Pure function: mismo input → mismo output, sin side effects
 private static User validateUser(TestParameters params) {
@@ -146,6 +156,7 @@ private static User validateUser(TestParameters params) {
 ```
 
 #### c) Function Composition
+
 ```apex
 // Composición de funciones
 TestResult result = pipe(
@@ -157,6 +168,7 @@ TestResult result = pipe(
 ```
 
 #### d) Higher-Order Functions
+
 ```apex
 // Función que retorna función
 private static Queueable createExecutor(String userId, String configName) {
@@ -167,19 +179,21 @@ private static Queueable createExecutor(String userId, String configName) {
 ## Flujo de Ejecución
 
 ### 1. Trigger Execution (LWC)
+
 ```javascript
 // Usuario hace clic en "Run As User"
 const result = await executeAsUser({
-    userId: selectedUserId,
-    configName: selectedConfig,
-    bindingsJson: JSON.stringify(bindings)
+  userId: selectedUserId,
+  configName: selectedConfig,
+  bindingsJson: JSON.stringify(bindings)
 });
 
 // Result contiene jobId
-console.log('Job ID:', result.jobId);
+console.log("Job ID:", result.jobId);
 ```
 
 ### 2. Store Parameters (Functional)
+
 ```apex
 // Almacenamiento inmutable en Platform Cache
 Cache.Org.put('RunAsTest_' + userId, new Map<String, Object>{
@@ -191,17 +205,19 @@ Cache.Org.put('RunAsTest_' + userId, new Map<String, Object>{
 ```
 
 ### 3. Enqueue Test (Async)
+
 ```apex
 // Queueable para ejecución asíncrona
 public class RunAsTestQueueable implements Queueable {
-    public void execute(QueueableContext context) {
-        // Ejecuta el test genérico
-        Test.runTests(new List<Id>{ testClassId });
-    }
+  public void execute(QueueableContext context) {
+    // Ejecuta el test genérico
+    Test.runTests(new List<Id>{ testClassId });
+  }
 }
 ```
 
 ### 4. Execute with System.runAs (Test Context)
+
 ```apex
 @isTest
 static void executeRunAsTest() {
@@ -216,6 +232,7 @@ static void executeRunAsTest() {
 ```
 
 ### 5. Store Results (Functional)
+
 ```apex
 // Almacenamiento funcional de resultados
 Cache.Org.put('RunAsTestResult_' + userId, new Map<String, Object>{
@@ -227,28 +244,31 @@ Cache.Org.put('RunAsTestResult_' + userId, new Map<String, Object>{
 ```
 
 ### 6. Poll for Results (LWC)
+
 ```javascript
 // Polling funcional
 const pollResults = async () => {
-    const result = await getTestResults({ userId: selectedUserId });
+  const result = await getTestResults({ userId: selectedUserId });
 
-    if (result.success) {
-        displayResults(result);
-    } else if (!result.message.includes('No results')) {
-        setTimeout(pollResults, 2000); // Poll cada 2 segundos
-    }
+  if (result.success) {
+    displayResults(result);
+  } else if (!result.message.includes("No results")) {
+    setTimeout(pollResults, 2000); // Poll cada 2 segundos
+  }
 };
 ```
 
 ## Ventajas del Enfoque Funcional
 
 ### 1. Simplicidad
+
 ```apex
 // Antes (Imperativo): 200+ líneas
 // Después (Funcional): 50 líneas core + 30 líneas utilities
 ```
 
 ### 2. Testability
+
 ```apex
 @isTest
 static void testValidateUser() {
@@ -259,6 +279,7 @@ static void testValidateUser() {
 ```
 
 ### 3. Composability
+
 ```apex
 // Funciones se pueden combinar fácilmente
 Function<TestParams, User> validator = JT_GenericRunAsTest::validateUser;
@@ -266,6 +287,7 @@ Function<User, QueryResult> executor = u => executeQuery(u, params);
 ```
 
 ### 4. Immutability
+
 ```apex
 // Una vez creado, no se modifica
 TestParameters params = new TestParameters(userId, config, bindings);
@@ -273,6 +295,7 @@ TestParameters params = new TestParameters(userId, config, bindings);
 ```
 
 ### 5. No Side Effects (donde es posible)
+
 ```apex
 // Pure function: no modifica estado externo
 private static Integer calculateRecordCount(List<SObject> records) {
@@ -283,18 +306,21 @@ private static Integer calculateRecordCount(List<SObject> records) {
 ## Limitaciones y Trade-offs
 
 ### ✅ Lo que SÍ hace:
+
 - Usa `System.runAs()` **real** en contexto de test
 - Programación funcional donde Apex lo permite
 - Código más limpio y mantenible
 - Testing más simple
 
 ### ❌ Limitaciones:
+
 - Ejecución asíncrona (no inmediata)
 - Requiere polling para resultados
 - Platform Cache tiene límites de tamaño
 - Apex no tiene true generics (limitaciones funcionales)
 
 ### 🔄 Trade-offs:
+
 - **Antes**: Síncrono pero complejo
 - **Después**: Asíncrono pero simple
 
@@ -331,21 +357,22 @@ pollForResults() {
 
 ## Comparación: Imperativo vs Funcional
 
-| Aspecto | Imperativo | Funcional |
-|---------|------------|-----------|
-| **Líneas de código** | 300+ | 120 |
-| **Complejidad** | Alta | Baja |
-| **Testability** | Difícil | Fácil |
-| **Mantenibilidad** | Baja | Alta |
-| **State management** | Mutable | Immutable |
-| **Composición** | Difícil | Natural |
-| **Side effects** | Muchos | Minimizados |
-| **Named Credentials** | Requerido | No requerido |
-| **Tooling API** | Sí | No |
+| Aspecto               | Imperativo | Funcional    |
+| --------------------- | ---------- | ------------ |
+| **Líneas de código**  | 300+       | 120          |
+| **Complejidad**       | Alta       | Baja         |
+| **Testability**       | Difícil    | Fácil        |
+| **Mantenibilidad**    | Baja       | Alta         |
+| **State management**  | Mutable    | Immutable    |
+| **Composición**       | Difícil    | Natural      |
+| **Side effects**      | Muchos     | Minimizados  |
+| **Named Credentials** | Requerido  | No requerido |
+| **Tooling API**       | Sí         | No           |
 
 ## Principios Funcionales Aplicados
 
 ### 1. **Pure Functions**
+
 ```apex
 // Input → Output, sin side effects
 private static Integer countRecords(List<SObject> records) {
@@ -354,12 +381,15 @@ private static Integer countRecords(List<SObject> records) {
 ```
 
 ### 2. **Immutability**
+
 ```apex
 // Una vez creado, no se modifica
-public final class TestParameters { /* ... */ }
+public final class TestParameters /* ... */ {
+}
 ```
 
 ### 3. **First-Class Functions**
+
 ```apex
 // Funciones como parámetros (limitado en Apex)
 private static TestResult pipe(
@@ -369,12 +399,14 @@ private static TestResult pipe(
 ```
 
 ### 4. **Function Composition**
+
 ```apex
 // Combinación de funciones pequeñas
 result = compose(getData, validate, transform, store);
 ```
 
 ### 5. **Declarative vs Imperative**
+
 ```apex
 // Declarativo: QUÉ hacer
 User user = validateUser(params);
@@ -405,4 +437,3 @@ Si bien Apex tiene limitaciones para programación funcional pura (no true gener
 **Autor**: Jaime Terrats
 **Fecha**: 29 de Noviembre, 2025
 **Versión**: 1.0
-

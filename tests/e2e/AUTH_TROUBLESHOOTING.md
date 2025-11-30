@@ -44,23 +44,24 @@ await page.goto(url);  // Ya autenticado
 ### Se requieren múltiples cookies
 
 Salesforce Lightning requiere:
+
 - `sid` - Session ID principal
 - `sid_Client` - Session ID del cliente
 
 ```javascript
 await page.context().addCookies([
-    {
-        name: 'sid',
-        value: session.accessToken,
-        domain: hostname,
-        sameSite: 'None'  // Importante!
-    },
-    {
-        name: 'sid_Client',
-        value: session.accessToken,
-        domain: hostname,
-        sameSite: 'None'  // Importante!
-    }
+  {
+    name: "sid",
+    value: session.accessToken,
+    domain: hostname,
+    sameSite: "None" // Importante!
+  },
+  {
+    name: "sid_Client",
+    value: session.accessToken,
+    domain: hostname,
+    sameSite: "None" // Importante!
+  }
 ]);
 ```
 
@@ -75,11 +76,12 @@ sf org display --json
 ```
 
 Debe mostrar:
+
 ```json
 {
   "status": 0,
   "result": {
-    "accessToken": "00D...",  // ← Debe tener un token válido
+    "accessToken": "00D...", // ← Debe tener un token válido
     "instanceUrl": "https://...",
     "username": "tu@email.com"
   }
@@ -87,6 +89,7 @@ Debe mostrar:
 ```
 
 Si `accessToken` es null o no existe:
+
 ```bash
 # Re-autentica
 sf org login web
@@ -100,6 +103,7 @@ sf org display --target-org tu@email.com
 ```
 
 Si dice "expired" o "invalid":
+
 ```bash
 # Re-autentica
 sf org login web --set-default
@@ -111,49 +115,51 @@ Crea este archivo de prueba:
 
 ```javascript
 // test-auth.js
-const { chromium } = require('playwright');
-const { getSFSession } = require('./tests/e2e/utils/sfAuth');
+const { chromium } = require("playwright");
+const { getSFSession } = require("./tests/e2e/utils/sfAuth");
 
 (async () => {
-    const session = getSFSession();
-    console.log('Session:', session);
+  const session = getSFSession();
+  console.log("Session:", session);
 
-    const browser = await chromium.launch({ headless: false });
-    const context = await browser.newContext();
-    const page = await context.newPage();
+  const browser = await chromium.launch({ headless: false });
+  const context = await browser.newContext();
+  const page = await context.newPage();
 
-    // Add cookies BEFORE navigation
-    await context.addCookies([
-        {
-            name: 'sid',
-            value: session.accessToken,
-            domain: new URL(session.instanceUrl).hostname,
-            path: '/',
-            secure: true,
-            sameSite: 'None'
-        }
-    ]);
-
-    // Navigate
-    await page.goto(session.instanceUrl + '/lightning/page/home');
-
-    // Check if authenticated
-    const isLoginPage = await page.locator('input[type="password"]')
-                                   .isVisible({ timeout: 5000 })
-                                   .catch(() => false);
-
-    if (isLoginPage) {
-        console.log('❌ FAILED - Still on login page');
-    } else {
-        console.log('✅ SUCCESS - Authenticated!');
+  // Add cookies BEFORE navigation
+  await context.addCookies([
+    {
+      name: "sid",
+      value: session.accessToken,
+      domain: new URL(session.instanceUrl).hostname,
+      path: "/",
+      secure: true,
+      sameSite: "None"
     }
+  ]);
 
-    await page.waitForTimeout(5000);
-    await browser.close();
+  // Navigate
+  await page.goto(session.instanceUrl + "/lightning/page/home");
+
+  // Check if authenticated
+  const isLoginPage = await page
+    .locator('input[type="password"]')
+    .isVisible({ timeout: 5000 })
+    .catch(() => false);
+
+  if (isLoginPage) {
+    console.log("❌ FAILED - Still on login page");
+  } else {
+    console.log("✅ SUCCESS - Authenticated!");
+  }
+
+  await page.waitForTimeout(5000);
+  await browser.close();
 })();
 ```
 
 Ejecuta:
+
 ```bash
 node test-auth.js
 ```
@@ -203,15 +209,16 @@ El código actualizado incluye una verificación:
 
 ```javascript
 // Después de navegar, verifica si estás en login
-const isLoginPage = await page.locator('input[type="password"]')
-                               .isVisible({ timeout: 2000 })
-                               .catch(() => false);
+const isLoginPage = await page
+  .locator('input[type="password"]')
+  .isVisible({ timeout: 2000 })
+  .catch(() => false);
 
 if (isLoginPage) {
-    throw new Error('Authentication failed - still on login page');
+  throw new Error("Authentication failed - still on login page");
 }
 
-console.log('✅ Authenticated successfully - no login required');
+console.log("✅ Authenticated successfully - no login required");
 ```
 
 Si ves este error, significa que las cookies no funcionaron.
@@ -230,7 +237,7 @@ Si ves este error, significa que las cookies no funcionaron.
 // El domain será diferente pero el proceso es igual
 const url = new URL(session.instanceUrl);
 {
-    domain: url.hostname  // Se ajusta automáticamente
+  domain: url.hostname; // Se ajusta automáticamente
 }
 ```
 
@@ -269,6 +276,7 @@ Cuando veas la página de login, verifica en orden:
 ## 🚨 Errores Comunes
 
 ### Error 1: "accessToken is null"
+
 ```bash
 # Causa: No hay sesión activa
 # Solución:
@@ -276,6 +284,7 @@ sf org login web --set-default
 ```
 
 ### Error 2: "Invalid session ID"
+
 ```bash
 # Causa: Token expiró
 # Solución:
@@ -283,12 +292,14 @@ sf org login web --set-default
 ```
 
 ### Error 3: "Still redirects to login"
+
 ```bash
 # Causa: Cookies inyectadas después de navegar
 # Solución: Usa código actualizado (cookies ANTES de goto)
 ```
 
 ### Error 4: "CORS errors"
+
 ```bash
 # Causa: sameSite policy incorrecto
 # Solución: sameSite: 'None' con secure: true
@@ -310,6 +321,7 @@ Después de aplicar la solución, deberías ver:
 ```
 
 **NO deberías ver**:
+
 - ❌ Página de login
 - ❌ Input de username/password
 - ❌ "Login to Salesforce"
@@ -322,43 +334,44 @@ Después de aplicar la solución, deberías ver:
 
 ```javascript
 async function injectSFSession(page, session) {
-    const url = new URL(session.instanceUrl);
+  const url = new URL(session.instanceUrl);
 
-    // 1. PRIMERO: Agrega cookies
-    await page.context().addCookies([
-        {
-            name: 'sid',
-            value: session.accessToken,
-            domain: url.hostname,
-            path: '/',
-            httpOnly: false,
-            secure: true,
-            sameSite: 'None'
-        },
-        {
-            name: 'sid_Client',
-            value: session.accessToken,
-            domain: url.hostname,
-            path: '/',
-            httpOnly: false,
-            secure: true,
-            sameSite: 'None'
-        }
-    ]);
-
-    // 2. DESPUÉS: Navega (ya autenticado)
-    await page.goto(session.instanceUrl + '/lightning/page/home');
-
-    // 3. Verifica que no estás en login
-    const isLoginPage = await page.locator('input[type="password"]')
-                                   .isVisible({ timeout: 2000 })
-                                   .catch(() => false);
-
-    if (isLoginPage) {
-        throw new Error('Authentication failed');
+  // 1. PRIMERO: Agrega cookies
+  await page.context().addCookies([
+    {
+      name: "sid",
+      value: session.accessToken,
+      domain: url.hostname,
+      path: "/",
+      httpOnly: false,
+      secure: true,
+      sameSite: "None"
+    },
+    {
+      name: "sid_Client",
+      value: session.accessToken,
+      domain: url.hostname,
+      path: "/",
+      httpOnly: false,
+      secure: true,
+      sameSite: "None"
     }
+  ]);
 
-    console.log('✅ Authenticated successfully');
+  // 2. DESPUÉS: Navega (ya autenticado)
+  await page.goto(session.instanceUrl + "/lightning/page/home");
+
+  // 3. Verifica que no estás en login
+  const isLoginPage = await page
+    .locator('input[type="password"]')
+    .isVisible({ timeout: 2000 })
+    .catch(() => false);
+
+  if (isLoginPage) {
+    throw new Error("Authentication failed");
+  }
+
+  console.log("✅ Authenticated successfully");
 }
 ```
 
@@ -367,18 +380,21 @@ async function injectSFSession(page, session) {
 ## 💡 Pro Tips
 
 1. **Refresca tu sesión regularmente**
+
    ```bash
    # Cada 2 horas en desarrollo
    sf org login web --set-default
    ```
 
 2. **Usa org alias**
+
    ```bash
    sf org login web --set-default --alias myorg
    sf config set target-org myorg
    ```
 
 3. **Guarda múltiples orgs**
+
    ```bash
    sf org list  # Ver todas las orgs guardadas
    sf config set target-org otra@org.com  # Cambiar rápido
@@ -401,9 +417,9 @@ async function injectSFSession(page, session) {
 ---
 
 **Si sigues teniendo problemas**, ejecuta:
+
 ```bash
 node test-auth.js  # Script de debug manual
 ```
 
 Y comparte el output para debugging adicional.
-

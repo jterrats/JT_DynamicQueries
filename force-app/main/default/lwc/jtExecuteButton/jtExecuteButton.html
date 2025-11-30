@@ -1,0 +1,20 @@
+<template>
+  <div class={buttonClass}>
+    <lightning-button
+      label={label}
+      variant={variant}
+      icon-name={iconName}
+      disabled={isDisabled}
+      onclick={handleClick}
+      class="slds-m-right_small"
+    ></lightning-button>
+
+    <template if:true={showSpinner}>
+      <lightning-spinner
+        alternative-text="Loading"
+        size="small"
+        class="slds-m-left_small"
+      ></lightning-spinner>
+    </template>
+  </div>
+</template>

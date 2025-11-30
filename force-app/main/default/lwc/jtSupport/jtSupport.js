@@ -1,24 +1,24 @@
-import { LightningElement } from 'lwc';
-import { getLabels } from './labels';
+import { LightningElement } from "lwc";
+import { getLabels } from "./labels";
 
 export default class JtSupport extends LightningElement {
-    labels = getLabels();
+  labels = getLabels();
 
-    // GitHub repository URL
-    githubIssuesUrl = 'https://github.com/jterrats/JT_DynamicQueries/issues';
-    githubNewIssueUrl = 'https://github.com/jterrats/JT_DynamicQueries/issues/new';
-    githubRepoUrl = 'https://github.com/jterrats/JT_DynamicQueries';
+  // GitHub repository URL
+  githubIssuesUrl = "https://github.com/jterrats/JT_DynamicQueries/issues";
+  githubNewIssueUrl =
+    "https://github.com/jterrats/JT_DynamicQueries/issues/new";
+  githubRepoUrl = "https://github.com/jterrats/JT_DynamicQueries";
 
-    handleNavigateToIssues() {
-        window.open(this.githubIssuesUrl, '_blank');
-    }
+  handleNavigateToIssues() {
+    window.open(this.githubIssuesUrl, "_blank");
+  }
 
-    handleNavigateToNewIssue() {
-        window.open(this.githubNewIssueUrl, '_blank');
-    }
+  handleNavigateToNewIssue() {
+    window.open(this.githubNewIssueUrl, "_blank");
+  }
 
-    handleNavigateToRepo() {
-        window.open(this.githubRepoUrl, '_blank');
-    }
+  handleNavigateToRepo() {
+    window.open(this.githubRepoUrl, "_blank");
+  }
 }
-

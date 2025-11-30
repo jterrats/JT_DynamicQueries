@@ -51,10 +51,10 @@ Sistema funcional para ejecutar queries con `System.runAs()` real que serializa 
 
 ```json
 {
-    "userId": "005...",
-    "configName": "Get_Accounts",
-    "bindingsJson": "{\"name\":\"Acme Corp\"}",
-    "timestamp": 1234567890
+  "userId": "005...",
+  "configName": "Get_Accounts",
+  "bindingsJson": "{\"name\":\"Acme Corp\"}",
+  "timestamp": 1234567890
 }
 ```
 
@@ -64,31 +64,31 @@ Sistema funcional para ejecutar queries con `System.runAs()` real que serializa 
 
 ```json
 {
-    "success": true,
-    "recordCount": 3,
-    "errorMessage": null,
-    "executionTime": 245,
-    "runAsUser": "John Doe",
-    "timestamp": 1234567890,
-    "fields": ["Id", "Name", "CreatedDate", "Owner.Name"],
-    "records": [
-        {
-            "Id": "001...",
-            "Name": "Acme Corp",
-            "CreatedDate": "2025-11-29T10:00:00.000Z",
-            "Owner": {
-                "Name": "John Doe"
-            }
-        },
-        {
-            "Id": "001...",
-            "Name": "Global Industries",
-            "CreatedDate": "2025-11-28T15:30:00.000Z",
-            "Owner": {
-                "Name": "Jane Smith"
-            }
-        }
-    ]
+  "success": true,
+  "recordCount": 3,
+  "errorMessage": null,
+  "executionTime": 245,
+  "runAsUser": "John Doe",
+  "timestamp": 1234567890,
+  "fields": ["Id", "Name", "CreatedDate", "Owner.Name"],
+  "records": [
+    {
+      "Id": "001...",
+      "Name": "Acme Corp",
+      "CreatedDate": "2025-11-29T10:00:00.000Z",
+      "Owner": {
+        "Name": "John Doe"
+      }
+    },
+    {
+      "Id": "001...",
+      "Name": "Global Industries",
+      "CreatedDate": "2025-11-28T15:30:00.000Z",
+      "Owner": {
+        "Name": "Jane Smith"
+      }
+    }
+  ]
 }
 ```
 
@@ -256,9 +256,9 @@ processTestQueryResults(result) {
 ```apex
 // All parameters passed as immutable
 public class TestParameters {
-    public final String userId;
-    public final String configName;
-    public final String bindingsJson;
+  public final String userId;
+  public final String configName;
+  public final String bindingsJson;
 }
 ```
 
@@ -312,19 +312,21 @@ private static Map<String, Object> flattenSObject(SObject obj) {
 ```
 
 **Input:**
+
 ```apex
 Account acc = [SELECT Id, Name, Owner.Name, Owner.Email FROM Account LIMIT 1];
 ```
 
 **Output JSON:**
+
 ```json
 {
-    "Id": "001...",
-    "Name": "Acme Corp",
-    "Owner": {
-        "Name": "John Doe",
-        "Email": "john@example.com"
-    }
+  "Id": "001...",
+  "Name": "Acme Corp",
+  "Owner": {
+    "Name": "John Doe",
+    "Email": "john@example.com"
+  }
 }
 ```
 
@@ -333,20 +335,20 @@ Account acc = [SELECT Id, Name, Owner.Name, Owner.Email FROM Account LIMIT 1];
 ```javascript
 // Transform JSON records to datatable format
 this.queryResults = result.records.map((record, index) => {
-    const row = {
-        Id: record.Id || `temp_${index}`,  // Ensure unique key
-        Name: record.Name,
-        CreatedDate: record.CreatedDate,
-        OwnerName: record.Owner?.Name       // Handle relationships
-    };
-    return row;
+  const row = {
+    Id: record.Id || `temp_${index}`, // Ensure unique key
+    Name: record.Name,
+    CreatedDate: record.CreatedDate,
+    OwnerName: record.Owner?.Name // Handle relationships
+  };
+  return row;
 });
 
 // Define columns
 this.columns = [
-    { label: 'Name', fieldName: 'Name', type: 'text' },
-    { label: 'Created Date', fieldName: 'CreatedDate', type: 'date' },
-    { label: 'Owner', fieldName: 'OwnerName', type: 'text' }
+  { label: "Name", fieldName: "Name", type: "text" },
+  { label: "Created Date", fieldName: "CreatedDate", type: "date" },
+  { label: "Owner", fieldName: "OwnerName", type: "text" }
 ];
 ```
 
@@ -368,12 +370,12 @@ this.columns = [
 
 ```json
 {
-    "success": false,
-    "recordCount": 0,
-    "records": [],
-    "fields": [],
-    "errorMessage": "System.QueryException: List has no rows for assignment",
-    "assertMessage": "FAILURE: System.QueryException: List has no rows for assignment"
+  "success": false,
+  "recordCount": 0,
+  "records": [],
+  "fields": [],
+  "errorMessage": "System.QueryException: List has no rows for assignment",
+  "assertMessage": "FAILURE: System.QueryException: List has no rows for assignment"
 }
 ```
 
@@ -412,7 +414,7 @@ System.debug(resultJson);
 ```javascript
 // Click "Execute with System.runAs (Test)"
 // Watch browser console for JSON results
-console.log('Test Results:', result);
+console.log("Test Results:", result);
 ```
 
 ## Advantages of JSON Serialization
@@ -448,34 +450,34 @@ console.log('Test Results:', result);
 ```javascript
 // LWC calls
 executeAsUser({
-    userId: '005xxx',
-    configName: 'Get_Accounts',
-    bindingsJson: '{"name":"Acme%"}'
-})
+  userId: "005xxx",
+  configName: "Get_Accounts",
+  bindingsJson: '{"name":"Acme%"}'
+});
 ```
 
 ### Result
 
 ```json
 {
-    "success": true,
-    "recordCount": 2,
-    "executionTime": 156,
-    "runAsUser": "John Doe",
-    "assertMessage": "SUCCESS: Found 2 record(s) as John Doe",
-    "fields": ["Id", "Name", "Industry"],
-    "records": [
-        {
-            "Id": "001xxx",
-            "Name": "Acme Corp",
-            "Industry": "Technology"
-        },
-        {
-            "Id": "001yyy",
-            "Name": "Acme Industries",
-            "Industry": "Manufacturing"
-        }
-    ]
+  "success": true,
+  "recordCount": 2,
+  "executionTime": 156,
+  "runAsUser": "John Doe",
+  "assertMessage": "SUCCESS: Found 2 record(s) as John Doe",
+  "fields": ["Id", "Name", "Industry"],
+  "records": [
+    {
+      "Id": "001xxx",
+      "Name": "Acme Corp",
+      "Industry": "Technology"
+    },
+    {
+      "Id": "001yyy",
+      "Name": "Acme Industries",
+      "Industry": "Manufacturing"
+    }
+  ]
 }
 ```
 
@@ -483,10 +485,11 @@ executeAsUser({
 
 ```html
 <lightning-datatable
-    key-field="Id"
-    data={queryResults}
-    columns={columns}
-    hide-checkbox-column>
+  key-field="Id"
+  data="{queryResults}"
+  columns="{columns}"
+  hide-checkbox-column
+>
 </lightning-datatable>
 ```
 
@@ -507,4 +510,3 @@ Este enfoque funcional con serialización JSON proporciona:
 **Autor**: Jaime Terrats
 **Fecha**: 29 de Noviembre, 2025
 **Versión**: 1.0
-

@@ -1,0 +1,49 @@
+<template>
+  <template if:true={hasParameters}>
+    <div class="parameters-container">
+      <!-- Header -->
+      <div class="slds-text-heading_small slds-p-bottom_small">
+        <lightning-icon
+          icon-name="utility:text"
+          size="x-small"
+          class="slds-m-right_xx-small"
+        ></lightning-icon>
+        <strong>{title}</strong>
+      </div>
+
+      <!-- Parameters Grid -->
+      <lightning-layout multiple-rows>
+        <template for:each={parametersWithValues} for:item="param">
+          <lightning-layout-item
+            key={param.name}
+            size="12"
+            medium-device-size="6"
+            class="slds-p-right_small slds-p-bottom_small"
+          >
+            <lightning-input
+              type="text"
+              label={param.label}
+              value={param.value}
+              data-param={param.name}
+              onchange={handleInputChange}
+              placeholder={param.name}
+              required={param.required}
+              aria-required={param.required}
+              field-level-help={param.helpText}
+            >
+            </lightning-input>
+          </lightning-layout-item>
+        </template>
+      </lightning-layout>
+    </div>
+  </template>
+
+  <!-- Empty State (optional, for debugging) -->
+  <template if:false={hasParameters}>
+    <div
+      class="slds-text-body_small slds-text-color_weak slds-p-vertical_small"
+    >
+      {noParametersText}
+    </div>
+  </template>
+</template>

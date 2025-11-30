@@ -3,6 +3,7 @@
 ## ✅ LOGROS COMPLETADOS
 
 ### 1. ✅ Autenticación con SF CLI (RESUELTO)
+
 **Problema**: Tests iban a la página de login  
 **Solución**: Inyectar cookies ANTES de navegar
 
@@ -18,6 +19,7 @@ await page.goto(url); // Ya autenticado
 ```
 
 ### 2. ✅ Permission Set Auto-Asignado (RESUELTO)
+
 **Problema**: Usuario podría no tener el Permission Set  
 **Solución**: Script Apex que lo asigna automáticamente
 
@@ -28,11 +30,13 @@ assignPermissionSet(); // ✅ Auto-asigna si no lo tiene
 ```
 
 **Output**:
+
 ```
 ✅ Permission Set "JT_Dynamic_Queries" assigned to user
 ```
 
 ### 3. ✅ Detección de Ambiente (SANDBOX vs PRODUCTION)
+
 **LWC**: Usa Organization.IsSandbox  
 **E2E**: Usa URL.includes('sandbox')
 
@@ -45,22 +49,26 @@ Ambos métodos válidos y optimizados para su contexto.
 ### Navegación al Componente LWC
 
 **URLs probadas**:
+
 - ❌ `/lightning/cmp/c__jtQueryViewer` - Page doesn't exist
 - ❌ `/lightning/n/Query_Viewer` - Tab not found
 
 **Necesitamos**:
+
 - La URL correcta del tab en la Custom App
 - O navegar via App Launcher → Dynamic Queries → Query Viewer tab
 
 **Opciones**:
 
 #### Opción A: Usar el Tab API name
+
 ```javascript
 // Necesitamos el API name correcto del tab
 await page.goto(`${instanceUrl}/lightning/n/JT_Query_Viewer`);
 ```
 
 #### Opción B: Navegar via App Launcher
+
 ```javascript
 // 1. Click App Launcher
 // 2. Click "View All" o buscar directamente
@@ -89,12 +97,14 @@ await page.goto(`${instanceUrl}/lightning/n/JT_Query_Viewer`);
 ## 🎯 PRÓXIMOS PASOS
 
 1. **Obtener URL correcta del tab**:
+
    ```bash
    sf org open --path "/lightning/n/JT_Query_Viewer"
    # O revisar en Setup → Tabs → Query Viewer
    ```
 
 2. **Actualizar beforeEach**:
+
    ```javascript
    await page.goto(`${session.instanceUrl}/lightning/n/[TAB_API_NAME]`);
    ```
@@ -109,11 +119,13 @@ await page.goto(`${instanceUrl}/lightning/n/JT_Query_Viewer`);
 ## 📝 ARCHIVOS CREADOS/ACTUALIZADOS
 
 ### Scripts
+
 - ✅ `scripts/apex/assign-permset.apex` - Auto-asigna Permission Set
 - ✅ `tests/e2e/utils/assignPermissionSet.js` - Wrapper para Apex
 - ✅ `tests/e2e/utils/sfAuth.js` - Autenticación mejorada
 
 ### Documentación
+
 - ✅ `tests/e2e/README.md` - Guía completa de E2E tests
 - ✅ `tests/e2e/E2E_TEST_SCENARIOS.md` - 15 escenarios documentados
 - ✅ `tests/e2e/AUTH_TROUBLESHOOTING.md` - Troubleshooting de auth
@@ -125,6 +137,7 @@ await page.goto(`${instanceUrl}/lightning/n/JT_Query_Viewer`);
 ## 🔧 CÓDIGO CLAVE
 
 ### Autenticación (FUNCIONANDO ✅)
+
 ```javascript
 async function injectSFSession(page, session) {
     // 1. Cookies PRIMERO
@@ -132,29 +145,30 @@ async function injectSFSession(page, session) {
         { name: 'sid', value: session.accessToken, ... },
         { name: 'sid_Client', value: session.accessToken, ... }
     ]);
-    
+
     // 2. Navegar DESPUÉS
     await page.goto(session.instanceUrl + '/lightning/page/home');
-    
+
     // 3. Verificar NO está en login
     const isLoginPage = await page.locator('input[type="password"]')
                                    .isVisible({ timeout: 2000 })
                                    .catch(() => false);
-    
+
     if (isLoginPage) {
         throw new Error('Authentication failed');
     }
-    
+
     console.log('✅ Authenticated successfully - no login required');
 }
 ```
 
 ### Permission Set (FUNCIONANDO ✅)
+
 ```javascript
 // beforeAll hook
 test.beforeAll(() => {
-    session = getSFSession();
-    assignPermissionSet(); // ✅ Auto-asigna
+  session = getSFSession();
+  assignPermissionSet(); // ✅ Auto-asigna
 });
 ```
 
@@ -162,7 +176,7 @@ test.beforeAll(() => {
 
 ## 🎉 LOGROS DESTACADOS
 
-1. **Sin Login Manual** 
+1. **Sin Login Manual**
    - Usa sesión activa del SF CLI
    - Ahorra tiempo en cada ejecución
    - Más seguro (no credenciales hardcoded)
@@ -194,4 +208,3 @@ test.beforeAll(() => {
 ---
 
 **Próximo paso**: Obtener la URL correcta del tab y actualizar navegación.
-

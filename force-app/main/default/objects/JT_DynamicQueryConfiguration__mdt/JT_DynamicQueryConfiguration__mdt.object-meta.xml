@@ -1,6 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
-    <description>With this custom metadata, queries adapt with ease, streamlining their management and preventing future code interventions.</description>
+    <description
+  >With this custom metadata, queries adapt with ease, streamlining their management and preventing future code interventions.</description>
     <label>JT Dynamic Query Configuration</label>
     <pluralLabel>JT Dynamic Queries Configurations</pluralLabel>
     <visibility>Public</visibility>

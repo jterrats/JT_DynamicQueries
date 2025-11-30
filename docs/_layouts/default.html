@@ -173,7 +173,7 @@
         border-radius: 8px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       }
-      
+
       .footer {
         margin-top: 3rem;
         padding: 2rem;
@@ -233,28 +233,42 @@
     </div>
 
     <!-- Mermaid.js for diagram rendering -->
-    <script type="module">
-      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-      mermaid.initialize({ 
-        startOnLoad: true,
-        theme: 'default',
-        themeVariables: {
-          primaryColor: '#667eea',
-          primaryTextColor: '#fff',
-          primaryBorderColor: '#764ba2',
-          lineColor: '#667eea',
-          secondaryColor: '#48bb78',
-          tertiaryColor: '#f59e0b',
-          fontSize: '16px'
-        },
-        flowchart: {
-          curve: 'basis',
-          padding: 20
-        },
-        sequence: {
-          actorMargin: 80,
-          messageFontSize: 14
-        }
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        mermaid.initialize({ 
+          startOnLoad: true,
+          theme: 'default',
+          themeVariables: {
+            primaryColor: '#667eea',
+            primaryTextColor: '#fff',
+            primaryBorderColor: '#764ba2',
+            lineColor: '#667eea',
+            secondaryColor: '#48bb78',
+            tertiaryColor: '#f59e0b',
+            fontSize: '16px'
+          },
+          flowchart: {
+            curve: 'basis',
+            padding: 20
+          },
+          sequence: {
+            actorMargin: 80,
+            messageFontSize: 14
+          }
+        });
+
+        // Find all code blocks with mermaid class and convert them
+        document.querySelectorAll('code.language-mermaid').forEach(function(element) {
+          const parent = element.parentElement;
+          const mermaidDiv = document.createElement('div');
+          mermaidDiv.className = 'mermaid';
+          mermaidDiv.textContent = element.textContent;
+          parent.parentNode.replaceChild(mermaidDiv, parent);
+        });
+
+        // Re-render mermaid diagrams
+        mermaid.run();
       });
     </script>
   </body>

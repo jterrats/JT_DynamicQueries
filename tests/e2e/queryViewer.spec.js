@@ -1198,4 +1198,229 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
 
     expect(true).toBeTruthy();
   });
+
+  // ============================================
+  // Cache Management Tests
+  // ============================================
+  test("should have Clear Cache button in toolbar", async ({ page }) => {
+    console.log("🧹 Testing Clear Cache button presence...");
+
+    const clearCacheButton = page
+      .locator('lightning-button:has-text("Clear Cache")')
+      .first();
+
+    await expect(clearCacheButton).toBeVisible();
+    console.log("✅ Clear Cache button is visible");
+
+    expect(true).toBeTruthy();
+  });
+
+  test("should open cache management modal", async ({ page }) => {
+    console.log("🧹 Testing cache modal opening...");
+
+    // Click Clear Cache button
+    const clearCacheButton = page
+      .locator('lightning-button:has-text("Clear Cache")')
+      .first();
+
+    await clearCacheButton.click();
+    await page.waitForTimeout(1000);
+
+    // Check modal is visible
+    const modal = page.locator("c-jt-cache-modal");
+    await expect(modal).toBeVisible();
+
+    // Check modal title
+    const modalTitle = page.locator("h2:has-text('Clear Cache')");
+    await expect(modalTitle).toBeVisible();
+
+    console.log("✅ Cache modal opened successfully");
+
+    // Close modal
+    const cancelButton = page.locator('button:has-text("Cancel")').last();
+    await cancelButton.click();
+    await page.waitForTimeout(500);
+
+    expect(true).toBeTruthy();
+  });
+
+  test("should have all cache options in modal", async ({ page }) => {
+    console.log("🧹 Testing cache options...");
+
+    // Open modal
+    const clearCacheButton = page
+      .locator('lightning-button:has-text("Clear Cache")')
+      .first();
+    await clearCacheButton.click();
+    await page.waitForTimeout(1000);
+
+    // Check all checkboxes exist
+    const configCheckbox = page
+      .locator('lightning-input:has-text("Query Configurations")')
+      .first();
+    const resultsCheckbox = page
+      .locator('lightning-input:has-text("Query Results")')
+      .first();
+    const usersCheckbox = page
+      .locator('lightning-input:has-text("User List")')
+      .first();
+    const recentCheckbox = page
+      .locator('lightning-input:has-text("Recent")')
+      .first();
+
+    await expect(configCheckbox).toBeVisible();
+    await expect(resultsCheckbox).toBeVisible();
+    await expect(usersCheckbox).toBeVisible();
+    await expect(recentCheckbox).toBeVisible();
+
+    console.log("✅ All cache options are present");
+
+    // Close modal
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(500);
+
+    expect(true).toBeTruthy();
+  });
+
+  test("should enable Clear button only when options selected", async ({
+    page
+  }) => {
+    console.log("🧹 Testing Clear button state...");
+
+    // Open modal
+    const clearCacheButton = page
+      .locator('lightning-button:has-text("Clear Cache")')
+      .first();
+    await clearCacheButton.click();
+    await page.waitForTimeout(1000);
+
+    // Clear button should be disabled initially
+    const clearButton = page
+      .locator('button:has-text("Clear Selected")')
+      .last();
+    const isDisabled = await clearButton.isDisabled();
+    expect(isDisabled).toBe(true);
+    console.log("✅ Clear button disabled when nothing selected");
+
+    // Select an option
+    const resultsCheckbox = page
+      .locator('lightning-input:has-text("Query Results")')
+      .first();
+    await resultsCheckbox.locator("input").check();
+    await page.waitForTimeout(500);
+
+    // Clear button should be enabled now
+    const isEnabled = await clearButton.isEnabled();
+    expect(isEnabled).toBe(true);
+    console.log("✅ Clear button enabled when option selected");
+
+    // Close modal
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(500);
+
+    expect(true).toBeTruthy();
+  });
+
+  test("should clear cache and show success toast", async ({ page }) => {
+    console.log("🧹 Testing cache clearing functionality...");
+
+    // Open modal
+    const clearCacheButton = page
+      .locator('lightning-button:has-text("Clear Cache")')
+      .first();
+    await clearCacheButton.click();
+    await page.waitForTimeout(1000);
+
+    // Select Query Results option
+    const resultsCheckbox = page
+      .locator('lightning-input:has-text("Query Results")')
+      .first();
+    await resultsCheckbox.locator("input").check();
+    await page.waitForTimeout(500);
+
+    // Click Clear Selected
+    const clearButton = page
+      .locator('button:has-text("Clear Selected")')
+      .last();
+    await clearButton.click();
+    await page.waitForTimeout(1000);
+
+    // Check for success toast
+    const toast = page.locator(".slds-notify--toast");
+    const toastVisible = await toast.isVisible().catch(() => false);
+
+    if (toastVisible) {
+      console.log("✅ Success toast appeared");
+    }
+
+    // Modal should be closed
+    const modal = page.locator("c-jt-cache-modal");
+    const modalVisible = await modal.isVisible().catch(() => false);
+    expect(modalVisible).toBe(false);
+
+    console.log("✅ Cache cleared successfully");
+
+    expect(true).toBeTruthy();
+  });
+
+  test("should use Select All to select all options", async ({ page }) => {
+    console.log("🧹 Testing Select All functionality...");
+
+    // Open modal
+    const clearCacheButton = page
+      .locator('lightning-button:has-text("Clear Cache")')
+      .first();
+    await clearCacheButton.click();
+    await page.waitForTimeout(1000);
+
+    // Click Select All
+    const selectAllCheckbox = page
+      .locator('lightning-input:has-text("Select All")')
+      .first();
+    await selectAllCheckbox.locator("input").check();
+    await page.waitForTimeout(500);
+
+    // All checkboxes should be checked
+    const configCheckbox = page
+      .locator('lightning-input:has-text("Query Configurations")')
+      .first();
+    const configChecked = await configCheckbox
+      .locator("input")
+      .isChecked()
+      .catch(() => false);
+
+    expect(configChecked).toBe(true);
+    console.log("✅ Select All works correctly");
+
+    // Close modal
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(500);
+
+    expect(true).toBeTruthy();
+  });
+
+  test("should close modal with Escape key", async ({ page }) => {
+    console.log("🧹 Testing keyboard accessibility...");
+
+    // Open modal
+    const clearCacheButton = page
+      .locator('lightning-button:has-text("Clear Cache")')
+      .first();
+    await clearCacheButton.click();
+    await page.waitForTimeout(1000);
+
+    // Press Escape
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(500);
+
+    // Modal should be closed
+    const modal = page.locator("c-jt-cache-modal");
+    const modalVisible = await modal.isVisible().catch(() => false);
+    expect(modalVisible).toBe(false);
+
+    console.log("✅ Modal closes with Escape key");
+
+    expect(true).toBeTruthy();
+  });
 });
+

@@ -79,7 +79,7 @@ export default class JtQueryViewer extends LightningElement {
   @track queryValidation = { isValid: false, message: "" };
   @track isSaving = false;
   @track showCacheModal = false;
-  
+
   // Store wired results for refreshing
   wiredConfigsResult;
   wiredUsersResult;

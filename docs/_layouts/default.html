@@ -1,106 +1,225 @@
 <!DOCTYPE html>
-<html lang="{{ site.lang | default: "en-US" }}">
+<html lang="en-US">
   <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    {% if site.title %}
-    <title>{{ page.title | default: site.title }}</title>
-    {% endif %}
-
-    <meta name="description" content="{{ page.description | default: site.description | default: site.github.project_tagline }}"/>
-
-    <link rel="stylesheet" href="{{ "/assets/css/style.css?v=" | append: site.github.build_revision | relative_url }}">
+    <title>{% if page.title %}{{ page.title }} | {% endif %}{{ site.title | default: "JT Dynamic Queries" }}</title>
+    <meta name="description" content="{{ page.description | default: site.description | default: 'Dynamic SOQL Query Execution Tool for Salesforce' }}"/>
+    
     <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
       body {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         line-height: 1.6;
         color: #333;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
+        background: #f5f5f5;
       }
 
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        min-height: 100vh;
+      }
+      
       .page-header {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
-        padding: 3rem 1rem;
+        padding: 3rem 2rem;
         text-align: center;
-        border-radius: 8px;
-        margin-bottom: 2rem;
       }
-
+      
       .page-header h1 {
-        margin: 0;
+        margin: 0 0 1rem;
         font-size: 2.5rem;
+        font-weight: 700;
       }
-
+      
       .page-header p {
-        margin: 1rem 0 0;
+        margin: 0;
         opacity: 0.9;
+        font-size: 1.125rem;
       }
 
+      .page-header a {
+        color: white;
+        text-decoration: none;
+        border-bottom: 2px solid rgba(255,255,255,0.5);
+        transition: border-color 0.3s;
+      }
+
+      .page-header a:hover {
+        border-bottom-color: white;
+      }
+      
       .content {
-        padding: 1rem;
+        padding: 2rem;
       }
 
-      a {
+      .content h1,
+      .content h2,
+      .content h3,
+      .content h4 {
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        color: #2d3748;
+      }
+
+      .content h1 { font-size: 2rem; }
+      .content h2 { font-size: 1.75rem; }
+      .content h3 { font-size: 1.5rem; }
+      .content h4 { font-size: 1.25rem; }
+
+      .content p {
+        margin-bottom: 1rem;
+      }
+
+      .content ul,
+      .content ol {
+        margin-bottom: 1rem;
+        padding-left: 2rem;
+      }
+
+      .content li {
+        margin-bottom: 0.5rem;
+      }
+      
+      .content a {
+        color: #667eea;
+        text-decoration: none;
+        transition: color 0.3s;
+      }
+      
+      .content a:hover {
+        color: #764ba2;
+        text-decoration: underline;
+      }
+
+      .content table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0;
+      }
+
+      .content table th,
+      .content table td {
+        padding: 0.75rem;
+        border: 1px solid #e2e8f0;
+        text-align: left;
+      }
+
+      .content table th {
+        background: #f7fafc;
+        font-weight: 600;
+      }
+      
+      .content code {
+        background: #f7fafc;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-family: 'Monaco', 'Menlo', monospace;
+        font-size: 0.875em;
+      }
+      
+      .content pre {
+        background: #2d3748;
+        color: #f7fafc;
+        padding: 1rem;
+        border-radius: 8px;
+        overflow-x: auto;
+        margin: 1rem 0;
+      }
+
+      .content pre code {
+        background: transparent;
+        padding: 0;
+        color: inherit;
+      }
+
+      .content blockquote {
+        border-left: 4px solid #667eea;
+        padding-left: 1rem;
+        margin: 1rem 0;
+        color: #718096;
+        font-style: italic;
+      }
+
+      .content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin: 1rem 0;
+      }
+
+      .content hr {
+        border: none;
+        border-top: 2px solid #e2e8f0;
+        margin: 2rem 0;
+      }
+      
+      .footer {
+        margin-top: 3rem;
+        padding: 2rem;
+        border-top: 1px solid #e2e8f0;
+        text-align: center;
+        color: #718096;
+        background: #f7fafc;
+      }
+
+      .footer a {
         color: #667eea;
         text-decoration: none;
       }
 
-      a:hover {
+      .footer a:hover {
         text-decoration: underline;
       }
 
-      code {
-        background: #f5f5f5;
-        padding: 2px 6px;
-        border-radius: 3px;
-      }
+      @media (max-width: 768px) {
+        .page-header h1 {
+          font-size: 2rem;
+        }
 
-      pre {
-        background: #2d2d2d;
-        color: #f8f8f2;
-        padding: 1rem;
-        border-radius: 8px;
-        overflow-x: auto;
-      }
+        .content {
+          padding: 1rem;
+        }
 
-      .footer {
-        margin-top: 3rem;
-        padding-top: 2rem;
-        border-top: 1px solid #e1e4e8;
-        text-align: center;
-        color: #666;
+        .content h1 { font-size: 1.75rem; }
+        .content h2 { font-size: 1.5rem; }
+        .content h3 { font-size: 1.25rem; }
       }
     </style>
   </head>
   <body>
-    <div class="page-header">
-      <h1>{{ site.title | default: "JT Dynamic Queries" }}</h1>
-      <p>{{ site.description | default: "Dynamic SOQL Query Execution Tool for Salesforce" }}</p>
-      {% if site.github.repository_url %}
-      <p>
-        <a href="{{ site.github.repository_url }}" style="color: white; text-decoration: underline;">
-          View on GitHub
-        </a>
-      </p>
-      {% endif %}
-    </div>
+    <div class="container">
+      <div class="page-header">
+        <h1>{{ site.title | default: "JT Dynamic Queries" }}</h1>
+        <p>{{ site.description | default: "Dynamic SOQL Query Execution Tool for Salesforce" }}</p>
+        <p style="margin-top: 1rem;">
+          <a href="https://github.com/jterrats/JT_DynamicQueries">View on GitHub</a>
+        </p>
+      </div>
 
-    <div class="content">
-      {{ content }}
-    </div>
+      <div class="content">
+        {{ content }}
+      </div>
 
-    <div class="footer">
-      <p>
-        Built with ❤️ for Salesforce Community
-        {% if site.github.repository_url %}
-        | <a href="{{ site.github.repository_url }}">GitHub Repository</a>
-        {% endif %}
-      </p>
+      <div class="footer">
+        <p>
+          Built with ❤️ for Salesforce Community
+        </p>
+        <p style="margin-top: 0.5rem;">
+          <a href="https://github.com/jterrats/JT_DynamicQueries">GitHub Repository</a> |
+          <a href="https://github.com/jterrats/JT_DynamicQueries/issues">Report Issues</a>
+        </p>
+      </div>
     </div>
   </body>
 </html>

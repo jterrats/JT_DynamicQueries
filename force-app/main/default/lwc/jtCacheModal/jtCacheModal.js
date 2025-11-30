@@ -2,14 +2,14 @@
  * @description Cache Management Modal Component
  * @author Jaime Terrats
  * @date 2025-11-30
- * 
+ *
  * Allows users to selectively clear different types of cache
  */
 import { LightningElement, api } from 'lwc';
 
 export default class JtCacheModal extends LightningElement {
   @api labels = {};
-  
+
   // Cache options
   clearConfigurations = false;
   clearResults = false;
@@ -39,16 +39,16 @@ export default class JtCacheModal extends LightningElement {
 
   // Computed
   get hasSelections() {
-    return this.clearConfigurations || 
-           this.clearResults || 
-           this.clearUsers || 
+    return this.clearConfigurations ||
+           this.clearResults ||
+           this.clearUsers ||
            this.clearRecent;
   }
 
   get allSelected() {
-    return this.clearConfigurations && 
-           this.clearResults && 
-           this.clearUsers && 
+    return this.clearConfigurations &&
+           this.clearResults &&
+           this.clearUsers &&
            this.clearRecent;
   }
 

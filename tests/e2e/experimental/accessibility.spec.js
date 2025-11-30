@@ -12,7 +12,7 @@ const {
   getSFSession,
   injectSFSession,
   navigateToApp
-} = require("./utils/sfAuth");
+} = require("../utils/sfAuth");
 
 const TARGET_APP_NAME = "Dynamic Queries";
 const QUERY_VIEWER_TAB = "Query Viewer";

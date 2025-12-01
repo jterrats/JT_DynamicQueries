@@ -124,7 +124,7 @@ New to JT Dynamic Queries? Start here!
 4. Core Functionality (15 min)
 ```
 
-**Total Time:** ~50 minutes  
+**Total Time:** ~50 minutes
 **You'll Learn:** Installation, basic usage, core features
 
 ---
@@ -143,7 +143,7 @@ Ready for advanced features?
 4. Architecture Overview (30 min)
 ```
 
-**Total Time:** ~90 minutes  
+**Total Time:** ~90 minutes
 **You'll Learn:** Tooling API, Run As, metadata creation, system design
 
 ---
@@ -164,7 +164,7 @@ Want to contribute or customize?
 5. Testing Guide (30 min)
 ```
 
-**Total Time:** ~2.5 hours  
+**Total Time:** ~2.5 hours
 **You'll Learn:** Internal architecture, patterns, testing, contribution workflow
 
 ---

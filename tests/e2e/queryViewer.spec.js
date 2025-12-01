@@ -804,7 +804,9 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
       }
 
       // Execute query using semantic selector
-      const executeButton = page.locator('[data-testid="execute-query-button"]');
+      const executeButton = page.locator(
+        '[data-testid="execute-query-button"]'
+      );
       await executeButton.click({ timeout: 10000 });
       await page.waitForTimeout(5000);
 
@@ -1038,7 +1040,9 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
       console.log("✅ Configuration selected");
 
       // Verify execute button is present and clickable using semantic selector
-      const executeButton = page.locator('[data-testid="execute-query-button"]');
+      const executeButton = page.locator(
+        '[data-testid="execute-query-button"]'
+      );
       const buttonClickable = await executeButton.isEnabled().catch(() => true);
       expect(buttonClickable).toBe(true);
       console.log("✅ Execute button is clickable after selection");
@@ -1154,7 +1158,9 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     console.log("🧹 Testing Clear Cache button presence...");
 
     // Use semantic selector
-    const clearCacheButton = page.locator('[data-testid="header-clear-cache-button"]');
+    const clearCacheButton = page.locator(
+      '[data-testid="header-clear-cache-button"]'
+    );
 
     await expect(clearCacheButton).toBeVisible();
     console.log("✅ Clear Cache button is visible");
@@ -1166,7 +1172,9 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     console.log("🧹 Testing cache modal opening...");
 
     // Click Clear Cache button using semantic selector
-    const clearCacheButton = page.locator('[data-testid="header-clear-cache-button"]');
+    const clearCacheButton = page.locator(
+      '[data-testid="header-clear-cache-button"]'
+    );
     await clearCacheButton.click();
     await page.waitForTimeout(1000);
 
@@ -1192,13 +1200,19 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     console.log("🧹 Testing cache options...");
 
     // Open modal using semantic selector
-    const clearCacheButton = page.locator('[data-testid="header-clear-cache-button"]');
+    const clearCacheButton = page.locator(
+      '[data-testid="header-clear-cache-button"]'
+    );
     await clearCacheButton.click();
     await page.waitForTimeout(1000);
 
     // Check all checkboxes exist using semantic selectors
-    const configCheckbox = page.locator('[data-testid="cache-option-configurations"]');
-    const resultsCheckbox = page.locator('[data-testid="cache-option-results"]');
+    const configCheckbox = page.locator(
+      '[data-testid="cache-option-configurations"]'
+    );
+    const resultsCheckbox = page.locator(
+      '[data-testid="cache-option-results"]'
+    );
     const usersCheckbox = page.locator('[data-testid="cache-option-users"]');
     const recentCheckbox = page.locator('[data-testid="cache-option-recent"]');
 
@@ -1222,7 +1236,9 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     console.log("🧹 Testing Clear button state...");
 
     // Open modal using semantic selector
-    const openCacheButton = page.locator('[data-testid="header-clear-cache-button"]');
+    const openCacheButton = page.locator(
+      '[data-testid="header-clear-cache-button"]'
+    );
     await openCacheButton.click();
     await page.waitForTimeout(1000);
 
@@ -1233,7 +1249,9 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     console.log("✅ Clear button disabled when nothing selected");
 
     // Select an option using semantic selector
-    const resultsCheckbox = page.locator('[data-testid="cache-option-results"]');
+    const resultsCheckbox = page.locator(
+      '[data-testid="cache-option-results"]'
+    );
     await resultsCheckbox.locator("input").check();
     await page.waitForTimeout(500);
 
@@ -1253,12 +1271,16 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     console.log("🧹 Testing cache clearing functionality...");
 
     // Open modal using semantic selector
-    const openCacheButton = page.locator('[data-testid="header-clear-cache-button"]');
+    const openCacheButton = page.locator(
+      '[data-testid="header-clear-cache-button"]'
+    );
     await openCacheButton.click();
     await page.waitForTimeout(1000);
 
     // Select Query Results option using semantic selector
-    const resultsCheckbox = page.locator('[data-testid="cache-option-results"]');
+    const resultsCheckbox = page.locator(
+      '[data-testid="cache-option-results"]'
+    );
     await resultsCheckbox.locator("input").check();
     await page.waitForTimeout(500);
 
@@ -1289,7 +1311,9 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     console.log("🧹 Testing Select All functionality...");
 
     // Open modal using semantic selector
-    const openCacheButton = page.locator('[data-testid="header-clear-cache-button"]');
+    const openCacheButton = page.locator(
+      '[data-testid="header-clear-cache-button"]'
+    );
     await openCacheButton.click();
     await page.waitForTimeout(1000);
 
@@ -1299,7 +1323,9 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     await page.waitForTimeout(500);
 
     // All checkboxes should be checked - verify with semantic selector
-    const configCheckbox = page.locator('[data-testid="cache-option-configurations"]');
+    const configCheckbox = page.locator(
+      '[data-testid="cache-option-configurations"]'
+    );
     const configChecked = await configCheckbox
       .locator("input")
       .isChecked()
@@ -1319,7 +1345,9 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     console.log("🧹 Testing keyboard accessibility...");
 
     // Open modal using semantic selector
-    const openCacheButton = page.locator('[data-testid="header-clear-cache-button"]');
+    const openCacheButton = page.locator(
+      '[data-testid="header-clear-cache-button"]'
+    );
     await openCacheButton.click();
     await page.waitForTimeout(1000);
 
@@ -1337,4 +1365,3 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     expect(true).toBeTruthy();
   });
 });
-

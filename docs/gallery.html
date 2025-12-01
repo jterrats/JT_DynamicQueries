@@ -1,275 +1,314 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>JT Dynamic Queries - Demo Gallery</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 2rem;
-        }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 2rem;
+      }
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+      }
 
-        header {
-            text-align: center;
-            color: white;
-            margin-bottom: 3rem;
-        }
+      header {
+        text-align: center;
+        color: white;
+        margin-bottom: 3rem;
+      }
 
+      h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .subtitle {
+        font-size: 1.25rem;
+        opacity: 0.9;
+        margin-bottom: 2rem;
+      }
+
+      .back-button {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+      }
+
+      .back-button:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      }
+
+      .video-section {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        margin: 2rem 0;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      }
+
+      .video-section h2 {
+        color: #2d3748;
+        margin-bottom: 1.5rem;
+        font-size: 1.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .video-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+      }
+
+      .video-item {
+        background: #f7fafc;
+        border-radius: 8px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .video-item:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      }
+
+      .video-item video {
+        width: 100%;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        background: #000;
+      }
+
+      .video-item-title {
+        margin-top: 1rem;
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #2d3748;
+      }
+
+      .video-item-description {
+        margin-top: 0.5rem;
+        color: #718096;
+        font-size: 0.95rem;
+        line-height: 1.5;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        background: #667eea;
+        color: white;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-top: 0.75rem;
+      }
+
+      .info-box {
+        background: rgba(102, 126, 234, 0.1);
+        border-left: 4px solid #667eea;
+        padding: 1.5rem;
+        margin: 2rem 0;
+        border-radius: 8px;
+        color: #2d3748;
+      }
+
+      .info-box h3 {
+        margin-bottom: 0.75rem;
+        color: #667eea;
+      }
+
+      .info-box p {
+        line-height: 1.6;
+        margin-bottom: 0.5rem;
+      }
+
+      .info-box ul {
+        margin-top: 1rem;
+        padding-left: 1.5rem;
+      }
+
+      .info-box li {
+        margin-bottom: 0.5rem;
+      }
+
+      @media (max-width: 768px) {
         h1 {
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .subtitle {
-            font-size: 1.25rem;
-            opacity: 0.9;
-            margin-bottom: 2rem;
-        }
-
-        .back-button {
-            display: inline-block;
-            padding: 0.75rem 1.5rem;
-            background: rgba(255,255,255,0.2);
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255,255,255,0.3);
-        }
-
-        .back-button:hover {
-            background: rgba(255,255,255,0.3);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-        }
-
-        .video-section {
-            background: white;
-            border-radius: 12px;
-            padding: 2rem;
-            margin: 2rem 0;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-
-        .video-section h2 {
-            color: #2d3748;
-            margin-bottom: 1.5rem;
-            font-size: 1.75rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+          font-size: 2rem;
         }
 
         .video-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem;
+          grid-template-columns: 1fr;
         }
 
-        .video-item {
-            background: #f7fafc;
-            border-radius: 8px;
-            padding: 1.5rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        body {
+          padding: 1rem;
         }
-
-        .video-item:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-        }
-
-        .video-item video {
-            width: 100%;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            background: #000;
-        }
-
-        .video-item-title {
-            margin-top: 1rem;
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: #2d3748;
-        }
-
-        .video-item-description {
-            margin-top: 0.5rem;
-            color: #718096;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            background: #667eea;
-            color: white;
-            border-radius: 20px;
-            font-size: 0.875rem;
-            font-weight: 500;
-            margin-top: 0.75rem;
-        }
-
-        .info-box {
-            background: rgba(102, 126, 234, 0.1);
-            border-left: 4px solid #667eea;
-            padding: 1.5rem;
-            margin: 2rem 0;
-            border-radius: 8px;
-            color: #2d3748;
-        }
-
-        .info-box h3 {
-            margin-bottom: 0.75rem;
-            color: #667eea;
-        }
-
-        .info-box p {
-            line-height: 1.6;
-            margin-bottom: 0.5rem;
-        }
-
-        .info-box ul {
-            margin-top: 1rem;
-            padding-left: 1.5rem;
-        }
-
-        .info-box li {
-            margin-bottom: 0.5rem;
-        }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
-            }
-
-            .video-grid {
-                grid-template-columns: 1fr;
-            }
-
-            body {
-                padding: 1rem;
-            }
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <header>
-            <h1>🎬 JT Dynamic Queries Demo Gallery</h1>
-            <p class="subtitle">Real E2E Test Videos - See it in Action!</p>
-            <a href="index.html" class="back-button">← Back to Documentation</a>
-        </header>
+      <header>
+        <h1>🎬 JT Dynamic Queries Demo Gallery</h1>
+        <p class="subtitle">Real E2E Test Videos - See it in Action!</p>
+        <a href="index.html" class="back-button">← Back to Documentation</a>
+      </header>
 
-        <div class="info-box">
-            <h3>📹 About These Videos</h3>
-            <p><strong>These are real E2E test recordings from Playwright!</strong></p>
-            <p>Every video shows actual automated tests running against a live Salesforce org. What you see is exactly what users experience:</p>
-            <ul>
-                <li>✅ Authentic user flows and interactions</li>
-                <li>✅ Real data and real-time responses</li>
-                <li>✅ Actual Lightning UI rendering</li>
-                <li>✅ All 28 tests passing - 100% success rate</li>
-            </ul>
-        </div>
+      <div class="info-box">
+        <h3>📹 About These Videos</h3>
+        <p>
+          <strong>These are real E2E test recordings from Playwright!</strong>
+        </p>
+        <p>
+          Every video shows actual automated tests running against a live
+          Salesforce org. What you see is exactly what users experience:
+        </p>
+        <ul>
+          <li>✅ Authentic user flows and interactions</li>
+          <li>✅ Real data and real-time responses</li>
+          <li>✅ Actual Lightning UI rendering</li>
+          <li>✅ All 28 tests passing - 100% success rate</li>
+        </ul>
+      </div>
 
-        <!-- Videos Section -->
-        <section class="video-section">
-            <h2>🎥 Test Execution Videos</h2>
-            <div class="video-grid">
-                <div class="video-item">
-                    <video controls preload="metadata">
-                        <source src="../videos/appexchange/01_complete_user_flow.webm" type="video/webm">
-                        Your browser does not support the video tag.
-                    </video>
-                    <div class="video-item-title">Complete User Flow</div>
-                    <div class="video-item-description">
-                        Full workflow from configuration selection to query execution and results display
-                    </div>
-                    <span class="badge">End-to-End</span>
-                </div>
-
-                <div class="video-item">
-                    <video controls preload="metadata">
-                        <source src="../videos/appexchange/02_configuration_selection.webm" type="video/webm">
-                        Your browser does not support the video tag.
-                    </video>
-                    <div class="video-item-title">Configuration Selection</div>
-                    <div class="video-item-description">
-                        Searchable dropdown with real-time filtering and keyboard navigation
-                    </div>
-                    <span class="badge">Search & Filter</span>
-                </div>
-
-                <div class="video-item">
-                    <video controls preload="metadata">
-                        <source src="../videos/appexchange/03_query_execution.webm" type="video/webm">
-                        Your browser does not support the video tag.
-                    </video>
-                    <div class="video-item-title">Query Execution</div>
-                    <div class="video-item-description">
-                        Execute queries, view results in multiple formats (Table, JSON, CSV)
-                    </div>
-                    <span class="badge">Results Display</span>
-                </div>
+      <!-- Videos Section -->
+      <section class="video-section">
+        <h2>🎥 Test Execution Videos</h2>
+        <div class="video-grid">
+          <div class="video-item">
+            <video controls preload="metadata">
+              <source
+                src="../videos/appexchange/01_complete_user_flow.webm"
+                type="video/webm"
+              />
+              Your browser does not support the video tag.
+            </video>
+            <div class="video-item-title">Complete User Flow</div>
+            <div class="video-item-description">
+              Full workflow from configuration selection to query execution and
+              results display
             </div>
-        </section>
+            <span class="badge">End-to-End</span>
+          </div>
 
-        <div class="info-box" style="background: rgba(72, 187, 120, 0.1); border-left-color: #48bb78;">
-            <h3>✨ Why Videos Matter</h3>
-            <p>Videos demonstrate:</p>
-            <ul>
-                <li>🎯 <strong>Real Performance</strong>: See actual load times and responsiveness</li>
-                <li>🖱️ <strong>User Experience</strong>: Watch smooth interactions and transitions</li>
-                <li>📱 <strong>Responsive Design</strong>: Works on all screen sizes</li>
-                <li>♿ <strong>Accessibility</strong>: Keyboard navigation and ARIA support</li>
-                <li>🧪 <strong>Quality Assurance</strong>: 100% automated test coverage</li>
-            </ul>
-        </div>
-
-        <section class="video-section">
-            <h2>📊 Test Coverage Highlights</h2>
-            <div style="padding: 1rem; background: #f7fafc; border-radius: 8px;">
-                <ul style="list-style: none; padding: 0;">
-                    <li style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0;">
-                        ✅ <strong>28/28 E2E Tests Passing</strong> - 100% Success Rate
-                    </li>
-                    <li style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0;">
-                        🎨 <strong>UI/UX Testing</strong> - Configuration selection, query execution, results display
-                    </li>
-                    <li style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0;">
-                        📱 <strong>Responsive Testing</strong> - Desktop, tablet, and mobile viewports
-                    </li>
-                    <li style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0;">
-                        ♿ <strong>Accessibility Testing</strong> - WCAG 2.1 AA compliance
-                    </li>
-                    <li style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0;">
-                        🌐 <strong>i18n Testing</strong> - Multi-language support validation
-                    </li>
-                    <li style="padding: 0.75rem;">
-                        🔒 <strong>Security Testing</strong> - Run As User, permission validation
-                    </li>
-                </ul>
+          <div class="video-item">
+            <video controls preload="metadata">
+              <source
+                src="../videos/appexchange/02_configuration_selection.webm"
+                type="video/webm"
+              />
+              Your browser does not support the video tag.
+            </video>
+            <div class="video-item-title">Configuration Selection</div>
+            <div class="video-item-description">
+              Searchable dropdown with real-time filtering and keyboard
+              navigation
             </div>
-        </section>
+            <span class="badge">Search & Filter</span>
+          </div>
+
+          <div class="video-item">
+            <video controls preload="metadata">
+              <source
+                src="../videos/appexchange/03_query_execution.webm"
+                type="video/webm"
+              />
+              Your browser does not support the video tag.
+            </video>
+            <div class="video-item-title">Query Execution</div>
+            <div class="video-item-description">
+              Execute queries, view results in multiple formats (Table, JSON,
+              CSV)
+            </div>
+            <span class="badge">Results Display</span>
+          </div>
+        </div>
+      </section>
+
+      <div
+        class="info-box"
+        style="background: rgba(72, 187, 120, 0.1); border-left-color: #48bb78"
+      >
+        <h3>✨ Why Videos Matter</h3>
+        <p>Videos demonstrate:</p>
+        <ul>
+          <li>
+            🎯 <strong>Real Performance</strong>: See actual load times and
+            responsiveness
+          </li>
+          <li>
+            🖱️ <strong>User Experience</strong>: Watch smooth interactions and
+            transitions
+          </li>
+          <li>
+            📱 <strong>Responsive Design</strong>: Works on all screen sizes
+          </li>
+          <li>
+            ♿ <strong>Accessibility</strong>: Keyboard navigation and ARIA
+            support
+          </li>
+          <li>
+            🧪 <strong>Quality Assurance</strong>: 100% automated test coverage
+          </li>
+        </ul>
+      </div>
+
+      <section class="video-section">
+        <h2>📊 Test Coverage Highlights</h2>
+        <div style="padding: 1rem; background: #f7fafc; border-radius: 8px">
+          <ul style="list-style: none; padding: 0">
+            <li style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0">
+              ✅ <strong>28/28 E2E Tests Passing</strong> - 100% Success Rate
+            </li>
+            <li style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0">
+              🎨 <strong>UI/UX Testing</strong> - Configuration selection, query
+              execution, results display
+            </li>
+            <li style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0">
+              📱 <strong>Responsive Testing</strong> - Desktop, tablet, and
+              mobile viewports
+            </li>
+            <li style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0">
+              ♿ <strong>Accessibility Testing</strong> - WCAG 2.1 AA compliance
+            </li>
+            <li style="padding: 0.75rem; border-bottom: 1px solid #e2e8f0">
+              🌐 <strong>i18n Testing</strong> - Multi-language support
+              validation
+            </li>
+            <li style="padding: 0.75rem">
+              🔒 <strong>Security Testing</strong> - Run As User, permission
+              validation
+            </li>
+          </ul>
+        </div>
+      </section>
     </div>
-</body>
+  </body>
 </html>

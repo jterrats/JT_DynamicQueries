@@ -107,7 +107,7 @@ sequenceDiagram
     DS-->>QVC: Configurations
     QVC-->>CB: Return List
     CB-->>QV: Config Selected
-    
+
     QV->>EB: Enable Execute
     User->>EB: Click Execute
     EB->>QVC: executeQuery(config, params)
@@ -501,7 +501,7 @@ flowchart TD
 ```mermaid
 graph TD
     App[Lightning App<br/>JT Dynamic Queries]
-    
+
     App --> Tab1[Query Viewer Tab]
     App --> Tab2[Documentation Tab]
     App --> Tab3[Support Tab]
@@ -536,6 +536,7 @@ graph TD
 ## 💡 Key Design Patterns
 
 ### Singleton Pattern
+
 ```mermaid
 classDiagram
     class JT_DataSelector {
@@ -550,6 +551,7 @@ classDiagram
 ```
 
 ### Observer Pattern
+
 ```mermaid
 classDiagram
     class jtQueryViewer {
@@ -566,7 +568,7 @@ classDiagram
     class jtCacheModal {
         +dispatchEvent(clearcache)
     }
-    
+
     jtSearchableCombobox --> jtQueryViewer: configselect
     jtExecuteButton --> jtQueryViewer: execute
     jtCacheModal --> jtQueryViewer: clearcache
@@ -617,4 +619,3 @@ graph LR
 > **Note:** All diagrams are interactive on GitHub Pages. View source for Mermaid syntax.
 
 **Last Updated:** {{ site.time | date: '%B %d, %Y' }}
-

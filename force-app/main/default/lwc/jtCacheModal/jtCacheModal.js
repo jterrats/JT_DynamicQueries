@@ -5,7 +5,7 @@
  *
  * Allows users to selectively clear different types of cache
  */
-import { LightningElement, api } from 'lwc';
+import { LightningElement, api } from "lwc";
 
 export default class JtCacheModal extends LightningElement {
   @api labels = {};
@@ -39,17 +39,21 @@ export default class JtCacheModal extends LightningElement {
 
   // Computed
   get hasSelections() {
-    return this.clearConfigurations ||
-           this.clearResults ||
-           this.clearUsers ||
-           this.clearRecent;
+    return (
+      this.clearConfigurations ||
+      this.clearResults ||
+      this.clearUsers ||
+      this.clearRecent
+    );
   }
 
   get allSelected() {
-    return this.clearConfigurations &&
-           this.clearResults &&
-           this.clearUsers &&
-           this.clearRecent;
+    return (
+      this.clearConfigurations &&
+      this.clearResults &&
+      this.clearUsers &&
+      this.clearRecent
+    );
   }
 
   // Event handlers
@@ -90,15 +94,14 @@ export default class JtCacheModal extends LightningElement {
       recent: this.clearRecent
     };
 
-    this.dispatchEvent(new CustomEvent('clearcache', { detail }));
+    this.dispatchEvent(new CustomEvent("clearcache", { detail }));
     this.close();
   }
 
   // Keyboard accessibility
   handleKeyDown(event) {
-    if (event.key === 'Escape') {
+    if (event.key === "Escape") {
       this.handleCancel();
     }
   }
 }
-

@@ -53,8 +53,7 @@ const LABELS = {
     clearResultsLabel: "Query Results",
     clearResultsHelp: "Clear current query results and reset the view",
     clearUsersLabel: "User List",
-    clearUsersHelp:
-      "Refresh the list of active users for Run As functionality",
+    clearUsersHelp: "Refresh the list of active users for Run As functionality",
     clearRecentLabel: "Recent Selections",
     clearRecentHelp:
       "Clear recently selected configurations and user preferences",

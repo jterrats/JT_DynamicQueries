@@ -13,6 +13,7 @@
 **Labels:** `enhancement`, `v3.0`, `high-priority`, `ui/ux`
 
 **Story:**
+
 ```markdown
 ## 🎯 User Story
 
@@ -23,6 +24,7 @@
 ## 📝 Description
 
 Implement a visual SOQL builder that allows users to:
+
 - Select objects from a dropdown
 - Drag & drop fields from the object schema
 - Add WHERE conditions using visual controls
@@ -99,6 +101,7 @@ Implement a visual SOQL builder that allows users to:
 **Labels:** `enhancement`, `v3.0`, `medium-priority`, `user-experience`
 
 **Story:**
+
 ```markdown
 ## 🎯 User Story
 
@@ -109,6 +112,7 @@ Implement a visual SOQL builder that allows users to:
 ## 📝 Description
 
 Add query history tracking and favorites system:
+
 - Track last 50 executed queries per user
 - Star/favorite frequently used queries
 - Quick access panel for history
@@ -127,7 +131,6 @@ Add query history tracking and favorites system:
 - [ ] Export history to CSV
 
 ## 🎨 UI Mockup
-
 ```
 ┌──────────────────────────────────────────┐
 │  ⭐ Favorites (3)                        │
@@ -165,6 +168,7 @@ JT_QueryHistory__c {
 ```
 
 **LWC Component:**
+
 - `jtQueryHistory` - Main history panel
 - Cache last 50 in Platform Cache + localStorage
 
@@ -181,6 +185,7 @@ JT_QueryHistory__c {
 ## 📅 Estimated Effort
 
 **8 points** (1 sprint)
+
 ```
 
 ---
@@ -195,8 +200,8 @@ JT_QueryHistory__c {
 ```markdown
 ## 🎯 User Story
 
-**As a** data analyst running multiple reports  
-**I want** to execute multiple query configurations at once  
+**As a** data analyst running multiple reports
+**I want** to execute multiple query configurations at once
 **So that** I can save time and get all results in one batch
 
 ## 📝 Description
@@ -222,30 +227,32 @@ Enable bulk execution of multiple query configurations:
 ## 🎨 UI Mockup
 
 ```
+
 ┌──────────────────────────────────────────┐
-│  Bulk Query Execution                    │
+│  Bulk Query Execution │
 ├──────────────────────────────────────────┤
-│  Select Configurations (3 selected)      │
-│  ☑ Account by Name                       │
-│  ☑ Opportunity Pipeline                  │
-│  ☐ Contact Report                        │
-│  ☑ User Activity                         │
-│                                          │
-│  [Select All] [Clear]  [Execute All (3)]│
+│  Select Configurations (3 selected) │
+│  ☑ Account by Name │
+│  ☑ Opportunity Pipeline │
+│  ☐ Contact Report │
+│  ☑ User Activity │
+│  │
+│  [Select All] [Clear] [Execute All (3)]│
 ├──────────────────────────────────────────┤
-│  Execution Progress:                     │
-│                                          │
-│  ✅ Account by Name                      │
-│     15 records - Completed               │
-│                                          │
-│  🔄 Opportunity Pipeline                 │
-│     [████████░░░░] 75%  [Cancel]         │
-│                                          │
-│  ⏳ User Activity                        │
-│     Queued...                            │
+│  Execution Progress: │
+│  │
+│  ✅ Account by Name │
+│  15 records - Completed │
+│  │
+│  🔄 Opportunity Pipeline │
+│  [████████░░░░] 75% [Cancel] │
+│  │
+│  ⏳ User Activity │
+│  Queued... │
 ├──────────────────────────────────────────┤
-│  [Download All Results (ZIP)]            │
+│  [Download All Results (ZIP)] │
 └──────────────────────────────────────────┘
+
 ```
 
 ## 🔧 Technical Implementation
@@ -255,7 +262,7 @@ Enable bulk execution of multiple query configurations:
 public class JT_BulkQueryExecutor implements Queueable {
   private List<String> configNames;
   private Integer currentIndex = 0;
-  
+
   public void execute(QueueableContext ctx) {
     // Execute current query
     // Store results
@@ -268,6 +275,7 @@ public class JT_BulkQueryExecutor implements Queueable {
 ```
 
 **Result Storage:**
+
 - Platform Cache (temporary)
 - ContentVersion (permanent ZIP)
 
@@ -284,6 +292,7 @@ public class JT_BulkQueryExecutor implements Queueable {
 ## 📅 Estimated Effort
 
 **13 points** (2 sprints)
+
 ```
 
 ---
@@ -298,8 +307,8 @@ public class JT_BulkQueryExecutor implements Queueable {
 ```markdown
 ## 🎯 User Story
 
-**As a** user viewing large result sets  
-**I want** to filter and search within results  
+**As a** user viewing large result sets
+**I want** to filter and search within results
 **So that** I can quickly find specific records without re-running queries
 
 ## 📝 Description
@@ -328,24 +337,26 @@ Add client-side filtering capabilities to query results:
 ## 🎨 UI Mockup
 
 ```
+
 ┌──────────────────────────────────────────┐
-│  Results (234 records, 15 filtered)      │
-│  🔍 [Global search...] [🔧 Filters (2)]  │
+│  Results (234 records, 15 filtered) │
+│  🔍 [Global search...] [🔧 Filters (2)] │
 ├──────────────────────────────────────────┤
-│  Name ▼ 🔽    Industry 🔽    Amount 🔽   │
-│  ┌──────────────────────┐                │
-│  │ Filter: Name         │                │
-│  │ ○ Contains "Acme"    │                │
-│  │ ○ Equals             │                │
-│  │ ○ Starts with        │                │
-│  │ [Apply] [Clear]      │                │
-│  └──────────────────────┘                │
-│                                          │
-│  Acme Corp    Technology    $50,000     │
-│  Acme Inc     Retail        $25,000     │
+│  Name ▼ 🔽 Industry 🔽 Amount 🔽 │
+│  ┌──────────────────────┐ │
+│  │ Filter: Name │ │
+│  │ ○ Contains "Acme" │ │
+│  │ ○ Equals │ │
+│  │ ○ Starts with │ │
+│  │ [Apply] [Clear] │ │
+│  └──────────────────────┘ │
+│  │
+│  Acme Corp Technology $50,000 │
+│  Acme Inc Retail $25,000 │
 ├──────────────────────────────────────────┤
-│  [Clear All Filters]  [Save Filter]      │
+│  [Clear All Filters] [Save Filter] │
 └──────────────────────────────────────────┘
+
 ```
 
 ## 🔧 Technical Implementation
@@ -361,6 +372,7 @@ filteredResults = allResults.filter(record => {
 ```
 
 **Features:**
+
 - Use Array.filter() for performance
 - Debounce search input (300ms)
 - Store filters in component state
@@ -379,6 +391,7 @@ filteredResults = allResults.filter(record => {
 ## 📅 Estimated Effort
 
 **8 points** (1 sprint)
+
 ```
 
 ---
@@ -393,8 +406,8 @@ filteredResults = allResults.filter(record => {
 ```markdown
 ## 🎯 User Story
 
-**As a** new user learning the system  
-**I want** access to pre-built query templates  
+**As a** new user learning the system
+**I want** access to pre-built query templates
 **So that** I can quickly get started with common use cases
 
 ## 📝 Description
@@ -457,6 +470,7 @@ JT_QueryTemplate__mdt {
 ```
 
 **Component:**
+
 - New: `jtTemplateLibrary.cmp`
 - Template browser with categories
 - Preview and customize flow
@@ -474,6 +488,7 @@ JT_QueryTemplate__mdt {
 ## 📅 Estimated Effort
 
 **5 points** (1 sprint)
+
 ```
 
 ---
@@ -488,8 +503,8 @@ JT_QueryTemplate__mdt {
 ```markdown
 ## 🎯 User Story
 
-**As a** user creating a new query configuration  
-**I want** real-time validation as I type my SOQL  
+**As a** user creating a new query configuration
+**I want** real-time validation as I type my SOQL
 **So that** I can catch syntax errors before saving
 
 ## 📝 Description
@@ -517,18 +532,20 @@ Implement real-time SOQL validation with:
 ## 🎨 UI Example
 
 ```
+
 ┌──────────────────────────────────────────┐
-│  SOQL Query:                    ✅ Valid │
-│  ┌────────────────────────────────────┐  │
-│  │ SELECT Name, Amount                │  │
-│  │ FROM Acount                        │  │
-│  │      ~~~~~~                        │  │
-│  │      ⚠️  Unknown object: "Acount"   │  │
-│  │      💡 Did you mean "Account"?     │  │
-│  │ WHERE Amount > 1000                │  │
-│  └────────────────────────────────────┘  │
-│  [Fix Automatically]                     │
+│  SOQL Query: ✅ Valid │
+│  ┌────────────────────────────────────┐ │
+│  │ SELECT Name, Amount │ │
+│  │ FROM Acount │ │
+│  │ ~~~~~~ │ │
+│  │ ⚠️ Unknown object: "Acount" │ │
+│  │ 💡 Did you mean "Account"? │ │
+│  │ WHERE Amount > 1000 │ │
+│  └────────────────────────────────────┘ │
+│  [Fix Automatically] │
 └──────────────────────────────────────────┘
+
 ```
 
 ## 🔧 Technical Implementation
@@ -543,6 +560,7 @@ validateSOQL(query) {
 ```
 
 **Approach 2: Tooling API (accurate, online)**
+
 ```javascript
 async validateWithToolingAPI(query) {
   // POST to /services/data/v60.0/tooling/query/?explain=true
@@ -565,6 +583,7 @@ async validateWithToolingAPI(query) {
 ## 📅 Estimated Effort
 
 **8 points** (1 sprint)
+
 ```
 
 ---
@@ -579,8 +598,8 @@ async validateWithToolingAPI(query) {
 ```markdown
 ## 🎯 User Story
 
-**As an** Admin monitoring query performance  
-**I want** a dashboard showing query execution metrics  
+**As an** Admin monitoring query performance
+**I want** a dashboard showing query execution metrics
 **So that** I can identify slow queries and optimize them
 
 ## 📝 Description
@@ -610,26 +629,28 @@ Build an analytics dashboard showing:
 ## 🎨 Dashboard Layout
 
 ```
+
 ┌────────────────────────────────────────────────┐
-│  Performance Analytics    [Last 30 Days ▼]    │
+│  Performance Analytics [Last 30 Days ▼] │
 ├────────────────────────────────────────────────┤
-│  ┌──────────────┐  ┌──────────────┐           │
-│  │ Avg Time     │  │ Total Runs   │           │
-│  │  1.2s        │  │  2,847       │           │
-│  └──────────────┘  └──────────────┘           │
+│  ┌──────────────┐ ┌──────────────┐ │
+│  │ Avg Time │ │ Total Runs │ │
+│  │ 1.2s │ │ 2,847 │ │
+│  └──────────────┘ └──────────────┘ │
 ├────────────────────────────────────────────────┤
-│  📊 Execution Time Trend                       │
-│  [Line chart showing daily avg time]          │
+│  📊 Execution Time Trend │
+│  [Line chart showing daily avg time] │
 ├────────────────────────────────────────────────┤
-│  🐌 Top 10 Slowest Queries                     │
+│  🐌 Top 10 Slowest Queries │
 │  1. Contact Report............5.8s (Optimize)│
-│  2. Opportunity Pipeline......3.2s            │
-│  3. Account Hierarchy.........2.9s            │
+│  2. Opportunity Pipeline......3.2s │
+│  3. Account Hierarchy.........2.9s │
 ├────────────────────────────────────────────────┤
-│  🔥 Most Used Configurations                   │
-│  1. Account by Name...........456 runs        │
-│  2. User List.................234 runs        │
+│  🔥 Most Used Configurations │
+│  1. Account by Name...........456 runs │
+│  2. User List.................234 runs │
 └────────────────────────────────────────────────┘
+
 ```
 
 ## 🔧 Technical Implementation
@@ -648,6 +669,7 @@ JT_QueryMetrics__c {
 ```
 
 **Dashboard:**
+
 - Use Lightning Dashboard or custom LWC with Chart.js
 - Aggregate data in Apex (SOQL GROUP BY)
 - Cache dashboard data (15 min TTL)
@@ -665,6 +687,7 @@ JT_QueryMetrics__c {
 ## 📅 Estimated Effort
 
 **13 points** (2 sprints)
+
 ```
 
 ---
@@ -681,8 +704,8 @@ JT_QueryMetrics__c {
 ```markdown
 ## 🎯 User Story
 
-**As a** user running the same queries frequently  
-**I want** cached results for recent queries  
+**As a** user running the same queries frequently
+**I want** cached results for recent queries
 **So that** I get instant results without hitting governor limits
 
 ## 📝 Description
@@ -709,11 +732,11 @@ Implement Platform Cache to cache:
 ```apex
 public class JT_CacheManager {
   private static final String CACHE_PARTITION = 'local.JTDynamicQueries';
-  
+
   public static void cacheResults(String key, Object value, Integer ttlSeconds) {
     Cache.Org.put(CACHE_PARTITION + '.' + key, value, ttlSeconds);
   }
-  
+
   public static Object getResults(String key) {
     return Cache.Org.get(CACHE_PARTITION + '.' + key);
   }
@@ -732,6 +755,7 @@ public class JT_CacheManager {
 ## 📅 Estimated Effort
 
 **5 points** (1 sprint)
+
 ```
 
 ---
@@ -746,8 +770,8 @@ public class JT_CacheManager {
 ```markdown
 ## 🎯 User Story
 
-**As a** manager needing daily/weekly reports  
-**I want** to schedule automatic query execution  
+**As a** manager needing daily/weekly reports
+**I want** to schedule automatic query execution
 **So that** I receive results via email without manual work
 
 ## 📝 Description
@@ -777,21 +801,23 @@ Enable scheduling of query executions:
 ## 🎨 UI Mockup
 
 ```
+
 ┌──────────────────────────────────────────┐
-│  Schedule Query: Account by Name         │
+│  Schedule Query: Account by Name │
 ├──────────────────────────────────────────┤
-│  Frequency: [Weekly ▼]                   │
-│  Day: [Monday ▼]                         │
-│  Time: [09:00 AM ▼]                      │
-│  Timezone: [PST ▼]                       │
-│                                          │
-│  Email Recipients:                       │
-│  [user@example.com, team@example.com]   │
-│                                          │
-│  Format: ○ CSV Attachment  ○ HTML Table  │
-│                                          │
-│  [Cancel]  [Schedule]                    │
+│  Frequency: [Weekly ▼] │
+│  Day: [Monday ▼] │
+│  Time: [09:00 AM ▼] │
+│  Timezone: [PST ▼] │
+│  │
+│  Email Recipients: │
+│  [user@example.com, team@example.com] │
+│  │
+│  Format: ○ CSV Attachment ○ HTML Table │
+│  │
+│  [Cancel] [Schedule] │
 └──────────────────────────────────────────┘
+
 ```
 
 ## 🔧 Technical Implementation
@@ -800,32 +826,33 @@ Enable scheduling of query executions:
 global class JT_ScheduledQueryExecutor implements Schedulable {
   private String configName;
   private List<String> recipients;
-  
+
   global void execute(SchedulableContext ctx) {
     // Execute query
     List<SObject> results = JT_DataSelector.executeQuery(...);
-    
+
     // Generate CSV
     String csv = generateCSV(results);
-    
+
     // Send email
     Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
     email.setToAddresses(recipients);
     email.setSubject('Scheduled Query Results: ' + configName);
     email.setHtmlBody(generateEmailBody(results));
-    
+
     // Attach CSV
     Messaging.EmailFileAttachment attachment = new Messaging.EmailFileAttachment();
     attachment.setFileName(configName + '_' + Datetime.now().format('yyyy-MM-dd') + '.csv');
     attachment.setBody(Blob.valueOf(csv));
     email.setFileAttachments(new List<Messaging.EmailFileAttachment>{ attachment });
-    
+
     Messaging.sendEmail(new List<Messaging.SingleEmailMessage>{ email });
   }
 }
 ```
 
 **Custom Object for Schedules:**
+
 ```apex
 JT_QuerySchedule__c {
   JT_ConfigName__c (Text)
@@ -852,6 +879,7 @@ JT_QuerySchedule__c {
 ## 📅 Estimated Effort
 
 **13 points** (2 sprints)
+
 ```
 
 ---
@@ -866,8 +894,8 @@ JT_QuerySchedule__c {
 ```markdown
 ## 🎯 User Story
 
-**As a** DevOps engineer managing multiple orgs  
-**I want** to export/import configurations as JSON  
+**As a** DevOps engineer managing multiple orgs
+**I want** to export/import configurations as JSON
 **So that** I can migrate configs between sandbox and production
 
 ## 📝 Description
@@ -899,29 +927,31 @@ Enable export and import of query configurations:
 ## 🎨 UI Flow
 
 ```
+
 ┌──────────────────────────────────────────┐
-│  Import Configurations                   │
+│  Import Configurations │
 ├──────────────────────────────────────────┤
-│  Step 1: Upload File                     │
-│  [Choose File] query-configs.json ✓     │
-│                                          │
-│  Step 2: Preview (15 configurations)    │
-│  ✅ Account_by_Name (New)                │
-│  ⚠️  User_Report (Exists - conflict)     │
-│  ✅ Opportunity_Pipeline (New)           │
-│                                          │
-│  Conflict Resolution:                    │
-│  ○ Skip existing  ○ Overwrite  ○ Rename  │
-│                                          │
-│  [Back]  [Import (13 valid)]            │
+│  Step 1: Upload File │
+│  [Choose File] query-configs.json ✓ │
+│  │
+│  Step 2: Preview (15 configurations) │
+│  ✅ Account_by_Name (New) │
+│  ⚠️ User_Report (Exists - conflict) │
+│  ✅ Opportunity_Pipeline (New) │
+│  │
+│  Conflict Resolution: │
+│  ○ Skip existing ○ Overwrite ○ Rename │
+│  │
+│  [Back] [Import (13 valid)] │
 ├──────────────────────────────────────────┤
-│  Step 3: Results                         │
-│  ✅ 12 imported successfully             │
-│  ⚠️  1 skipped (duplicate)               │
-│  ❌ 2 failed (invalid SOQL)              │
-│                                          │
-│  [Download Log]  [Done]                  │
+│  Step 3: Results │
+│  ✅ 12 imported successfully │
+│  ⚠️ 1 skipped (duplicate) │
+│  ❌ 2 failed (invalid SOQL) │
+│  │
+│  [Download Log] [Done] │
 └──────────────────────────────────────────┘
+
 ```
 
 ## 🔧 Technical Implementation
@@ -933,23 +963,24 @@ public static String exportConfigurations() {
     SELECT Label, DeveloperName, JT_BaseQuery__c, JT_Binding__c
     FROM JT_DynamicQueryConfiguration__mdt
   ];
-  
+
   return JSON.serialize(configs, true);
 }
 ```
 
 **Import:**
+
 ```apex
 public static ImportResult importConfigurations(
-  String jsonData, 
+  String jsonData,
   ConflictResolution resolution
 ) {
   List<ConfigWrapper> configs = (List<ConfigWrapper>) JSON.deserialize(...);
-  
+
   // Validate each config
   // Check for conflicts
   // Create metadata records via Tooling API
-  
+
   return new ImportResult(successCount, skipCount, errors);
 }
 ```
@@ -967,6 +998,7 @@ public static ImportResult importConfigurations(
 ## 📅 Estimated Effort
 
 **13 points** (2 sprints)
+
 ```
 
 ---
@@ -981,8 +1013,8 @@ public static ImportResult importConfigurations(
 ```markdown
 ## 🎯 User Story
 
-**As a** user in an org with 500+ Apex classes  
-**I want** "Where is this used?" to run in background  
+**As a** user in an org with 500+ Apex classes
+**I want** "Where is this used?" to run in background
 **So that** I don't hit timeout limits and get complete results
 
 ## 📝 Description
@@ -1011,14 +1043,14 @@ public class JT_UsageSearchQueueable implements Queueable {
   private String configName;
   private Integer batchIndex = 0;
   private static final Integer BATCH_SIZE = 50;
-  
+
   public void execute(QueueableContext ctx) {
     // Search batch of 50 classes
     List<String> results = searchBatch(configName, batchIndex, BATCH_SIZE);
-    
+
     // Store partial results
     storeResults(configName, results);
-    
+
     // Chain next batch if more exist
     if (hasMoreBatches()) {
       System.enqueueJob(new JT_UsageSearchQueueable(configName, batchIndex + 1));
@@ -1043,6 +1075,7 @@ public class JT_UsageSearchQueueable implements Queueable {
 ## 📅 Estimated Effort
 
 **8 points** (1 sprint)
+
 ```
 
 ---
@@ -1057,8 +1090,8 @@ public class JT_UsageSearchQueueable implements Queueable {
 ```markdown
 ## 🎯 User Story
 
-**As a** global user speaking Italian/Japanese/Portuguese/Chinese  
-**I want** the app in my native language  
+**As a** global user speaking Italian/Japanese/Portuguese/Chinese
+**I want** the app in my native language
 **So that** I can use it more effectively
 
 ## 📝 Description
@@ -1090,16 +1123,18 @@ Expand i18n support to 8 languages total:
 ## 📦 Files to Create
 
 ```
+
 force-app/main/default/
 ├── lwc/jtQueryViewer/labels_it.js
 ├── lwc/jtQueryViewer/labels_ja.js
 ├── lwc/jtQueryViewer/labels_pt.js
 ├── lwc/jtQueryViewer/labels_zh.js
 └── objectTranslations/
-    ├── JT_DynamicQueryConfiguration__mdt-it/
-    ├── JT_DynamicQueryConfiguration__mdt-ja/
-    ├── JT_DynamicQueryConfiguration__mdt-pt_BR/
-    └── JT_DynamicQueryConfiguration__mdt-zh_CN/
+├── JT_DynamicQueryConfiguration**mdt-it/
+├── JT_DynamicQueryConfiguration**mdt-ja/
+├── JT_DynamicQueryConfiguration**mdt-pt_BR/
+└── JT_DynamicQueryConfiguration**mdt-zh_CN/
+
 ```
 
 ## 🎯 Priority
@@ -1120,6 +1155,7 @@ force-app/main/default/
 **Labels:** `enhancement`, `future`, `api`, `low-priority`
 
 **Story:**
+
 ```markdown
 ## 🎯 User Story
 
@@ -1130,6 +1166,7 @@ force-app/main/default/
 ## 📝 Description
 
 Add GraphQL query support alongside SOQL:
+
 - Convert SOQL to GraphQL
 - Execute GraphQL queries via API
 - Support nested relationships
@@ -1149,33 +1186,34 @@ Add GraphQL query support alongside SOQL:
 - [ ] Mutations support (Insert/Update/Delete)
 
 ## 🎨 UI Mockup
-
 ```
+
 ┌──────────────────────────────────────────┐
-│  Query Type: ○ SOQL  ● GraphQL          │
+│  Query Type: ○ SOQL ● GraphQL │
 ├──────────────────────────────────────────┤
-│  GraphQL Query:                          │
-│  ┌────────────────────────────────────┐  │
-│  │ query {                            │  │
-│  │   uiapi {                          │  │
-│  │     query {                        │  │
-│  │       Account(where: {            │  │
-│  │         Name: { like: "%Acme%" }  │  │
-│  │       }) {                         │  │
-│  │         edges {                    │  │
-│  │           node {                   │  │
-│  │             Id                     │  │
-│  │             Name { value }         │  │
-│  │             Industry { value }     │  │
-│  │           }                        │  │
-│  │         }                          │  │
-│  │       }                            │  │
-│  │     }                              │  │
-│  │   }                                │  │
-│  │ }                                  │  │
-│  └────────────────────────────────────┘  │
-│  [Convert from SOQL]  [Execute]          │
+│  GraphQL Query: │
+│  ┌────────────────────────────────────┐ │
+│  │ query { │ │
+│  │ uiapi { │ │
+│  │ query { │ │
+│  │ Account(where: { │ │
+│  │ Name: { like: "%Acme%" } │ │
+│  │ }) { │ │
+│  │ edges { │ │
+│  │ node { │ │
+│  │ Id │ │
+│  │ Name { value } │ │
+│  │ Industry { value } │ │
+│  │ } │ │
+│  │ } │ │
+│  │ } │ │
+│  │ } │ │
+│  │ } │ │
+│  │ } │ │
+│  └────────────────────────────────────┘ │
+│  [Convert from SOQL] [Execute] │
 └──────────────────────────────────────────┘
+
 ```
 
 ## 🔧 Technical Implementation
@@ -1208,6 +1246,7 @@ req.setBody(JSON.serialize(new Map<String, Object>{
 ## 📅 Estimated Effort
 
 **21 points** (3 sprints)
+
 ```
 
 ---
@@ -1222,8 +1261,8 @@ req.setBody(JSON.serialize(new Map<String, Object>{
 ```markdown
 ## 🎯 User Story
 
-**As a** analyst comparing data over time  
-**I want** to compare two query result sets  
+**As a** analyst comparing data over time
+**I want** to compare two query result sets
 **So that** I can identify changes, additions, and deletions
 
 ## 📝 Description
@@ -1253,21 +1292,23 @@ Build a comparison tool to compare two query executions:
 ## 🎨 UI Layout
 
 ```
+
 ┌──────────────────────────────────────────────────┐
-│  Compare Results                                 │
-│  Left: [Account Query - Dec 1 ▼]                │
-│  Right: [Account Query - Nov 1 ▼]               │
+│  Compare Results │
+│  Left: [Account Query - Dec 1 ▼] │
+│  Right: [Account Query - Nov 1 ▼] │
 ├──────────────────────────────────────────────────┤
-│  Summary: 5 added, 2 removed, 8 modified        │
+│  Summary: 5 added, 2 removed, 8 modified │
 ├──────────────────────────────────────────────────┤
-│  ID        Name (Left)    Name (Right)   Status │
-│  001...    Acme Corp      Acme Corp      Same   │
-│  002...    -              NewCo Inc      Added  │
-│  003...    Old LLC        -              Removed│
-│  004...    Test Inc       Test Corp      Changed│
+│  ID Name (Left) Name (Right) Status │
+│  001... Acme Corp Acme Corp Same │
+│  002... - NewCo Inc Added │
+│  003... Old LLC - Removed│
+│  004... Test Inc Test Corp Changed│
 ├──────────────────────────────────────────────────┤
-│  [Export Diff Report]  [Save Comparison]        │
+│  [Export Diff Report] [Save Comparison] │
 └──────────────────────────────────────────────────┘
+
 ```
 
 ## 🔧 Technical Implementation
@@ -1275,17 +1316,17 @@ Build a comparison tool to compare two query executions:
 ```apex
 public class JT_ResultComparator {
   public static DiffResult compareResults(
-    List<SObject> setA, 
+    List<SObject> setA,
     List<SObject> setB,
     String keyField
   ) {
     Map<String, SObject> mapA = buildMap(setA, keyField);
     Map<String, SObject> mapB = buildMap(setB, keyField);
-    
+
     List<DiffRecord> added = findAdded(mapA, mapB);
     List<DiffRecord> removed = findRemoved(mapA, mapB);
     List<DiffRecord> modified = findModified(mapA, mapB);
-    
+
     return new DiffResult(added, removed, modified);
   }
 }
@@ -1304,6 +1345,7 @@ public class JT_ResultComparator {
 ## 📅 Estimated Effort
 
 **13 points** (2 sprints)
+
 ```
 
 ---
@@ -1318,8 +1360,8 @@ public class JT_ResultComparator {
 ```markdown
 ## 🎯 User Story
 
-**As a** developer writing SOQL queries  
-**I want** automatic optimization suggestions  
+**As a** developer writing SOQL queries
+**I want** automatic optimization suggestions
 **So that** my queries run faster and consume fewer resources
 
 ## 📝 Description
@@ -1346,30 +1388,32 @@ Analyze SOQL queries and suggest optimizations:
 ## 🎨 Suggestion Panel
 
 ```
+
 ┌──────────────────────────────────────────┐
-│  Query Optimization                      │
-│  Score: 65/100 ⚠️  Needs improvement     │
+│  Query Optimization │
+│  Score: 65/100 ⚠️ Needs improvement │
 ├──────────────────────────────────────────┤
-│  💡 Suggestions:                         │
-│                                          │
-│  1. ⚡ Add LIMIT clause                  │
-│     Impact: 🟢 High (reduce API time)   │
-│     "Add LIMIT 200 to prevent scanning  │
-│      entire table"                       │
-│     [Apply] [Learn More] [Ignore]        │
-│                                          │
-│  2. 🎯 Add indexed field to WHERE        │
-│     Impact: 🟡 Medium                    │
-│     "Add WHERE CreatedDate > LAST_N_DAYS│
-│      for better performance"             │
-│     [Apply] [Learn More] [Ignore]        │
-│                                          │
-│  3. 📦 Use aggregate query               │
-│     Impact: 🟢 High                      │
-│     "Replace with COUNT() for faster    │
-│      results"                            │
-│     [Apply] [Learn More] [Ignore]        │
+│  💡 Suggestions: │
+│  │
+│  1. ⚡ Add LIMIT clause │
+│  Impact: 🟢 High (reduce API time) │
+│  "Add LIMIT 200 to prevent scanning │
+│  entire table" │
+│  [Apply] [Learn More] [Ignore] │
+│  │
+│  2. 🎯 Add indexed field to WHERE │
+│  Impact: 🟡 Medium │
+│  "Add WHERE CreatedDate > LAST_N_DAYS│
+│  for better performance" │
+│  [Apply] [Learn More] [Ignore] │
+│  │
+│  3. 📦 Use aggregate query │
+│  Impact: 🟢 High │
+│  "Replace with COUNT() for faster │
+│  results" │
+│  [Apply] [Learn More] [Ignore] │
 └──────────────────────────────────────────┘
+
 ```
 
 ## 🔧 Technical Implementation
@@ -1379,7 +1423,7 @@ Analyze SOQL queries and suggest optimizations:
 public class JT_QueryOptimizer {
   public static List<Suggestion> analyzeSalesforce(String soql) {
     List<Suggestion> suggestions = new List<Suggestion>();
-    
+
     // Rule 1: Missing LIMIT
     if (!soql.containsIgnoreCase('LIMIT')) {
       suggestions.add(new Suggestion(
@@ -1389,7 +1433,7 @@ public class JT_QueryOptimizer {
         SuggestionLevel.HIGH
       ));
     }
-    
+
     // Rule 2: No WHERE clause
     if (!soql.containsIgnoreCase('WHERE')) {
       suggestions.add(new Suggestion(
@@ -1399,17 +1443,18 @@ public class JT_QueryOptimizer {
         SuggestionLevel.MEDIUM
       ));
     }
-    
+
     // Rule 3: Use of non-indexed fields
     // Rule 4: Too many fields selected
     // Rule 5: Inefficient relationship queries
-    
+
     return suggestions;
   }
 }
 ```
 
 **AI-Powered (Future):**
+
 - Integrate with Einstein GPT
 - Learn from query execution patterns
 - Personalized suggestions based on org data
@@ -1427,6 +1472,7 @@ public class JT_QueryOptimizer {
 ## 📅 Estimated Effort
 
 **21 points** (3 sprints)
+
 ```
 
 ---
@@ -1441,8 +1487,8 @@ public class JT_QueryOptimizer {
 ```markdown
 ## 🎯 User Story
 
-**As an** Agentforce AI agent  
-**I want** more granular query actions  
+**As an** Agentforce AI agent
+**I want** more granular query actions
 **So that** I can help users more effectively with data queries
 
 ## 📝 Description
@@ -1487,18 +1533,18 @@ public static List<ValidationResult> validateConfiguration(
   List<ValidationRequest> requests
 ) {
   List<ValidationResult> results = new List<ValidationResult>();
-  
+
   for (ValidationRequest req : requests) {
     JT_DynamicQueryConfiguration__mdt config = getConfig(req.configName);
-    
+
     ValidationResult result = new ValidationResult();
     result.exists = (config != null);
     result.valid = validateSOQL(config?.JT_BaseQuery__c);
     result.objectExists = checkObjectExists(config?.JT_ObjectName__c);
-    
+
     results.add(result);
   }
-  
+
   return results;
 }
 
@@ -1510,13 +1556,13 @@ public class ValidationRequest {
 public class ValidationResult {
   @InvocableVariable
   public Boolean exists;
-  
+
   @InvocableVariable
   public Boolean valid;
-  
+
   @InvocableVariable
   public Boolean objectExists;
-  
+
   @InvocableVariable
   public List<String> errors;
 }
@@ -1535,6 +1581,7 @@ public class ValidationResult {
 ## 📅 Estimated Effort
 
 **8 points** (1 sprint)
+
 ```
 
 ---
@@ -1549,8 +1596,8 @@ public class ValidationResult {
 ```markdown
 ## 🎯 User Story
 
-**As a** Security Administrator  
-**I want** enhanced security controls  
+**As a** Security Administrator
+**I want** enhanced security controls
 **So that** I can protect against abuse and maintain audit compliance
 
 ## 📝 Description
@@ -1597,7 +1644,7 @@ Implement comprehensive security enhancements:
 ```apex
 public class JT_RateLimiter {
   private static final Integer MAX_SEARCHES_PER_HOUR = 10;
-  
+
   public static Boolean checkLimit(String operation, Id userId) {
     Integer count = [
       SELECT COUNT()
@@ -1606,13 +1653,14 @@ public class JT_RateLimiter {
       AND JT_UserId__c = :userId
       AND CreatedDate = LAST_N_HOURS:1
     ];
-    
+
     return count < MAX_SEARCHES_PER_HOUR;
   }
 }
 ```
 
 **Audit Logger:**
+
 ```apex
 public class JT_AuditLogger {
   public static void logQueryExecution(
@@ -1648,6 +1696,7 @@ public class JT_AuditLogger {
 ## 📅 Estimated Effort
 
 **21 points** (3 sprints)
+
 ```
 
 ---
@@ -1662,8 +1711,8 @@ public class JT_AuditLogger {
 ```markdown
 ## 🎯 User Story
 
-**As an** Admin managing the application  
-**I want** pre-built reports and dashboards  
+**As an** Admin managing the application
+**I want** pre-built reports and dashboards
 **So that** I can track usage patterns and identify optimization opportunities
 
 ## 📝 Description
@@ -1699,28 +1748,30 @@ Create standard Reports and Dashboard for usage analytics:
 ## 🎨 Dashboard Layout
 
 ```
+
 ┌────────────────────────────────────────────────┐
-│  JT Dynamic Queries Analytics                  │
-│  [Last 30 Days ▼]          [Refresh] [Export] │
+│  JT Dynamic Queries Analytics │
+│  [Last 30 Days ▼] [Refresh] [Export] │
 ├────────────────────────────────────────────────┤
-│  ┌──────────────┐  ┌──────────────┐           │
-│  │ Total Runs   │  │ Unique Users │           │
-│  │  2,847       │  │  23          │           │
-│  └──────────────┘  └──────────────┘           │
+│  ┌──────────────┐ ┌──────────────┐ │
+│  │ Total Runs │ │ Unique Users │ │
+│  │ 2,847 │ │ 23 │ │
+│  └──────────────┘ └──────────────┘ │
 ├────────────────────────────────────────────────┤
-│  📊 Most Used Configurations                   │
-│  [Bar chart]                                   │
-│  Account by Name............456 runs          │
-│  User List..................234 runs          │
-│  Opportunity Pipeline.......189 runs          │
+│  📊 Most Used Configurations │
+│  [Bar chart] │
+│  Account by Name............456 runs │
+│  User List..................234 runs │
+│  Opportunity Pipeline.......189 runs │
 ├────────────────────────────────────────────────┤
-│  ⚠️  Unused Configurations (Consider Delete)   │
-│  • Old_Report - Created 6 months ago          │
-│  • Test_Config - Never used                   │
+│  ⚠️ Unused Configurations (Consider Delete) │
+│  • Old_Report - Created 6 months ago │
+│  • Test_Config - Never used │
 ├────────────────────────────────────────────────┤
-│  📈 Usage Trend                                │
-│  [Line chart showing daily executions]        │
+│  📈 Usage Trend │
+│  [Line chart showing daily executions] │
 └────────────────────────────────────────────────┘
+
 ```
 
 ## 🔧 Technical Implementation
@@ -1753,6 +1804,7 @@ Create standard Reports and Dashboard for usage analytics:
 ## 📅 Estimated Effort
 
 **8 points** (1 sprint)
+
 ```
 
 ---
@@ -1782,3 +1834,4 @@ Create standard Reports and Dashboard for usage analytics:
 
 **Total:** 18 issues, ~198 story points
 
+```

@@ -9,6 +9,7 @@ This guide explains how to generate professional screenshots and demo videos for
 ### **Screenshots**
 
 **Salesforce AppExchange Screenshot Requirements:**
+
 - **Dimensions**: Minimum 1280x800px (recommended: 1920x1080px)
 - **Format**: PNG or JPG
 - **Quantity**: 5-8 images
@@ -19,6 +20,7 @@ This guide explains how to generate professional screenshots and demo videos for
 ### **Videos**
 
 **Salesforce AppExchange Video Requirements:**
+
 - **Duration**: 30-120 seconds per video
 - **Format**: MP4, WebM, or MOV
 - **Resolution**: 1280x800px minimum (HD preferred)
@@ -27,6 +29,7 @@ This guide explains how to generate professional screenshots and demo videos for
 - **Audio**: Optional (music/voiceover)
 
 **Benefits of Videos:**
+
 - ✅ Show complete user workflows
 - ✅ Demonstrate responsive design
 - ✅ Highlight key features in action
@@ -47,6 +50,7 @@ node tests/screenshots/captureAppExchangeScreenshots.js
 ```
 
 **Output:**
+
 - `screenshots/appexchange/01_main_interface.png`
 - `screenshots/appexchange/02_configuration_dropdown.png`
 - `screenshots/appexchange/03_config_selected_preview.png`
@@ -71,12 +75,14 @@ If you prefer to take screenshots manually for better control:
 ## 📋 Screenshot Checklist
 
 ### **1. Main Interface - Configuration Selection**
+
 - ✅ Show searchable combobox
 - ✅ Display environment badge (Production/Sandbox)
 - ✅ Show "New Configuration" button
 - ✅ Clean, empty state or with sample config
 
 **Key Features to Highlight:**
+
 - Searchable dropdown
 - Modern UI design
 - Clear call-to-action buttons
@@ -84,12 +90,14 @@ If you prefer to take screenshots manually for better control:
 ---
 
 ### **2. Configuration Dropdown Open**
+
 - ✅ Show filtered options
 - ✅ Display search functionality
 - ✅ Show multiple configurations
 - ✅ Highlight hover state
 
 **Key Features to Highlight:**
+
 - Real-time filtering
 - Easy-to-read list
 - Lightning Design System styling
@@ -97,12 +105,14 @@ If you prefer to take screenshots manually for better control:
 ---
 
 ### **3. Configuration Selected + Query Preview**
+
 - ✅ Show selected configuration
 - ✅ Display SQL query preview
 - ✅ Show parameter inputs (if applicable)
 - ✅ Display object/binding information
 
 **Key Features to Highlight:**
+
 - Query preview with syntax highlighting
 - Dynamic parameter inputs
 - Object name display
@@ -111,12 +121,14 @@ If you prefer to take screenshots manually for better control:
 ---
 
 ### **4. Query Results - Table View**
+
 - ✅ Show populated results (10+ rows)
 - ✅ Display pagination controls
 - ✅ Show column headers
 - ✅ Display record count
 
 **Key Features to Highlight:**
+
 - Responsive data table
 - Pagination
 - Clear column structure
@@ -125,12 +137,14 @@ If you prefer to take screenshots manually for better control:
 ---
 
 ### **5. JSON View** (Optional but Recommended)
+
 - ✅ Show formatted JSON
 - ✅ Display syntax highlighting
 - ✅ Show view toggle buttons
 - ✅ Demonstrate alternative viewing options
 
 **Key Features to Highlight:**
+
 - Multiple view modes
 - Syntax highlighted JSON
 - Developer-friendly
@@ -138,12 +152,14 @@ If you prefer to take screenshots manually for better control:
 ---
 
 ### **6. Mobile Responsive View**
+
 - ✅ Show mobile viewport (375x667)
 - ✅ Display expandable cards
 - ✅ Show mobile navigation
 - ✅ Demonstrate responsive design
 
 **Key Features to Highlight:**
+
 - Fully responsive
 - Mobile-optimized cards
 - Touch-friendly UI
@@ -151,12 +167,14 @@ If you prefer to take screenshots manually for better control:
 ---
 
 ### **7. Create Configuration Modal**
+
 - ✅ Show modal dialog
 - ✅ Display form fields
 - ✅ Show validation hints
 - ✅ Display save/cancel buttons
 
 **Key Features to Highlight:**
+
 - In-app configuration creation
 - User-friendly forms
 - Field validation
@@ -165,12 +183,14 @@ If you prefer to take screenshots manually for better control:
 ---
 
 ### **8. Support Page** (Optional)
+
 - ✅ Show support card layout
 - ✅ Display GitHub integration
 - ✅ Show bug reporting options
 - ✅ Display contact information
 
 **Key Features to Highlight:**
+
 - Integrated support
 - GitHub connection
 - Community engagement
@@ -187,11 +207,13 @@ node tests/screenshots/captureAppExchangeVideos.js
 ```
 
 **Output:**
+
 - `videos/appexchange/01_complete_user_flow.webm` (~90 seconds)
 - `videos/appexchange/02_mobile_responsive.webm` (~30 seconds)
 - `videos/appexchange/03_config_creation.webm` (~40 seconds)
 
 **Videos Include:**
+
 1. **Complete User Flow**: Search → Select → Execute → View Results
 2. **Mobile Responsive**: Touch interaction and card expansion
 3. **Config Creation**: Modal workflow demonstration
@@ -211,6 +233,7 @@ done
 ```
 
 **FFmpeg Installation:**
+
 - **Mac**: `brew install ffmpeg`
 - **Linux**: `sudo apt install ffmpeg`
 - **Windows**: Download from https://ffmpeg.org/
@@ -222,17 +245,20 @@ done
 ### **Screenshots**
 
 ### **Optimization Tools:**
+
 - **ImageOptim** (Mac): https://imageoptim.com/
 - **TinyPNG**: https://tinypng.com/
 - **Squoosh**: https://squoosh.app/
 
 ### **Editing Tips:**
+
 1. **Crop**: Remove unnecessary whitespace
 2. **Annotate**: Add arrows/callouts to highlight features (optional)
 3. **Optimize**: Reduce file size without losing quality
 4. **Verify**: Check dimensions meet requirements (1280x800 min)
 
 ### **What to Avoid:**
+
 - ❌ Blurry images
 - ❌ Lorem ipsum or fake data
 - ❌ Exposed sensitive information (usernames, emails)
@@ -246,27 +272,35 @@ done
 Use these as templates for your listing:
 
 ### **Screenshot 1: Main Interface**
+
 > "Dynamic Queries main interface featuring searchable configuration selector and modern Lightning UI"
 
 ### **Screenshot 2: Configuration Dropdown**
+
 > "Real-time filtering of query configurations with intuitive search"
 
 ### **Screenshot 3: Query Preview**
+
 > "Selected configuration with SQL query preview and dynamic parameter inputs"
 
 ### **Screenshot 4: Query Results**
+
 > "Professional data table view with pagination and responsive design"
 
 ### **Screenshot 5: JSON View**
+
 > "Alternative JSON view for developers with syntax highlighting"
 
 ### **Screenshot 6: Mobile View**
+
 > "Fully responsive mobile interface with expandable result cards"
 
 ### **Screenshot 7: Create Configuration**
+
 > "In-app configuration creation with field validation and user-friendly forms"
 
 ### **Screenshot 8: Support**
+
 > "Integrated support page with GitHub issue tracking and community resources"
 
 ---
@@ -291,12 +325,14 @@ Before uploading to AppExchange:
 ### **Videos**
 
 #### **Editing Tools:**
+
 - **OpenShot** (Free, Cross-platform): https://www.openshot.org/
 - **DaVinci Resolve** (Free, Professional): https://www.blackmagicdesign.com/products/davinciresolve
 - **iMovie** (Mac): Built-in
 - **Kdenlive** (Linux): https://kdenlive.org/
 
 #### **Optimization:**
+
 1. **Trim**: Remove unnecessary pauses
 2. **Speed Up**: 1.25x-1.5x for longer flows
 3. **Add Captions**: Highlight key actions
@@ -304,6 +340,7 @@ Before uploading to AppExchange:
 5. **Add Branding**: Optional watermark/logo
 
 #### **Video Tips:**
+
 - ✅ Show real data (anonymized if needed)
 - ✅ Smooth mouse movements
 - ✅ Clear, purposeful interactions
@@ -311,6 +348,7 @@ Before uploading to AppExchange:
 - ✅ Professional quality
 
 #### **What to Avoid:**
+
 - ❌ Shaky cursor movements
 - ❌ Long waits/loading screens
 - ❌ Errors or bugs
@@ -361,6 +399,7 @@ videos/
 ## 🎯 Next Steps
 
 ### **For Screenshots:**
+
 1. **Manual Capture**: Use browser DevTools (Cmd+Shift+M) for best results
 2. **Automated**: `npm run screenshots:appexchange` (may timeout on some flows)
 3. **Review**: Check each screenshot for quality
@@ -370,6 +409,7 @@ videos/
 **Tip:** Manual capture gives better control over timing and ensures buttons are enabled.
 
 ### **For Videos:**
+
 1. **Manual Capture**: Use browser screen recording for smooth flows
 2. **Automated**: `npm run videos:appexchange` (may need retry for timing)
 3. **Review**: Watch each video for quality
@@ -390,6 +430,7 @@ Live screenshots and videos are available in the GitHub Pages documentation.
 ## 📞 Questions?
 
 If screenshots don't capture correctly, check:
+
 - ✅ SF CLI session is active
 - ✅ Org has test data
 - ✅ Configurations exist
@@ -397,4 +438,3 @@ If screenshots don't capture correctly, check:
 - ✅ Browser window is large enough
 
 **Troubleshooting:** See `tests/e2e/AUTH_TROUBLESHOOTING.md`
-

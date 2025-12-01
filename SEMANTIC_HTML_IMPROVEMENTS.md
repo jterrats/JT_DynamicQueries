@@ -3,6 +3,7 @@
 ## 📋 Objetivo
 
 Asegurar que todos los IDs, names, data-attributes y clases CSS en los LWC sean:
+
 - **Semánticos**: Describen claramente su propósito
 - **No ambiguos**: Únicos y específicos al contexto
 - **Testeables**: Fáciles de seleccionar en E2E tests
@@ -15,12 +16,16 @@ Asegurar que todos los IDs, names, data-attributes y clases CSS en los LWC sean:
 ### ✅ **jtSearchableCombobox** - MEJORAR
 
 **Problemas actuales:**
+
 ```html
-<input id="combobox-input" />        <!-- ❌ Genérico -->
-<div id="listbox-id" />               <!-- ❌ No descriptivo -->
+<input id="combobox-input" />
+<!-- ❌ Genérico -->
+<div id="listbox-id" />
+<!-- ❌ No descriptivo -->
 ```
 
 **Mejoras propuestas:**
+
 ```html
 <input
   id="searchable-combobox-input"
@@ -36,6 +41,7 @@ Asegurar que todos los IDs, names, data-attributes y clases CSS en los LWC sean:
 ```
 
 **Beneficios:**
+
 - Tests E2E pueden usar: `page.locator('[data-testid="config-selector-input"]')`
 - Único en el contexto del componente padre
 
@@ -44,11 +50,13 @@ Asegurar que todos los IDs, names, data-attributes y clases CSS en los LWC sean:
 ### ✅ **jtParameterInputs** - MEJORAR
 
 **Estado actual:**
+
 ```html
 <lightning-input data-param="{param.name}" />
 ```
 
 **Mejoras propuestas:**
+
 ```html
 <lightning-input
   data-param="{param.name}"
@@ -59,6 +67,7 @@ Asegurar que todos los IDs, names, data-attributes y clases CSS en los LWC sean:
 ```
 
 **Beneficios:**
+
 - Tests pueden seleccionar parámetros específicos: `page.locator('[data-testid="query-parameter-accountName"]')`
 
 ---
@@ -66,9 +75,11 @@ Asegurar que todos los IDs, names, data-attributes y clases CSS en los LWC sean:
 ### ✅ **jtExecuteButton** - MEJORAR
 
 **Problema actual:**
+
 - No hay identificadores específicos más allá del label
 
 **Mejoras propuestas:**
+
 ```html
 <lightning-button
   data-testid="execute-query-button"
@@ -82,12 +93,16 @@ Asegurar que todos los IDs, names, data-attributes y clases CSS en los LWC sean:
 ### ✅ **jtCacheModal** - MEJORAR
 
 **Problemas actuales:**
+
 ```html
-<lightning-input label="Query Configurations" />  <!-- ❌ Solo label -->
-<button class="slds-button slds-button_brand" /> <!-- ❌ No ID -->
+<lightning-input label="Query Configurations" />
+<!-- ❌ Solo label -->
+<button class="slds-button slds-button_brand" />
+<!-- ❌ No ID -->
 ```
 
 **Mejoras propuestas:**
+
 ```html
 <lightning-input
   type="checkbox"
@@ -104,6 +119,7 @@ Asegurar que todos los IDs, names, data-attributes y clases CSS en los LWC sean:
 ```
 
 **Beneficios:**
+
 - Tests: `page.locator('[data-testid="cache-option-configurations"]').check()`
 - Tests: `page.locator('[data-testid="cache-clear-button"]').click()`
 
@@ -112,21 +128,27 @@ Asegurar que todos los IDs, names, data-attributes y clases CSS en los LWC sean:
 ### ✅ **jtQueryViewer** - MEJORAR
 
 **Problemas actuales:**
+
 ```html
 <!-- View toggle buttons -->
-<lightning-button data-view="table" />    <!-- ⚠️  Podría mejorarse -->
+<lightning-button data-view="table" />
+<!-- ⚠️  Podría mejorarse -->
 <lightning-button data-view="json" />
 <lightning-button data-view="csv" />
 
 <!-- Pagination -->
-<lightning-button icon-name="utility:chevronleft" />  <!-- ❌ No ID -->
-<lightning-button icon-name="utility:chevronright" /> <!-- ❌ No ID -->
+<lightning-button icon-name="utility:chevronleft" />
+<!-- ❌ No ID -->
+<lightning-button icon-name="utility:chevronright" />
+<!-- ❌ No ID -->
 
 <!-- Mobile cards -->
-<article class="slds-card" data-id={row.Id} />  <!-- ⚠️  Mejora menor -->
+<article class="slds-card" data-id="{row.Id}" />
+<!-- ⚠️  Mejora menor -->
 ```
 
 **Mejoras propuestas:**
+
 ```html
 <!-- View toggle buttons -->
 <lightning-button
@@ -171,21 +193,16 @@ Asegurar que todos los IDs, names, data-attributes y clases CSS en los LWC sean:
 ### ✅ **jtRunAsSection** - MEJORAR
 
 **Mejoras propuestas:**
+
 ```html
 <c-jt-searchable-combobox
   data-testid="run-as-user-selector"
   name="run-as-user"
 />
 
-<lightning-button
-  data-testid="run-as-clear-button"
-  name="run-as-clear"
-/>
+<lightning-button data-testid="run-as-clear-button" name="run-as-clear" />
 
-<lightning-button
-  data-testid="run-as-execute-button"
-  name="run-as-execute"
-/>
+<lightning-button data-testid="run-as-execute-button" name="run-as-execute" />
 ```
 
 ---
@@ -193,6 +210,7 @@ Asegurar que todos los IDs, names, data-attributes y clases CSS en los LWC sean:
 ### ✅ **jtConfigModal** - MEJORAR
 
 **Mejoras propuestas:**
+
 ```html
 <lightning-input
   data-testid="config-label-input"
@@ -206,10 +224,7 @@ Asegurar que todos los IDs, names, data-attributes y clases CSS en los LWC sean:
   label="SOQL Query"
 />
 
-<lightning-button
-  data-testid="config-save-button"
-  name="save-configuration"
-/>
+<lightning-button data-testid="config-save-button" name="save-configuration" />
 ```
 
 ---
@@ -217,6 +232,7 @@ Asegurar que todos los IDs, names, data-attributes y clases CSS en los LWC sean:
 ## 🎯 Convención de Nombres
 
 ### **data-testid Pattern:**
+
 ```
 {componentContext}-{element}-{type}
 
@@ -230,6 +246,7 @@ Ejemplos:
 ```
 
 ### **name Pattern:**
+
 ```
 {function}-{detail}
 
@@ -242,6 +259,7 @@ Ejemplos:
 ```
 
 ### **ID Pattern (si es necesario):**
+
 ```
 {componentName}-{element}-{uniqueId}
 
@@ -280,6 +298,7 @@ Ejemplos:
 ### Paso 1: Agregar `data-testid` a componentes reutilizables
 
 Componentes que RECIBEN `data-testid` como prop:
+
 - `c-jt-searchable-combobox`
 - `c-jt-execute-button`
 - `c-jt-parameter-inputs`
@@ -287,6 +306,7 @@ Componentes que RECIBEN `data-testid` como prop:
 ### Paso 2: Agregar `data-testid` a elementos en componentes padre
 
 Componentes que USAN los reutilizables con `data-testid` específico:
+
 - `c-jt-query-viewer`
 - `c-jt-cache-modal`
 - `c-jt-run-as-section`
@@ -294,13 +314,15 @@ Componentes que USAN los reutilizables con `data-testid` específico:
 ### Paso 3: Actualizar tests E2E
 
 Cambiar de:
+
 ```javascript
-page.locator('lightning-button').filter({ hasText: /Execute/i })
+page.locator("lightning-button").filter({ hasText: /Execute/i });
 ```
 
 A:
+
 ```javascript
-page.locator('[data-testid="execute-query-button"]')
+page.locator('[data-testid="execute-query-button"]');
 ```
 
 ---
@@ -318,6 +340,7 @@ page.locator('[data-testid="execute-query-button"]')
 ## 📝 Checklist de Implementación
 
 ### jtSearchableCombobox
+
 - [ ] Agregar prop `dataTestId`
 - [ ] Agregar prop `name`
 - [ ] Usar en input: `data-testid="{dataTestId}-input"`
@@ -325,26 +348,31 @@ page.locator('[data-testid="execute-query-button"]')
 - [ ] Usar en options: `data-testid="{dataTestId}-option-{value}"`
 
 ### jtExecuteButton
+
 - [ ] Agregar prop `dataTestId`
 - [ ] Agregar prop `name`
 - [ ] Default: `data-testid="execute-query-button"`
 
 ### jtParameterInputs
+
 - [ ] Agregar `data-testid` a cada input
 - [ ] Pattern: `query-parameter-{paramName}`
 
 ### jtCacheModal
+
 - [ ] Agregar `data-testid` a cada checkbox
 - [ ] Agregar `data-testid` a botones
 - [ ] Agregar `data-testid` al select all
 
 ### jtQueryViewer
+
 - [ ] Agregar `data-testid` a view toggle buttons
 - [ ] Agregar `data-testid` a pagination buttons
 - [ ] Agregar `data-testid` a header actions
 - [ ] Pasar `data-testid` a componentes hijos
 
 ### jtRunAsSection
+
 - [ ] Pasar `data-testid` a searchable combobox
 - [ ] Agregar `data-testid` a botones
 
@@ -353,25 +381,29 @@ page.locator('[data-testid="execute-query-button"]')
 ## 🎉 Resultado Esperado
 
 **Antes:**
+
 ```javascript
 // Test frágil
-const button = page.locator('lightning-button').filter({ hasText: /Execute/i });
+const button = page.locator("lightning-button").filter({ hasText: /Execute/i });
 ```
 
 **Después:**
+
 ```javascript
 // Test robusto
 const button = page.locator('[data-testid="execute-query-button"]');
 ```
 
 **Antes:**
+
 ```javascript
 // Selector ambiguo
-const combobox = page.locator('c-jt-query-viewer lightning-combobox');
+const combobox = page.locator("c-jt-query-viewer lightning-combobox");
 // Error: found 2 elements ❌
 ```
 
 **Después:**
+
 ```javascript
 // Selector específico
 const configSelector = page.locator('[data-testid="config-selector-input"]');
@@ -383,4 +415,3 @@ const userSelector = page.locator('[data-testid="run-as-user-selector-input"]');
 
 **Fecha de creación**: 1 Diciembre 2024
 **Status**: 🚧 En Progreso
-

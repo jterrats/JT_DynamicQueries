@@ -41,17 +41,20 @@ Check out our [Gallery](gallery.html) to see the application in action:
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/jterrats/JT_DynamicQueries.git
 cd JT_DynamicQueries
 ```
 
 2. Deploy to your Salesforce org:
+
 ```bash
 sfdx force:source:deploy -p force-app/main/default -u YOUR_ORG_ALIAS
 ```
 
 3. Assign the permission set:
+
 ```bash
 sfdx force:user:permset:assign -n JT_Dynamic_Queries -u YOUR_ORG_ALIAS
 ```
@@ -93,16 +96,19 @@ sfdx force:user:permset:assign -n JT_Dynamic_Queries -u YOUR_ORG_ALIAS
 ## 🏆 Key Highlights
 
 ### Performance
+
 - ⚡ **<2s Load Time** - Lightning-fast UI
 - 🚀 **Optimized Queries** - Efficient SOQL execution
 - 📦 **Lazy Loading** - On-demand resource fetching
 
 ### Security
+
 - 🔒 **WITH USER_MODE** - Enforces user permissions
 - 🛡️ **Field-level Security** - Respects FLS
 - 🔐 **Sharing Rules** - Honors org sharing model
 
 ### User Experience
+
 - 🎨 **Modern UI** - Lightning Design System
 - 📱 **Responsive** - Mobile-optimized
 - ♿ **Accessible** - WCAG 2.1 AA compliant
@@ -139,4 +145,3 @@ MIT License - See [LICENSE](https://github.com/jterrats/JT_DynamicQueries/blob/m
 **Last Updated:** November 30, 2025
 **Version:** 2.0
 **Status:** Production Ready ✅
-

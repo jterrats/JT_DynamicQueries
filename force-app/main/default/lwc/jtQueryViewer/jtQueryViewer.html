@@ -17,7 +17,9 @@
   <lightning-card title="Dynamic Query Viewer" icon-name="custom:custom63">
     <!-- Card Header Actions -->
     <div slot="actions">
-      <div class="slds-grid slds-grid_vertical-align-center slds-grid_align-end">
+      <div
+        class="slds-grid slds-grid_vertical-align-center slds-grid_align-end"
+      >
         <!-- Clear Cache Button (Always visible - non-destructive operation) -->
         <lightning-button
           label={labels.clearCache}
@@ -622,7 +624,11 @@
                     {labels.showing} {firstRecordIndex} - {lastRecordIndex}
                     {labels.of} {recordCount}
                   </div>
-                  <div class="slds-button-group" role="group" aria-label="Pagination controls">
+                  <div
+                    class="slds-button-group"
+                    role="group"
+                    aria-label="Pagination controls"
+                  >
                     <lightning-button
                       icon-name="utility:chevronleft"
                       variant="neutral"

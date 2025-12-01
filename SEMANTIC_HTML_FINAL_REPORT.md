@@ -281,24 +281,28 @@ await page.locator('[data-testid="query-parameter-minAmount"]').fill("1000");
 ### **Archivos de Documentación:**
 
 1. ✅ **SEMANTIC_HTML_IMPROVEMENTS.md**
-  - Plan detallado de implementación
-  - Convenciones y patrones
-  - Beneficios y roadmap
+
+- Plan detallado de implementación
+- Convenciones y patrones
+- Beneficios y roadmap
 
 2. ✅ **SEMANTIC_HTML_IMPLEMENTATION_SUMMARY.md**
-  - Resumen de componentes actualizados
-  - Ejemplos de uso
-  - Métricas de impacto
+
+- Resumen de componentes actualizados
+- Ejemplos de uso
+- Métricas de impacto
 
 3. ✅ **E2E_TESTS_UPDATE_SUMMARY.md**
-  - Tests actualizados (24 tests)
-  - Selectores cambiados (~63)
-  - Comparativas antes/después
+
+- Tests actualizados (24 tests)
+- Selectores cambiados (~63)
+- Comparativas antes/después
 
 4. ✅ **SEMANTIC_HTML_FINAL_REPORT.md** (este documento)
-  - Resumen ejecutivo completo
-  - Todas las métricas
-  - Checklist final
+
+- Resumen ejecutivo completo
+- Todas las métricas
+- Checklist final
 
 ---
 

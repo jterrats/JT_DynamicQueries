@@ -44,6 +44,8 @@ export default class JtQueryViewer extends LightningElement {
   @track jsonOutput = "";
   expandedCards = new Set();
   @track showRunAs = false;
+  @track queryPreviewData = [];
+  @track isLoadingPreview = false;
   @track runAsUserId = "";
   @track runAsUserName = "";
   @track userOptions = []; // All active users for combobox
@@ -712,7 +714,8 @@ export default class JtQueryViewer extends LightningElement {
       new ShowToastEvent({
         title: title,
         message: message,
-        variant: "info"
+        variant: "info",
+        mode: "dismissable"
       })
     );
   }
@@ -724,7 +727,7 @@ export default class JtQueryViewer extends LightningElement {
         title: title,
         message: message,
         variant: "warning",
-        mode: "sticky"
+        mode: "dismissable"
       })
     );
   }
@@ -1065,6 +1068,9 @@ export default class JtQueryViewer extends LightningElement {
     } else if (this.hasParameters) {
       // Use parameter values entered by user
       bindingsToSend = JSON.stringify(this.parameterValues);
+      // Debug logging
+      console.log('Parameter Values:', this.parameterValues);
+      console.log('Bindings JSON:', bindingsToSend);
     } else {
       bindingsToSend = null;
     }
@@ -1273,7 +1279,8 @@ export default class JtQueryViewer extends LightningElement {
       new ShowToastEvent({
         title: "Success",
         message: message,
-        variant: "success"
+        variant: "success",
+        mode: "dismissable"
       })
     );
     this.announceToScreenReader(`Success: ${message}`);
@@ -1285,7 +1292,7 @@ export default class JtQueryViewer extends LightningElement {
         title: title,
         message: message,
         variant: "error",
-        mode: "sticky"
+        mode: "dismissable"
       })
     );
     this.announceToScreenReader(`Error: ${title}. ${message}`, true);

@@ -323,6 +323,64 @@
               <div class="query-preview slds-box slds-theme_shade">
                 <pre class="slds-text-body_small">{queryPreview}</pre>
               </div>
+
+              <!-- Query Data Preview -->
+              <template if:true={showPreviewData}>
+                <div class="slds-m-top_small">
+                  <div class="slds-text-heading_small slds-p-bottom_x-small">
+                    Data Preview (Top {previewRecordCount} records):
+                  </div>
+                  
+                  <template if:true={isLoadingPreview}>
+                    <div class="slds-text-align_center slds-p-vertical_medium">
+                      <lightning-spinner
+                        alternative-text="Loading preview..."
+                        size="small"
+                      ></lightning-spinner>
+                    </div>
+                  </template>
+
+                  <template if:false={isLoadingPreview}>
+                    <lightning-datatable
+                      key-field="Id"
+                      data={previewPaginatedData}
+                      columns={previewColumns}
+                      hide-checkbox-column
+                      show-row-number-column
+                      class="slds-box"
+                      data-testid="query-preview-table"
+                    ></lightning-datatable>
+
+                    <!-- Preview Pagination -->
+                    <template if:true={showPreviewPagination}>
+                      <div class="slds-m-top_x-small slds-text-align_center">
+                        <lightning-button-group>
+                          <lightning-button
+                            label="Previous"
+                            icon-name="utility:chevronleft"
+                            onclick={handlePreviewPrevious}
+                            disabled={previewHasPrevious}
+                            data-testid="preview-prev-button"
+                          ></lightning-button>
+                          <lightning-button
+                            label={previewPageInfo}
+                            disabled
+                            data-testid="preview-page-info"
+                          ></lightning-button>
+                          <lightning-button
+                            label="Next"
+                            icon-name="utility:chevronright"
+                            icon-position="right"
+                            onclick={handlePreviewNext}
+                            disabled={previewHasNext}
+                            data-testid="preview-next-button"
+                          ></lightning-button>
+                        </lightning-button-group>
+                      </div>
+                    </template>
+                  </template>
+                </div>
+              </template>
             </div>
           </lightning-layout-item>
         </template>

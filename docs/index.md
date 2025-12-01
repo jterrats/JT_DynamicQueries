@@ -129,7 +129,7 @@ sfdx force:user:permset:assign -n JT_Dynamic_Queries -u YOUR_ORG_ALIAS
 - [Setup Tooling API](SETUP_TOOLING_API.html) - Alternative guide
 - [Report Type Setup](REPORT_TYPE_SETUP.html) - Reports configuration
 
-### Technical Documentation  
+### Technical Documentation
 - [Run As User Feature](RUN_AS_USER_FEATURE.html) - User context execution
 - [Functional Run As](FUNCTIONAL_RUN_AS.html) - Functional implementation
 - [Searchable Combobox Usage](SEARCHABLE_COMBOBOX_USAGE.html) - Component guide

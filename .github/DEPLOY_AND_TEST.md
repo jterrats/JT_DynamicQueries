@@ -12,7 +12,17 @@
 ```bash
 # Make your changes
 # Write/update tests
-npm run test:e2e        # Run E2E tests locally
+
+# Run E2E tests with video recording
+npm run test:e2e
+
+# MANDATORY: Review test videos/screenshots
+# Location: test-results/**/*.webm
+# Validate:
+# - UI styles render correctly
+# - Spacing and alignment proper
+# - No visual glitches
+# - Responsive layout works
 ```
 
 ### 2. Deploy to Org
@@ -185,7 +195,7 @@ sf project deploy report --target-org <alias> --verbose
 **Action:** Fix the deployment error, redeploy, revalidate.
 
 ### Issue: "Manual Validation Failed"
-**Action:** 
+**Action:**
 1. Fix the issue locally
 2. Redeploy
 3. Revalidate manually

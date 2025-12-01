@@ -540,14 +540,32 @@ Local Tests → Deploy to Org → Validate in Org → Commit → Push
    ```bash
    sf apex run test --target-org <alias> --test-level RunLocalTests
    ```
-11. Verify deployment success and test results
-12. **Manual validation in org UI:**
+11. **Run E2E tests with video recording:**
+   ```bash
+   npm run test:e2e
+   ```
+12. **Review E2E videos/screenshots (MANDATORY):**
+   - Check `test-results/` folder for videos
+   - Watch all recorded test runs
+   - Validate UI/UX visually:
+     * ✅ Styles render correctly
+     * ✅ Spacing and alignment proper
+     * ✅ Colors match design
+     * ✅ Responsive layout works
+     * ✅ Animations smooth
+     * ✅ No visual glitches
+     * ❌ No UI elements cut off
+     * ❌ No overlapping elements
+     * ❌ No broken layouts
+13. Verify deployment success and test results
+14. **Manual validation in org UI:**
     - Navigate to component
     - Test all scenarios from BDD
     - Verify error handling
     - Check console for errors
     - Test edge cases
-13. If any issues found → Fix → Redeploy → Revalidate
+    - Compare with E2E videos for consistency
+15. If any issues found → Fix → Redeploy → Revalidate
 
 #### **Phase 3: Commit (Only After Org Validation)**
 14. All tests pass in org ✅

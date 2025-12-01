@@ -77,6 +77,51 @@ private class JT_QueryViewerController_Test {
   }
 
   /**
+   * @description Test executeQueryPreview method
+   * @author Jaime Terrats | 12-01-2025
+   **/
+  @isTest
+  static void testExecuteQueryPreview() {
+    Map<String, Object> bindings = new Map<String, Object>{
+      'name' => 'Test Account for Viewer'
+    };
+    String bindingsJson = JSON.serialize(bindings);
+
+    Test.startTest();
+    JT_QueryViewerController.QueryResult result = JT_QueryViewerController.executeQueryPreview(
+      'Test_Record',
+      bindingsJson
+    );
+    Test.stopTest();
+
+    System.assertEquals(true, result.success, 'Preview should succeed');
+    System.assert(result.recordCount <= 5, 'Preview should return max 5 records');
+    if (result.recordCount > 0) {
+      System.assertNotEquals(null, result.fields, 'Fields should be populated');
+      System.assertNotEquals(null, result.records, 'Records should be populated');
+    }
+  }
+
+  /**
+   * @description Test executeQueryPreview with invalid bindings
+   * @author Jaime Terrats | 12-01-2025
+   **/
+  @isTest
+  static void testExecuteQueryPreviewError() {
+    String invalidBindings = '{invalid json}';
+
+    Test.startTest();
+    JT_QueryViewerController.QueryResult result = JT_QueryViewerController.executeQueryPreview(
+      'Test_Record',
+      invalidBindings
+    );
+    Test.stopTest();
+
+    System.assertEquals(false, result.success, 'Preview should fail with invalid JSON');
+    System.assertNotEquals(null, result.errorMessage, 'Error message should be present');
+  }
+
+  /**
    * @description Test extractParameters method
    * @author Jaime Terrats | 11-28-2025
    **/

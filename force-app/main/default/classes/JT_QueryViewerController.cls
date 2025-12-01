@@ -115,6 +115,69 @@ public with sharing class JT_QueryViewerController {
   }
 
   /**
+   * @description Executes a query preview with LIMIT 5 for data preview
+   * @author Jaime Terrats | 12-01-2025
+   * @param devName Configuration developer name
+   * @param bindingsJson JSON string with bindings
+   * @return QueryResult with max 5 records
+   **/
+  @AuraEnabled
+  public static QueryResult executeQueryPreview(
+    String devName,
+    String bindingsJson
+  ) {
+    try {
+      Map<String, Object> bindings = String.isNotBlank(bindingsJson)
+        ? (Map<String, Object>) JSON.deserializeUntyped(bindingsJson)
+        : new Map<String, Object>();
+
+      // Get the configuration to modify query with LIMIT
+      JT_DynamicQueryConfiguration__mdt config = [
+        SELECT JT_BaseQuery__c, JT_ObjectName__c
+        FROM JT_DynamicQueryConfiguration__mdt
+        WHERE DeveloperName = :devName
+        WITH USER_MODE
+        LIMIT 1
+      ];
+
+      String previewQuery = config.JT_BaseQuery__c;
+      
+      // Add LIMIT 5 if not already present
+      if (!previewQuery.containsIgnoreCase('LIMIT')) {
+        previewQuery += ' LIMIT 5';
+      } else {
+        // Replace existing LIMIT with LIMIT 5
+        previewQuery = previewQuery.replaceAll('(?i)LIMIT\\s+\\d+', 'LIMIT 5');
+      }
+
+      List<SObject> records = Database.queryWithBinds(
+        previewQuery,
+        bindings,
+        AccessLevel.USER_MODE
+      );
+
+      QueryResult result = new QueryResult();
+      result.records = records;
+      result.recordCount = records.size();
+      result.success = true;
+
+      // Extract field names from first record if available
+      if (!records.isEmpty()) {
+        result.fields = getFieldNames(records[0]);
+      }
+
+      return result;
+    } catch (Exception e) {
+      QueryResult result = new QueryResult();
+      result.success = false;
+      result.errorMessage = e.getMessage();
+      result.records = new List<SObject>();
+      result.recordCount = 0;
+      return result;
+    }
+  }
+
+  /**
    * @description Extracts parameter names from a SOQL query
    * @author Jaime Terrats | 11-28-2025
    * @param query SOQL query string

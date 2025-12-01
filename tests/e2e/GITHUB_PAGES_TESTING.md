@@ -152,24 +152,24 @@ on:
 jobs:
   test-github-pages:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-          
+
       - name: Install dependencies
         run: npm ci
-        
+
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
-        
+
       - name: Run GitHub Pages Tests
         run: npm run test:github-pages
-        
+
       - name: Upload Test Results
         if: always()
         uses: actions/upload-artifact@v3
@@ -252,7 +252,7 @@ nslookup jterrats.github.io
 test('New feature docs are accessible', async ({ page }) => {
   const response = await page.goto(`${BASE_URL}/NEW_FEATURE.html`);
   expect([200, 304]).toContain(response.status());
-  
+
   await expect(page.locator('body')).toContainText('New Feature');
 });
 ```
@@ -289,7 +289,7 @@ test('New feature docs are accessible', async ({ page }) => {
 
 ---
 
-**Last Updated:** December 1, 2025  
-**Test Coverage:** 33 tests, 6 categories  
+**Last Updated:** December 1, 2025
+**Test Coverage:** 33 tests, 6 categories
 **Status:** ✅ All Passing
 

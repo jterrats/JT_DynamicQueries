@@ -682,8 +682,8 @@ ccfdc8d feat: i18n translations, searchable combobox improvements
 **Documentation:**
 
 - In-app: Navigate to **Documentation** tab
-- GitHub: [docs/](./docs/) folder
-- Setup Guide: [TOOLING_API_SETUP.md](./TOOLING_API_SETUP.md)
+- GitHub Pages: [Documentation](https://jterrats.github.io/JT_DynamicQueries/)
+- Setup Guide: [TOOLING_API_SETUP.html](TOOLING_API_SETUP.html)
 
 **Issues & Bugs:**
 

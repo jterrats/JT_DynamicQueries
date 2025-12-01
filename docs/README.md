@@ -1,368 +1,120 @@
 # 📚 JT Dynamic Queries - Documentation Hub
 
-<div align="center">
+Welcome to the complete documentation for **JT Dynamic Queries** v2.0!
 
-![Version](https://img.shields.io/badge/version-2.0.0-blue)
-![Docs](https://img.shields.io/badge/docs-complete-brightgreen)
-![Languages](https://img.shields.io/badge/languages-8-purple)
-![Tests](https://img.shields.io/badge/tests-28%2F28-brightgreen)
+## 🏠 [Home](index.html)
 
-**Enterprise-grade dynamic query execution for Salesforce**
-
-[🚀 Quick Start](#-quick-start) • [📖 User Guide](#-user-guide) • [🔧 Developer Guide](#-developer-guide) • [🏗️ Architecture](#-architecture) • [🌍 Languages](#-languages)
-
-</div>
+Start here for an overview and quick links.
 
 ---
 
-## 📑 Table of Contents
+## 📖 Core Documentation
 
-### 🎯 Getting Started
+### Features & Overview
+- **[✨ Features v2.0](FEATURES_v2.html)** - Complete feature list and examples
+- **[🏗️ Architecture Layers](ARCHITECTURE_LAYERS.html)** - System design and patterns
+- **[🔄 Microservices Pattern](MICROSERVICES_PATTERN.html)** - Design patterns
+- **[♿ Accessibility](ACCESSIBILITY.html)** - WCAG 2.1 AA compliance
 
-Perfect for new users and first-time setup
-
-| Document                                                                | Description                   | Time   |
-| ----------------------------------------------------------------------- | ----------------------------- | ------ |
-| 📥 [Installation Guide](./getting-started/installation.md)              | Deploy to your Salesforce org | 10 min |
-| ⚡ [Quick Start](./getting-started/quick-start.md)                      | Execute your first query      | 5 min  |
-| 🔐 [Tooling API Setup](./getting-started/tooling-api-setup.md)          | Enable advanced features      | 15 min |
-| 🌐 [Configuración (Español)](./getting-started/tooling-api-setup-es.md) | Guía en español               | 15 min |
-
----
-
-### 🏗️ Architecture
-
-Deep dive into system design and patterns
-
-| Document                                               | Description                     | Audience   |
-| ------------------------------------------------------ | ------------------------------- | ---------- |
-| 📐 [Architecture Overview](./architecture/overview.md) | System design & patterns        | Architects |
-| 🧩 [Component Guide](./architecture/components.md)     | LWC & Apex components           | Developers |
-| 🔄 [Design Patterns](./architecture/patterns.md)       | Microservices, functional, etc. | Advanced   |
-| 📊 [Layered Architecture](./architecture/layers.md)    | Separation of concerns          | All        |
+### Setup & Configuration
+- **[🔧 Tooling API Setup](TOOLING_API_SETUP.html)** - English setup guide
+- **[🌐 Configuración en Español](TOOLING_API_SETUP_ES.html)** - Guía en español
+- **[📊 Report Type Setup](REPORT_TYPE_SETUP.html)** - Reports configuration
 
 ---
 
-### ✨ Features
+## 🎯 Technical Guides
 
-Comprehensive feature documentation
+### Component Documentation
+- **[🔍 Searchable Combobox Usage](SEARCHABLE_COMBOBOX_USAGE.html)** - Component guide
+- **[🏪 State Manager](STATE_MANAGER_OFFICIAL.html)** - State management pattern
+- **[🌍 Translations Architecture](TRANSLATIONS_ARCHITECTURE.html)** - i18n system
 
-| Document                                                      | Description                       | Level    |
-| ------------------------------------------------------------- | --------------------------------- | -------- |
-| 🎯 [Core Functionality](./features/core-functionality.md)     | Query execution, pagination, etc. | Beginner |
-| 🚀 [Advanced Features](./features/advanced-features.md)       | Run As, Usage Finder, Tooling API | Advanced |
-| ♿ [Accessibility](./features/accessibility.md)               | WCAG 2.1 AA compliance            | All      |
-| 🌍 [Internationalization](./features/internationalization.md) | Multi-language support            | All      |
-
----
-
-### 👨‍💻 Development
-
-For contributors and developers
-
-| Document                                               | Description             | Required      |
-| ------------------------------------------------------ | ----------------------- | ------------- |
-| 🤝 [Contributing Guide](./development/contributing.md) | How to contribute       | ✅ Read first |
-| 🧪 [Testing Guide](./development/testing.md)           | E2E & Apex tests        | ✅ Important  |
-| 🔍 [Code Quality](./development/code-quality.md)       | PMD, ESLint, standards  | ✅ Important  |
-| 📦 [Release Process](./development/release-process.md) | Versioning & deployment | Maintainers   |
+### Advanced Features
+- **[👤 Run As User Feature](RUN_AS_USER_FEATURE.html)** - User context execution
+- **[⚙️ Functional Run As](FUNCTIONAL_RUN_AS.html)** - Functional implementation
+- **[🔬 JSON Run As Testing](JSON_RUNASTESTING.html)** - Testing documentation
+- **[🔀 Sandbox Detection Comparison](SANDBOX_DETECTION_COMPARISON.html)** - Environment detection
 
 ---
 
-### 📖 Guides
+## 🧪 Testing & Quality
 
-Step-by-step instructions
+### E2E Testing
+- **[✅ E2E Complete Success](E2E_COMPLETE_SUCCESS.html)** - All 28 tests passing
+- **[📋 E2E Tests Update Summary](E2E_TESTS_UPDATE_SUMMARY.html)** - Test improvements
+- **[📊 E2E Progress Summary](E2E_PROGRESS_SUMMARY.html)** - Testing milestones
 
-| Document                                            | Description                 | Audience   |
-| --------------------------------------------------- | --------------------------- | ---------- |
-| 👤 [User Guide](./guides/user-guide.md)             | Complete user manual        | End Users  |
-| 🛠️ [Developer Guide](./guides/developer-guide.md)   | Integration & customization | Developers |
-| 🆘 [Troubleshooting](./guides/troubleshooting.md)   | Common issues & solutions   | All        |
-| 🔧 [Configuration Guide](./guides/configuration.md) | Custom metadata setup       | Admins     |
-
----
-
-### 📚 API Reference
-
-Technical API documentation
-
-| Document                                                     | Description                 | Type        |
-| ------------------------------------------------------------ | --------------------------- | ----------- |
-| ⚡ [Apex API Reference](./api/apex-reference.md)             | All Apex classes & methods  | Backend     |
-| 💡 [LWC API Reference](./api/lwc-reference.md)               | All components & properties | Frontend    |
-| 🔌 [Events Reference](./api/events-reference.md)             | Custom events & handlers    | Frontend    |
-| 🎯 [InvocableMethod Reference](./api/invocable-reference.md) | Flow & Agentforce actions   | Integration |
+### Code Quality
+- **[🎨 Semantic HTML Final Report](SEMANTIC_HTML_FINAL_REPORT.html)** - HTML improvements
+- **[📝 Semantic HTML Implementation](SEMANTIC_HTML_IMPLEMENTATION_SUMMARY.html)** - Implementation details
+- **[🔧 Semantic HTML Improvements](SEMANTIC_HTML_IMPROVEMENTS.html)** - Planned improvements
+- **[📈 Implementation Summary](IMPLEMENTATION_SUMMARY.html)** - Overall implementation
 
 ---
 
-### 🎉 Releases
+## 📦 Releases & Roadmap
 
-Version history and release notes
+### Current Version (v2.0)
+- **[🎉 V2 Release Summary](V2_RELEASE_SUMMARY.html)** - Version 2.0 overview
+- **[📝 Changelog v2](CHANGELOG_v2.html)** - Detailed version history
 
-| Document                                              | Description                  | Version |
-| ----------------------------------------------------- | ---------------------------- | ------- |
-| 📋 [v2.0 Release Summary](./releases/v2.0-summary.md) | Complete v2.0 overview       | 2.0.0   |
-| 📝 [Changelog](./releases/changelog.md)               | Full version history         | All     |
-| ⬆️ [Migration Guide](./releases/migration-guide.md)   | v1.0 → v2.0 upgrade          | v2.0+   |
-| 🗺️ [v3.0 Roadmap](V3_ROADMAP.html) ⭐                | Complete v3.0 roadmap        | v3.0    |
-| 🎫 [GitHub Issues](GITHUB_ISSUES_V3.html) ⭐          | 18 features with user stories | v3.0    |
-| 🚀 [Future Roadmap](./releases/roadmap.md)            | Long-term vision             | v3.1+   |
+### Future Plans (v3.0)
+- **[🗺️ V3.0 Roadmap](V3_ROADMAP.html)** ⭐ - Complete roadmap with timeline
+- **[🎫 GitHub Issues v3.0](GITHUB_ISSUES_V3.html)** ⭐ - 18 planned features with user stories
 
 ---
 
-## 🎓 Learning Paths
+## 📸 Media & Demos
 
-### 🟢 **Beginner Path**
-
-New to JT Dynamic Queries? Start here!
-
-```
-1. Installation Guide (10 min)
-   ↓
-2. Quick Start (5 min)
-   ↓
-3. User Guide (20 min)
-   ↓
-4. Core Functionality (15 min)
-```
-
-**Total Time:** ~50 minutes
-**You'll Learn:** Installation, basic usage, core features
+- **[📹 Demo Gallery](gallery.html)** - Video demos and screenshots
+- **[📷 AppExchange Screenshots](APPEXCHANGE_SCREENSHOTS.html)** - Marketing materials
 
 ---
 
-### 🟡 **Intermediate Path**
+## 🔗 External Links
 
-Ready for advanced features?
-
-```
-1. Tooling API Setup (15 min)
-   ↓
-2. Advanced Features (25 min)
-   ↓
-3. Configuration Guide (20 min)
-   ↓
-4. Architecture Overview (30 min)
-```
-
-**Total Time:** ~90 minutes
-**You'll Learn:** Tooling API, Run As, metadata creation, system design
-
----
-
-### 🔴 **Advanced Developer Path**
-
-Want to contribute or customize?
-
-```
-1. Developer Guide (30 min)
-   ↓
-2. Component Guide (40 min)
-   ↓
-3. Design Patterns (35 min)
-   ↓
-4. Contributing Guide (25 min)
-   ↓
-5. Testing Guide (30 min)
-```
-
-**Total Time:** ~2.5 hours
-**You'll Learn:** Internal architecture, patterns, testing, contribution workflow
-
----
-
-## 🌍 Languages
-
-Documentation available in multiple languages:
-
-| Language     | Coverage | Status         |
-| ------------ | -------- | -------------- |
-| 🇬🇧 English   | 100%     | ✅ Complete    |
-| 🇪🇸 Español   | 80%      | ✅ Major docs  |
-| 🇫🇷 Français  | 40%      | 🔄 In progress |
-| 🇩🇪 Deutsch   | 40%      | 🔄 In progress |
-| 🇮🇹 Italiano  | 30%      | 🔄 In progress |
-| 🇯🇵 日本語    | 30%      | 🔄 In progress |
-| 🇧🇷 Português | 30%      | 🔄 In progress |
-| 🇨🇳 中文      | 30%      | 🔄 In progress |
-
-**Want to help translate?** See [Contributing Guide](./development/contributing.md#translations)
-
----
-
-## 🔍 Quick Search
-
-### By Role
-
-<details>
-<summary><strong>👤 End User</strong> - I want to execute queries</summary>
-
-**Recommended Reading:**
-
-1. [Installation Guide](./getting-started/installation.md)
-2. [Quick Start](./getting-started/quick-start.md)
-3. [User Guide](./guides/user-guide.md)
-4. [Core Functionality](./features/core-functionality.md)
-
-**Time Investment:** ~45 minutes
-
-</details>
-
-<details>
-<summary><strong>👨‍💼 Admin/Architect</strong> - I want to configure and manage</summary>
-
-**Recommended Reading:**
-
-1. [Configuration Guide](./guides/configuration.md)
-2. [Advanced Features](./features/advanced-features.md)
-3. [Tooling API Setup](./getting-started/tooling-api-setup.md)
-4. [Architecture Overview](./architecture/overview.md)
-
-**Time Investment:** ~90 minutes
-
-</details>
-
-<details>
-<summary><strong>👨‍💻 Developer</strong> - I want to customize or contribute</summary>
-
-**Recommended Reading:**
-
-1. [Developer Guide](./guides/developer-guide.md)
-2. [Component Guide](./architecture/components.md)
-3. [Contributing Guide](./development/contributing.md)
-4. [Testing Guide](./development/testing.md)
-5. [API Reference](./api/)
-
-**Time Investment:** ~3 hours
-
-</details>
-
-<details>
-<summary><strong>🏢 Enterprise/AppExchange</strong> - I'm evaluating for purchase</summary>
-
-**Recommended Reading:**
-
-1. [v2.0 Release Summary](./releases/v2.0-summary.md)
-2. [Features Overview](./features/)
-3. [Architecture Overview](./architecture/overview.md)
-4. [Accessibility](./features/accessibility.md)
-5. [Security Model](../SECURITY.md)
-
-**Time Investment:** ~60 minutes
-
-</details>
-
----
-
-## 📊 Documentation Stats
-
-```
-📄 Total Documents: 30+
-📖 Total Words: ~50,000
-⏱️ Total Reading Time: ~6 hours
-🌍 Languages: 8
-✅ Completeness: 95%
-📅 Last Updated: 2025-11-30
-```
+- **[GitHub Repository](https://github.com/jterrats/JT_DynamicQueries)** - Source code
+- **[Issue Tracker](https://github.com/jterrats/JT_DynamicQueries/issues)** - Report bugs or request features
+- **[Contributing Guide](https://github.com/jterrats/JT_DynamicQueries/blob/main/CONTRIBUTING.md)** - How to contribute
 
 ---
 
 ## 🆘 Need Help?
 
-### Quick Links
-
-| Issue                 | Solution                                                                                              |
-| --------------------- | ----------------------------------------------------------------------------------------------------- |
-| ❓ General questions  | Check [User Guide](./guides/user-guide.md)                                                            |
-| 🐛 Bug reports        | [GitHub Issues](https://github.com/jterrats/JT_DynamicQueries/issues)                                 |
-| 💡 Feature requests   | [GitHub Issues](https://github.com/jterrats/JT_DynamicQueries/issues/new?template=feature_request.md) |
-| 🔧 Setup issues       | [Troubleshooting Guide](./guides/troubleshooting.md)                                                  |
-| 🤝 Want to contribute | [Contributing Guide](./development/contributing.md)                                                   |
-| 🌐 Translation help   | [Translation Guide](./development/contributing.md#translations)                                       |
-
-### Community
-
-- 💬 [Salesforce Trailblazer Community](https://trailhead.salesforce.com/)
-- 📧 Email: [support@example.com](mailto:support@example.com)
-- 🐦 Twitter: [@YourHandle](https://twitter.com)
+| Type | Resource |
+|------|----------|
+| 📖 Documentation | You're here! Browse the sections above |
+| 🐛 Bug Reports | [GitHub Issues](https://github.com/jterrats/JT_DynamicQueries/issues) |
+| 💡 Feature Requests | [GitHub Issues](https://github.com/jterrats/JT_DynamicQueries/issues/new?labels=enhancement) |
+| ❓ Questions | [GitHub Discussions](https://github.com/jterrats/JT_DynamicQueries/discussions) |
 
 ---
 
-## 🎯 Popular Topics
+## 📊 Documentation Status
 
-### Most Viewed
-
-1. 📥 [Installation Guide](./getting-started/installation.md)
-2. 🔐 [Tooling API Setup](./getting-started/tooling-api-setup.md)
-3. 🧩 [Component Guide](./architecture/components.md)
-4. 🤝 [Contributing Guide](./development/contributing.md)
-5. 🆘 [Troubleshooting](./guides/troubleshooting.md)
-
-### Most Useful
-
-1. ⚡ [Quick Start](./getting-started/quick-start.md)
-2. 👤 [User Guide](./guides/user-guide.md)
-3. 🛠️ [Developer Guide](./guides/developer-guide.md)
-4. 🚀 [Advanced Features](./features/advanced-features.md)
-5. 📐 [Architecture Overview](./architecture/overview.md)
+| Category | Files | Status |
+|----------|-------|--------|
+| Core Docs | 4 | ✅ Complete |
+| Setup Guides | 3 | ✅ Complete |
+| Technical Guides | 7 | ✅ Complete |
+| Testing Docs | 7 | ✅ Complete |
+| Release Docs | 4 | ✅ Complete |
+| **Total** | **25** | **✅ Complete** |
 
 ---
 
-## 🔄 Keep Updated
-
-**Latest Changes:**
-
-- ✨ **v2.0.0** - Modular architecture, 8 languages, 100% E2E tests
-- 📚 **Docs Update** - Complete documentation restructure
-- 🌐 **i18n** - Added 6 new languages
-- 🧪 **Testing** - 28 E2E tests (100% pass rate)
-
-**Subscribe to updates:**
-
-- ⭐ [Star on GitHub](https://github.com/jterrats/JT_DynamicQueries)
-- 👀 [Watch Repository](https://github.com/jterrats/JT_DynamicQueries/subscription)
-- 📰 [Release Notes](./releases/changelog.md)
-
----
-
-## 📖 Offline Access
-
-Download documentation as:
-
-- 📄 **PDF:** [Download Full Docs](./exports/docs-full.pdf) _(Coming soon)_
-- 📦 **ZIP:** [Download Archive](./exports/docs-archive.zip) _(Coming soon)_
-- 📱 **Mobile:** Optimized for mobile viewing
-
----
-
-## 🎨 Documentation Style Guide
-
-Writing new documentation? Follow our style guide:
-
-- ✅ Use clear, concise language
-- ✅ Include code examples
-- ✅ Add screenshots for UI features
-- ✅ Provide both English and Spanish versions
-- ✅ Test all code snippets
-- ✅ Update table of contents
-- ✅ Add cross-references
-
-See [Style Guide](./development/style-guide.md) for details.
-
----
-
-## 📜 License
-
-This documentation is licensed under [MIT License](../LICENSE).
-
-Code is open source and available on [GitHub](https://github.com/jterrats/JT_DynamicQueries).
+**Last Updated:** December 1, 2025  
+**Version:** 2.0.0  
+**Status:** 📗 Production Ready
 
 ---
 
 <div align="center">
 
-**Made with ❤️ by the JT Dynamic Queries Team**
+**Made with ❤️ for the Salesforce Community**
 
 [⬆ Back to Top](#-jt-dynamic-queries---documentation-hub)
 
 </div>
+

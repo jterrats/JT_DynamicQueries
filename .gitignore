@@ -73,3 +73,4 @@ playwright/.cache/
 .env
 .env.local
 .env.*.local
+playwright-report-github-pages/

@@ -13,7 +13,8 @@ Welcome to the official documentation for **JT Dynamic Queries** - A powerful Dy
 - [✨ Features v2.0](FEATURES_v2.html) - Complete feature list and examples
 - [🏗️ Architecture](ARCHITECTURE_LAYERS.html) - System design and patterns
 - [♿ Accessibility](ACCESSIBILITY.html) - WCAG 2.1 AA compliance
-- [📚 API Reference](api/) - Developer documentation
+- [🔧 Tooling API Setup](TOOLING_API_SETUP.html) - Configure advanced features
+- [🌐 Configuración en Español](TOOLING_API_SETUP_ES.html) - Guía en español
 
 ## 🎯 What is JT Dynamic Queries?
 
@@ -114,21 +115,42 @@ sfdx force:user:permset:assign -n JT_Dynamic_Queries -u YOUR_ORG_ALIAS
 - ♿ **Accessible** - WCAG 2.1 AA compliant
 - 🌐 **Multi-language** - 6 languages supported
 
-## 📚 Documentation Structure
+## 📚 Available Documentation
 
-```
-docs/
-├── getting-started/    # Installation and setup guides
-├── features/           # Feature documentation
-├── architecture/       # System design docs
-├── api/               # API reference
-├── guides/            # How-to guides
-└── releases/          # Release notes
-```
+### Core Documentation
+- [Features v2.0](FEATURES_v2.html) - Complete feature list
+- [Architecture Layers](ARCHITECTURE_LAYERS.html) - System design
+- [Accessibility](ACCESSIBILITY.html) - WCAG 2.1 AA compliance
+- [Microservices Pattern](MICROSERVICES_PATTERN.html) - Design patterns
+
+### Setup & Configuration
+- [Tooling API Setup](TOOLING_API_SETUP.html) - English guide
+- [Configuración Tooling API](TOOLING_API_SETUP_ES.html) - Guía en español
+- [Setup Tooling API](SETUP_TOOLING_API.html) - Alternative guide
+- [Report Type Setup](REPORT_TYPE_SETUP.html) - Reports configuration
+
+### Technical Documentation  
+- [Run As User Feature](RUN_AS_USER_FEATURE.html) - User context execution
+- [Functional Run As](FUNCTIONAL_RUN_AS.html) - Functional implementation
+- [Searchable Combobox Usage](SEARCHABLE_COMBOBOX_USAGE.html) - Component guide
+- [State Manager](STATE_MANAGER_OFFICIAL.html) - State management
+- [Translations Architecture](TRANSLATIONS_ARCHITECTURE.html) - i18n system
+
+### E2E & Testing
+- [E2E Complete Success](E2E_COMPLETE_SUCCESS.html) - Test results
+- [E2E Tests Update](E2E_TESTS_UPDATE_SUMMARY.html) - Test updates
+- [Semantic HTML Report](SEMANTIC_HTML_FINAL_REPORT.html) - HTML improvements
+- [Semantic HTML Summary](SEMANTIC_HTML_IMPLEMENTATION_SUMMARY.html) - Implementation
+
+### Release Notes
+- [V2 Release Summary](V2_RELEASE_SUMMARY.html) - Version 2.0 overview
+- [Changelog v2](CHANGELOG_v2.html) - Version history
+- [V3.0 Roadmap](V3_ROADMAP.html) ⭐ - Future plans
+- [GitHub Issues v3.0](GITHUB_ISSUES_V3.html) ⭐ - 18 planned features
 
 ## 🤝 Contributing
 
-We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.html) for guidelines.
+We welcome contributions! See [Contributing Guide](https://github.com/jterrats/JT_DynamicQueries/blob/main/CONTRIBUTING.md) for guidelines.
 
 ## 📄 License
 

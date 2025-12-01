@@ -694,8 +694,8 @@ Accessible via **Documentation** tab, includes:
 
 **Need Help?**
 
-- 📖 Check [Documentation tab](./docs/TOOLING_API_SETUP.md)
-- 🐛 [Open an Issue](https://github.com/YOUR_REPO/issues)
+- 📖 Check [Tooling API Setup Guide](TOOLING_API_SETUP.html)
+- 🐛 [Open an Issue](https://github.com/jterrats/JT_DynamicQueries/issues)
 - 💬 [Salesforce Trailblazer Community](https://trailhead.salesforce.com/)
 
 **Want to Contribute?**

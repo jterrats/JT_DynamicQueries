@@ -1167,18 +1167,32 @@ export default class JtQueryViewer extends LightningElement {
 
     // Build bindings JSON
     let bindingsToSend;
+    
+    // 🐛 DEBUG: Log binding construction
+    console.log('🔍 Building bindings...');
+    console.log('🔍 hasBindings:', this.hasBindings);
+    console.log('🔍 hasParameters:', this.hasParameters);
+    console.log('🔍 this.bindings:', this.bindings);
+    console.log('🔍 this.parameters:', JSON.stringify(this.parameters, null, 2));
+    console.log('🔍 this.parameterValues BEFORE stringify:', JSON.stringify(this.parameterValues, null, 2));
+    
     if (this.hasBindings && !this.hasParameters) {
       // Use bindings from configuration
       bindingsToSend = this.bindings;
+      console.log('✅ Using config bindings:', bindingsToSend);
     } else if (this.hasParameters) {
       // Use parameter values entered by user
       bindingsToSend = JSON.stringify(this.parameterValues);
-      // Debug logging
-      console.log('Parameter Values:', this.parameterValues);
-      console.log('Bindings JSON:', bindingsToSend);
+      console.log('✅ Using parameter values');
+      console.log('✅ parameterValues object:', this.parameterValues);
+      console.log('✅ Stringified bindings:', bindingsToSend);
+      console.log('✅ Keys in parameterValues:', Object.keys(this.parameterValues));
     } else {
       bindingsToSend = null;
+      console.log('⚠️ No bindings needed');
     }
+    
+    console.log('🚀 Final bindingsToSend:', bindingsToSend);
 
     executeQuery({
       devName: this.selectedConfig,

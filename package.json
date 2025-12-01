@@ -6,6 +6,7 @@
   "scripts": {
     "lint": "sf scanner run --target \"force-app/main/default/**/*.{cls,trigger,js}\" --engine \"pmd,eslint-lwc,retire-js\" --severity-threshold=3 --format table",
     "lint:staged": "sf scanner run --target \"force-app/main/default\" --engine \"pmd,eslint-lwc\" --severity-threshold=3 --format table",
+    "yamllint": "prettier --check \"**/*.{yaml,yml}\"",
     "test": "npm run test:unit",
     "test:unit": "sfdx-lwc-jest",
     "test:unit:watch": "sfdx-lwc-jest --watch",
@@ -22,7 +23,7 @@
     "prettier": "prettier --write \"**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}\"",
     "prettier:verify": "prettier --check \"**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}\"",
     "postinstall": "husky install",
-    "precommit": "npm run prettier && npm run lint:staged",
+    "precommit": "npm run prettier && npm run lint:staged && npm run yamllint",
     "screenshots:appexchange": "node tests/screenshots/captureAppExchangeScreenshots.js",
     "videos:appexchange": "node tests/screenshots/captureAppExchangeVideos.js"
   },

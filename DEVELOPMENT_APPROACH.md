@@ -507,6 +507,61 @@ Track these in your CI/CD pipeline:
 
 ## 🚀 Workflow for Every Change
 
+### ⚡ Decision Tree: Which Flow to Use?
+
+```
+Does your change involve Apex?
+├─ YES → Use Apex Development Flow
+│         (Requires deploy, can't use Local Dev)
+│
+└─ NO → Does it involve @api/@wire?
+   ├─ YES → Use Apex Development Flow
+   │         (Requires deploy for metadata changes)
+   │
+   └─ NO → Use Local Dev Flow
+             (Hot reload for HTML/CSS/JS)
+```
+
+---
+
+## 🔧 Apex Development Flow
+
+**For:** Apex classes, @AuraEnabled methods, @api properties, @wire adapters
+
+```mermaid
+graph TD
+    A[1. Modificar Código Apex] --> B[2. Escribir/Actualizar Unit Test Apex<br/>- @isTest method<br/>- Test happy path + error cases]
+    
+    B --> C[3. Deploy Cambios<br/>sf project deploy start]
+    
+    C --> D[4. Run Apex Tests del Proyecto<br/>sf apex run test --test-level RunLocalTests]
+    
+    D --> E{Tests Pass?}
+    
+    E -->|❌ Failure| F[Revisar Errores<br/>- Stack trace<br/>- Assertions]
+    F --> G[Corregir<br/>- Fix code<br/>- Update test]
+    G --> H[Reiterar<br/>Back to Step 3]
+    H --> C
+    
+    E -->|✅ Success| I[5. Pasar a E2E Tests<br/>npm run test:e2e]
+    
+    I --> J[6. Review E2E Videos]
+    J --> K[7. Manual Validation]
+    K --> L[8. ✅ Commit & Push]
+    
+    style A fill:#e1f5ff
+    style B fill:#fff4e1
+    style C fill:#ffe1f5
+    style D fill:#e1ffe1
+    style E fill:#fff9e1
+    style I fill:#e1e1ff
+    style L fill:#d4edda
+```
+
+---
+
+## 🚀 Workflow for Every Change
+
 ### 🔴 **CRITICAL RULE: Test in Target Org BEFORE Commit**
 
 **⚠️ NO COMMIT without org validation!**

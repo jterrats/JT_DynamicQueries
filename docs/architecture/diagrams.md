@@ -548,7 +548,7 @@ classDiagram
         -applySecurityMode(query) String
     }
     note for JT_DataSelector "Singleton ensures single instance<br/>Manages config cache<br/>Enforces security"
-    
+
     style JT_DataSelector fill:#667eea,stroke:#333,stroke-width:3px,color:#fff
 ```
 
@@ -574,7 +574,7 @@ classDiagram
     jtSearchableCombobox --> jtQueryViewer: configselect
     jtExecuteButton --> jtQueryViewer: execute
     jtCacheModal --> jtQueryViewer: clearcache
-    
+
     style jtQueryViewer fill:#667eea,stroke:#333,stroke-width:3px,color:#fff
     style jtSearchableCombobox fill:#48bb78,stroke:#333,stroke-width:2px,color:#fff
     style jtExecuteButton fill:#48bb78,stroke:#333,stroke-width:2px,color:#fff

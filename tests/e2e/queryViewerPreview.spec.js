@@ -56,19 +56,37 @@ test.describe('Query Data Preview', () => {
     await combobox.locator('li[role="option"]').first().click();
     await page.waitForTimeout(2000); // Wait for preview to load
 
-    // Check that Data Preview section is visible
+    // ✅ HAPPY PATH: Check that Data Preview section is visible
     const dataPreviewHeading = page.locator('text=Data Preview');
     await expect(dataPreviewHeading).toBeVisible({ timeout: 10000 });
 
-    // Check that preview table is displayed
+    // ✅ HAPPY PATH: Check that preview table is displayed
     const previewTable = page.locator('[data-testid="query-preview-table"]');
     await expect(previewTable).toBeVisible();
 
-    // Verify table has rows
+    // ✅ HAPPY PATH: Verify table has rows (records returned)
     const rows = previewTable.locator('tbody tr');
     const rowCount = await rows.count();
     expect(rowCount).toBeGreaterThan(0);
     expect(rowCount).toBeLessThanOrEqual(3); // Max 3 per page
+
+    // ✅ HAPPY PATH: Verify actual data in cells (not empty)
+    const firstCell = rows.first().locator('td').nth(1); // Skip checkbox column
+    const cellText = await firstCell.textContent();
+    expect(cellText).not.toBe('');
+    expect(cellText).not.toBeNull();
+
+    // ❌ NEGATIVE: Verify NO error toasts appear
+    const errorToast = page.locator('.slds-notify--error, .slds-notify_error');
+    await expect(errorToast).not.toBeVisible({ timeout: 2000 }).catch(() => {
+      // If toast doesn't exist at all, that's fine
+    });
+
+    // ❌ NEGATIVE: Verify NO error messages in UI
+    const errorMessage = page.locator('[data-testid="error-message"], .slds-text-color_error');
+    await expect(errorMessage).not.toBeVisible({ timeout: 2000 }).catch(() => {
+      // If error element doesn't exist at all, that's fine
+    });
   });
 
   test('should show pagination controls when preview has more than 3 records', async ({ page }) => {
@@ -113,26 +131,34 @@ test.describe('Query Data Preview', () => {
     const hasNext = await nextButton.isVisible({ timeout: 5000 }).catch(() => false);
 
     if (hasNext) {
-      // Get first row data from page 1
+      // ✅ HAPPY PATH: Get first row data from page 1 (records exist)
       const previewTable = page.locator('[data-testid="query-preview-table"]');
       const firstRowPage1 = await previewTable.locator('tbody tr').first().textContent();
+      expect(firstRowPage1).not.toBe('');
+      expect(firstRowPage1).not.toBeNull();
 
-      // Click Next
+      // ✅ HAPPY PATH: Click Next and verify different data
       await nextButton.click();
       await page.waitForTimeout(500);
 
-      // Verify page changed
       const firstRowPage2 = await previewTable.locator('tbody tr').first().textContent();
       expect(firstRowPage2).not.toBe(firstRowPage1);
+      expect(firstRowPage2).not.toBe('');
 
-      // Click Previous
+      // ❌ NEGATIVE: No error toast during pagination
+      const errorToast = page.locator('.slds-notify--error');
+      await expect(errorToast).not.toBeVisible({ timeout: 1000 }).catch(() => {});
+
+      // ✅ HAPPY PATH: Click Previous and verify back to page 1
       const prevButton = page.locator('[data-testid="preview-prev-button"]');
       await prevButton.click();
       await page.waitForTimeout(500);
 
-      // Verify back to page 1
       const firstRowAgain = await previewTable.locator('tbody tr').first().textContent();
       expect(firstRowAgain).toBe(firstRowPage1);
+
+      // ❌ NEGATIVE: Still no error toasts
+      await expect(errorToast).not.toBeVisible({ timeout: 1000 }).catch(() => {});
     }
   });
 

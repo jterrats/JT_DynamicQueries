@@ -99,12 +99,14 @@ Technical API documentation
 
 Version history and release notes
 
-| Document                                              | Description            | Version |
-| ----------------------------------------------------- | ---------------------- | ------- |
-| 📋 [v2.0 Release Summary](./releases/v2.0-summary.md) | Complete v2.0 overview | 2.0.0   |
-| 📝 [Changelog](./releases/changelog.md)               | Full version history   | All     |
-| ⬆️ [Migration Guide](./releases/migration-guide.md)   | v1.0 → v2.0 upgrade    | v2.0+   |
-| 🗺️ [Roadmap](./releases/roadmap.md)                   | Future enhancements    | v2.1+   |
+| Document                                              | Description                  | Version |
+| ----------------------------------------------------- | ---------------------------- | ------- |
+| 📋 [v2.0 Release Summary](./releases/v2.0-summary.md) | Complete v2.0 overview       | 2.0.0   |
+| 📝 [Changelog](./releases/changelog.md)               | Full version history         | All     |
+| ⬆️ [Migration Guide](./releases/migration-guide.md)   | v1.0 → v2.0 upgrade          | v2.0+   |
+| 🗺️ [v3.0 Roadmap](V3_ROADMAP.html) ⭐                | Complete v3.0 roadmap        | v3.0    |
+| 🎫 [GitHub Issues](GITHUB_ISSUES_V3.html) ⭐          | 18 features with user stories | v3.0    |
+| 🚀 [Future Roadmap](./releases/roadmap.md)            | Long-term vision             | v3.1+   |
 
 ---
 

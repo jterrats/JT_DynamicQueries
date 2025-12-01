@@ -134,6 +134,24 @@ We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.html) for guideline
 
 MIT License - See [LICENSE](https://github.com/jterrats/JT_DynamicQueries/blob/main/LICENSE) for details.
 
+## 🗺️ Roadmap & Future
+
+### v3.0 and Beyond
+
+- 📋 [**v3.0 Roadmap**](V3_ROADMAP.html) - Comprehensive roadmap with timeline and priorities
+- 🎫 [**GitHub Issues (18 features)**](GITHUB_ISSUES_V3.html) - Detailed user stories for all planned features
+- 🚀 [**View Issues on GitHub**](https://github.com/jterrats/JT_DynamicQueries/issues) - Track progress and contribute
+
+**Planned Features:**
+- Visual SOQL Builder with drag & drop
+- Query history and favorites
+- Bulk query execution
+- Advanced result filtering
+- Query templates library
+- Real-time query validation
+- Performance analytics dashboard
+- Additional language support (8 total)
+
 ## 🔗 Links
 
 - [GitHub Repository](https://github.com/jterrats/JT_DynamicQueries)
@@ -142,6 +160,6 @@ MIT License - See [LICENSE](https://github.com/jterrats/JT_DynamicQueries/blob/m
 
 ---
 
-**Last Updated:** November 30, 2025
+**Last Updated:** December 1, 2025
 **Version:** 2.0
 **Status:** Production Ready ✅

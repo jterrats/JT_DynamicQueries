@@ -653,6 +653,8 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 
 ### 🎯 Planned for v3.0
 
+**[📋 View Full v3.0 Roadmap](https://jterrats.github.io/JT_DynamicQueries/V3_ROADMAP.html)** | **[🎫 18 GitHub Issues Created](https://github.com/jterrats/JT_DynamicQueries/issues)**
+
 - Visual SOQL Builder (Drag & drop field selector)
 - Query history and favorites
 - Bulk query execution (multiple configs at once)
@@ -660,15 +662,17 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 - Query templates library
 - Real-time query validation (as you type)
 - Performance analytics dashboard
-- Additional language support (Korean, Portuguese)
+- Additional language support (Italian, Japanese, Portuguese, Chinese)
 
 ### 💡 Future Considerations
 
 - GraphQL support
 - Scheduled query execution
 - Result comparison tool
-- Query optimization suggestions
+- Query optimization suggestions (AI-powered)
 - Integration with External Objects
+- Advanced Agentforce actions
+- Security enhancements suite
 
 ---
 

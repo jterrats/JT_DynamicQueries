@@ -278,15 +278,15 @@ graph TB
     QV --> EB
     QV --> QR
     QV --> CM
-    
+
     CB --> QVC
     EB --> QVC
     CM --> QVC
-    
+
     QVC --> DS
     MC --> MD
     UF --> DB
-    
+
     DS --> DB
     DS --> MD
 
@@ -298,6 +298,7 @@ graph TB
 ### 📚 Detailed Architecture Documentation
 
 For comprehensive architecture details including:
+
 - 🔄 Query execution flow diagrams
 - 🛡️ Security architecture with USER_MODE
 - 🔍 Microservices pattern (Usage Finder)
@@ -675,9 +676,15 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 
 **Made with ❤️ for the Salesforce Community**
 
+</div>
+
+<div align="center">
+
 <a href="https://githubsfdeploy.herokuapp.com?owner=jterrats&repo=JT_DynamicQueries&ref=main">
   <img alt="Deploy to Salesforce"
        src="https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/deploy.png">
 </a>
+
+[GitHub Repository](https://github.com/jterrats/JT_DynamicQueries) | [Report Issues](https://github.com/jterrats/JT_DynamicQueries/issues)
 
 </div>

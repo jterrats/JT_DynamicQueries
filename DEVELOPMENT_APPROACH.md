@@ -37,12 +37,12 @@ test('should show data preview after config selection', async ({ page }) => {
   // Arrange
   await navigateToQueryViewer(page);
   const combobox = page.locator('[data-testid="config-selector"]');
-  
+
   // Act
   await combobox.click();
   await combobox.locator('li[role="option"]').first().click();
   await page.waitForTimeout(2000);
-  
+
   // Assert
   const previewTable = page.locator('[data-testid="query-preview-table"]');
   await expect(previewTable).toBeVisible();
@@ -57,23 +57,23 @@ test('should show data preview after config selection', async ({ page }) => {
 ❌ Error 1: "Key 'searchName' does not exist in the bindMap"
    👉 Action: Check handleExecuteQuery() - parameter not being passed
    🔧 Fix: Add console.log to debug parameterValues
-   
+
 ❌ Error 2: "Locator '[data-testid="query-preview-table"]' not found"
    👉 Action: Add data-testid to lightning-datatable
    🔧 Fix: Add data-testid="query-preview-table" to HTML
-   
+
 ❌ Error 3: "executeQueryPreview is not a function"
    👉 Action: Import from Apex controller
    🔧 Fix: import executeQueryPreview from "@salesforce/apex/..."
-   
+
 ❌ Error 4: "Method does not exist: executeQueryPreview"
    👉 Action: Create Apex method
    🔧 Fix: Add @AuraEnabled method in JT_QueryViewerController.cls
-   
+
 ❌ Error 5: "Toast notifications not dismissing"
    👉 Action: Check ShowToastEvent configuration
    🔧 Fix: Add mode: 'dismissable' to all toasts
-   
+
 ✅ All tests pass!
 ```
 
@@ -82,8 +82,8 @@ test('should show data preview after config selection', async ({ page }) => {
 ## 📋 Workflow: Real Bug Fix Example (From Today)
 
 ### Bug Report
-> **Bug #1:** Toasts don't disappear automatically  
-> **Bug #2:** Query preview shows only SOQL text, not actual data  
+> **Bug #1:** Toasts don't disappear automatically
+> **Bug #2:** Query preview shows only SOQL text, not actual data
 > **Bug #3:** Parameter 'searchName' error when executing query
 
 ### Step 1: Write E2E Test (BDD Approach)
@@ -102,7 +102,7 @@ test('toast should auto-dismiss after 5 seconds', async ({ page }) => {
 test('should display data preview table with records', async ({ page }) => {
   await selectConfig(page, 'Test Record');
   await page.waitForTimeout(2000);
-  
+
   const previewTable = page.locator('[data-testid="query-preview-table"]');
   await expect(previewTable).toBeVisible(); // ❌ Fails here
 });
@@ -151,19 +151,19 @@ showSuccessToast(message) {
 
 **Error-Driven Steps:**
 
-1. **Error:** `data-testid not found`  
+1. **Error:** `data-testid not found`
    **Fix:** Add to HTML template
-   
-2. **Error:** `Cannot read property 'previewData' of undefined`  
+
+2. **Error:** `Cannot read property 'previewData' of undefined`
    **Fix:** Initialize `@track queryPreviewData = []`
-   
-3. **Error:** `executeQueryPreview is not a function`  
+
+3. **Error:** `executeQueryPreview is not a function`
    **Fix:** Import from Apex
-   
-4. **Error:** `Method does not exist`  
+
+4. **Error:** `Method does not exist`
    **Fix:** Create Apex method with `@AuraEnabled`
 
-5. **Error:** `List has no rows`  
+5. **Error:** `List has no rows`
    **Fix:** Add `LIMIT 1` to config query
 
 ### Step 4: Commit with Context
@@ -264,13 +264,13 @@ static void testExecuteQueryPreview() {
   // Arrange
   String devName = 'Test_Record';
   String bindings = '{"name": "Test"}';
-  
+
   // Act
   Test.startTest();
-  JT_QueryViewerController.QueryResult result = 
+  JT_QueryViewerController.QueryResult result =
     JT_QueryViewerController.executeQueryPreview(devName, bindings);
   Test.stopTest();
-  
+
   // Assert
   System.assertEquals(true, result.success, 'Preview should succeed');
   System.assert(result.recordCount <= 5, 'Max 5 records');
@@ -298,11 +298,11 @@ test('should paginate preview data', async ({ page }) => {
   // Arrange
   await selectConfig(page, 'All Active');
   await page.waitForTimeout(2000);
-  
+
   // Act
   const nextButton = page.locator('[data-testid="preview-next-button"]');
   await nextButton.click();
-  
+
   // Assert
   const pageInfo = page.locator('[data-testid="preview-page-info"]');
   await expect(pageInfo).toContainText('Page 2 of');
@@ -318,7 +318,7 @@ describe('jtQueryViewer', () => {
       is: JtQueryViewer
     });
     document.body.appendChild(element);
-    
+
     expect(element.queryPreviewData).toEqual([]);
     expect(element.showPreviewData).toBe(false);
   });
@@ -399,13 +399,13 @@ public static QueryResult executeQueryPreview(
   if (!previewQuery.containsIgnoreCase('LIMIT')) {
     previewQuery += ' LIMIT 5';
   }
-  
+
   List<SObject> records = Database.queryWithBinds(
     previewQuery,
     bindings,
     AccessLevel.USER_MODE
   );
-  
+
   return buildResult(records);
 }
 ```
@@ -435,7 +435,7 @@ static void testExecuteQueryPreview() {
     '{"name": "Test"}'
   );
   Test.stopTest();
-  
+
   System.assertEquals(true, result.success);
   System.assert(result.recordCount <= 5);
 }
@@ -507,25 +507,96 @@ Track these in your CI/CD pipeline:
 
 ## 🚀 Workflow for Every Change
 
+### 🔴 **CRITICAL RULE: Test in Target Org BEFORE Commit**
+
+**⚠️ NO COMMIT without org validation!**
+
+```
+Local Tests → Deploy to Org → Validate in Org → Commit → Push
+     ↓              ↓               ↓             ↓        ↓
+   Pass          Success         Works        Safe      Share
+```
+
+---
+
 ### For New Features:
+
+#### **Phase 1: Local Development (Error-Driven)**
 1. Write BDD scenario (Gherkin or plain English)
 2. Write E2E test (Playwright for LWC)
-3. Run test → ❌ **error**
+3. Run test locally → ❌ **error**
 4. Add HTML element → ❌ **new error**
 5. Add LWC properties → ❌ **new error**
 6. Import Apex method → ❌ **new error**
-7. Create Apex method → ✅ **test passes**
-8. Write Apex unit test
-9. Commit with error-driven context
+7. Create Apex method → ✅ **test passes locally**
+8. Write Apex unit test → ✅ **passes locally**
+
+#### **Phase 2: Org Validation (MANDATORY)**
+9. Deploy to target org (sandbox/scratch)
+   ```bash
+   sf project deploy start --target-org <alias>
+   ```
+10. Run Apex tests in org
+   ```bash
+   sf apex run test --target-org <alias> --test-level RunLocalTests
+   ```
+11. Verify deployment success and test results
+12. **Manual validation in org UI:**
+    - Navigate to component
+    - Test all scenarios from BDD
+    - Verify error handling
+    - Check console for errors
+    - Test edge cases
+13. If any issues found → Fix → Redeploy → Revalidate
+
+#### **Phase 3: Commit (Only After Org Validation)**
+14. All tests pass in org ✅
+15. Manual validation complete ✅
+16. No console errors ✅
+17. **NOW commit with confidence:**
+    ```bash
+    git add -A
+    git commit -m "feat: ..."
+    git push origin main
+    ```
+
+---
 
 ### For Bug Fixes:
-1. Write E2E test that reproduces bug
-2. Verify test fails
-3. Let error guide fix
-4. Fix error → may reveal new error
-5. Repeat until test passes
-6. Write regression Apex test if needed
-7. Commit with bug context
+
+#### **Phase 1: Reproduce in Target Org**
+1. Reproduce bug in target org first
+2. Document exact steps to reproduce
+3. Take screenshots/video if helpful
+
+#### **Phase 2: Local Fix (Error-Driven)**
+4. Write E2E test that reproduces bug
+5. Verify test fails
+6. Let error guide fix
+7. Fix error → may reveal new error
+8. Repeat until test passes locally
+9. Write regression Apex test if needed
+
+#### **Phase 3: Org Validation (MANDATORY)**
+10. Deploy fix to target org
+11. Run Apex tests in org
+12. **Manually verify bug is fixed:**
+    - Follow exact reproduction steps
+    - Verify fix works
+    - Test related functionality
+    - Check for side effects
+13. If bug persists → Fix → Redeploy → Revalidate
+
+#### **Phase 4: Commit (Only After Org Validation)**
+14. Bug confirmed fixed in org ✅
+15. No regressions introduced ✅
+16. All tests pass ✅
+17. **NOW commit:**
+    ```bash
+    git add -A
+    git commit -m "fix: ..."
+    git push origin main
+    ```
 
 ---
 
@@ -562,13 +633,50 @@ LWC Tests (Component Logic)
 
 ---
 
+## 🚨 Pre-Commit Checklist (MANDATORY)
+
+Before running `git commit`, verify ALL of these:
+
+```bash
+# 1. Local tests pass
+npm run test:e2e  # E2E tests pass ✓
+sf apex run test  # Apex tests pass ✓
+
+# 2. Deploy to org
+sf project deploy start --target-org <alias>  # Deploy success ✓
+
+# 3. Run tests in org
+sf apex run test --target-org <alias> --test-level RunLocalTests  # Pass ✓
+
+# 4. Manual validation in org
+# □ Navigate to component in org
+# □ Test all BDD scenarios
+# □ Verify no console errors
+# □ Test edge cases
+# □ Verify error handling
+# □ Check mobile view (if applicable)
+# □ Test with different user profiles (if applicable)
+
+# 5. Validate deployment
+sf project deploy validate --target-org <alias>  # Validate ✓
+
+# 6. NOW you can commit
+git add -A
+git commit -m "..."
+git push origin main
+```
+
+---
+
 ## 💡 Key Takeaways
 
 1. **Write tests first** - Errors guide implementation
 2. **Follow errors** - Each error tells you what to build next
-3. **Small commits** - One error fix = one commit
-4. **BDD scenarios** - Describe behavior, not implementation
-5. **TDD in Salesforce** - Apex + E2E tests both matter
+3. **Test in org BEFORE commit** - Local tests aren't enough
+4. **Small commits** - One feature/fix = one commit (after org validation)
+5. **BDD scenarios** - Describe behavior, not implementation
+6. **TDD in Salesforce** - Apex + E2E + Org validation all matter
+7. **No commit without org validation** - This is non-negotiable
 
 ---
 
@@ -604,7 +712,7 @@ test(preview): Add E2E tests for preview pagination
 
 ## 🎯 Remember
 
-> **The error message is your friend.**  
+> **The error message is your friend.**
 > It tells you exactly what to build next.
 
 **No guessing. No over-engineering. Just follow the errors.** 🚀

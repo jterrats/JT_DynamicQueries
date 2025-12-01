@@ -83,19 +83,17 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     // Wait for component to be fully interactive
     await page.waitForTimeout(2000);
 
-    const combobox = page
-      .locator("c-jt-query-viewer")
-      .locator("c-jt-searchable-combobox")
-      .first();
-    await expect(combobox).toBeVisible({ timeout: 15000 });
+    // Use semantic selector for config selector
+    const input = page.locator('[data-testid="config-selector-input"]');
+    await expect(input).toBeVisible({ timeout: 15000 });
 
     // Click the input to open dropdown
-    const input = combobox.locator("input");
     await input.click({ timeout: 10000 });
     await page.waitForTimeout(1500);
 
     // Check for options in the custom dropdown
-    const options = combobox.locator(".slds-listbox__item");
+    const dropdown = page.locator('[data-testid="config-selector-dropdown"]');
+    const options = dropdown.locator(".slds-listbox__item");
     const count = await options.count();
     expect(count).toBeGreaterThan(0);
 
@@ -111,10 +109,9 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     console.log("🔍 Testing searchable combobox...");
     await page.waitForTimeout(2000);
 
-    const combobox = page
-      .locator("c-jt-query-viewer c-jt-searchable-combobox")
-      .first();
-    const isVisible = await combobox
+    // Use semantic selector
+    const input = page.locator('[data-testid="config-selector-input"]');
+    const isVisible = await input
       .isVisible({ timeout: 5000 })
       .catch(() => false);
 
@@ -122,7 +119,6 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
       console.log("✅ Searchable combobox found");
 
       // Click to open dropdown
-      const input = combobox.locator("input").first();
       await input.click();
       await page.waitForTimeout(1000);
 
@@ -131,7 +127,7 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
       await page.waitForTimeout(1000);
 
       // Check if dropdown is visible
-      const dropdown = combobox.locator(".slds-dropdown").first();
+      const dropdown = page.locator('[data-testid="config-selector-dropdown"]');
       const dropdownVisible = await dropdown
         .isVisible({ timeout: 2000 })
         .catch(() => false);
@@ -140,7 +136,7 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
         console.log("✅ Dropdown visible after typing");
 
         // Check if options are filtered
-        const options = combobox.locator(".slds-listbox__option");
+        const options = dropdown.locator(".slds-listbox__option");
         const optionCount = await options.count();
         console.log(`Found ${optionCount} filtered option(s)`);
         expect(optionCount).toBeGreaterThan(0);
@@ -167,11 +163,8 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
   }) => {
     await page.waitForTimeout(2000);
 
-    // Select a configuration
-    const combobox = page
-      .locator("c-jt-query-viewer c-jt-searchable-combobox")
-      .first();
-    const input = combobox.locator("input");
+    // Select a configuration using semantic selector
+    const input = page.locator('[data-testid="config-selector-input"]');
     await input.click();
     await input.fill("Test Record");
     await page.waitForTimeout(2000);
@@ -207,24 +200,18 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
   }) => {
     await page.waitForTimeout(2000);
 
-    // Select configuration
-    const combobox = page
-      .locator("c-jt-query-viewer")
-      .locator("c-jt-searchable-combobox")
-      .first();
-    const input = combobox.locator("input");
+    // Select configuration using semantic selector
+    const input = page.locator('[data-testid="config-selector-input"]');
     await input.click({ timeout: 10000 });
     await page.waitForTimeout(1500);
 
-    const firstOption = combobox.locator(".slds-listbox__item").first();
+    const dropdown = page.locator('[data-testid="config-selector-dropdown"]');
+    const firstOption = dropdown.locator(".slds-listbox__item").first();
     await firstOption.click({ timeout: 5000 });
     await page.waitForTimeout(2000);
 
-    // Execute query
-    const executeButton = page
-      .locator("lightning-button")
-      .filter({ hasText: /Execute/i })
-      .first();
+    // Execute query using semantic selector
+    const executeButton = page.locator('[data-testid="execute-query-button"]');
     await executeButton.click({ timeout: 10000 });
 
     // Wait for execution
@@ -253,32 +240,23 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     console.log("🧪 Testing pagination...");
     await page.waitForTimeout(2000);
 
-    const combobox = page
-      .locator("c-jt-query-viewer")
-      .locator("c-jt-searchable-combobox")
-      .first();
-    const input = combobox.locator("input");
+    // Use semantic selectors
+    const input = page.locator('[data-testid="config-selector-input"]');
     await input.click({ timeout: 10000 });
     await page.waitForTimeout(1500);
 
-    const firstOption = combobox.locator(".slds-listbox__item").first();
+    const dropdown = page.locator('[data-testid="config-selector-dropdown"]');
+    const firstOption = dropdown.locator(".slds-listbox__item").first();
     await firstOption.click({ timeout: 5000 });
     await page.waitForTimeout(2000);
 
-    const executeButton = page
-      .locator("lightning-button")
-      .filter({ hasText: /Execute/i })
-      .first();
+    const executeButton = page.locator('[data-testid="execute-query-button"]');
     await executeButton.click({ timeout: 10000 });
     await page.waitForTimeout(5000);
 
-    // Check for pagination controls
-    const nextButton = page.locator(
-      'lightning-button[icon-name="utility:chevronright"]'
-    );
-    const prevButton = page.locator(
-      'lightning-button[icon-name="utility:chevronleft"]'
-    );
+    // Check for pagination controls using semantic selectors
+    const nextButton = page.locator('[data-testid="pagination-next"]');
+    const prevButton = page.locator('[data-testid="pagination-previous"]');
 
     const hasPagination = await nextButton
       .isVisible({ timeout: 2000 })
@@ -646,17 +624,16 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     console.log("🔍 Testing combobox search/filter...");
     await page.waitForTimeout(2000);
 
-    const combobox = page
-      .locator("c-jt-query-viewer c-jt-searchable-combobox")
-      .first();
-    const input = combobox.locator("input");
+    // Use semantic selectors
+    const input = page.locator('[data-testid="config-selector-input"]');
+    const dropdown = page.locator('[data-testid="config-selector-dropdown"]');
 
     // Click to open dropdown
     await input.click();
     await page.waitForTimeout(1000);
 
     // Count initial options
-    const initialOptions = combobox.locator(".slds-listbox__item");
+    const initialOptions = dropdown.locator(".slds-listbox__item");
     const initialCount = await initialOptions.count();
     console.log(`✅ Initial options count: ${initialCount}`);
 
@@ -665,7 +642,7 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     await page.waitForTimeout(1500);
 
     // Count filtered options
-    const filteredOptions = combobox.locator(".slds-listbox__item");
+    const filteredOptions = dropdown.locator(".slds-listbox__item");
     const filteredCount = await filteredOptions.count();
     console.log(`✅ Filtered options count: ${filteredCount}`);
 
@@ -676,7 +653,7 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     // Clear and verify all options return
     await input.fill("");
     await page.waitForTimeout(1000);
-    const clearedCount = await combobox.locator(".slds-listbox__item").count();
+    const clearedCount = await dropdown.locator(".slds-listbox__item").count();
     console.log(`✅ Options after clear: ${clearedCount}`);
   });
 
@@ -694,15 +671,11 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
         .isVisible({ timeout: 5000 })
         .catch(() => false),
       "Configuration Dropdown": await page
-        .locator("c-jt-query-viewer")
-        .locator("c-jt-searchable-combobox")
-        .first()
+        .locator('[data-testid="config-selector-input"]')
         .isVisible({ timeout: 5000 })
         .catch(() => false),
       "Execute Button": await page
-        .locator("lightning-button")
-        .filter({ hasText: /Execute/i })
-        .first()
+        .locator('[data-testid="execute-query-button"]')
         .isVisible({ timeout: 5000 })
         .catch(() => false)
     };
@@ -748,17 +721,14 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
       `✅ c-jt-parameter-inputs component exists: ${componentExists}`
     );
 
-    // Test selection and verification
-    const combobox1 = page
-      .locator("c-jt-query-viewer c-jt-searchable-combobox")
-      .first();
-    const input1 = combobox1.locator("input");
-
-    await input1.click();
+    // Test selection and verification using semantic selectors
+    const input = page.locator('[data-testid="config-selector-input"]');
+    await input.click();
     await page.waitForTimeout(1000);
 
     // Try to click first option (Test Record or similar)
-    const firstOption = combobox1.locator(".slds-listbox__item").first();
+    const dropdown = page.locator('[data-testid="config-selector-dropdown"]');
+    const firstOption = dropdown.locator(".slds-listbox__item").first();
     const optionVisible = await firstOption
       .isVisible({ timeout: 3000 })
       .catch(() => false);
@@ -787,11 +757,8 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     expect(selectQueryVisible).toBe(true);
     console.log('✅ "Select Query Configuration" label is visible');
 
-    // Verify Execute Query button exists
-    const executeButton = page
-      .locator("lightning-button")
-      .filter({ hasText: /Execute Query/i })
-      .first();
+    // Verify Execute Query button exists using semantic selector
+    const executeButton = page.locator('[data-testid="execute-query-button"]');
     const buttonVisible = await executeButton
       .isVisible({ timeout: 3000 })
       .catch(() => false);
@@ -818,11 +785,8 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     console.log("🧪 Testing empty results table...");
     await page.waitForTimeout(2000);
 
-    // Select config and execute with impossible filter
-    const combobox = page
-      .locator("c-jt-query-viewer c-jt-searchable-combobox")
-      .first();
-    const input = combobox.locator("input");
+    // Select config and execute with impossible filter using semantic selectors
+    const input = page.locator('[data-testid="config-selector-input"]');
     await input.click();
     await page.waitForTimeout(500);
     await input.fill("Dynamic Input Test");
@@ -839,11 +803,8 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
         await inputs.nth(i).locator("input").fill("NonExistent12345");
       }
 
-      // Execute query
-      const executeButton = page
-        .locator("lightning-button")
-        .filter({ hasText: /Execute Query/i })
-        .first();
+      // Execute query using semantic selector
+      const executeButton = page.locator('[data-testid="execute-query-button"]');
       await executeButton.click({ timeout: 10000 });
       await page.waitForTimeout(5000);
 
@@ -877,11 +838,8 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     console.log("🔍 Testing execute button disabled state...");
     await page.waitForTimeout(2000);
 
-    // Get the execute button
-    const executeButton = page
-      .locator("c-jt-query-viewer lightning-button")
-      .filter({ hasText: /Execute Query/i })
-      .first();
+    // Get the execute button using semantic selector
+    const executeButton = page.locator('[data-testid="execute-query-button"]');
 
     // Check if button is disabled (may not have disabled attribute, check via evaluate)
     const isDisabledInitial = await executeButton
@@ -901,16 +859,14 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     expect(await executeButton.isVisible()).toBe(true);
     console.log("✅ Execute button is visible");
 
-    // Select a configuration
-    const combobox = page
-      .locator("c-jt-query-viewer c-jt-searchable-combobox")
-      .first();
-    const input = combobox.locator("input");
+    // Select a configuration using semantic selectors
+    const input = page.locator('[data-testid="config-selector-input"]');
     await input.click();
     await page.waitForTimeout(1000);
 
     // Click on first option
-    const option = combobox.locator(".slds-listbox__item").first();
+    const dropdown = page.locator('[data-testid="config-selector-dropdown"]');
+    const option = dropdown.locator(".slds-listbox__item").first();
     await expect(option).toBeVisible({ timeout: 5000 });
     await option.click();
     await page.waitForTimeout(1500);
@@ -1063,17 +1019,14 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     console.log("🔍 Testing component integration...");
     await page.waitForTimeout(2000);
 
-    // Select a configuration
-    const combobox = page
-      .locator("c-jt-query-viewer c-jt-searchable-combobox")
-      .first();
-    const input = combobox.locator("input");
-
+    // Select a configuration using semantic selectors
+    const input = page.locator('[data-testid="config-selector-input"]');
     await input.click();
     await page.waitForTimeout(1000);
 
     // Click first available option
-    const firstOption = combobox.locator(".slds-listbox__item").first();
+    const dropdown = page.locator('[data-testid="config-selector-dropdown"]');
+    const firstOption = dropdown.locator(".slds-listbox__item").first();
     const optionVisible = await firstOption
       .isVisible({ timeout: 3000 })
       .catch(() => false);
@@ -1084,12 +1037,8 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
 
       console.log("✅ Configuration selected");
 
-      // Verify execute button is present and clickable
-      const executeButton = page
-        .locator("c-jt-query-viewer lightning-button")
-        .filter({ hasText: /Execute Query/i })
-        .first();
-
+      // Verify execute button is present and clickable using semantic selector
+      const executeButton = page.locator('[data-testid="execute-query-button"]');
       const buttonClickable = await executeButton.isEnabled().catch(() => true);
       expect(buttonClickable).toBe(true);
       console.log("✅ Execute button is clickable after selection");
@@ -1108,17 +1057,16 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     console.log("🔍 Testing combobox filtering...");
     await page.waitForTimeout(2000);
 
-    const combobox = page
-      .locator("c-jt-query-viewer c-jt-searchable-combobox")
-      .first();
-    const input = combobox.locator("input");
+    // Use semantic selectors
+    const input = page.locator('[data-testid="config-selector-input"]');
+    const dropdown = page.locator('[data-testid="config-selector-dropdown"]');
 
     // Click to open dropdown
     await input.click();
     await page.waitForTimeout(1000);
 
     // Count initial options
-    const initialOptions = combobox.locator(".slds-listbox__item");
+    const initialOptions = dropdown.locator(".slds-listbox__item");
     const initialCount = await initialOptions.count();
     console.log(`✅ Initial options count: ${initialCount}`);
 
@@ -1127,7 +1075,7 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     await page.waitForTimeout(1500);
 
     // Count filtered options
-    const filteredOptions = combobox.locator(".slds-listbox__item");
+    const filteredOptions = dropdown.locator(".slds-listbox__item");
     const filteredCount = await filteredOptions.count();
     console.log(`✅ Filtered options count: ${filteredCount}`);
 
@@ -1205,9 +1153,8 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
   test("should have Clear Cache button in toolbar", async ({ page }) => {
     console.log("🧹 Testing Clear Cache button presence...");
 
-    const clearCacheButton = page
-      .locator('lightning-button:has-text("Clear Cache")')
-      .first();
+    // Use semantic selector
+    const clearCacheButton = page.locator('[data-testid="header-clear-cache-button"]');
 
     await expect(clearCacheButton).toBeVisible();
     console.log("✅ Clear Cache button is visible");
@@ -1218,11 +1165,8 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
   test("should open cache management modal", async ({ page }) => {
     console.log("🧹 Testing cache modal opening...");
 
-    // Click Clear Cache button
-    const clearCacheButton = page
-      .locator('lightning-button:has-text("Clear Cache")')
-      .first();
-
+    // Click Clear Cache button using semantic selector
+    const clearCacheButton = page.locator('[data-testid="header-clear-cache-button"]');
     await clearCacheButton.click();
     await page.waitForTimeout(1000);
 
@@ -1236,8 +1180,8 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
 
     console.log("✅ Cache modal opened successfully");
 
-    // Close modal
-    const cancelButton = page.locator('button:has-text("Cancel")').last();
+    // Close modal using semantic selector
+    const cancelButton = page.locator('[data-testid="cache-cancel-button"]');
     await cancelButton.click();
     await page.waitForTimeout(500);
 
@@ -1247,26 +1191,16 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
   test("should have all cache options in modal", async ({ page }) => {
     console.log("🧹 Testing cache options...");
 
-    // Open modal
-    const clearCacheButton = page
-      .locator('lightning-button:has-text("Clear Cache")')
-      .first();
+    // Open modal using semantic selector
+    const clearCacheButton = page.locator('[data-testid="header-clear-cache-button"]');
     await clearCacheButton.click();
     await page.waitForTimeout(1000);
 
-    // Check all checkboxes exist
-    const configCheckbox = page
-      .locator('lightning-input:has-text("Query Configurations")')
-      .first();
-    const resultsCheckbox = page
-      .locator('lightning-input:has-text("Query Results")')
-      .first();
-    const usersCheckbox = page
-      .locator('lightning-input:has-text("User List")')
-      .first();
-    const recentCheckbox = page
-      .locator('lightning-input:has-text("Recent")')
-      .first();
+    // Check all checkboxes exist using semantic selectors
+    const configCheckbox = page.locator('[data-testid="cache-option-configurations"]');
+    const resultsCheckbox = page.locator('[data-testid="cache-option-results"]');
+    const usersCheckbox = page.locator('[data-testid="cache-option-users"]');
+    const recentCheckbox = page.locator('[data-testid="cache-option-recent"]');
 
     await expect(configCheckbox).toBeVisible();
     await expect(resultsCheckbox).toBeVisible();
@@ -1287,25 +1221,19 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
   }) => {
     console.log("🧹 Testing Clear button state...");
 
-    // Open modal
-    const clearCacheButton = page
-      .locator('lightning-button:has-text("Clear Cache")')
-      .first();
-    await clearCacheButton.click();
+    // Open modal using semantic selector
+    const openCacheButton = page.locator('[data-testid="header-clear-cache-button"]');
+    await openCacheButton.click();
     await page.waitForTimeout(1000);
 
-    // Clear button should be disabled initially
-    const clearButton = page
-      .locator('button:has-text("Clear Selected")')
-      .last();
+    // Clear button should be disabled initially using semantic selector
+    const clearButton = page.locator('[data-testid="cache-clear-button"]');
     const isDisabled = await clearButton.isDisabled();
     expect(isDisabled).toBe(true);
     console.log("✅ Clear button disabled when nothing selected");
 
-    // Select an option
-    const resultsCheckbox = page
-      .locator('lightning-input:has-text("Query Results")')
-      .first();
+    // Select an option using semantic selector
+    const resultsCheckbox = page.locator('[data-testid="cache-option-results"]');
     await resultsCheckbox.locator("input").check();
     await page.waitForTimeout(500);
 
@@ -1324,24 +1252,18 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
   test("should clear cache and show success toast", async ({ page }) => {
     console.log("🧹 Testing cache clearing functionality...");
 
-    // Open modal
-    const clearCacheButton = page
-      .locator('lightning-button:has-text("Clear Cache")')
-      .first();
-    await clearCacheButton.click();
+    // Open modal using semantic selector
+    const openCacheButton = page.locator('[data-testid="header-clear-cache-button"]');
+    await openCacheButton.click();
     await page.waitForTimeout(1000);
 
-    // Select Query Results option
-    const resultsCheckbox = page
-      .locator('lightning-input:has-text("Query Results")')
-      .first();
+    // Select Query Results option using semantic selector
+    const resultsCheckbox = page.locator('[data-testid="cache-option-results"]');
     await resultsCheckbox.locator("input").check();
     await page.waitForTimeout(500);
 
-    // Click Clear Selected
-    const clearButton = page
-      .locator('button:has-text("Clear Selected")')
-      .last();
+    // Click Clear Selected using semantic selector
+    const clearButton = page.locator('[data-testid="cache-clear-button"]');
     await clearButton.click();
     await page.waitForTimeout(1000);
 
@@ -1366,24 +1288,18 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
   test("should use Select All to select all options", async ({ page }) => {
     console.log("🧹 Testing Select All functionality...");
 
-    // Open modal
-    const clearCacheButton = page
-      .locator('lightning-button:has-text("Clear Cache")')
-      .first();
-    await clearCacheButton.click();
+    // Open modal using semantic selector
+    const openCacheButton = page.locator('[data-testid="header-clear-cache-button"]');
+    await openCacheButton.click();
     await page.waitForTimeout(1000);
 
-    // Click Select All
-    const selectAllCheckbox = page
-      .locator('lightning-input:has-text("Select All")')
-      .first();
+    // Click Select All using semantic selector
+    const selectAllCheckbox = page.locator('[data-testid="cache-select-all"]');
     await selectAllCheckbox.locator("input").check();
     await page.waitForTimeout(500);
 
-    // All checkboxes should be checked
-    const configCheckbox = page
-      .locator('lightning-input:has-text("Query Configurations")')
-      .first();
+    // All checkboxes should be checked - verify with semantic selector
+    const configCheckbox = page.locator('[data-testid="cache-option-configurations"]');
     const configChecked = await configCheckbox
       .locator("input")
       .isChecked()
@@ -1402,11 +1318,9 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
   test("should close modal with Escape key", async ({ page }) => {
     console.log("🧹 Testing keyboard accessibility...");
 
-    // Open modal
-    const clearCacheButton = page
-      .locator('lightning-button:has-text("Clear Cache")')
-      .first();
-    await clearCacheButton.click();
+    // Open modal using semantic selector
+    const openCacheButton = page.locator('[data-testid="header-clear-cache-button"]');
+    await openCacheButton.click();
     await page.waitForTimeout(1000);
 
     // Press Escape

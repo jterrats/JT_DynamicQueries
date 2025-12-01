@@ -38,6 +38,8 @@
       options={userOptions}
       icon-name="standard:user"
       disabled={isLoadingUsers}
+      data-testid="run-as-user-selector"
+      name="run-as-user"
       onselect={handleUserSelect}
       onclear={handleUserClear}
     ></c-jt-searchable-combobox>
@@ -72,6 +74,9 @@
           variant="neutral"
           icon-name="utility:clear"
           size="small"
+          data-testid="run-as-clear-button"
+          name="run-as-clear"
+          aria-label="Clear selected user"
         ></lightning-button>
 
         <template if:true={showRunAsTest}>
@@ -83,6 +88,9 @@
             icon-name="utility:shield"
             disabled={isRunningTest}
             class="slds-m-left_small"
+            data-testid="run-as-execute-button"
+            name="run-as-execute"
+            aria-label="Execute query as selected user"
           ></lightning-button>
         </template>
       </div>

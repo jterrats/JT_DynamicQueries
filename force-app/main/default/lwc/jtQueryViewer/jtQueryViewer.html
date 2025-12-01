@@ -26,6 +26,8 @@
           variant="neutral"
           icon-name="utility:refresh"
           class="slds-m-right_x-small"
+          data-testid="header-clear-cache-button"
+          name="clear-cache"
           aria-label="Open cache management modal"
         >
         </lightning-button>
@@ -38,6 +40,8 @@
             onclick={handleShowCreateModal}
             variant="brand"
             icon-name="utility:add"
+            data-testid="header-create-config-button"
+            name="create-configuration"
             aria-label="Create new query configuration"
           >
           </lightning-button>
@@ -175,6 +179,8 @@
             clear-button-title={labels.clear}
             show-options-title={labels.chooseConfiguration}
             debug-mode={dropdownDebugMode}
+            data-testid="config-selector"
+            name="configuration-selector"
             required
             onselect={handleConfigSelect}
             onclear={handleConfigClear}
@@ -416,7 +422,10 @@
                     variant={isTableView}
                     onclick={handleViewChange}
                     data-view="table"
+                    data-testid="results-view-toggle-table"
+                    name="results-view-table"
                     title="View as Table"
+                    aria-label="View results as table"
                   ></lightning-button>
                   <lightning-button
                     label="JSON"
@@ -424,7 +433,10 @@
                     variant={isJsonView}
                     onclick={handleViewChange}
                     data-view="json"
+                    data-testid="results-view-toggle-json"
+                    name="results-view-json"
                     title="View as JSON (LLM-friendly)"
+                    aria-label="View results as JSON"
                   ></lightning-button>
                   <lightning-button
                     label="CSV"
@@ -432,7 +444,10 @@
                     variant={isCsvView}
                     onclick={handleViewChange}
                     data-view="csv"
+                    data-testid="results-view-toggle-csv"
+                    name="results-view-csv"
                     title="Download as CSV"
+                    aria-label="Download results as CSV"
                   ></lightning-button>
                 </lightning-button-group>
               </div>
@@ -607,19 +622,25 @@
                     {labels.showing} {firstRecordIndex} - {lastRecordIndex}
                     {labels.of} {recordCount}
                   </div>
-                  <div class="slds-button-group">
+                  <div class="slds-button-group" role="group" aria-label="Pagination controls">
                     <lightning-button
                       icon-name="utility:chevronleft"
                       variant="neutral"
                       onclick={handlePreviousPage}
                       disabled={isFirstPage}
                       title={labels.previous}
+                      data-testid="pagination-previous"
+                      name="pagination-previous"
+                      aria-label="Go to previous page"
                     >
                     </lightning-button>
                     <lightning-button
                       label={currentPageDisplay}
                       variant="neutral"
                       disabled
+                      data-testid="pagination-current"
+                      name="pagination-current"
+                      aria-label={currentPageDisplay}
                     >
                     </lightning-button>
                     <lightning-button
@@ -628,6 +649,9 @@
                       onclick={handleNextPage}
                       disabled={isLastPage}
                       title={labels.next}
+                      data-testid="pagination-next"
+                      name="pagination-next"
+                      aria-label="Go to next page"
                     >
                     </lightning-button>
                   </div>

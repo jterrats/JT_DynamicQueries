@@ -44,11 +44,15 @@ export default class JtParameterInputs extends LightningElement {
   }
 
   get parametersWithValues() {
-    // Merge parameters with current values and add helpful tooltips
+    // Merge parameters with current values and add helpful tooltips + semantic attributes
     return this._parameters.map((param) => ({
       ...param,
       value: this._values[param.name] || "",
-      helpText: `This value replaces ':${param.name}' in your SOQL query. Example: WHERE Field__c = :${param.name}`
+      helpText: `This value replaces ':${param.name}' in your SOQL query. Example: WHERE Field__c = :${param.name}`,
+      // Semantic HTML attributes for E2E testing
+      testId: `query-parameter-${param.name}`,
+      inputName: `query-parameter-${param.name}`,
+      ariaLabel: `Query parameter: ${param.label || param.name}`
     }));
   }
 

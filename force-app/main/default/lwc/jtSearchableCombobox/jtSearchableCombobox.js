@@ -31,6 +31,10 @@ export default class JtSearchableCombobox extends LightningElement {
   @api variant = "standard"; // standard | label-hidden
   @api debugMode = false; // Force dropdown open for CSS debugging
 
+  // Semantic HTML attributes (for E2E testing & accessibility)
+  @api dataTestId = "searchable-combobox"; // Base testId for this instance
+  @api name = "searchable-combobox"; // Form element name
+
   // Translatable texts (passed from parent)
   @api noResultsText = "No results found";
   @api errorText = "Please select an option";
@@ -97,6 +101,35 @@ export default class JtSearchableCombobox extends LightningElement {
 
   get labelClass() {
     return `slds-form-element__label ${this.required ? "slds-required" : ""}`;
+  }
+
+  // Semantic HTML computed properties (for E2E testing)
+  get inputId() {
+    return `${this.dataTestId}-input`;
+  }
+
+  get inputName() {
+    return `${this.name}-input`;
+  }
+
+  get inputTestId() {
+    return `${this.dataTestId}-input`;
+  }
+
+  get listboxId() {
+    return `${this.dataTestId}-listbox`;
+  }
+
+  get dropdownTestId() {
+    return `${this.dataTestId}-dropdown`;
+  }
+
+  get comboboxTestId() {
+    return `${this.dataTestId}-combobox`;
+  }
+
+  get ariaLabel() {
+    return this.label || this.placeholder || "Searchable combobox";
   }
 
   // Lifecycle
@@ -187,15 +220,22 @@ export default class JtSearchableCombobox extends LightningElement {
       return;
     }
 
+    let filtered = [];
     if (!term) {
-      this.filteredOptions = [...this._options];
+      filtered = [...this._options];
     } else {
-      this.filteredOptions = this._options.filter((opt) => {
+      filtered = this._options.filter((opt) => {
         const label = (opt.label || "").toLowerCase();
         const value = (opt.value || "").toLowerCase();
         return label.includes(term) || value.includes(term);
       });
     }
+
+    // Add semantic test ID to each option
+    this.filteredOptions = filtered.map((opt) => ({
+      ...opt,
+      optionTestId: `${this.dataTestId}-option-${opt.value}`
+    }));
   }
 
   // Public API Methods

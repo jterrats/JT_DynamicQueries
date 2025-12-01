@@ -15,6 +15,10 @@ export default class JtExecuteButton extends LightningElement {
   @api disabled = false;
   @api isLoading = false;
 
+  // Semantic HTML attributes (for E2E testing & accessibility)
+  @api dataTestId = "execute-query-button";
+  @api name = "execute-query";
+
   // Validation requirements (defaults handled in getter)
   @api requireConfig = false;
   @api requireParameters = false;

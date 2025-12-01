@@ -25,10 +25,13 @@
               label={param.label}
               value={param.value}
               data-param={param.name}
+              data-testid={param.testId}
+              name={param.inputName}
               onchange={handleInputChange}
               placeholder={param.name}
               required={param.required}
               aria-required={param.required}
+              aria-label={param.ariaLabel}
               field-level-help={param.helpText}
             >
             </lightning-input>

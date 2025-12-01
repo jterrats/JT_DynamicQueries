@@ -50,6 +50,8 @@
               checked={allSelected}
               onchange={handleSelectAll}
               class="slds-text-heading_small"
+              data-testid="cache-select-all"
+              name="cache-select-all"
             ></lightning-input>
           </div>
 
@@ -65,6 +67,8 @@
                 checked={clearConfigurations}
                 onchange={handleConfigChange}
                 field-level-help={labels.clearConfigurationsHelp}
+                data-testid="cache-option-configurations"
+                name="cache-option-configurations"
               ></lightning-input>
             </div>
 
@@ -76,6 +80,8 @@
                 checked={clearResults}
                 onchange={handleResultsChange}
                 field-level-help={labels.clearResultsHelp}
+                data-testid="cache-option-results"
+                name="cache-option-results"
               ></lightning-input>
             </div>
 
@@ -87,6 +93,8 @@
                 checked={clearUsers}
                 onchange={handleUsersChange}
                 field-level-help={labels.clearUsersHelp}
+                data-testid="cache-option-users"
+                name="cache-option-users"
               ></lightning-input>
             </div>
 
@@ -98,6 +106,8 @@
                 checked={clearRecent}
                 onchange={handleRecentChange}
                 field-level-help={labels.clearRecentHelp}
+                data-testid="cache-option-recent"
+                name="cache-option-recent"
               ></lightning-input>
             </div>
           </div>
@@ -131,6 +141,9 @@
           <button
             class="slds-button slds-button_neutral"
             onclick={handleCancel}
+            data-testid="cache-cancel-button"
+            name="cache-cancel"
+            aria-label="Cancel cache clearing"
           >
             {labels.cancel}
           </button>
@@ -138,6 +151,9 @@
             class="slds-button slds-button_brand"
             onclick={handleClear}
             disabled={!hasSelections}
+            data-testid="cache-clear-button"
+            name="cache-clear"
+            aria-label="Clear selected cache options"
           >
             <lightning-icon
               icon-name="utility:refresh"

@@ -185,8 +185,8 @@
         text-align: center;
         margin: 0;
         background: white;
-        padding: 0;
-        min-height: 300px;
+        padding: 20px;
+        min-height: 600px;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -194,19 +194,22 @@
       
       .mermaid svg {
         max-width: 100%;
+        width: 100%;
         height: auto;
+        min-height: 500px;
       }
       
       .mermaid-interactive-wrapper {
         position: relative;
         overflow: hidden;
+        min-height: 600px;
       }
-      
+
       .mermaid-interactive-wrapper:hover {
         border-color: #764ba2 !important;
         box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
       }
-      
+
       .diagram-controls button:active {
         transform: scale(0.95);
       }
@@ -287,7 +290,7 @@
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
     <!-- svg-pan-zoom for interactive diagrams -->
     <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
-    
+
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         mermaid.initialize({
@@ -300,15 +303,25 @@
             lineColor: "#667eea",
             secondaryColor: "#48bb78",
             tertiaryColor: "#f59e0b",
-            fontSize: "16px"
+            fontSize: "18px",
+            fontFamily: "Arial, sans-serif"
           },
           flowchart: {
             curve: "basis",
-            padding: 20
+            padding: 30,
+            nodeSpacing: 80,
+            rankSpacing: 80,
+            diagramPadding: 30
           },
           sequence: {
-            actorMargin: 80,
-            messageFontSize: 14
+            actorMargin: 100,
+            messageFontSize: 16,
+            width: 200,
+            height: 65
+          },
+          classDiagram: {
+            padding: 30,
+            textHeight: 20
           }
         });
 
@@ -336,10 +349,10 @@
             wrapper.style.padding = '10px';
             wrapper.style.marginBottom = '2rem';
             wrapper.style.background = '#f7fafc';
-            
+
             svg.parentNode.insertBefore(wrapper, svg);
             wrapper.appendChild(svg);
-            
+
             // Add control buttons
             const controls = document.createElement('div');
             controls.className = 'diagram-controls';
@@ -349,7 +362,7 @@
             controls.style.display = 'flex';
             controls.style.gap = '8px';
             controls.style.zIndex = '1000';
-            
+
             const buttonStyle = `
               background: #667eea;
               color: white;
@@ -362,7 +375,7 @@
               box-shadow: 0 2px 4px rgba(0,0,0,0.2);
               transition: all 0.3s;
             `;
-            
+
             // Zoom In button
             const zoomIn = document.createElement('button');
             zoomIn.innerHTML = '🔍+';
@@ -370,7 +383,7 @@
             zoomIn.style.cssText = buttonStyle;
             zoomIn.onmouseover = function() { this.style.background = '#5568d3'; };
             zoomIn.onmouseout = function() { this.style.background = '#667eea'; };
-            
+
             // Zoom Out button
             const zoomOut = document.createElement('button');
             zoomOut.innerHTML = '🔍-';
@@ -378,7 +391,7 @@
             zoomOut.style.cssText = buttonStyle;
             zoomOut.onmouseover = function() { this.style.background = '#5568d3'; };
             zoomOut.onmouseout = function() { this.style.background = '#667eea'; };
-            
+
             // Reset button
             const reset = document.createElement('button');
             reset.innerHTML = '↺';
@@ -386,7 +399,7 @@
             reset.style.cssText = buttonStyle;
             reset.onmouseover = function() { this.style.background = '#5568d3'; };
             reset.onmouseout = function() { this.style.background = '#667eea'; };
-            
+
             // Fit button
             const fit = document.createElement('button');
             fit.innerHTML = '⛶';
@@ -394,13 +407,13 @@
             fit.style.cssText = buttonStyle;
             fit.onmouseover = function() { this.style.background = '#5568d3'; };
             fit.onmouseout = function() { this.style.background = '#667eea'; };
-            
+
             controls.appendChild(zoomIn);
             controls.appendChild(zoomOut);
             controls.appendChild(reset);
             controls.appendChild(fit);
             wrapper.appendChild(controls);
-            
+
             // Add instruction text
             const instructions = document.createElement('div');
             instructions.style.cssText = `
@@ -412,12 +425,12 @@
             `;
             instructions.textContent = '💡 Arrastra para mover • Rueda del ratón para zoom • Usa los botones arriba';
             wrapper.appendChild(instructions);
-            
+
             // Initialize svg-pan-zoom
             const panZoomInstance = svgPanZoom(svg, {
               zoomEnabled: true,
               controlIconsEnabled: false,
-              fit: true,
+              fit: false,
               center: true,
               minZoom: 0.5,
               maxZoom: 10,
@@ -430,25 +443,31 @@
               }
             });
             
+            // Set initial zoom to 120% for better visibility
+            setTimeout(function() {
+              panZoomInstance.zoom(1.2);
+              panZoomInstance.center();
+            }, 100);
+
             // Connect buttons to pan-zoom instance
             zoomIn.onclick = function() {
               panZoomInstance.zoomIn();
             };
-            
+
             zoomOut.onclick = function() {
               panZoomInstance.zoomOut();
             };
-            
+
             reset.onclick = function() {
               panZoomInstance.resetZoom();
               panZoomInstance.resetPan();
             };
-            
+
             fit.onclick = function() {
               panZoomInstance.fit();
               panZoomInstance.center();
             };
-            
+
             // Make cursor indicate draggable
             svg.style.cursor = 'grab';
             svg.addEventListener('mousedown', function() {

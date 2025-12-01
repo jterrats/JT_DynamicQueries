@@ -5,6 +5,7 @@ import { getLabels } from "./labels";
 import getConfigurations from "@salesforce/apex/JT_QueryViewerController.getConfigurations";
 import extractParameters from "@salesforce/apex/JT_QueryViewerController.extractParameters";
 import executeQuery from "@salesforce/apex/JT_QueryViewerController.executeQuery";
+import executeQueryPreview from "@salesforce/apex/JT_QueryViewerController.executeQueryPreview";
 import canUseRunAs from "@salesforce/apex/JT_QueryViewerController.canUseRunAs";
 import getAllActiveUsers from "@salesforce/apex/JT_QueryViewerController.getAllActiveUsers";
 import executeAsUser from "@salesforce/apex/JT_RunAsTestExecutor.executeAsUser";
@@ -45,7 +46,13 @@ export default class JtQueryViewer extends LightningElement {
   expandedCards = new Set();
   @track showRunAs = false;
   @track queryPreviewData = [];
+  @track previewColumns = [];
   @track isLoadingPreview = false;
+  @track showPreviewData = false;
+  @track previewRecordCount = 0;
+  @track previewCurrentPage = 1;
+  @track previewPageSize = 3; // Show 3 records at a time
+  @track previewTotalPages = 1;
   @track runAsUserId = "";
   @track runAsUserName = "";
   @track userOptions = []; // All active users for combobox
@@ -234,6 +241,101 @@ export default class JtQueryViewer extends LightningElement {
     return this.baseQuery;
   }
 
+  // Load query preview data (max 5 records)
+  loadQueryPreview() {
+    if (!this.selectedConfig) {
+      this.showPreviewData = false;
+      return;
+    }
+
+    this.isLoadingPreview = true;
+    this.showPreviewData = false;
+
+    // Build bindings JSON
+    let bindingsToSend;
+    if (this.hasBindings && !this.hasParameters) {
+      bindingsToSend = this.bindings;
+    } else if (this.hasParameters) {
+      bindingsToSend = JSON.stringify(this.parameterValues);
+    } else {
+      bindingsToSend = null;
+    }
+
+    executeQueryPreview({
+      devName: this.selectedConfig,
+      bindingsJson: bindingsToSend
+    })
+      .then((result) => {
+        if (result.success && result.recordCount > 0) {
+          this.queryPreviewData = result.records;
+          this.previewRecordCount = result.recordCount;
+          this.showPreviewData = true;
+
+          // Build columns
+          if (result.fields && result.fields.length > 0) {
+            this.previewColumns = result.fields.map((field) => ({
+              label: this.formatLabel(field),
+              fieldName: field,
+              type: this.getFieldType(field)
+            }));
+          }
+
+          // Calculate pagination
+          this.previewTotalPages = Math.ceil(
+            this.previewRecordCount / this.previewPageSize
+          );
+          this.previewCurrentPage = 1;
+        } else {
+          this.showPreviewData = false;
+          this.queryPreviewData = [];
+        }
+      })
+      .catch((error) => {
+        console.error('Preview error:', error);
+        this.showPreviewData = false;
+        this.queryPreviewData = [];
+      })
+      .finally(() => {
+        this.isLoadingPreview = false;
+      });
+  }
+
+  // Preview pagination getters
+  get previewPaginatedData() {
+    const start = (this.previewCurrentPage - 1) * this.previewPageSize;
+    const end = start + this.previewPageSize;
+    return this.queryPreviewData.slice(start, end);
+  }
+
+  get showPreviewPagination() {
+    return this.previewRecordCount > this.previewPageSize;
+  }
+
+  get previewHasPrevious() {
+    return this.previewCurrentPage > 1;
+  }
+
+  get previewHasNext() {
+    return this.previewCurrentPage < this.previewTotalPages;
+  }
+
+  get previewPageInfo() {
+    return `Page ${this.previewCurrentPage} of ${this.previewTotalPages} (${this.previewRecordCount} records)`;
+  }
+
+  // Preview pagination handlers
+  handlePreviewPrevious() {
+    if (this.previewHasPrevious) {
+      this.previewCurrentPage--;
+    }
+  }
+
+  handlePreviewNext() {
+    if (this.previewHasNext) {
+      this.previewCurrentPage++;
+    }
+  }
+
   get hasBindings() {
     return this.bindings && this.bindings.trim() !== "";
   }
@@ -363,6 +465,9 @@ export default class JtQueryViewer extends LightningElement {
     }
 
     this.resetResults();
+    
+    // Load query preview data
+    this.loadQueryPreview();
   }
 
   // Phase 1 Refactor: Clear configuration

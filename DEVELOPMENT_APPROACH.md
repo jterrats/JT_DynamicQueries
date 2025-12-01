@@ -522,28 +522,51 @@ Local Tests → Deploy to Org → Validate in Org → Commit → Push
 ### For New Features:
 
 #### **Phase 1: Local Development (Error-Driven)**
+
+**Option A: With Local Dev (Hot Reload) - For UI/Style Changes**
 1. Write BDD scenario (Gherkin or plain English)
+2. Start Local Dev server: `sf lightning dev app --name "Dynamic Queries"`
+3. Make HTML/CSS/JS changes
+4. Save → See changes instantly in browser ✨
+5. Iterate quickly (Edit → Save → Preview → Repeat)
+6. When UI looks good → Proceed to Phase 2
+
+**Option B: Traditional (No Hot Reload) - For Backend/API Changes**
+1. Write BDD scenario
 2. Write E2E test (Playwright for LWC)
-3. Run test locally → ❌ **error**
-4. Add HTML element → ❌ **new error**
-5. Add LWC properties → ❌ **new error**
-6. Import Apex method → ❌ **new error**
-7. Create Apex method → ✅ **test passes locally**
-8. Write Apex unit test → ✅ **passes locally**
+3. Make changes to Apex/@api/@wire
+4. Write Apex unit test
+5. Proceed to Phase 2 (must deploy to see changes)
+
+**💡 Use Local Dev when:**
+- Changing HTML structure
+- Adjusting CSS styles
+- Refining UI/UX
+- Testing layout/spacing
+- Visual polish
+
+**💡 Use Traditional when:**
+- Adding @api properties
+- Changing Apex methods
+- Modifying @wire adapters
+- Updating metadata
+- Backend logic changes
 
 #### **Phase 2: Org Validation (MANDATORY)**
-9. Deploy to target org (sandbox/scratch)
+9. **Deploy to target org (sandbox/scratch)**
    ```bash
    sf project deploy start --target-org <alias>
    ```
-10. Run Apex tests in org
+10. **Run Apex tests in org**
    ```bash
    sf apex run test --target-org <alias> --test-level RunLocalTests
    ```
-11. **Run E2E tests with video recording:**
+11. **Run E2E tests AFTER deploy (they test against the org)**
    ```bash
    npm run test:e2e
    ```
+   ⚠️ **Important:** E2E tests run against deployed code in org, so deploy MUST happen first!
+   
 12. **Review E2E videos/screenshots (MANDATORY):**
    - Check `test-results/` folder for videos
    - Watch all recorded test runs

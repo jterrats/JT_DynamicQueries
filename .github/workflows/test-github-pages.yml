@@ -1,0 +1,132 @@
+name: Test GitHub Pages
+
+on:
+  # Run after GitHub Pages deployment
+  workflow_run:
+    workflows: ["pages-build-deployment"]
+    types:
+      - completed
+  
+  # Run daily at 2 AM UTC to monitor site health
+  schedule:
+    - cron: '0 2 * * *'
+  
+  # Allow manual trigger
+  workflow_dispatch:
+  
+  # Run on pushes to main that affect docs
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'tests/e2e/github-pages.spec.js'
+      - '.github/workflows/test-github-pages.yml'
+
+jobs:
+  test-github-pages:
+    name: E2E Tests - GitHub Pages
+    runs-on: ubuntu-latest
+    
+    # Only run if Pages deployment succeeded
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name != 'workflow_run' }}
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install Dependencies
+        run: npm ci
+      
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps chromium firefox webkit
+      
+      - name: Wait for GitHub Pages to be ready
+        if: github.event_name == 'workflow_run'
+        run: |
+          echo "Waiting 30 seconds for GitHub Pages to propagate..."
+          sleep 30
+      
+      - name: Run GitHub Pages E2E Tests
+        run: npm run test:github-pages
+        env:
+          CI: true
+      
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-github-pages
+          path: playwright-report-github-pages/
+          retention-days: 30
+      
+      - name: Upload Test Screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-screenshots-github-pages
+          path: test-results/github-pages/
+          retention-days: 7
+      
+      - name: Comment PR with Test Results
+        if: github.event_name == 'pull_request' && failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '❌ GitHub Pages E2E tests failed. Check the workflow run for details.'
+            })
+      
+      - name: Create Issue on Failure
+        if: failure() && github.event_name == 'schedule'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '🚨 GitHub Pages E2E Tests Failing',
+              body: `GitHub Pages E2E tests are failing.
+              
+              **Workflow Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+              **Triggered by:** ${{ github.event_name }}
+              **Time:** ${{ github.event.workflow_run.created_at }}
+              
+              Please investigate and fix the failing tests.`,
+              labels: ['bug', 'github-pages', 'automated']
+            })
+
+  notify-success:
+    name: Notify Success
+    runs-on: ubuntu-latest
+    needs: test-github-pages
+    if: success()
+    
+    steps:
+      - name: Success Summary
+        run: |
+          echo "✅ All GitHub Pages E2E tests passed!"
+          echo "Site: https://jterrats.github.io/JT_DynamicQueries/"
+          echo "Tests: 33 tests across 6 categories"
+
+  notify-failure:
+    name: Notify Failure
+    runs-on: ubuntu-latest
+    needs: test-github-pages
+    if: failure()
+    
+    steps:
+      - name: Failure Summary
+        run: |
+          echo "❌ GitHub Pages E2E tests failed"
+          echo "Check the test results artifact for details"
+          exit 1
+

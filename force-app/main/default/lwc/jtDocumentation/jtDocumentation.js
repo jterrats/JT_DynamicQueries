@@ -1,26 +1,38 @@
 import { LightningElement, track } from "lwc";
+import { getLabels } from "./labels";
 
 export default class JtDocumentation extends LightningElement {
   @track activeSection = "overview";
 
-  sections = [
-    { id: "overview", label: "Overview", icon: "utility:info" },
-    { id: "features", label: "Features", icon: "utility:like" },
-    { id: "getting-started", label: "Getting Started", icon: "utility:setup" },
-    {
-      id: "batch-processing",
-      label: "Batch Processing",
-      icon: "utility:database"
-    },
-    { id: "tooling-api", label: "Tooling API Setup", icon: "utility:settings" },
-    {
-      id: "accessibility",
-      label: "Accessibility",
-      icon: "utility:touch_action"
-    },
-    { id: "architecture", label: "Architecture", icon: "utility:record" },
-    { id: "api", label: "API Reference", icon: "utility:apex" }
-  ];
+  get labels() {
+    return getLabels();
+  }
+
+  get sections() {
+    return [
+      { id: "overview", label: this.labels.overviewTab, icon: "utility:info" },
+      {
+        id: "getting-started",
+        label: this.labels.gettingStartedTab,
+        icon: "utility:setup"
+      },
+      {
+        id: "api",
+        label: this.labels.apiReferenceTab,
+        icon: "utility:apex"
+      },
+      {
+        id: "batch-processing",
+        label: this.labels.batchProcessingTab,
+        icon: "utility:database"
+      },
+      {
+        id: "support",
+        label: this.labels.supportTab,
+        icon: "utility:help"
+      }
+    ];
+  }
 
   get isSectionActive() {
     return (sectionId) => this.activeSection === sectionId;

@@ -7,8 +7,14 @@
  * @fires cancel - When Cancel/Close is clicked
  */
 import { LightningElement, api, track } from "lwc";
+import { getLabels } from "./labels";
 
 export default class JtConfigModal extends LightningElement {
+  // Labels
+  get labels() {
+    return getLabels();
+  }
+
   // Public API
   @api mode = "create"; // 'create' | 'edit'
   @api isSaving = false;
@@ -49,6 +55,16 @@ export default class JtConfigModal extends LightningElement {
     objectName: ""
   };
 
+  @track labelValidation = {
+    isValid: true,
+    message: ""
+  };
+
+  @track developerNameValidation = {
+    isValid: true,
+    message: ""
+  };
+
   // Public API to set initial config (for edit mode)
   @api
   setConfig(config) {
@@ -84,7 +100,9 @@ export default class JtConfigModal extends LightningElement {
       this.isSaving ||
       !this._config.label ||
       !this._config.developerName ||
-      !this._config.baseQuery
+      !this._config.baseQuery ||
+      !this.labelValidation.isValid ||
+      !this.developerNameValidation.isValid
     );
   }
 
@@ -98,6 +116,17 @@ export default class JtConfigModal extends LightningElement {
     // Auto-generate developer name from label
     if (field === "label" && this.mode === "create") {
       this._config.developerName = this.generateDeveloperName(value);
+      this.validateDeveloperName(this._config.developerName);
+    }
+
+    // Validate label
+    if (field === "label") {
+      this.validateLabel(value);
+    }
+
+    // Validate developer name
+    if (field === "developerName") {
+      this.validateDeveloperName(value);
     }
 
     // Validate query when it changes
@@ -121,11 +150,109 @@ export default class JtConfigModal extends LightningElement {
 
   // Helper Methods
   generateDeveloperName(label) {
-    return label
+    if (!label) return "";
+
+    let apiName = label
       .trim()
-      .replace(/[^a-zA-Z0-9\s]/g, "")
-      .replace(/\s+/g, "_")
-      .substring(0, 40);
+      .replace(/[^a-zA-Z0-9\s]/g, "") // Solo alfanuméricos y espacios
+      .replace(/\s+/g, "_"); // Espacios → guiones bajos
+
+    // Debe empezar con letra
+    if (apiName && !/^[a-zA-Z]/.test(apiName)) {
+      apiName = "Config_" + apiName;
+    }
+
+    // Remover guiones bajos consecutivos
+    apiName = apiName.replace(/_+/g, "_");
+
+    // No puede terminar con guión bajo
+    apiName = apiName.replace(/_+$/, "");
+
+    // Máximo 40 caracteres
+    return apiName.substring(0, 40).replace(/_+$/, ""); // Trim again si substring cortó en _
+  }
+
+  validateLabel(label) {
+    if (!label || label.trim().length === 0) {
+      this.labelValidation = {
+        isValid: false,
+        message: this.labels.labelRequired
+      };
+      return;
+    }
+
+    if (label.length > 40) {
+      this.labelValidation = {
+        isValid: false,
+        message: this.labels.labelTooLong
+      };
+      return;
+    }
+
+    this.labelValidation = {
+      isValid: true,
+      message: ""
+    };
+  }
+
+  validateDeveloperName(devName) {
+    if (!devName || devName.trim().length === 0) {
+      this.developerNameValidation = {
+        isValid: false,
+        message: this.labels.developerNameRequired
+      };
+      return;
+    }
+
+    // Máximo 40 caracteres
+    if (devName.length > 40) {
+      this.developerNameValidation = {
+        isValid: false,
+        message: this.labels.developerNameTooLong
+      };
+      return;
+    }
+
+    // Solo alfanuméricos y guiones bajos
+    if (!/^[a-zA-Z0-9_]+$/.test(devName)) {
+      this.developerNameValidation = {
+        isValid: false,
+        message: this.labels.developerNameInvalidChars
+      };
+      return;
+    }
+
+    // Debe empezar con letra
+    if (!/^[a-zA-Z]/.test(devName)) {
+      this.developerNameValidation = {
+        isValid: false,
+        message: this.labels.developerNameMustStartWithLetter
+      };
+      return;
+    }
+
+    // No puede terminar con guión bajo
+    if (/_$/.test(devName)) {
+      this.developerNameValidation = {
+        isValid: false,
+        message: this.labels.developerNameCannotEndWithUnderscore
+      };
+      return;
+    }
+
+    // No puede tener guiones bajos consecutivos
+    if (/__/.test(devName)) {
+      this.developerNameValidation = {
+        isValid: false,
+        message: this.labels.developerNameNoConsecutiveUnderscores
+      };
+      return;
+    }
+
+    this.developerNameValidation = {
+      isValid: true,
+      message: ""
+    };
   }
 
   async validateQuery(query) {
@@ -172,6 +299,14 @@ export default class JtConfigModal extends LightningElement {
       isValid: false,
       message: "",
       objectName: ""
+    };
+    this.labelValidation = {
+      isValid: true,
+      message: ""
+    };
+    this.developerNameValidation = {
+      isValid: true,
+      message: ""
     };
   }
 }

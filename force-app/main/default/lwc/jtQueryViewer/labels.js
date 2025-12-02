@@ -105,7 +105,16 @@ const LABELS = {
       "This configuration is not currently referenced in any Apex classes or Flows.",
     type: "Type",
     name: "Name",
-    line: "Line"
+    line: "Line",
+    // Validation Messages
+    labelRequired: "Label is required",
+    labelTooLong: "Label must be 40 characters or less",
+    developerNameRequired: "Developer Name is required",
+    developerNameTooLong: "Developer Name must be 40 characters or less",
+    developerNameInvalidChars: "Only letters, numbers, and underscores allowed",
+    developerNameMustStartWithLetter: "Must start with a letter",
+    developerNameCannotEndWithUnderscore: "Cannot end with an underscore",
+    developerNameNoConsecutiveUnderscores: "Cannot contain consecutive underscores"
   },
   es: {
     selectConfiguration: "Seleccionar Configuración de Consulta",
@@ -205,7 +214,16 @@ const LABELS = {
       "Esta configuración no está referenciada en ninguna clase Apex o Flow actualmente.",
     type: "Tipo",
     name: "Nombre",
-    line: "Línea"
+    line: "Línea",
+    // Validation Messages
+    labelRequired: "La etiqueta es requerida",
+    labelTooLong: "La etiqueta debe tener 40 caracteres o menos",
+    developerNameRequired: "El nombre de desarrollador es requerido",
+    developerNameTooLong: "El nombre de desarrollador debe tener 40 caracteres o menos",
+    developerNameInvalidChars: "Solo se permiten letras, números y guiones bajos",
+    developerNameMustStartWithLetter: "Debe comenzar con una letra",
+    developerNameCannotEndWithUnderscore: "No puede terminar con guión bajo",
+    developerNameNoConsecutiveUnderscores: "No puede contener guiones bajos consecutivos"
   },
   fr: {
     selectConfiguration: "Sélectionner la Configuration de Requête",

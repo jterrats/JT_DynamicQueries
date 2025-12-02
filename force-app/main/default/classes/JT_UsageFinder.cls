@@ -232,7 +232,7 @@ public with sharing class JT_UsageFinder {
       req.setMethod('HEAD');
       req.setHeader('Authorization', 'Bearer ' + getSessionId());
       req.setTimeout(5000);
-      
+
       // If this doesn't throw an exception, Named Credential is configured
       return true;
     } catch (System.CalloutException e) {

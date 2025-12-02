@@ -1,4 +1,27 @@
-# Named Credential Setup - Manual Configuration
+# Named Credential Setup
+
+## 🚀 Opción 1: Setup Automático (Recomendado)
+
+Ejecuta este script en Developer Console para configurar automáticamente con la URL de tu org:
+
+```apex
+// Copy y paste desde: scripts/setup-named-credential-auto.apex
+```
+
+O ejecuta desde terminal:
+
+```bash
+sf apex run --file scripts/setup-named-credential-auto.apex
+```
+
+✅ **Ventajas:**
+- Detecta automáticamente la URL del org
+- Funciona en cualquier org (dev, sandbox, production)
+- No necesitas hardcodear URLs
+
+---
+
+## 🔧 Opción 2: Configuración Manual (UI)
 
 ## Paso 1: Crear External Credential
 

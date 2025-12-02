@@ -41,16 +41,30 @@
   min-height: 300px;
 }
 
-/* Desktop Table */
-.desktop-table {
-  display: none;
+.csv-content {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  white-space: pre;
   overflow-x: auto;
+  margin: 0;
+  padding: 1rem;
+  background-color: #f4f6f9;
+  border-radius: 0.25rem;
+  max-height: 600px;
+  overflow-y: auto;
 }
 
 @media (min-width: 48rem) {
-  .desktop-table {
-    display: block;
+  .csv-content {
+    font-size: 0.875rem;
   }
+}
+
+/* Desktop Table */
+.desktop-table {
+  display: block; /* ✅ Always show tree-grid */
+  overflow-x: auto;
 }
 
 .desktop-table table {
@@ -128,4 +142,11 @@
 
 .mobile-cards .slds-item_detail dd {
   word-break: break-word;
+}
+
+/* Child relationship styling */
+.child-relationship-cell {
+  color: var(--lwc-colorTextLink, #006dcc);
+  font-weight: 500;
+  font-style: italic;
 }

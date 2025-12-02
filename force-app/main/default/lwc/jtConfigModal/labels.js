@@ -68,4 +68,3 @@ const LABELS = {
 export function getLabels() {
   return LABELS[LANG] || LABELS.en;
 }
-

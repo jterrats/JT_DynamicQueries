@@ -17,3 +17,9 @@ package.xml
 # Named Credentials (user-specific configuration)
 **/namedCredentials/**
 **/externalCredentials/**
+
+# 🚫 CI/CD External Client Apps (prevent sync from org)
+**/externalClientApps/JT_CI_*.eca-meta.xml
+**/extlClntAppGlobalOauthSets/JT_CI_*.ecaGlblOauth-meta.xml
+**/extlClntAppOauthSettings/JT_CI_*.ecaOauth-meta.xml
+**/extlClntAppOauthPlcyCnfg/JT_CI_*.ecaOauthPlcy-meta.xml

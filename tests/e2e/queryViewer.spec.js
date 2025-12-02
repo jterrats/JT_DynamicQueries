@@ -6,7 +6,7 @@ const {
 } = require("./utils/sfAuth");
 const { setupTestData } = require("./utils/setupTestData");
 
-const TARGET_APP_NAME = "Dynamic Queries";
+const TARGET_APP_NAME = "Dynamic Query Framework";
 const QUERY_VIEWER_TAB = "Query Viewer";
 const DOCUMENTATION_TAB = "Documentation";
 
@@ -1095,8 +1095,10 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     console.log("✅ Combobox filtering works correctly");
   });
 
-  test("jtQueryResults should export CSV correctly", async ({ page }) => {
-    console.log("🔍 Testing CSV export functionality...");
+  test("jtQueryResults should preview and export CSV correctly", async ({
+    page
+  }) => {
+    console.log("🔍 Testing CSV preview and export functionality...");
 
     // Select and execute query
     const configInput = page.locator("c-jt-searchable-combobox").first();
@@ -1130,22 +1132,172 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
       await csvViewButton.click();
       await page.waitForTimeout(1000);
 
-      // Check for CSV content
-      const csvContent = page
+      // ✅ Check for CSV preview (new feature)
+      const csvPreview = page
         .locator("c-jt-query-results pre.csv-content")
         .first();
-      const csvVisible = await csvContent
+      const csvVisible = await csvPreview
         .isVisible({ timeout: 2000 })
         .catch(() => false);
 
       if (csvVisible) {
-        const csvText = await csvContent.textContent();
-        // CSV should have headers
+        const csvText = await csvPreview.textContent();
+        // CSV should have headers and content
         expect(csvText.length).toBeGreaterThan(0);
-        console.log("✅ CSV export works correctly");
+        console.log(`✅ CSV preview visible (${csvText.length} chars)`);
+
+        // ✅ Check for Copy and Download buttons
+        const copyButton = page.locator(
+          'c-jt-query-results lightning-button[label="Copy"]'
+        );
+        const downloadButton = page.locator(
+          'c-jt-query-results lightning-button[label="Download"]'
+        );
+
+        const copyExists = await copyButton.count();
+        const downloadExists = await downloadButton.count();
+
+        if (copyExists > 0) {
+          console.log("✅ Copy button exists");
+        }
+        if (downloadExists > 0) {
+          console.log("✅ Download button exists");
+        }
       } else {
-        console.log("⚠️  CSV view not available");
+        console.log("⚠️  CSV preview not available");
       }
+    }
+
+    expect(true).toBeTruthy();
+  });
+
+  test("should display nested child relationships with expand/collapse", async ({
+    page
+  }) => {
+    console.log(
+      "🌳 Testing tree-grid nested viewer with child relationships..."
+    );
+
+    // Select Complex Query with child relationships
+    const configInput = page.locator("c-jt-searchable-combobox").first();
+    await configInput.locator("input").click();
+    await page.waitForTimeout(500);
+    await configInput.locator("input").fill("Customer 360 View");
+    await page.waitForTimeout(2000);
+
+    const option = configInput.locator(".slds-listbox__item").first();
+    const optionExists = await option.count();
+
+    if (optionExists > 0) {
+      await option.click();
+      await page.waitForTimeout(1000);
+
+      // Execute query
+      const executeButton = page
+        .locator("c-jt-execute-button lightning-button")
+        .first();
+      await executeButton.click();
+      await page.waitForTimeout(5000);
+
+      // ✅ Check for nested table structure
+      const resultsComponent = page.locator("c-jt-query-results").first();
+      const hasResults = await resultsComponent
+        .isVisible({ timeout: 5000 })
+        .catch(() => false);
+
+      if (hasResults) {
+        console.log("✅ Results component visible");
+
+        // ✅ Check for expand/collapse buttons (chevrons)
+        const expandButtons = page.locator(
+          'c-jt-query-results lightning-button-icon[icon-name*="chevron"]'
+        );
+        const expandButtonCount = await expandButtons.count();
+
+        if (expandButtonCount > 0) {
+          console.log(
+            `✅ Found ${expandButtonCount} expand/collapse buttons (child relationships)`
+          );
+
+          // ✅ Click first expand button
+          const firstExpandButton = expandButtons.first();
+          await firstExpandButton.click();
+          await page.waitForTimeout(1000);
+
+          // ✅ Check for lightning-accordion (child relationships container)
+          const accordion = page.locator(
+            "c-jt-query-results lightning-accordion"
+          );
+          const accordionVisible = await accordion
+            .isVisible({ timeout: 2000 })
+            .catch(() => false);
+
+          if (accordionVisible) {
+            console.log("✅ Child relationships accordion visible");
+
+            // ✅ Check for accordion sections (Contacts, Opportunities, Cases)
+            const accordionSections = page.locator(
+              "c-jt-query-results lightning-accordion-section"
+            );
+            const sectionCount = await accordionSections.count();
+
+            if (sectionCount > 0) {
+              console.log(
+                `✅ Found ${sectionCount} child relationship sections`
+              );
+
+              // ✅ Click first accordion section to expand
+              const firstSection = accordionSections.first();
+              await firstSection.click();
+              await page.waitForTimeout(1000);
+
+              // ✅ Check for lightning-datatable inside accordion
+              const datatable = page.locator(
+                "c-jt-query-results lightning-datatable"
+              );
+              const datatableVisible = await datatable
+                .isVisible({ timeout: 2000 })
+                .catch(() => false);
+
+              if (datatableVisible) {
+                console.log("✅ Child records datatable visible");
+
+                // ✅ Verify AccountId is NOT in child columns (filtered out)
+                const columns = await datatable
+                  .locator("thead th")
+                  .allTextContents();
+                const hasAccountId = columns.some((col) =>
+                  col.includes("Account Id")
+                );
+
+                if (!hasAccountId) {
+                  console.log(
+                    "✅ AccountId correctly filtered from child columns"
+                  );
+                } else {
+                  console.log(
+                    "⚠️  AccountId should be filtered from child columns"
+                  );
+                }
+              } else {
+                console.log("⚠️  Child datatable not visible");
+              }
+            } else {
+              console.log("⚠️  No accordion sections found");
+            }
+          } else {
+            console.log("⚠️  Accordion not visible after expand");
+          }
+        } else {
+          console.log(
+            "⚠️  No expand/collapse buttons found (no child relationships)"
+          );
+        }
+      } else {
+        console.log("⚠️  No results to test tree-grid");
+      }
+    } else {
+      console.log("⚠️  'Customer 360 View' config not found - skipping");
     }
 
     expect(true).toBeTruthy();

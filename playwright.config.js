@@ -37,7 +37,17 @@ module.exports = defineConfig({
 
     /* Default timeout */
     actionTimeout: 15000,
-    navigationTimeout: 30000
+    navigationTimeout: 30000,
+
+    /* ✅ Performance & Cache Optimizations */
+    launchOptions: {
+      args: [
+        "--disk-cache-size=100000000", // 100MB cache
+        "--media-cache-size=100000000",
+        "--aggressive-cache-discard",
+        "--disable-blink-features=AutomationControlled"
+      ]
+    }
   },
 
   /* Configure projects for major browsers */

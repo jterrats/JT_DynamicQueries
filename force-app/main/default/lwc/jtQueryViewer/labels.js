@@ -114,7 +114,8 @@ const LABELS = {
     developerNameInvalidChars: "Only letters, numbers, and underscores allowed",
     developerNameMustStartWithLetter: "Must start with a letter",
     developerNameCannotEndWithUnderscore: "Cannot end with an underscore",
-    developerNameNoConsecutiveUnderscores: "Cannot contain consecutive underscores"
+    developerNameNoConsecutiveUnderscores:
+      "Cannot contain consecutive underscores"
   },
   es: {
     selectConfiguration: "Seleccionar Configuración de Consulta",
@@ -219,11 +220,14 @@ const LABELS = {
     labelRequired: "La etiqueta es requerida",
     labelTooLong: "La etiqueta debe tener 40 caracteres o menos",
     developerNameRequired: "El nombre de desarrollador es requerido",
-    developerNameTooLong: "El nombre de desarrollador debe tener 40 caracteres o menos",
-    developerNameInvalidChars: "Solo se permiten letras, números y guiones bajos",
+    developerNameTooLong:
+      "El nombre de desarrollador debe tener 40 caracteres o menos",
+    developerNameInvalidChars:
+      "Solo se permiten letras, números y guiones bajos",
     developerNameMustStartWithLetter: "Debe comenzar con una letra",
     developerNameCannotEndWithUnderscore: "No puede terminar con guión bajo",
-    developerNameNoConsecutiveUnderscores: "No puede contener guiones bajos consecutivos"
+    developerNameNoConsecutiveUnderscores:
+      "No puede contener guiones bajos consecutivos"
   },
   fr: {
     selectConfiguration: "Sélectionner la Configuration de Requête",

@@ -11,7 +11,7 @@ const {
   navigateToApp
 } = require("./utils/sfAuth");
 
-const TARGET_APP_NAME = "Dynamic Queries";
+const TARGET_APP_NAME = "Dynamic Query Framework";
 const QUERY_VIEWER_TAB = "Query Viewer";
 
 test.describe("Query Risk Warning Modal", () => {

@@ -1,0 +1,130 @@
+name: E2E Tests on Main Merge
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  e2e-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Salesforce CLI
+        run: |
+          npm install -g @salesforce/cli
+          sf version
+
+      - name: Write JWT key to file
+        run: |
+          echo "${{ secrets.SF_JWT_KEY }}" > server.key
+          chmod 600 server.key
+
+      - name: Authenticate to Salesforce
+        run: |
+          sf org login jwt \
+            --client-id ${{ secrets.SF_CONSUMER_KEY }} \
+            --jwt-key-file server.key \
+            --username ${{ secrets.SF_USERNAME }} \
+            --instance-url ${{ secrets.SF_INSTANCE_URL }} \
+            --set-default \
+            --alias ci-org
+
+          echo "✅ Authenticated as ${{ secrets.SF_USERNAME }}"
+          sf org display --target-org ci-org
+
+      - name: Deploy to org
+        run: |
+          echo "📦 Deploying to org..."
+          sf project deploy start \
+            --source-dir force-app \
+            --target-org ci-org \
+            --wait 15 \
+            --verbose
+
+          echo "✅ Deployment complete"
+
+      - name: Run Apex tests
+        run: |
+          echo "🧪 Running Apex tests..."
+          sf apex run test \
+            --target-org ci-org \
+            --test-level RunSpecifiedTests \
+            --tests JT_QueryViewerController_Test,JT_DataSelector_Test,JT_SystemSelector_Test,JT_AuditLogDomain_Test,JT_SettingsService_Test,JT_ConfigurationSelector_Test \
+            --result-format human \
+            --code-coverage \
+            --wait 15
+
+          echo "✅ Apex tests passed"
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run E2E tests
+        run: |
+          echo "🎭 Running E2E tests..."
+          npm run test:e2e
+        env:
+          SF_INSTANCE_URL: ${{ secrets.SF_INSTANCE_URL }}
+
+      - name: Upload E2E test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
+
+      - name: Upload E2E videos on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-videos-failed
+          path: test-results/
+          retention-days: 30
+
+      - name: Clean up JWT key
+        if: always()
+        run: rm -f server.key
+
+      - name: Comment PR with results
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const status = '${{ job.status }}';
+            const emoji = status === 'success' ? '✅' : '❌';
+
+            const comment = `
+            ## ${emoji} E2E Test Results
+
+            **Status**: ${status}
+            **Commit**: ${{ github.sha }}
+            **Branch**: ${{ github.head_ref }}
+
+            ${status === 'failure' ? '📹 E2E videos available in artifacts' : ''}
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });

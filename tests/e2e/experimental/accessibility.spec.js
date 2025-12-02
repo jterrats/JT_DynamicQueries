@@ -14,7 +14,7 @@ const {
   navigateToApp
 } = require("../utils/sfAuth");
 
-const TARGET_APP_NAME = "Dynamic Queries";
+const TARGET_APP_NAME = "Dynamic Query Framework";
 const QUERY_VIEWER_TAB = "Query Viewer";
 
 test.describe("Accessibility Tests - WCAG 2.1 AA", () => {

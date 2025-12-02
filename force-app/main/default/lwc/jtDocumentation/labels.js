@@ -86,7 +86,8 @@ const LABELS = {
     publicAPIsTitle: "APIs Públicas",
     internalFrameworkTitle: "Clases Internas del Framework",
     publicAPIsDescription: "Estas clases son parte de la API pública:",
-    internalDescription: "Estas clases son solo para uso interno del framework:",
+    internalDescription:
+      "Estas clases son solo para uso interno del framework:",
 
     // Batch Processing Section
     batchProcessingTitle: "Evaluación de Riesgos y Procesamiento por Lotes",
@@ -203,4 +204,3 @@ const LABELS = {
 export function getLabels() {
   return LABELS[LANG] || LABELS.en;
 }
-

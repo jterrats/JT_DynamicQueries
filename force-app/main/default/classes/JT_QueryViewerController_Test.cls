@@ -14,6 +14,117 @@ private class JT_QueryViewerController_Test {
   }
 
   /**
+   * @description Test child relationships in query results
+   * Validates that child relationships (Contacts, Opportunities, etc.) are preserved
+   */
+  @IsTest
+  static void testChildRelationshipsInQuery() {
+    // Create test data with child relationships
+    Account acc = new Account(
+      Name = 'Test Account with Children',
+      Type = 'Customer',
+      Industry = 'Technology',
+      AnnualRevenue = 1000000
+    );
+    insert acc;
+
+    // Create child Contacts
+    List<Contact> contacts = new List<Contact>{
+      new Contact(
+        AccountId = acc.Id,
+        FirstName = 'John',
+        LastName = 'Doe',
+        Email = 'john@test.com'
+      ),
+      new Contact(
+        AccountId = acc.Id,
+        FirstName = 'Jane',
+        LastName = 'Smith',
+        Email = 'jane@test.com'
+      )
+    };
+    insert contacts;
+
+    // Create child Opportunities
+    List<Opportunity> opps = new List<Opportunity>{
+      new Opportunity(
+        AccountId = acc.Id,
+        Name = 'Test Opp 1',
+        StageName = 'Prospecting',
+        CloseDate = Date.today().addDays(30),
+        Amount = 10000
+      ),
+      new Opportunity(
+        AccountId = acc.Id,
+        Name = 'Test Opp 2',
+        StageName = 'Negotiation',
+        CloseDate = Date.today().addDays(60),
+        Amount = 20000
+      )
+    };
+    insert opps;
+
+    Test.startTest();
+
+    // Execute query with child relationships
+    JT_QueryViewerController.QueryResult result = JT_QueryViewerController.executeQuery(
+      'Complete_Customer_360_View',
+      '{"accountType": "Customer"}',
+      null
+    );
+
+    Test.stopTest();
+
+    // Validate result
+    System.assert(result.success, 'Query should succeed');
+    System.assert(result.recordCount > 0, 'Should return records');
+
+    // 🔥 CRITICAL VALIDATION: Check if child relationships are preserved
+    if (!result.records.isEmpty()) {
+      System.debug(
+        '🔥 TEST: First record: ' + JSON.serialize(result.records[0])
+      );
+
+      Map<String, Object> firstRecord = (Map<String, Object>) result.records[0];
+      System.debug('🔥 TEST: First record keys: ' + firstRecord.keySet());
+
+      // Check for Contacts child relationship
+      System.assert(
+        firstRecord.containsKey('Contacts'),
+        'ERROR: Contacts child relationship is MISSING! Keys found: ' +
+        firstRecord.keySet()
+      );
+
+      if (firstRecord.containsKey('Contacts')) {
+        Object contactsObj = firstRecord.get('Contacts');
+        System.debug('🔥 TEST: Contacts value: ' + contactsObj);
+
+        // Contacts should be a Map with 'records' and 'totalSize'
+        System.assert(
+          contactsObj instanceof Map<String, Object>,
+          'Contacts should be a Map, but is: ' + contactsObj
+        );
+
+        Map<String, Object> contactsMap = (Map<String, Object>) contactsObj;
+        System.assert(
+          contactsMap.containsKey('records'),
+          'Contacts should have "records" key. Keys: ' + contactsMap.keySet()
+        );
+        System.assert(
+          contactsMap.containsKey('totalSize'),
+          'Contacts should have "totalSize" key. Keys: ' + contactsMap.keySet()
+        );
+
+        System.assertEquals(
+          2,
+          contactsMap.get('totalSize'),
+          'Should have 2 contacts'
+        );
+      }
+    }
+  }
+
+  /**
    * @description Test getConfigurations method
    * @author Jaime Terrats | 11-28-2025
    **/

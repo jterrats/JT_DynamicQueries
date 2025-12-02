@@ -101,4 +101,108 @@ public without sharing class JT_SystemSelector {
       LIMIT 1000
     ];
   }
+
+  // ========================================
+  // USER & PROFILE QUERIES (Added 2025-12-02)
+  // ========================================
+
+  /**
+   * @description Retrieves a user by ID.
+   * Used by: JT_QueryViewerController for Run As feature
+   * @param userId The User ID to retrieve.
+   * @return User The User record.
+   * @throws QueryException if user not found.
+   */
+  public static User getUserById(Id userId) {
+    List<User> users = [
+      SELECT Id, Name, Email, Username, IsActive
+      FROM User
+      WHERE Id = :userId
+      WITH USER_MODE
+      LIMIT 1
+    ];
+
+    if (users.isEmpty()) {
+      throw new QueryException('User not found: ' + userId);
+    }
+
+    return users[0];
+  }
+
+  /**
+   * @description Retrieves all active users.
+   * Used by: JT_QueryViewerController for Run As user selection
+   * @return List<User> List of active users sorted by name.
+   */
+  public static List<User> getAllActiveUsers() {
+    return [
+      SELECT Id, Name, Email, Username, Profile.Name
+      FROM User
+      WHERE IsActive = TRUE
+      WITH USER_MODE
+      ORDER BY Name ASC
+      LIMIT 1000
+    ];
+  }
+
+  /**
+   * @description Retrieves the current user's profile.
+   * Used by: JT_QueryViewerController for permission checks
+   * @return Profile The current user's Profile record.
+   */
+  public static Profile getUserProfile() {
+    List<Profile> profiles = [
+      SELECT Id, Name
+      FROM Profile
+      WHERE Id = :UserInfo.getProfileId()
+      WITH USER_MODE
+      LIMIT 1
+    ];
+    return profiles.isEmpty() ? null : profiles[0];
+  }
+
+  /**
+   * @description Retrieves permission set assignments for a user.
+   * Used by: JT_QueryViewerController for Run As permission checks
+   * @param userId The User ID to retrieve assignments for.
+   * @return List<PermissionSetAssignment> List of permission set assignments.
+   */
+  public static List<PermissionSetAssignment> getPermissionSetAssignments(
+    Id userId
+  ) {
+    return [
+      SELECT
+        Id,
+        PermissionSetId,
+        PermissionSet.Name,
+        PermissionSet.PermissionsModifyAllData,
+        PermissionSet.PermissionsViewAllData
+      FROM PermissionSetAssignment
+      WHERE AssigneeId = :userId
+      WITH USER_MODE
+    ];
+  }
+
+  /**
+   * @description Checks if a user has Modify All Data or View All Data permissions.
+   * Used by: JT_QueryViewerController.canUseRunAs()
+   * @param userId The User ID to check permissions for.
+   * @return Boolean True if user has elevated permissions.
+   */
+  public static Boolean hasElevatedPermissions(Id userId) {
+    List<PermissionSetAssignment> assignments = [
+      SELECT
+        PermissionSet.PermissionsModifyAllData,
+        PermissionSet.PermissionsViewAllData
+      FROM PermissionSetAssignment
+      WHERE
+        AssigneeId = :userId
+        AND (PermissionSet.PermissionsModifyAllData = TRUE
+        OR PermissionSet.PermissionsViewAllData = TRUE)
+      WITH USER_MODE
+      LIMIT 1
+    ];
+
+    return !assignments.isEmpty();
+  }
 }

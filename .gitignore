@@ -74,3 +74,15 @@ playwright/.cache/
 .env.local
 .env.*.local
 playwright-report-github-pages/
+
+# 🚫 CI/CD Certificates & Keys (DO NOT TRACK)
+*.key
+*.crt
+*.csr
+*.pem
+*.p12
+*.jks
+certs/
+server.key
+server.crt
+.env.ci

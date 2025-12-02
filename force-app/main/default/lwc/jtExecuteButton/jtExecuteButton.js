@@ -6,7 +6,7 @@
  *
  * @fires execute - When button is clicked and validations pass
  */
-import { LightningElement, api } from "lwc";
+import { LightningElement, api, track } from "lwc";
 
 export default class JtExecuteButton extends LightningElement {
   @api label = "Execute Query";
@@ -14,6 +14,9 @@ export default class JtExecuteButton extends LightningElement {
   @api iconName = "utility:play";
   @api disabled = false;
   @api isLoading = false;
+
+  // ✅ Local state for immediate UI feedback (reactive)
+  @track _isExecuting = false;
 
   // Semantic HTML attributes (for E2E testing & accessibility)
   @api testId = "execute-query-button";
@@ -32,10 +35,16 @@ export default class JtExecuteButton extends LightningElement {
   get isDisabled() {
     // Disabled if:
     // 1. Explicitly disabled
-    // 2. Loading
-    // 3. No config selected (always required)
-    // 4. Has parameters but all are empty (avoid 50k+ records query)
-    if (this.disabled || this.isLoading || !this.selectedConfig) {
+    // 2. Loading (from parent)
+    // 3. Executing (local state - immediate)
+    // 4. No config selected (always required)
+    // 5. Has parameters but all are empty (avoid 50k+ records query)
+    if (
+      this.disabled ||
+      this.isLoading ||
+      this._isExecuting ||
+      !this.selectedConfig
+    ) {
       return true;
     }
 
@@ -84,8 +93,16 @@ export default class JtExecuteButton extends LightningElement {
   // Event Handler
   handleClick() {
     if (!this.isDisabled) {
+      // ✅ Set local executing state IMMEDIATELY
+      this._isExecuting = true;
+
       // Emit execute event
       this.dispatchEvent(new CustomEvent("execute"));
+
+      // ✅ Reset after a delay (parent's isLoading will take over)
+      setTimeout(() => {
+        this._isExecuting = false;
+      }, 100);
     }
   }
 }

@@ -16,7 +16,7 @@ test.describe("Query Data Preview", () => {
     // Wait for login if needed (or assume already logged in)
     await page.waitForTimeout(2000);
 
-    // Navigate to Dynamic Queries app
+    // Navigate to Dynamic Query Framework app
     await page.goto(process.env.SF_INSTANCE_URL + "/lightning/n/Query_Viewer", {
       waitUntil: "domcontentloaded",
       timeout: 30000

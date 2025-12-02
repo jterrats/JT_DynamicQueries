@@ -14,19 +14,8 @@ public with sharing class JT_QueryViewerController {
   @AuraEnabled(cacheable=true)
   public static List<ConfigurationOption> getConfigurations() {
     try {
-      List<JT_DynamicQueryConfiguration__mdt> configs = [
-        SELECT
-          Id,
-          DeveloperName,
-          Label,
-          JT_BaseQuery__c,
-          JT_Binding__c,
-          JT_ObjectName__c
-        FROM JT_DynamicQueryConfiguration__mdt
-        WITH USER_MODE
-        ORDER BY Label ASC
-        LIMIT 200
-      ];
+      // ✅ REFACTORED: Use Selector Layer (2025-12-02)
+      List<JT_DynamicQueryConfiguration__mdt> configs = JT_ConfigurationSelector.getConfigurations();
 
       List<ConfigurationOption> options = new List<ConfigurationOption>();
       for (JT_DynamicQueryConfiguration__mdt config : configs) {
@@ -62,13 +51,6 @@ public with sharing class JT_QueryViewerController {
     String runAsUserId
   ) {
     try {
-      // 🐛 DEBUG: Log what Apex receives
-      System.debug('🔍 APEX executeQuery RECEIVED:');
-      System.debug('🔍 devName: ' + devName);
-      System.debug('🔍 bindingsJson RAW: ' + bindingsJson);
-      System.debug('🔍 bindingsJson isBlank? ' + String.isBlank(bindingsJson));
-      System.debug('🔍 runAsUserId: ' + runAsUserId);
-
       // Validate Run As User feature
       if (String.isNotBlank(runAsUserId)) {
         validateRunAsPermission(runAsUserId);
@@ -78,28 +60,27 @@ public with sharing class JT_QueryViewerController {
         ? (Map<String, Object>) JSON.deserializeUntyped(bindingsJson)
         : new Map<String, Object>();
 
-      // 🐛 DEBUG: Log after deserialize
-      System.debug('🔍 bindings Map size: ' + bindings.size());
-      System.debug('🔍 bindings Map keys: ' + bindings.keySet());
-      System.debug('🔍 bindings Map: ' + bindings);
-
-      List<SObject> records = JT_DataSelector.getRecords(
+      List<SObject> sobjectRecords = JT_DataSelector.getRecords(
         devName,
         true,
         bindings
       );
 
       QueryResult result = new QueryResult();
-      result.records = records;
-      result.recordCount = records.size();
+
+      // ✅ SERIALIZE to preserve child relationships
+      String recordsJson = JSON.serialize(sobjectRecords);
+      result.records = (List<Object>) JSON.deserializeUntyped(recordsJson);
+
+      result.recordCount = sobjectRecords.size();
       result.success = true;
       result.runAsUserName = String.isNotBlank(runAsUserId)
         ? getUserName(runAsUserId)
         : null;
 
       // Extract field names from first record if available
-      if (!records.isEmpty()) {
-        result.fields = getFieldNames(records[0]);
+      if (!sobjectRecords.isEmpty()) {
+        result.fields = getFieldNames(sobjectRecords[0]);
       }
 
       return result;
@@ -107,22 +88,35 @@ public with sharing class JT_QueryViewerController {
       QueryResult result = new QueryResult();
       result.success = false;
       result.errorMessage = e.getMessage();
-      result.records = new List<SObject>();
+      result.records = new List<Object>(); // Changed from List<SObject>
       result.recordCount = 0;
       return result;
     }
   }
 
   /**
-   * @description Extracts field names from an SObject record
-   * @author Jaime Terrats | 11-28-2025
+   * @description Extracts field names from an SObject record IN ORDER
+   * Maintains SELECT order by extracting only top-level fields, excluding child relationships
+   * @author Jaime Terrats | 12-02-2025
    * @param record SObject record
-   * @return List<String> Field names
+   * @return List<String> Field names in the order they appear in the query
    **/
   private static List<String> getFieldNames(SObject record) {
     Map<String, Object> fieldMap = record.getPopulatedFieldsAsMap();
-    List<String> fields = new List<String>(fieldMap.keySet());
-    fields.sort();
+    List<String> fields = new List<String>();
+
+    // Extract only scalar fields (exclude child relationships)
+    for (String key : fieldMap.keySet()) {
+      Object value = fieldMap.get(key);
+      // Exclude 'attributes' and child relationships (which are lists)
+      if (key != 'attributes' && !(value instanceof List<SObject>)) {
+        fields.add(key);
+      }
+    }
+
+    // ❌ DON'T sort - this loses SELECT order
+    // fields.sort();
+
     return fields;
   }
 
@@ -139,18 +133,9 @@ public with sharing class JT_QueryViewerController {
     String bindingsJson
   ) {
     try {
-      // 🐛 DEBUG: Log what Apex receives for preview
-      System.debug('🔍 PREVIEW APEX RECEIVED:');
-      System.debug('🔍 devName: ' + devName);
-      System.debug('🔍 bindingsJson RAW: ' + bindingsJson);
-
       Map<String, Object> bindings = String.isNotBlank(bindingsJson)
         ? (Map<String, Object>) JSON.deserializeUntyped(bindingsJson)
         : new Map<String, Object>();
-
-      // 🐛 DEBUG: Log after deserialize
-      System.debug('🔍 bindings Map: ' + bindings);
-      System.debug('🔍 bindings keys: ' + bindings.keySet());
 
       // Get the configuration to modify query with LIMIT
       JT_DynamicQueryConfiguration__mdt config = [
@@ -192,7 +177,7 @@ public with sharing class JT_QueryViewerController {
       QueryResult result = new QueryResult();
       result.success = false;
       result.errorMessage = e.getMessage();
-      result.records = new List<SObject>();
+      result.records = new List<Object>(); // Changed from List<SObject>
       result.recordCount = 0;
       return result;
     }
@@ -243,21 +228,9 @@ public with sharing class JT_QueryViewerController {
   @AuraEnabled(cacheable=true)
   public static Boolean canUseRunAs() {
     try {
-      // Check if user has Modify All Data or View All Data permission
-      List<PermissionSetAssignment> assignments = [
-        SELECT
-          PermissionSet.PermissionsModifyAllData,
-          PermissionSet.PermissionsViewAllData
-        FROM PermissionSetAssignment
-        WHERE
-          AssigneeId = :UserInfo.getUserId()
-          AND (PermissionSet.PermissionsModifyAllData = TRUE
-          OR PermissionSet.PermissionsViewAllData = TRUE)
-        WITH USER_MODE
-        LIMIT 1
-      ];
-
-      return !assignments.isEmpty() || isSystemAdmin();
+      // ✅ REFACTORED: Use Selector Layer (2025-12-02)
+      return JT_SystemSelector.hasElevatedPermissions(UserInfo.getUserId()) ||
+        isSystemAdmin();
     } catch (Exception e) {
       return false;
     }
@@ -270,14 +243,10 @@ public with sharing class JT_QueryViewerController {
    **/
   private static Boolean isSystemAdmin() {
     try {
-      Profile userProfile = [
-        SELECT Name
-        FROM Profile
-        WHERE Id = :UserInfo.getProfileId()
-        WITH USER_MODE
-        LIMIT 1
-      ];
-      return userProfile.Name.contains('System Administrator');
+      // ✅ REFACTORED: Use Selector Layer (2025-12-02)
+      Profile userProfile = JT_SystemSelector.getUserProfile();
+      return userProfile != null &&
+        userProfile.Name.contains('System Administrator');
     } catch (Exception e) {
       return false;
     }
@@ -299,18 +268,16 @@ public with sharing class JT_QueryViewerController {
 
       Id currentUserId = UserInfo.getUserId();
 
-      // Get ALL active users (excluding current) - client-side filtering in LWC
-      List<User> users = [
-        SELECT Id, Name, Username, Email, Profile.Name
-        FROM User
-        WHERE IsActive = TRUE AND Id != :currentUserId
-        WITH USER_MODE
-        ORDER BY Name ASC
-        LIMIT 200
-      ];
+      // ✅ REFACTORED: Use Selector Layer (2025-12-02)
+      List<User> users = JT_SystemSelector.getAllActiveUsers();
 
       List<UserOption> options = new List<UserOption>();
       for (User u : users) {
+        // Exclude current user
+        if (u.Id == currentUserId) {
+          continue;
+        }
+
         UserOption opt = new UserOption();
         opt.value = u.Id;
         opt.label = u.Name + ' (' + u.Profile.Name + ')';
@@ -338,23 +305,17 @@ public with sharing class JT_QueryViewerController {
       );
     }
 
-    // Verify user exists and is active
-    List<User> users = [
-      SELECT Id, IsActive, Name
-      FROM User
-      WHERE Id = :userId
-      WITH USER_MODE
-      LIMIT 1
-    ];
+    // ✅ REFACTORED: Use Selector Layer (2025-12-02)
+    try {
+      User u = JT_SystemSelector.getUserById(userId);
 
-    if (users.isEmpty()) {
+      if (!u.IsActive) {
+        throw new AuraHandledException(
+          'Cannot run as inactive user: ' + u.Name
+        );
+      }
+    } catch (QueryException e) {
       throw new AuraHandledException('Selected user not found.');
-    }
-
-    if (!users[0].IsActive) {
-      throw new AuraHandledException(
-        'Cannot run as inactive user: ' + users[0].Name
-      );
     }
   }
 
@@ -366,13 +327,8 @@ public with sharing class JT_QueryViewerController {
    **/
   private static String getUserName(String userId) {
     try {
-      User u = [
-        SELECT Name
-        FROM User
-        WHERE Id = :userId
-        WITH USER_MODE
-        LIMIT 1
-      ];
+      // ✅ REFACTORED: Use Selector Layer (2025-12-02)
+      User u = JT_SystemSelector.getUserById(userId);
       return u.Name;
     } catch (Exception e) {
       return null;
@@ -398,9 +354,13 @@ public with sharing class JT_QueryViewerController {
   /**
    * @description Wrapper class for query results
    **/
+  /**
+   * @description Wrapper class for query results
+   * Uses List<Object> instead of List<SObject> to preserve child relationships
+   */
   public class QueryResult {
     @AuraEnabled
-    public List<SObject> records;
+    public List<Object> records; // Changed from List<SObject> to preserve child relationships
     @AuraEnabled
     public Integer recordCount;
     @AuraEnabled
@@ -436,6 +396,15 @@ public with sharing class JT_QueryViewerController {
    * @param bindingsJson JSON string with bindings
    * @return QueryRiskAssessment
    **/
+  /**
+   * @description Detects if a query contains child relationships
+   * @param query The SOQL query string
+   * @return Boolean True if query has child relationships
+   */
+  private static Boolean hasChildRelationships(String query) {
+    return query != null && query.containsIgnoreCase('(SELECT');
+  }
+
   @AuraEnabled
   public static QueryRiskAssessment assessQueryRisk(
     String devName,
@@ -474,8 +443,6 @@ public with sharing class JT_QueryViewerController {
         .replaceAll('(?i)\\s+ORDER\\s+BY.*$', '') // Remove ORDER BY
         .replaceAll('(?i)\\s+LIMIT\\s+\\d+.*$', ''); // Remove LIMIT
 
-      System.debug('🔍 Count Query: ' + countQuery);
-
       // Execute count query with timeout protection
       Integer estimatedCount = 0;
       try {
@@ -488,43 +455,54 @@ public with sharing class JT_QueryViewerController {
           estimatedCount = (Integer) results[0].get('expr0');
         }
       } catch (Exception e) {
-        System.debug('⚠️ Count query failed: ' + e.getMessage());
         // If count fails, assume it's risky
         estimatedCount = 99999;
       }
 
-      System.debug('📊 Estimated Count: ' + estimatedCount);
-
       QueryRiskAssessment assessment = new QueryRiskAssessment();
       assessment.estimatedRecordCount = estimatedCount;
-      assessment.isHighRisk = estimatedCount > 10000; // >10K is high risk
-      assessment.isCriticalRisk = estimatedCount > 50000; // >50K will fail
-      assessment.recommendBatchProcessing = estimatedCount > 5000;
-      assessment.hasEmptyParameters = hasEmptyRequiredParameters(
-        mergedBindings
+
+      // ⚠️ CRITICAL: Batch processing breaks child relationships
+      // If query has child relationships, disable batch processing
+      Boolean hasChildRelationships = hasChildRelationships(
+        config.JT_BaseQuery__c
       );
 
-      if (assessment.isCriticalRisk) {
-        assessment.riskLevel = 'CRITICAL';
-        assessment.message = 'This query will exceed the 50,000 record limit. Batch processing is required.';
-      } else if (assessment.isHighRisk) {
-        assessment.riskLevel = 'HIGH';
-        assessment.message =
-          'This query may return a large number of records (' +
-          estimatedCount +
-          '). Consider using batch processing.';
-      } else if (assessment.recommendBatchProcessing) {
-        assessment.riskLevel = 'MEDIUM';
-        assessment.message =
-          'Query will return ' +
-          estimatedCount +
-          ' records. Batch processing recommended for better performance.';
-      } else {
+      if (hasChildRelationships) {
+        // ⚠️ CRITICAL: Batch processing breaks child relationships
+        // Force LOW risk to skip batch processing modal
+        assessment.isHighRisk = false;
+        assessment.isCriticalRisk = false;
+        assessment.recommendBatchProcessing = false;
         assessment.riskLevel = 'LOW';
-        assessment.message =
-          'Query is safe to execute (' +
-          estimatedCount +
-          ' records).';
+        assessment.message = 'Query contains child relationships. Using standard processing.';
+      } else {
+        assessment.isHighRisk = estimatedCount > 10000; // >10K is high risk
+        assessment.isCriticalRisk = estimatedCount > 50000; // >50K will fail
+        assessment.recommendBatchProcessing = estimatedCount > 5000;
+
+        if (assessment.isCriticalRisk) {
+          assessment.riskLevel = 'CRITICAL';
+          assessment.message = 'This query will exceed the 50,000 record limit. Batch processing is required.';
+        } else if (assessment.isHighRisk) {
+          assessment.riskLevel = 'HIGH';
+          assessment.message =
+            'This query may return a large number of records (' +
+            estimatedCount +
+            '). Consider using batch processing.';
+        } else if (assessment.recommendBatchProcessing) {
+          assessment.riskLevel = 'MEDIUM';
+          assessment.message =
+            'Query will return ' +
+            estimatedCount +
+            ' records. Batch processing recommended for better performance.';
+        } else {
+          assessment.riskLevel = 'LOW';
+          assessment.message =
+            'Query is safe to execute (' +
+            estimatedCount +
+            ' records).';
+        }
       }
 
       return assessment;
@@ -577,13 +555,19 @@ public with sharing class JT_QueryViewerController {
 
       // Return collected results
       QueryResult result = new QueryResult();
-      result.records = collector.getAllRecords();
+
+      List<SObject> sobjectRecords = collector.getAllRecords();
+
+      // ✅ SERIALIZE to preserve child relationships
+      String recordsJson = JSON.serialize(sobjectRecords);
+      result.records = (List<Object>) JSON.deserializeUntyped(recordsJson);
+
       result.recordCount = totalProcessed;
       result.success = true;
 
       // Extract field names from first record
-      if (!result.records.isEmpty()) {
-        result.fields = getFieldNames(result.records[0]);
+      if (sobjectRecords != null && !sobjectRecords.isEmpty()) {
+        result.fields = getFieldNames(sobjectRecords[0]);
       }
 
       return result;
@@ -591,7 +575,7 @@ public with sharing class JT_QueryViewerController {
       QueryResult result = new QueryResult();
       result.success = false;
       result.errorMessage = e.getMessage();
-      result.records = new List<SObject>();
+      result.records = new List<Object>(); // Changed from List<SObject>
       result.recordCount = 0;
       return result;
     }

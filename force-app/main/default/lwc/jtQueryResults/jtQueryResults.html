@@ -41,19 +41,17 @@
 
     <!-- Table View -->
     <template if:true={viewMode.table}>
-      <!-- Desktop Table -->
+      <!-- Desktop: Nested Viewer with Child Relationships -->
       <div class="desktop-table">
         <table class="slds-table slds-table_cell-buffer slds-table_bordered">
           <thead>
             <tr class="slds-line-height_reset">
               <th
                 scope="col"
-                class="slds-text-align_center"
                 style="width: 3rem"
-              >
-                #
-              </th>
-              <template for:each={columns} for:item="col">
+                aria-label="Expand/Collapse"
+              ></th>
+              <template for:each={parentColumns} for:item="col">
                 <th key={col.fieldName} scope="col">
                   <div class="slds-truncate" title={col.label}>{col.label}</div>
                 </th>
@@ -62,10 +60,20 @@
           </thead>
           <tbody>
             <template for:each={paginatedResults} for:item="row">
+              <!-- Parent Row -->
               <tr key={row.Id} class="slds-hint-parent">
-                <th scope="row" class="slds-text-align_center">
-                  {row._rowNumber}
-                </th>
+                <td>
+                  <template if:true={row._hasChildren}>
+                    <lightning-button-icon
+                      icon-name={row._expandIcon}
+                      alternative-text={row._expandLabel}
+                      variant="bare"
+                      onclick={handleRowToggle}
+                      data-id={row.Id}
+                      class="slds-m-right_x-small"
+                    ></lightning-button-icon>
+                  </template>
+                </td>
                 <template for:each={row._cells} for:item="cell">
                   <td key={cell.key} data-label={cell.label}>
                     <div class="slds-truncate" title={cell.value}>
@@ -74,6 +82,40 @@
                   </td>
                 </template>
               </tr>
+            </template>
+
+            <!-- Expanded Children Sections (separate loop) -->
+            <template for:each={paginatedResults} for:item="row">
+              <template if:true={row._expanded}>
+                <tr key={row._childrenKey}>
+                  <td colspan="100" class="slds-p-around_medium">
+                    <lightning-accordion
+                      allow-multiple-sections-open
+                      active-section-name={row._activeChildSections}
+                    >
+                      <template
+                        for:each={row._childRelationships}
+                        for:item="relationship"
+                      >
+                        <lightning-accordion-section
+                          key={relationship.name}
+                          name={relationship.name}
+                          label={relationship.label}
+                        >
+                          <div class="slds-p-around_small">
+                            <lightning-datatable
+                              key-field="Id"
+                              data={relationship.records}
+                              columns={relationship.columns}
+                              hide-checkbox-column
+                            ></lightning-datatable>
+                          </div>
+                        </lightning-accordion-section>
+                      </template>
+                    </lightning-accordion>
+                  </td>
+                </tr>
+              </template>
             </template>
           </tbody>
         </table>
@@ -171,27 +213,51 @@
       </div>
     </template>
 
-    <!-- CSV Download -->
+    <!-- CSV Preview -->
     <template if:true={viewMode.csv}>
-      <div
-        class="csv-view slds-box slds-theme_info slds-text-align_center slds-p-around_large"
-      >
-        <lightning-icon
-          icon-name="utility:download"
-          size="large"
-          alternative-text="Download CSV"
-        ></lightning-icon>
-        <h3 class="slds-text-heading_medium slds-p-top_small">Download CSV</h3>
-        <p class="slds-text-body_regular slds-p-top_small">
-          Your CSV file is ready with {recordCount} records.
-        </p>
-        <lightning-button
-          label="Download CSV File"
-          icon-name="utility:download"
-          onclick={handleDownloadCsv}
-          variant="brand"
-          class="slds-m-top_medium"
-        ></lightning-button>
+      <div class="csv-view slds-box slds-theme_shade slds-m-bottom_medium">
+        <div class="slds-grid slds-grid_align-spread slds-p-bottom_x-small">
+          <div class="slds-text-heading_small">CSV Preview</div>
+          <div>
+            <lightning-button
+              label="Copy"
+              icon-name="utility:copy"
+              onclick={handleCopyCsv}
+              variant="neutral"
+              class="slds-m-right_x-small"
+            ></lightning-button>
+            <lightning-button
+              label="Download"
+              icon-name="utility:download"
+              onclick={handleDownloadCsv}
+              variant="brand"
+            ></lightning-button>
+          </div>
+        </div>
+        <pre class="csv-content">{csvOutput}</pre>
+
+        <template if:true={hasChildRecords}>
+          <div
+            class="slds-box slds-box_xx-small slds-theme_warning slds-m-top_small"
+          >
+            <div class="slds-media slds-media_small">
+              <div class="slds-media__figure">
+                <lightning-icon
+                  icon-name="utility:info"
+                  size="xx-small"
+                  variant="warning"
+                ></lightning-icon>
+              </div>
+              <div class="slds-media__body">
+                <p class="slds-text-body_small">
+                  <strong>Note:</strong> Parent records are duplicated for each
+                  child relationship (LEFT JOIN style). Total rows may exceed
+                  record count.
+                </p>
+              </div>
+            </div>
+          </div>
+        </template>
       </div>
     </template>
 

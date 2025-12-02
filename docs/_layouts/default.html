@@ -180,13 +180,13 @@
         margin: 2rem 0;
       }
 
-      /* Mermaid diagram styling */
+      /* Mermaid diagram styling - optimized for space */
       .mermaid {
         text-align: center;
         margin: 0;
         background: white;
         padding: 20px;
-        min-height: 600px;
+        min-height: 300px; /* ✅ Reduced from 600px */
         display: flex;
         justify-content: center;
         align-items: center;
@@ -196,13 +196,13 @@
         max-width: 100%;
         width: 100%;
         height: auto;
-        min-height: 500px;
+        /* ✅ Removed fixed min-height, let it adapt */
       }
 
       .mermaid-interactive-wrapper {
         position: relative;
         overflow: hidden;
-        min-height: 600px;
+        min-height: auto; /* ✅ Auto-adjust to content */
       }
 
       .mermaid-interactive-wrapper:hover {

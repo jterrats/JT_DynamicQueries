@@ -63,6 +63,7 @@ export default class JtQueryResults extends LightningElement {
   @track currentPage = 1;
   @track viewMode = { table: true, json: false, csv: false };
   @track jsonOutput = "";
+  @track csvOutput = "";
   expandedCards = new Set();
 
   // Computed - View mode
@@ -132,9 +133,11 @@ export default class JtQueryResults extends LightningElement {
       csv: view === "csv"
     };
 
-    // Side effect: Generate JSON only when needed
+    // Side effect: Generate output only when needed
     if (view === "json") {
       this.jsonOutput = this.generateJsonOutput();
+    } else if (view === "csv") {
+      this.csvOutput = this.generateCSV();
     }
   }
 
@@ -156,10 +159,191 @@ export default class JtQueryResults extends LightningElement {
     }
   }
 
+  // 🆕 Computed: Parent columns only (exclude child relationships)
+  get parentColumns() {
+    console.log("🔥 parentColumns CALLED");
+    console.log("🔥 this.columns:", this.columns);
+    console.log("🔥 this.columns.length:", this.columns?.length);
+
+    if (!this.columns || this.columns.length === 0) {
+      console.log("🔥 No columns, returning []");
+      return [];
+    }
+
+    const filtered = this.columns.filter((col) => {
+      if (this.records.length === 0) return true;
+
+      const firstRecord = this.records[0];
+      const value = firstRecord[col.fieldName];
+
+      const isChildRelationship =
+        value &&
+        typeof value === "object" &&
+        value.records &&
+        Array.isArray(value.records);
+
+      console.log(
+        `🔥 Column ${col.fieldName}: isChildRelationship=${isChildRelationship}`
+      );
+
+      return !isChildRelationship;
+    });
+
+    console.log("🔥 parentColumns filtered:", filtered);
+    return filtered;
+  }
+
+  // Override paginatedResults to include child relationship metadata
+  get paginatedResults() {
+    console.log("🔥 paginatedResults CALLED");
+    console.log("🔥 this.records:", this.records);
+    console.log("🔥 this.records.length:", this.records?.length);
+
+    if (!this.records || this.records.length === 0) {
+      console.log("🔥 No records, returning []");
+      return [];
+    }
+
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    const pageRecords = this.records.slice(start, end);
+
+    console.log("🔥 pageRecords.length:", pageRecords.length);
+
+    const enriched = pageRecords.map((row, index) => {
+      const enrichedRow = { ...row };
+
+      // Add row metadata
+      enrichedRow._rowNumber = start + index + 1;
+      enrichedRow._displayName =
+        row.Name || row.Id || `Record ${start + index + 1}`;
+
+      // ✅ Create _cells array for template iteration (LWC doesn't allow computed property access)
+      enrichedRow._cells = this.parentColumns.map((col) => ({
+        key: col.fieldName,
+        label: col.label,
+        value: row[col.fieldName] || ""
+      }));
+
+      // Detect child relationships
+      const childRelationships = [];
+      Object.keys(row).forEach((key) => {
+        const value = row[key];
+        if (
+          value &&
+          typeof value === "object" &&
+          value.records &&
+          Array.isArray(value.records) &&
+          value.records.length > 0
+        ) {
+          // Generate columns for this child relationship
+          const childColumns = this.generateColumnsForRecords(value.records);
+
+          childRelationships.push({
+            name: key,
+            label: `${this.formatLabel(key)} (${value.records.length})`,
+            records: value.records,
+            columns: childColumns
+          });
+        }
+      });
+
+      enrichedRow._hasChildren = childRelationships.length > 0;
+      enrichedRow._childRelationships = childRelationships;
+      enrichedRow._expanded = enrichedRow._expanded || false;
+      enrichedRow._expandIcon = enrichedRow._expanded
+        ? "utility:chevrondown"
+        : "utility:chevronright";
+      enrichedRow._expandLabel = enrichedRow._expanded ? "Collapse" : "Expand";
+      enrichedRow._activeChildSections = enrichedRow._expanded
+        ? childRelationships.map((r) => r.name)
+        : [];
+      enrichedRow._childrenKey = `${row.Id}_children`; // ✅ Valid LWC key
+
+      return enrichedRow;
+    });
+
+    console.log("🔥 enriched paginatedResults:", enriched);
+    return enriched;
+  }
+
+  // Helper: Generate columns dynamically from records
+  generateColumnsForRecords(records) {
+    if (!records || records.length === 0) return [];
+
+    const firstRecord = records[0];
+    const fields = Object.keys(firstRecord).filter(
+      (key) => key !== "attributes" && key !== "AccountId" // ✅ Filter redundant parent FK
+    );
+
+    return fields.map((field) => ({
+      label: this.formatLabel(field),
+      fieldName: field,
+      type: "text",
+      wrapText: false
+    }));
+  }
+
+  // Helper: Format field label
+  formatLabel(fieldName) {
+    if (!fieldName) return "";
+    return fieldName
+      .replace(/([A-Z])/g, " $1")
+      .replace(/^./, (str) => str.toUpperCase())
+      .trim();
+  }
+
+  // Handle row toggle (expand/collapse)
+  handleRowToggle(event) {
+    const recordId = event.currentTarget.dataset.id;
+
+    this.records = this.records.map((row) => {
+      if (row.Id === recordId) {
+        return {
+          ...row,
+          _expanded: !row._expanded
+        };
+      }
+      return row;
+    });
+  }
+
+  // 🆕 Computed: Generate columns for tree-grid
+
   handleCopyJson() {
+    // Generate JSON if not already generated
+    if (!this.jsonOutput) {
+      this.jsonOutput = this.generateJsonOutput();
+    }
+
     this.copyToClipboard(this.jsonOutput)
       .then(() => this.showToast("success", "Success", "JSON copied"))
-      .catch(() => this.showToast("error", "Error", "Copy failed"));
+      .catch((err) => {
+        console.error("Copy failed:", err);
+        this.showToast(
+          "error",
+          "Error",
+          "Copy failed: " + (err.message || "Unknown error")
+        );
+      });
+  }
+
+  handleCopyCsv() {
+    // Generate CSV if not already generated
+    if (!this.csvOutput) {
+      this.csvOutput = this.generateCSV();
+    }
+
+    this.copyToClipboard(this.csvOutput)
+      .then(() => this.showToast("success", "Success", "CSV copied"))
+      .catch((err) => {
+        console.error("Copy failed:", err);
+        this.showToast(
+          "error",
+          "Error",
+          "Copy failed: " + (err?.message || "Unknown error")
+        );
+      });
   }
 
   handleDownloadCsv() {
@@ -198,14 +382,176 @@ export default class JtQueryResults extends LightningElement {
   }
 
   generateCSV() {
-    const headers = this.columns.map((col) => col.label).join(",");
-    const rows = this.records.map(createCSVRow(this.columns));
-    return [headers, ...rows].join("\n");
+    // Check if records have child relationships
+    const hasChildren = this.records.some((record) => {
+      return Object.keys(record).some((key) => {
+        const value = record[key];
+        return (
+          value &&
+          typeof value === "object" &&
+          value.records &&
+          Array.isArray(value.records) &&
+          value.records.length > 0
+        );
+      });
+    });
+
+    if (hasChildren) {
+      return this.generateFlattenedCSV();
+    } else {
+      // Simple CSV without children
+      const headers = this.parentColumns.map((col) => col.label).join(",");
+      const rows = this.records.map(createCSVRow(this.parentColumns));
+      return [headers, ...rows].join("\n");
+    }
+  }
+
+  // Generate flattened CSV with parent + children (LEFT JOIN style)
+  generateFlattenedCSV() {
+    const parentFields = this.parentColumns.map((col) => col.fieldName);
+    const childFieldsSet = new Set();
+
+    // Collect all unique child fields
+    this.records.forEach((record) => {
+      Object.keys(record).forEach((key) => {
+        const value = record[key];
+        if (
+          value &&
+          typeof value === "object" &&
+          value.records &&
+          Array.isArray(value.records)
+        ) {
+          value.records.forEach((childRecord) => {
+            Object.keys(childRecord).forEach((childKey) => {
+              if (childKey !== "attributes" && childKey !== "AccountId") {
+                childFieldsSet.add(childKey);
+              }
+            });
+          });
+        }
+      });
+    });
+
+    const childFields = Array.from(childFieldsSet);
+
+    // Build CSV header
+    const allFields = [
+      ...parentFields.map((f) => `Parent_${this.formatLabel(f)}`),
+      "RelationshipType",
+      ...childFields.map((f) => `Child_${this.formatLabel(f)}`)
+    ];
+    const header = allFields.join(",");
+
+    // Build CSV rows
+    const rows = [];
+    this.records.forEach((record) => {
+      // Extract parent data
+      const parentData = {};
+      parentFields.forEach((field) => {
+        parentData[field] = record[field];
+      });
+
+      // Collect all children from all relationships
+      const children = [];
+      Object.keys(record).forEach((key) => {
+        const value = record[key];
+        if (
+          value &&
+          typeof value === "object" &&
+          value.records &&
+          Array.isArray(value.records) &&
+          value.records.length > 0
+        ) {
+          value.records.forEach((childRecord) => {
+            children.push({
+              type: key,
+              data: childRecord
+            });
+          });
+        }
+      });
+
+      if (children.length > 0) {
+        // Create one row per child (duplication)
+        children.forEach((child) => {
+          const row = [];
+
+          // Add parent fields (duplicate for each child)
+          parentFields.forEach((field) => {
+            row.push(escapeCSV(parentData[field]));
+          });
+
+          // Add relationship type
+          row.push(escapeCSV(child.type));
+
+          // Add child fields
+          childFields.forEach((field) => {
+            row.push(escapeCSV(child.data[field]));
+          });
+
+          rows.push(row.join(","));
+        });
+      } else {
+        // No children - single row with parent only
+        const row = [];
+
+        // Add parent fields
+        parentFields.forEach((field) => {
+          row.push(escapeCSV(parentData[field]));
+        });
+
+        // Add empty relationship type and child fields
+        row.push(""); // RelationshipType
+        childFields.forEach(() => {
+          row.push(""); // Empty child fields
+        });
+
+        rows.push(row.join(","));
+      }
+    });
+
+    return `${header}\n${rows.join("\n")}`;
   }
 
   // Side effect functions (clearly separated)
   copyToClipboard(text) {
-    return navigator.clipboard?.writeText(text) || Promise.reject();
+    // ✅ Try modern Clipboard API first (LWS orgs)
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text).catch(() => {
+        // If Clipboard API fails, fallback to execCommand
+        return this.copyToClipboardFallback(text);
+      });
+    }
+
+    // ⚠️ Fallback for Locker Service orgs
+    return this.copyToClipboardFallback(text);
+  }
+
+  copyToClipboardFallback(text) {
+    return new Promise((resolve, reject) => {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      textarea.style.pointerEvents = "none";
+
+      document.body.appendChild(textarea);
+      textarea.select();
+
+      try {
+        const successful = document.execCommand("copy");
+        document.body.removeChild(textarea);
+
+        if (successful) {
+          resolve();
+        } else {
+          reject(new Error("Copy command failed"));
+        }
+      } catch (err) {
+        document.body.removeChild(textarea);
+        reject(err);
+      }
+    });
   }
 
   downloadFile(content, filename, mimeType) {
@@ -225,7 +571,26 @@ export default class JtQueryResults extends LightningElement {
   }
 
   showToast(variant, title, message) {
-    this.dispatchEvent(new ShowToastEvent({ title, message, variant }));
+    // ✅ Clear any pending toast timeout to prevent stacking
+    if (this._toastTimeout) {
+      clearTimeout(this._toastTimeout);
+      this._toastTimeout = null;
+    }
+
+    // ✅ Dispatch toast with auto-dismiss mode (3 seconds)
+    this.dispatchEvent(
+      new ShowToastEvent({
+        title,
+        message,
+        variant,
+        mode: "dismissible" // Allow manual dismiss but auto-dismiss after 3s
+      })
+    );
+
+    // ✅ Set timeout to clear reference (prevents memory leaks)
+    this._toastTimeout = setTimeout(() => {
+      this._toastTimeout = null;
+    }, 3000);
   }
 
   // Public API
@@ -235,6 +600,7 @@ export default class JtQueryResults extends LightningElement {
     this.expandedCards = new Set();
     this.viewMode = { table: true, json: false, csv: false };
     this.jsonOutput = "";
+    this.csvOutput = "";
   }
 
   @api

@@ -123,7 +123,7 @@ This release introduces a **clean architecture** with separation of concerns acr
 
 ### 🔐 Security & Compliance
 
-- **JT_Action__c Field Type Change**
+- **JT_Action\_\_c Field Type Change**
   - Changed from `Picklist` to `Text(255)`
   - Allows flexible audit messages (not restricted to predefined values)
   - **BREAKING CHANGE**: Existing picklist values migrated automatically

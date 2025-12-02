@@ -487,8 +487,8 @@ export default class JtQueryViewer extends LightningElement {
 
     this.resetResults();
 
-    // Load query preview data
-    this.loadQueryPreview();
+    // 🐛 FIX: Don't auto-execute preview - wait for user to enter parameters or click Execute
+    // this.loadQueryPreview(); // REMOVED - only execute on parameter change or Execute click
 
     console.log(
       "📋 Current runAsUserId AFTER config change:",
@@ -542,35 +542,15 @@ export default class JtQueryViewer extends LightningElement {
 
   // Phase 2 Refactor: Updated to use jtParameterInputs event
   handleParameterChange(event) {
-    // Event from jtParameterInputs component
-    console.log("🔥 handleParameterChange CALLED!");
-    console.log("🔥 event.detail:", JSON.stringify(event.detail, null, 2));
-
     const { paramName, value, allValues } = event.detail;
 
     // 🛡️ CRITICAL FIX: Validate allValues exists
     // This prevents native 'change' event from overwriting with undefined
     if (!allValues || typeof allValues !== "object") {
-      console.log(
-        "⚠️ IGNORING: Invalid event (missing allValues) - likely native change event"
-      );
-      console.log(
-        "⚠️ This is expected - lightning-input fires both custom and native events"
-      );
-      return; // Early exit - ignore this event
+      return; // Early exit - ignore native change events
     }
 
-    console.log("🔥 paramName:", paramName);
-    console.log("🔥 single value:", value);
-    console.log("🔥 allValues:", JSON.stringify(allValues, null, 2));
-
     this.parameterValues = allValues;
-
-    console.log(
-      "✅ this.parameterValues AFTER assignment:",
-      JSON.stringify(this.parameterValues, null, 2)
-    );
-    console.log("✅ typeof this.parameterValues:", typeof this.parameterValues);
   }
 
   // Handle user selection from dropdown
@@ -894,26 +874,44 @@ export default class JtQueryViewer extends LightningElement {
 
   // Helper: Show info toast
   showInfoToast(title, message) {
+    // ✅ Clear previous toast to avoid stacking
+    if (this._toastTimeout) {
+      clearTimeout(this._toastTimeout);
+    }
+
     this.dispatchEvent(
       new ShowToastEvent({
         title: title,
         message: message,
         variant: "info",
-        mode: "dismissable"
+        mode: "dismissible"
       })
     );
+
+    this._toastTimeout = setTimeout(() => {
+      this._toastTimeout = null;
+    }, 3000);
   }
 
   // Helper: Show warning toast
   showWarningToast(title, message) {
+    // ✅ Clear previous toast to avoid stacking
+    if (this._toastTimeout) {
+      clearTimeout(this._toastTimeout);
+    }
+
     this.dispatchEvent(
       new ShowToastEvent({
         title: title,
         message: message,
         variant: "warning",
-        mode: "dismissable"
+        mode: "dismissible"
       })
     );
+
+    this._toastTimeout = setTimeout(() => {
+      this._toastTimeout = null;
+    }, 3000);
   }
 
   // Close usage modal
@@ -1232,7 +1230,11 @@ export default class JtQueryViewer extends LightningElement {
 
   // Execute the query (entry point with risk assessment)
   handleExecuteQuery() {
+    // ✅ FIX: Disable button IMMEDIATELY to prevent multiple clicks
+    this.isLoading = true;
+
     if (!this.selectedConfig) {
+      this.isLoading = false; // Re-enable if validation fails
       this.showErrorToast(
         "Configuration Required",
         "Please select a configuration first."
@@ -1263,7 +1265,7 @@ export default class JtQueryViewer extends LightningElement {
   // Assess query risk and show warning if necessary
   assessQueryRiskAndExecute() {
     this.isAssessingRisk = true;
-    this.isLoading = true;
+    // Note: isLoading already set to true in handleExecuteQuery
 
     // Build bindings JSON (same logic as before)
     const bindingsToSend = this.buildBindingsJson();
@@ -1307,27 +1309,11 @@ export default class JtQueryViewer extends LightningElement {
   buildBindingsJson() {
     let bindingsToSend;
 
-    // 🐛 DEBUG: Log binding construction
-    console.log("🔍 Building bindings...");
-    console.log("🔍 hasBindings:", this.hasBindings);
-    console.log("🔍 hasParameters:", this.hasParameters);
-    console.log("🔍 this.bindings:", this.bindings);
-    console.log(
-      "🔍 this.parameters:",
-      JSON.stringify(this.parameters, null, 2)
-    );
-    console.log(
-      "🔍 this.parameterValues BEFORE stringify:",
-      JSON.stringify(this.parameterValues, null, 2)
-    );
-
     if (this.hasBindings && !this.hasParameters) {
       // Use bindings from configuration
       bindingsToSend = this.bindings;
-      console.log("✅ Using config bindings:", bindingsToSend);
     } else if (this.hasParameters) {
       // Use parameter values entered by user
-      // ⚠️ VALIDATION: Don't overwrite config bindings with empty/null values
       const paramValues = this.parameterValues || {};
       const hasAnyValues = Object.keys(paramValues).some(
         (key) =>
@@ -1338,33 +1324,25 @@ export default class JtQueryViewer extends LightningElement {
 
       if (!hasAnyValues && this.hasBindings) {
         // Parameters are empty but config has bindings → Use config bindings
-        console.log("⚠️ Parameters empty, falling back to config bindings");
         bindingsToSend = this.bindings;
       } else if (!hasAnyValues && !this.hasBindings) {
         // No values and no config bindings → Send empty object
-        console.log("⚠️ No parameter values entered, sending empty bindings");
         bindingsToSend = JSON.stringify({});
       } else {
         // Has values → Use parameter values
         bindingsToSend = JSON.stringify(paramValues);
-        console.log("✅ Using parameter values");
-        console.log("✅ parameterValues object:", paramValues);
-        console.log("✅ Stringified bindings:", bindingsToSend);
-        console.log("✅ Keys in parameterValues:", Object.keys(paramValues));
       }
     } else {
       bindingsToSend = null;
-      console.log("⚠️ No bindings needed");
     }
 
-    console.log("🚀 Final bindingsToSend:", bindingsToSend);
     return bindingsToSend;
   }
 
   // Execute query normally (without batch processing)
   executeQueryNormal() {
     console.log("🔀 Executing query normally...");
-    this.isLoading = true;
+    // Note: isLoading already set to true in handleExecuteQuery
     this.showError = false;
     this.resetResults();
 
@@ -1402,7 +1380,7 @@ export default class JtQueryViewer extends LightningElement {
   // Execute query with batch processing (for large result sets)
   executeQueryWithBatches() {
     console.log("🔀 Executing query with batch processing...");
-    this.isLoading = true;
+    // Note: isLoading already set to true in handleExecuteQuery
     this.showError = false;
     this.resetResults();
 
@@ -1416,9 +1394,10 @@ export default class JtQueryViewer extends LightningElement {
       .then((result) => {
         if (result.success) {
           this.processQueryResults(result);
-          this.showSuccessToast(
-            `Found ${result.recordCount} record(s) (Batch Processing)`
-          );
+          // 🐛 BUG: This creates duplicate toast with normal processQueryResults
+          // this.showSuccessToast(
+          //   `Found ${result.recordCount} record(s) (Batch Processing)`
+          // );
         } else {
           this.showError = true;
           this.errorMessage = result.errorMessage;
@@ -1457,6 +1436,21 @@ export default class JtQueryViewer extends LightningElement {
 
   // Process query results for datatable
   processQueryResults(result) {
+    console.log("🎯 processQueryResults CALLED");
+    console.log("🎯 result:", result);
+    console.log("🎯 result.recordCount:", result.recordCount);
+    console.log("🎯 result.records:", result.records);
+    if (result.records && result.records.length > 0) {
+      console.log(
+        "🎯 result.records[0] structure:",
+        Object.keys(result.records[0])
+      );
+      console.log(
+        "🎯 First record full data:",
+        JSON.stringify(result.records[0], null, 2)
+      );
+    }
+
     this.recordCount = result.recordCount;
 
     // Always build columns (even with 0 records)
@@ -1466,17 +1460,15 @@ export default class JtQueryViewer extends LightningElement {
         fieldName: field,
         type: this.getFieldType(field)
       }));
+      console.log("✅ this.columns SET:", this.columns);
     }
 
     if (result.recordCount > 0) {
-      // Transform records for datatable
-      this.queryResults = result.records.map((record) => {
-        const row = { Id: record.Id };
-        result.fields.forEach((field) => {
-          row[field] = record[field];
-        });
-        return row;
-      });
+      // ✅ Pass records as-is to preserve child relationships
+      this.queryResults = result.records;
+
+      console.log("✅ this.queryResults SET:", this.queryResults);
+      console.log("✅ this.recordCount SET:", this.recordCount);
 
       this.hasResults = true;
       this.resetPagination(); // Initialize pagination
@@ -1626,37 +1618,68 @@ export default class JtQueryViewer extends LightningElement {
 
   // Toast notifications with screen reader announcements
   showSuccessToast(message) {
+    // ✅ Clear previous toast to avoid stacking
+    if (this._toastTimeout) {
+      clearTimeout(this._toastTimeout);
+    }
+
     this.dispatchEvent(
       new ShowToastEvent({
         title: "Success",
         message: message,
         variant: "success",
-        mode: "dismissable"
+        mode: "dismissible"
       })
     );
+
+    this._toastTimeout = setTimeout(() => {
+      this._toastTimeout = null;
+    }, 3000);
+
     this.announceToScreenReader(`Success: ${message}`);
   }
 
   showErrorToast(title, message) {
+    // ✅ Clear previous toast to avoid stacking
+    if (this._toastTimeout) {
+      clearTimeout(this._toastTimeout);
+    }
+
     this.dispatchEvent(
       new ShowToastEvent({
         title: title,
         message: message,
         variant: "error",
-        mode: "dismissable"
+        mode: "dismissible"
       })
     );
+
+    this._toastTimeout = setTimeout(() => {
+      this._toastTimeout = null;
+    }, 3000);
+
     this.announceToScreenReader(`Error: ${title}. ${message}`, true);
   }
 
   showInfoToast(title, message) {
+    // ✅ Clear previous toast to avoid stacking
+    if (this._toastTimeout) {
+      clearTimeout(this._toastTimeout);
+    }
+
     this.dispatchEvent(
       new ShowToastEvent({
         title: title,
         message: message,
-        variant: "info"
+        variant: "info",
+        mode: "dismissible"
       })
     );
+
+    this._toastTimeout = setTimeout(() => {
+      this._toastTimeout = null;
+    }, 3000);
+
     this.announceToScreenReader(`${title}: ${message}`);
   }
 

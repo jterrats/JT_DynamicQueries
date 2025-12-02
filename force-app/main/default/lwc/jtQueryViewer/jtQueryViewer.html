@@ -170,207 +170,205 @@
 
       <!-- Two-Column Responsive Layout: Mobile (1 col) | Tablet+ (2 cols: 8/4) -->
       <lightning-layout multiple-rows="true" class="slds-gutters">
-
         <!-- RIGHT COLUMN: Controls Panel (Order: mobile=first, desktop=second) -->
         <lightning-layout-item
           size="12"
           medium-device-size="4"
           large-device-size="4"
           padding="around-small"
-          class="slds-order_1 slds-medium-order_2">
-
+          class="slds-order_1 slds-medium-order_2"
+        >
           <!-- Configuration Selection -->
           <div class="slds-m-bottom_medium">
-          <!-- Phase 1 Refactor: Generic Searchable Combobox -->
-          <c-jt-searchable-combobox
-            test-id="config-selector"
-            label={labels.selectConfiguration}
-            placeholder={labels.searchConfigsPlaceholder}
-            options={configurationOptions}
-            no-results-text={labels.noResults}
-            error-text={labels.selectOption}
-            clear-button-title={labels.clear}
-            show-options-title={labels.chooseConfiguration}
-            debug-mode={dropdownDebugMode}
-            name="configuration-selector"
-            required
-            onselect={handleConfigSelect}
-            onclear={handleConfigClear}
-          ></c-jt-searchable-combobox>
+            <!-- Phase 1 Refactor: Generic Searchable Combobox -->
+            <c-jt-searchable-combobox
+              test-id="config-selector"
+              label={labels.selectConfiguration}
+              placeholder={labels.searchConfigsPlaceholder}
+              options={configurationOptions}
+              no-results-text={labels.noResults}
+              error-text={labels.selectOption}
+              clear-button-title={labels.clear}
+              show-options-title={labels.chooseConfiguration}
+              debug-mode={dropdownDebugMode}
+              name="configuration-selector"
+              required
+              onselect={handleConfigSelect}
+              onclear={handleConfigClear}
+            ></c-jt-searchable-combobox>
 
-          <!-- Where is this used? Link (only when config selected AND enabled) -->
-          <template if:true={showUsageLink}>
-            <div class="slds-m-top_x-small slds-m-left_small">
-              <a
-                href="javascript:void(0);"
-                onclick={handleShowUsageModal}
-                class="usage-link"
-                title="Find where this configuration is used in Apex code and Flows"
-              >
-                <lightning-icon
-                  icon-name="utility:search"
-                  size="xx-small"
-                  class="slds-m-right_xx-small"
-                ></lightning-icon>
-                Where is this used?
-              </a>
-            </div>
-          </template>
+            <!-- Where is this used? Link (only when config selected AND enabled) -->
+            <template if:true={showUsageLink}>
+              <div class="slds-m-top_x-small slds-m-left_small">
+                <a
+                  href="javascript:void(0);"
+                  onclick={handleShowUsageModal}
+                  class="usage-link"
+                  title="Find where this configuration is used in Apex code and Flows"
+                >
+                  <lightning-icon
+                    icon-name="utility:search"
+                    size="xx-small"
+                    class="slds-m-right_xx-small"
+                  ></lightning-icon>
+                  Where is this used?
+                </a>
+              </div>
+            </template>
           </div>
 
-        <!-- Collapsible Sections: API Features & Run As -->
-        <lightning-accordion
-          allow-multiple-sections-open
-          active-section-name="api-features"
-          class="slds-m-bottom_medium">
-
-          <!-- API Features Section -->
-          <lightning-accordion-section
-            name="api-features"
-            label="API Features & Tooling API">
-
-            <div class="slds-box slds-theme_shade slds-p-around_small">
-            <!-- Global API Disclaimer -->
-            <div
-              class="slds-box slds-box_x-small slds-theme_warning slds-m-bottom_medium"
-              role="alert"
-              aria-label="Tooling API consumption warning"
-            >
-              <div class="slds-media slds-media_center">
-                <div class="slds-media__figure">
-                  <lightning-icon
-                    icon-name="utility:warning"
-                    size="medium"
-                    variant="warning"
-                    alternative-text="Warning"
-                  ></lightning-icon>
-                </div>
-                <div class="slds-media__body">
-                  <p class="slds-text-body_small">
-                    <strong>Tooling API Required:</strong> This application uses
-                    Salesforce Tooling API for:
-                  </p>
-                  <ul
-                    class="slds-list_dotted slds-m-top_xx-small slds-m-left_medium"
-                  >
-                    <li>
-                      <strong>"Where is this used?"</strong> - Searches Flows
-                      (1-5 API calls per search)
-                    </li>
-                    <template if:true={canCreateMetadata}>
-                      <li>
-                        <strong>Create/Edit Configurations</strong> - Deploys
-                        metadata (2-3 API calls per operation)
-                      </li>
-                    </template>
-                  </ul>
-                  <p class="slds-text-body_small slds-m-top_xx-small">
-                    <strong>Setup Required:</strong> Named Credential must be
-                    configured. See
-                    <a href="#" onclick={handleGoToDocumentation}
-                      >Documentation → Tooling API Setup</a
-                    >
-                    for details.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Usage Tracking Toggle -->
-            <div class="slds-m-top_medium">
-              <lightning-input
-                type="checkbox"
-                label='Enable "Where is this used?" search'
-                checked={usageTrackingEnabled}
-                onchange={handleUsageTrackingChange}
-                disabled={isUpdatingSettings}
-                field-level-help="When enabled, searches for configuration references in Apex and Flows. Consumes API calls for Flow searches."
-              ></lightning-input>
-            </div>
-            </div>
-
-          </lightning-accordion-section>
-
-          <!-- Run As User Section (Admin Only) -->
-          <template if:true={showRunAs}>
+          <!-- Collapsible Sections: API Features & Run As -->
+          <lightning-accordion
+            allow-multiple-sections-open
+            active-section-name="api-features"
+            class="slds-m-bottom_medium"
+          >
+            <!-- API Features Section -->
             <lightning-accordion-section
-              name="run-as"
-              label="Run As User (Advanced)">
+              name="api-features"
+              label="API Features & Tooling API"
+            >
+              <div class="slds-box slds-theme_shade slds-p-around_small">
+                <!-- Global API Disclaimer -->
+                <div
+                  class="slds-box slds-box_x-small slds-theme_warning slds-m-bottom_medium"
+                  role="alert"
+                  aria-label="Tooling API consumption warning"
+                >
+                  <div class="slds-media slds-media_center">
+                    <div class="slds-media__figure">
+                      <lightning-icon
+                        icon-name="utility:warning"
+                        size="medium"
+                        variant="warning"
+                        alternative-text="Warning"
+                      ></lightning-icon>
+                    </div>
+                    <div class="slds-media__body">
+                      <p class="slds-text-body_small">
+                        <strong>Tooling API Required:</strong> This application
+                        uses Salesforce Tooling API for:
+                      </p>
+                      <ul
+                        class="slds-list_dotted slds-m-top_xx-small slds-m-left_medium"
+                      >
+                        <li>
+                          <strong>"Where is this used?"</strong> - Searches
+                          Flows (1-5 API calls per search)
+                        </li>
+                        <template if:true={canCreateMetadata}>
+                          <li>
+                            <strong>Create/Edit Configurations</strong> -
+                            Deploys metadata (2-3 API calls per operation)
+                          </li>
+                        </template>
+                      </ul>
+                      <p class="slds-text-body_small slds-m-top_xx-small">
+                        <strong>Setup Required:</strong> Named Credential must
+                        be configured. See
+                        <a href="#" onclick={handleGoToDocumentation}
+                          >Documentation → Tooling API Setup</a
+                        >
+                        for details.
+                      </p>
+                    </div>
+                  </div>
+                </div>
 
-              <div class="slds-p-around_small">
-              <c-jt-run-as-section
-                title=""
-                note-text={labels.runAsNote}
-                select-user-label={labels.selectUser}
-                select-user-placeholder={labels.searchUsersPlaceholder}
-                clear-label={labels.clear}
-                execute-as-user-label={labels.executeSystemRunAs}
-                executing-test-text={labels.executingTest}
-                loading-users-text={labels.loadingUsers}
-                user-options={userOptions}
-                is-loading-users={isLoadingUsers}
-                run-as-user-id={runAsUserId}
-                show-run-as-test={showRunAsTest}
-                is-running-test={isRunningTest}
-                onuserselect={handleUserSelect}
-                onuserclear={handleUserClear}
-                onclearselection={handleClearRunAs}
-                onexecuteasuser={handleExecuteAsUserTest}
-              ></c-jt-run-as-section>
-              </div>
-
-            </lightning-accordion-section>
-          </template>
-
-        </lightning-accordion>
-
-        <!-- Dynamic Parameters Input -->
-        <template if:true={hasParameters}>
-          <div class="slds-m-bottom_medium parameters-scrollable slds-scrollable_y">
-            <c-jt-parameter-inputs
-              parameters={parameters}
-              title={labels.queryParameters}
-              no-parameters-text={labels.noParametersRequired}
-              onchange={handleParameterChange}
-            ></c-jt-parameter-inputs>
-          </div>
-        </template>
-
-        <!-- Configuration Bindings Info -->
-        <template if:true={hasBindings}>
-          <template if:false={hasParameters}>
-            <div class="slds-m-bottom_medium">
-              <div class="info-box-readable slds-box slds-text-body_small">
-                <strong class="info-title">
-                  <lightning-icon
-                    icon-name="utility:info"
-                    size="x-small"
-                    class="slds-m-right_x-small"
-                  ></lightning-icon>
-                  {labels.predefinedBindings}
-                </strong>
-                <div class="slds-m-top_x-small">
-                  {labels.predefinedBindingsDesc}
+                <!-- Usage Tracking Toggle -->
+                <div class="slds-m-top_medium">
+                  <lightning-input
+                    type="checkbox"
+                    label='Enable "Where is this used?" search'
+                    checked={usageTrackingEnabled}
+                    onchange={handleUsageTrackingChange}
+                    disabled={isUpdatingSettings}
+                    field-level-help="When enabled, searches for configuration references in Apex and Flows. Consumes API calls for Flow searches."
+                  ></lightning-input>
                 </div>
               </div>
+            </lightning-accordion-section>
+
+            <!-- Run As User Section (Admin Only) -->
+            <template if:true={showRunAs}>
+              <lightning-accordion-section
+                name="run-as"
+                label="Run As User (Advanced)"
+              >
+                <div class="slds-p-around_small">
+                  <c-jt-run-as-section
+                    title=""
+                    note-text={labels.runAsNote}
+                    select-user-label={labels.selectUser}
+                    select-user-placeholder={labels.searchUsersPlaceholder}
+                    clear-label={labels.clear}
+                    execute-as-user-label={labels.executeSystemRunAs}
+                    executing-test-text={labels.executingTest}
+                    loading-users-text={labels.loadingUsers}
+                    user-options={userOptions}
+                    is-loading-users={isLoadingUsers}
+                    run-as-user-id={runAsUserId}
+                    show-run-as-test={showRunAsTest}
+                    is-running-test={isRunningTest}
+                    onuserselect={handleUserSelect}
+                    onuserclear={handleUserClear}
+                    onclearselection={handleClearRunAs}
+                    onexecuteasuser={handleExecuteAsUserTest}
+                  ></c-jt-run-as-section>
+                </div>
+              </lightning-accordion-section>
+            </template>
+          </lightning-accordion>
+
+          <!-- Dynamic Parameters Input -->
+          <template if:true={hasParameters}>
+            <div
+              class="slds-m-bottom_medium parameters-scrollable slds-scrollable_y"
+            >
+              <c-jt-parameter-inputs
+                parameters={parameters}
+                title={labels.queryParameters}
+                no-parameters-text={labels.noParametersRequired}
+                onchange={handleParameterChange}
+              ></c-jt-parameter-inputs>
             </div>
           </template>
-        </template>
 
-        <!-- Execute Button -->
-        <!-- Phase 3 Refactor: Extracted to jtExecuteButton -->
-        <div class="slds-m-bottom_medium">
-          <c-jt-execute-button
-            label={labels.executeQuery}
-            variant="brand"
-            icon-name="utility:database"
-            selected-config={selectedConfig}
-            has-parameters={hasParameters}
-            parameter-values={parameterValues}
-            is-loading={isLoading}
-            onexecute={handleExecuteQuery}
-          ></c-jt-execute-button>
-        </div>
+          <!-- Configuration Bindings Info -->
+          <template if:true={hasBindings}>
+            <template if:false={hasParameters}>
+              <div class="slds-m-bottom_medium">
+                <div class="info-box-readable slds-box slds-text-body_small">
+                  <strong class="info-title">
+                    <lightning-icon
+                      icon-name="utility:info"
+                      size="x-small"
+                      class="slds-m-right_x-small"
+                    ></lightning-icon>
+                    {labels.predefinedBindings}
+                  </strong>
+                  <div class="slds-m-top_x-small">
+                    {labels.predefinedBindingsDesc}
+                  </div>
+                </div>
+              </div>
+            </template>
+          </template>
+
+          <!-- Execute Button -->
+          <!-- Phase 3 Refactor: Extracted to jtExecuteButton -->
+          <div class="slds-m-bottom_medium">
+            <c-jt-execute-button
+              label={labels.executeQuery}
+              variant="brand"
+              icon-name="utility:database"
+              selected-config={selectedConfig}
+              has-parameters={hasParameters}
+              parameter-values={parameterValues}
+              is-loading={isLoading}
+              onexecute={handleExecuteQuery}
+            ></c-jt-execute-button>
+          </div>
         </lightning-layout-item>
         <!-- End Right Column -->
 
@@ -380,115 +378,115 @@
           medium-device-size="8"
           large-device-size="8"
           padding="around-small"
-          class="slds-order_2 slds-medium-order_1">
+          class="slds-order_2 slds-medium-order_1"
+        >
+          <!-- Query Preview -->
+          <template if:true={baseQuery}>
+            <div class="query-preview-container slds-m-bottom_medium">
+              <div class="slds-text-heading_small slds-p-bottom_x-small">
+                Query Preview:
+              </div>
+              <div class="query-preview slds-box slds-theme_shade">
+                <pre class="slds-text-body_small">{queryPreview}</pre>
+              </div>
 
-        <!-- Query Preview -->
-        <template if:true={baseQuery}>
-          <div class="query-preview-container slds-m-bottom_medium">
-            <div class="slds-text-heading_small slds-p-bottom_x-small">
-              Query Preview:
-            </div>
-            <div class="query-preview slds-box slds-theme_shade">
-              <pre class="slds-text-body_small">{queryPreview}</pre>
-            </div>
-
-            <!-- Query Data Preview -->
-            <template if:true={showPreviewData}>
-              <div class="slds-m-top_small">
-                <div class="slds-text-heading_small slds-p-bottom_x-small">
-                  Data Preview (Top {previewRecordCount} records):
-                </div>
-
-                <template if:true={isLoadingPreview}>
-                  <div class="slds-text-align_center slds-p-vertical_medium">
-                    <lightning-spinner
-                      alternative-text="Loading preview..."
-                      size="small"
-                    ></lightning-spinner>
+              <!-- Query Data Preview -->
+              <template if:true={showPreviewData}>
+                <div class="slds-m-top_small">
+                  <div class="slds-text-heading_small slds-p-bottom_x-small">
+                    Data Preview (Top {previewRecordCount} records):
                   </div>
-                </template>
 
-                <template if:false={isLoadingPreview}>
-                  <lightning-datatable
-                    key-field="Id"
-                    data={previewPaginatedData}
-                    columns={previewColumns}
-                    hide-checkbox-column
-                    show-row-number-column
-                    class="slds-box"
-                    data-testid="query-preview-table"
-                  ></lightning-datatable>
-
-                  <!-- Preview Pagination -->
-                  <template if:true={showPreviewPagination}>
-                    <div class="slds-m-top_x-small slds-text-align_center">
-                      <lightning-button-group>
-                        <lightning-button
-                          label="Previous"
-                          icon-name="utility:chevronleft"
-                          onclick={handlePreviewPrevious}
-                          disabled={previewHasPrevious}
-                          data-testid="preview-prev-button"
-                        ></lightning-button>
-                        <lightning-button
-                          label={previewPageInfo}
-                          disabled
-                          data-testid="preview-page-info"
-                        ></lightning-button>
-                        <lightning-button
-                          label="Next"
-                          icon-name="utility:chevronright"
-                          icon-position="right"
-                          onclick={handlePreviewNext}
-                          disabled={previewHasNext}
-                          data-testid="preview-next-button"
-                        ></lightning-button>
-                      </lightning-button-group>
+                  <template if:true={isLoadingPreview}>
+                    <div class="slds-text-align_center slds-p-vertical_medium">
+                      <lightning-spinner
+                        alternative-text="Loading preview..."
+                        size="small"
+                      ></lightning-spinner>
                     </div>
                   </template>
-                </template>
+
+                  <template if:false={isLoadingPreview}>
+                    <lightning-datatable
+                      key-field="Id"
+                      data={previewPaginatedData}
+                      columns={previewColumns}
+                      hide-checkbox-column
+                      show-row-number-column
+                      class="slds-box"
+                      data-testid="query-preview-table"
+                    ></lightning-datatable>
+
+                    <!-- Preview Pagination -->
+                    <template if:true={showPreviewPagination}>
+                      <div class="slds-m-top_x-small slds-text-align_center">
+                        <lightning-button-group>
+                          <lightning-button
+                            label="Previous"
+                            icon-name="utility:chevronleft"
+                            onclick={handlePreviewPrevious}
+                            disabled={previewHasPrevious}
+                            data-testid="preview-prev-button"
+                          ></lightning-button>
+                          <lightning-button
+                            label={previewPageInfo}
+                            disabled
+                            data-testid="preview-page-info"
+                          ></lightning-button>
+                          <lightning-button
+                            label="Next"
+                            icon-name="utility:chevronright"
+                            icon-position="right"
+                            onclick={handlePreviewNext}
+                            disabled={previewHasNext}
+                            data-testid="preview-next-button"
+                          ></lightning-button>
+                        </lightning-button-group>
+                      </div>
+                    </template>
+                  </template>
+                </div>
+              </template>
+            </div>
+          </template>
+
+          <!-- Test Assert Message -->
+          <template if:true={testAssertMessage}>
+            <div class="slds-m-bottom_medium">
+              <div class="slds-box slds-theme_success slds-text-body_regular">
+                <lightning-icon
+                  icon-name="utility:success"
+                  size="small"
+                  variant="success"
+                  class="slds-m-right_small"
+                ></lightning-icon>
+                <strong>Test Assertion:</strong> {testAssertMessage}
               </div>
-            </template>
-          </div>
-        </template>
-
-        <!-- Test Assert Message -->
-        <template if:true={testAssertMessage}>
-          <div class="slds-m-bottom_medium">
-            <div class="slds-box slds-theme_success slds-text-body_regular">
-              <lightning-icon
-                icon-name="utility:success"
-                size="small"
-                variant="success"
-                class="slds-m-right_small"
-              ></lightning-icon>
-              <strong>Test Assertion:</strong> {testAssertMessage}
             </div>
-          </div>
-        </template>
+          </template>
 
-        <!-- Error Message -->
-        <template if:true={showError}>
-          <div class="slds-m-bottom_medium">
-            <div
-              class="slds-notify slds-notify_alert slds-alert_error"
-              role="alert"
-            >
-              <span class="slds-assistive-text">error</span>
-              <lightning-icon
-                icon-name="utility:error"
-                size="small"
-                variant="error"
-                class="slds-m-right_small"
-              ></lightning-icon>
-              <h2>{errorMessage}</h2>
+          <!-- Error Message -->
+          <template if:true={showError}>
+            <div class="slds-m-bottom_medium">
+              <div
+                class="slds-notify slds-notify_alert slds-alert_error"
+                role="alert"
+              >
+                <span class="slds-assistive-text">error</span>
+                <lightning-icon
+                  icon-name="utility:error"
+                  size="small"
+                  variant="error"
+                  class="slds-m-right_small"
+                ></lightning-icon>
+                <h2>{errorMessage}</h2>
+              </div>
             </div>
-          </div>
-        </template>
+          </template>
 
-        <!-- Results Section -->
-        <template if:true={showResults}>
-          <div class="results-container slds-m-bottom_medium">
+          <!-- Results Section -->
+          <template if:true={showResults}>
+            <div class="results-container slds-m-bottom_medium">
               <!-- Results Header with View Toggle -->
               <div class="slds-grid slds-grid_align-spread slds-p-bottom_small">
                 <div class="slds-text-heading_small">
@@ -741,28 +739,26 @@
                 </div>
               </template>
             </div>
-        </template>
+          </template>
 
-        <!-- No Results Message -->
-        <template if:true={hasResults}>
-          <template if:false={showResults}>
-            <div class="slds-p-top_medium">
-              <div class="slds-align_absolute-center">
-                <lightning-icon
-                  icon-name="utility:search"
-                  size="large"
-                ></lightning-icon>
-                <div class="slds-text-heading_small slds-p-top_small">
-                  No records found
+          <!-- No Results Message -->
+          <template if:true={hasResults}>
+            <template if:false={showResults}>
+              <div class="slds-p-top_medium">
+                <div class="slds-align_absolute-center">
+                  <lightning-icon
+                    icon-name="utility:search"
+                    size="large"
+                  ></lightning-icon>
+                  <div class="slds-text-heading_small slds-p-top_small">
+                    No records found
+                  </div>
                 </div>
               </div>
-            </div>
+            </template>
           </template>
-        </template>
-
         </lightning-layout-item>
         <!-- End Left Column -->
-
       </lightning-layout>
     </div>
   </lightning-card>
@@ -809,7 +805,12 @@
 
   <!-- Query Risk Warning Modal -->
   <template if:true={showRiskWarningModal}>
-    <section role="dialog" tabindex="-1" aria-labelledby="risk-modal-heading" class="slds-modal slds-fade-in-open">
+    <section
+      role="dialog"
+      tabindex="-1"
+      aria-labelledby="risk-modal-heading"
+      class="slds-modal slds-fade-in-open"
+    >
       <div class="slds-modal__container">
         <!-- Modal Header -->
         <header class="slds-modal__header slds-theme_warning">
@@ -831,12 +832,16 @@
             <div class="slds-m-bottom_medium">
               <p class="slds-text-body_small">
                 <strong>Risk Level:</strong>
-                <lightning-badge label={queryRiskAssessment.riskLevel}></lightning-badge>
+                <lightning-badge
+                  label={queryRiskAssessment.riskLevel}
+                ></lightning-badge>
               </p>
             </div>
 
             <!-- Risk Message -->
-            <div class="slds-box slds-box_xx-small slds-theme_shade slds-m-bottom_medium">
+            <div
+              class="slds-box slds-box_xx-small slds-theme_shade slds-m-bottom_medium"
+            >
               <div class="slds-media">
                 <div class="slds-media__figure">
                   <lightning-icon
@@ -856,7 +861,8 @@
             <!-- Estimated Record Count -->
             <div class="slds-m-bottom_medium">
               <p class="slds-text-body_small slds-text-color_weak">
-                <strong>Estimated Records:</strong> {queryRiskAssessment.estimatedRecordCount}
+                <strong>Estimated Records:</strong>
+                {queryRiskAssessment.estimatedRecordCount}
               </p>
             </div>
 
@@ -864,8 +870,9 @@
             <template if:true={queryRiskAssessment.isCriticalRisk}>
               <div class="slds-box slds-theme_error slds-m-bottom_medium">
                 <p class="slds-text-body_small">
-                  <strong>⛔ Critical:</strong> This query will exceed Salesforce's 50,000 record limit.
-                  Batch processing is <strong>required</strong> to execute this query.
+                  <strong>⛔ Critical:</strong> This query will exceed
+                  Salesforce's 50,000 record limit. Batch processing is
+                  <strong>required</strong> to execute this query.
                 </p>
               </div>
             </template>
@@ -873,8 +880,9 @@
             <template if:false={queryRiskAssessment.isCriticalRisk}>
               <div class="slds-box slds-theme_warning slds-m-bottom_medium">
                 <p class="slds-text-body_small">
-                  <strong>⚠️ Recommendation:</strong> We recommend using batch processing for better performance
-                  and to avoid potential timeouts or governor limits.
+                  <strong>⚠️ Recommendation:</strong> We recommend using batch
+                  processing for better performance and to avoid potential
+                  timeouts or governor limits.
                 </p>
               </div>
             </template>

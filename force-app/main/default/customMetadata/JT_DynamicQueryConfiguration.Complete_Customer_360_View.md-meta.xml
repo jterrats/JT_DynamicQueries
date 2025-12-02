@@ -14,8 +14,7 @@
     (SELECT Id, FirstName, LastName, Email, Phone, Title, Department FROM Contacts ORDER BY CreatedDate DESC LIMIT 50),
     (SELECT Id, Name, StageName, Amount, CloseDate, Probability, Type FROM Opportunities WHERE IsClosed = false ORDER BY Amount DESC LIMIT 50),
     (SELECT Id, CaseNumber, Subject, Status, Priority, Origin, CreatedDate FROM Cases WHERE IsClosed = false ORDER BY CreatedDate DESC LIMIT 30),
-    (SELECT Id, ContractNumber, Status, StartDate, EndDate FROM Contracts WHERE Status = &apos;Activated&apos; LIMIT 20),
-    (SELECT Id, OpportunityId, Name, Quantity, TotalPrice, Product2.Name FROM OpportunityLineItems WHERE Opportunity.IsClosed = false LIMIT 100)
+    (SELECT Id, ContractNumber, Status, StartDate, EndDate FROM Contracts WHERE Status = &apos;Activated&apos; LIMIT 20)
 FROM Account
 WHERE Type =: accountType
 ORDER BY AnnualRevenue DESC NULLS LAST</value>

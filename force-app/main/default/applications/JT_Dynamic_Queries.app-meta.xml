@@ -5,12 +5,12 @@
         <shouldOverrideOrgTheme>false</shouldOverrideOrgTheme>
     </brand>
     <description
-  >Application for managing and executing dynamic SOQL queries</description>
+  >Metadata-driven SOQL execution framework with built-in security, batch processing, and risk assessment</description>
     <formFactors>Small</formFactors>
     <formFactors>Large</formFactors>
     <isNavAutoTempTabsDisabled>false</isNavAutoTempTabsDisabled>
     <isNavPersonalizationDisabled>false</isNavPersonalizationDisabled>
-    <label>Dynamic Queries</label>
+    <label>Dynamic Query Framework</label>
     <navType>Standard</navType>
     <tabs>JT_Documentation</tabs>
     <tabs>JT_Query_Viewer</tabs>

@@ -32,16 +32,21 @@ A metadata-driven SOQL execution framework with built-in security, batch process
 ### 📊 **Advanced Results Viewing**
 
 - **Toggle Views**: Switch between Table, JSON, and CSV formats
+- **🆕 Nested Viewer**: Child relationships (Contacts, Opportunities, Cases) with expand/collapse
+- **🆕 CSV Preview**: Preview CSV before downloading
+- **🆕 Clipboard Support**: Copy JSON/CSV with Locker Service fallback
 - **Mobile Responsive**: Expandable cards for mobile devices
-- **Export to CSV**: Download query results for external analysis
+- **Export to CSV**: Flattened export with LEFT JOIN style (parent duplication)
 - **Syntax Highlighting**: JSON view with formatted, readable output
 
 ### 🔐 **Tooling API Integration**
 
 - **"Where is this used?" for Flows**: Search Flow metadata (1-5 API calls)
-- **Named Credentials**: Secure OAuth 2.0 authentication
+- **🆕 Smart Deploy**: Auto-detects org URL changes for Named Credentials
+- **🆕 Multi-Org Support**: One codebase works across dev/sandbox/production
+- **Named Credentials**: Secure integration with dynamic URL provisioning
 - **Resilient Architecture**: Partial results if one service fails
-- **Comprehensive Setup Guides**: English and Spanish documentation
+- **Comprehensive Setup Guides**: Automated scripts + manual fallback
 
 ### ♿ **Accessibility & UX**
 
@@ -53,9 +58,11 @@ A metadata-driven SOQL execution framework with built-in security, batch process
 
 ### 🧪 **Testing Excellence**
 
-- **100% E2E Pass Rate**: 28 Playwright tests covering all features
+- **🆕 Bug Fix Validation**: 6 critical bugs fixed with E2E test coverage
+- **100% E2E Pass Rate**: 113+ Playwright tests covering all features
 - **98% Apex Pass Rate**: 723 unit tests
-- **Automated CI/CD**: GitHub Actions workflows for E2E and documentation
+- **🆕 Automated CI/CD**: GitHub Actions for E2E tests on every merge to main
+- **Visual Validation**: Automated screenshots and videos for UI changes
 
 ---
 
@@ -69,7 +76,9 @@ A metadata-driven SOQL execution framework with built-in security, batch process
 - **Results Pagination** - Client-side pagination for 10+ records
 - **Empty State Handling** - Shows table structure even with 0 results
 - **🆕 Toggle Views** - Switch between Table, JSON, and CSV formats
-- **🆕 Export to CSV** - Download query results for analysis
+- **🆕 Nested Viewer** - Child relationships with expand/collapse (accordion + mini-tables)
+- **🆕 CSV Preview** - Preview before download with Copy button (Clipboard API + fallback)
+- **🆕 Export to CSV** - Download query results for analysis (flattened with parent duplication)
 - **🆕 Mobile Responsive** - Expandable cards on mobile devices
 - **🆕 Searchable Dropdowns** - Real-time filtering for configs and users
 
@@ -200,25 +209,36 @@ The app includes five tabs:
 
 ### 4. (Optional) Configure Tooling API
 
-To enable advanced features like **"Where is this used?"** (search in Flows) and **Create/Edit Configurations** (metadata deployment via UI), configure Named Credentials for Tooling API access.
+To enable advanced features like **"Where is this used?"** (search in Flows), configure Named Credentials for Tooling API access.
 
-> **📚 Detailed Setup Guide:** See [TOOLING_API_SETUP.md](./docs/TOOLING_API_SETUP.md) for step-by-step instructions with screenshots.
-> **🌐 Guía en Español:** Ver [TOOLING_API_SETUP_ES.md](./docs/TOOLING_API_SETUP_ES.md) para instrucciones detalladas.
-
-**Quick Automated Setup:**
+**🚀 Quick Setup (Automated - Recommended):**
 
 ```bash
-./scripts/setup-tooling-api.sh
+# Auto-detect org URL and deploy Named Credential
+./scripts/smart-deploy.sh
 ```
 
-**Manual Setup:**
+**💡 Multi-Org Support:**
 
-Follow the step-by-step guide: [**Tooling API Setup Guide**](./docs/TOOLING_API_SETUP.md)
+```bash
+# Switch to different org
+sf config set target-org my-sandbox
+
+# Smart deploy auto-detects change!
+./scripts/smart-deploy.sh
+# ⚠️ Org URL mismatch detected!
+# 🔄 Updating environment...
+# ✅ Named Credential deployed with new org URL!
+```
+
+**📚 Detailed Guides:**
+- [Named Credential Setup](./scripts/SETUP_NAMED_CREDENTIAL.md) - Automation guide
+- [Multi-Org Workflow](./scripts/WORKFLOW_EXAMPLE.md) - Dev/Sandbox/Production examples
+- [Scripts README](./scripts/README.md) - All available scripts and aliases
 
 **Note:** The framework works WITHOUT Tooling API (core query execution features remain fully functional). Tooling API is only required for:
 
 - Searching configuration references in Flows
-- Creating/editing configurations via UI
 
 ## 📖 Documentation
 
@@ -237,7 +257,9 @@ Documentation automatically displays in your browser's language (English or Span
 
 ### External Documentation
 
-- [**Tooling API Setup Guide**](./docs/TOOLING_API_SETUP.md) - Configure Named Credentials for advanced features
+- [**Named Credential Setup**](./scripts/SETUP_NAMED_CREDENTIAL.md) - Auto-config for Tooling API with smart-deploy
+- [**CI/CD Setup**](./.github/CI_SETUP.md) - GitHub Actions for automated E2E testing
+- [**Bug Fixes Summary**](./.github/BUG_FIXES_SUMMARY.md) - 6 critical bugs fixed with test validation
 - [Run As User Feature](./RUN_AS_USER_FEATURE.md) - Detailed explanation of Run As modes
 - [E2E Testing Guide](./tests/e2e/README.md) - Playwright E2E test documentation
 - [Code Quality Report](./CODE_QUALITY_REPORT.md) - PMD and ESLint analysis

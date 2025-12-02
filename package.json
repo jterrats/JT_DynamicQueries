@@ -29,10 +29,10 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.0",
-    "@lwc/eslint-plugin-lwc": "^1.1.2",
+    "@lwc/eslint-plugin-lwc": "^2.2.0",
     "@playwright/test": "^1.48.0",
     "@prettier/plugin-xml": "^3.2.2",
-    "@salesforce/eslint-config-lwc": "^3.2.3",
+    "@salesforce/eslint-config-lwc": "^3.7.2",
     "@salesforce/eslint-plugin-aura": "^2.0.0",
     "@salesforce/eslint-plugin-lightning": "^1.0.0",
     "@salesforce/sfdx-lwc-jest": "^7.0.1",

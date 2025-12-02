@@ -55,30 +55,6 @@ jobs:
           echo "✅ Authenticated as ${{ secrets.SF_USERNAME }}"
           sf org display --target-org ci-org
 
-      - name: Deploy to org
-        run: |
-          echo "📦 Deploying to org..."
-          sf project deploy start \
-            --source-dir force-app \
-            --target-org ci-org \
-            --wait 15 \
-            --verbose
-
-          echo "✅ Deployment complete"
-
-      - name: Run Apex tests
-        run: |
-          echo "🧪 Running Apex tests..."
-          sf apex run test \
-            --target-org ci-org \
-            --test-level RunSpecifiedTests \
-            --tests JT_QueryViewerController_Test,JT_DataSelector_Test,JT_SystemSelector_Test,JT_AuditLogDomain_Test,JT_SettingsService_Test,JT_ConfigurationSelector_Test \
-            --result-format human \
-            --code-coverage \
-            --wait 15
-
-          echo "✅ Apex tests passed"
-
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 

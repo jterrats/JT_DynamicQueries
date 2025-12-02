@@ -5,6 +5,94 @@ All notable changes to the Dynamic Query Framework project will be documented in
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2025-12-02
+
+### 🌳 Nested Viewer for Child Relationships
+
+#### New Features
+
+- **Nested Viewer Component**
+  - Child relationships (Contacts, Opportunities, Cases) display with expand/collapse
+  - `lightning-accordion` for grouping child records
+  - `lightning-datatable` for mini-tables within each child relationship
+  - Dynamic column generation for child records
+  - Mobile-responsive nested tables
+
+- **CSV Export Improvements**
+  - **CSV Preview** before download with formatted display
+  - **Copy to Clipboard** button for CSV and JSON
+  - **Clipboard API + Fallback**: Uses modern `navigator.clipboard` or `execCommand` for Locker Service
+  - **Flattened Export**: LEFT JOIN style with parent duplication for Excel compatibility
+
+#### Bug Fixes (6/6 with E2E Validation)
+
+1. ✅ **Child Relationships Missing** - Fixed data loss in `processQueryResults`
+2. ✅ **AccountId Redundant** - Filtered from child columns
+3. ✅ **CSV Preview Missing** - Added preview with Copy/Download buttons
+4. ✅ **Clipboard Copy Failing** - Implemented hybrid approach (Clipboard API + execCommand fallback)
+5. ✅ **Expand/Collapse Not Working** - Implemented nested accordion structure
+6. ✅ **Toasts Stacking** - Added clearTimeout mechanism
+7. ✅ **Execute Button Not Disabling** - Implemented `@track _isExecuting` for immediate feedback
+
+#### Testing
+
+- **New Test Suite**: `tests/e2e/bugfixes.spec.js` (7 tests, all passing)
+- **Updated Tests**: All E2E tests updated for "Dynamic Query Framework" rebrand
+- **Playwright Optimization**: Cache directory configured for faster CI runs
+
+### 🚀 CI/CD & Automation
+
+#### GitHub Actions Workflow
+
+- **New Workflow**: `.github/workflows/e2e-on-merge.yml`
+  - Auto-runs E2E tests on every push to main
+  - JWT authentication with External Client App
+  - Artifact uploads (videos and reports) on failure
+  - GitHub permissions for issue creation
+
+- **External Client App**
+  - Pre-configured for CI/CD: `JT_CI_Runner`
+  - JWT certificate (valid until Dec 2, 2027)
+  - Excluded from Git (.gitignore, .forceignore)
+
+#### Smart Deploy Scripts
+
+- **setup-org-url.sh**: Auto-detects current org URL
+- **deploy-with-replacement.sh**: Deploys Named Credential with string replacement
+- **smart-deploy.sh**: Auto-detects org changes and re-configures
+- **deploy-alias.sh**: Sets up shell aliases (`jt-deploy`, `jt-setup`)
+
+#### Multi-Org Support
+
+- **Dynamic URL Provisioning**: Works across dev/sandbox/production
+- **Auto-Detection**: Compares current org with cached URL
+- **Git Clean**: Placeholder in XML, replacement during deploy
+- **`.env` File**: Caches org URL for mismatch detection
+
+### 🔧 Tooling API Updates
+
+- **Named Credentials**: Updated to use `callout:JT_Tooling_API` prefix
+- **NoAuthentication Protocol**: Session ID passed manually in code
+- **isToolingAPIAvailable()**: Updated to check Named Credential instead of Remote Site
+- **Error Messages**: Reference new setup scripts
+
+### 📚 Documentation
+
+- **scripts/SETUP_NAMED_CREDENTIAL.md**: Complete automation guide
+- **scripts/WORKFLOW_EXAMPLE.md**: Multi-org deployment examples
+- **scripts/README.md**: All scripts with usage examples
+- **.github/CI_SETUP.md**: GitHub Actions configuration guide
+- **.github/BUG_FIXES_SUMMARY.md**: Bug tracking with test validation
+
+### 🔐 Security
+
+- `.env` excluded from Git (contains org-specific URLs)
+- `.env.example` provided as template
+- Certificates and keys excluded (.gitignore)
+- External Client App excluded from repo (.forceignore)
+
+---
+
 ## [2.1.0] - 2025-12-02
 
 ### 🏗️ Major Architectural Refactor (Domain/Service/Selector Pattern)

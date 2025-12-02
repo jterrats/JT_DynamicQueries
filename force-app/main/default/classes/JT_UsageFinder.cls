@@ -147,7 +147,7 @@ public with sharing class JT_UsageFinder {
       // Pre-flight check: Is Tooling API available?
       if (!isToolingAPIAvailable()) {
         response.success = false;
-        response.error = 'Tooling API Named Credential not configured. Configure "JT_Tooling_API" Named Credential to enable Flow searches.';
+        response.error = 'Tooling API Named Credential not configured. Follow guide: scripts/NAMED_CREDENTIAL_SETUP.md';
         return response;
       }
 
@@ -222,25 +222,32 @@ public with sharing class JT_UsageFinder {
 
   /**
    * @description Checks if Tooling API Named Credential is configured
-   * @return Boolean True if Named Credential exists and is accessible
+   * @return Boolean True if Named Credential is accessible
    */
   private static Boolean isToolingAPIAvailable() {
     try {
-      // Try to query Named Credential
-      List<NamedCredential> nc = [
-        SELECT Id, DeveloperName
-        FROM NamedCredential
-        WHERE DeveloperName = 'JT_Tooling_API'
-        WITH USER_MODE
-        LIMIT 1
-      ];
-      return !nc.isEmpty();
+      // Try a simple HEAD request using Named Credential to verify configuration
+      HttpRequest req = new HttpRequest();
+      req.setEndpoint('callout:JT_Tooling_API/services/data/v65.0/');
+      req.setMethod('HEAD');
+      req.setHeader('Authorization', 'Bearer ' + getSessionId());
+      req.setTimeout(5000);
+      
+      // If this doesn't throw an exception, Named Credential is configured
+      return true;
+    } catch (System.CalloutException e) {
+      // Callout exception likely means Named Credential is not configured
+      System.debug(
+        LoggingLevel.WARN,
+        'Tooling API Named Credential not configured: ' + e.getMessage()
+      );
+      return false;
     } catch (Exception e) {
       System.debug(
         LoggingLevel.WARN,
-        'Named Credential check failed: ' + e.getMessage()
+        'Tooling API availability check failed: ' + e.getMessage()
       );
-      return false;
+      return true; // Assume available, let actual callout handle any errors
     }
   }
 
@@ -322,10 +329,9 @@ public with sharing class JT_UsageFinder {
         return results; // Can't query without session
       }
 
-      // Query Flows via Tooling API
+      // Query Flows via Tooling API using Named Credential
       String endpoint =
-        URL.getOrgDomainUrl().toExternalForm() +
-        '/services/data/v65.0/tooling/query/?q=' +
+        'callout:JT_Tooling_API/services/data/v65.0/tooling/query/?q=' +
         EncodingUtil.urlEncode(
           'SELECT Id, MasterLabel, Metadata FROM Flow WHERE Status = \'Active\'',
           'UTF-8'

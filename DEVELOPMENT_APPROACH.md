@@ -33,7 +33,7 @@ Feature: Query Data Preview
 ### 2. **TDD: Write E2E Test First (Playwright)**
 
 ```javascript
-test('should show data preview after config selection', async ({ page }) => {
+test("should show data preview after config selection", async ({ page }) => {
   // Arrange
   await navigateToQueryViewer(page);
   const combobox = page.locator('[data-testid="config-selector"]');
@@ -82,6 +82,7 @@ test('should show data preview after config selection', async ({ page }) => {
 ## 📋 Workflow: Real Bug Fix Example (From Today)
 
 ### Bug Report
+
 > **Bug #1:** Toasts don't disappear automatically
 > **Bug #2:** Query preview shows only SOQL text, not actual data
 > **Bug #3:** Parameter 'searchName' error when executing query
@@ -90,17 +91,17 @@ test('should show data preview after config selection', async ({ page }) => {
 
 ```javascript
 // Test for Bug #1
-test('toast should auto-dismiss after 5 seconds', async ({ page }) => {
+test("toast should auto-dismiss after 5 seconds", async ({ page }) => {
   await page.click('[data-testid="execute-button"]');
-  const toast = page.locator('.slds-notify');
+  const toast = page.locator(".slds-notify");
   await expect(toast).toBeVisible();
   await page.waitForTimeout(6000);
   await expect(toast).not.toBeVisible(); // ❌ Fails here
 });
 
 // Test for Bug #2
-test('should display data preview table with records', async ({ page }) => {
-  await selectConfig(page, 'Test Record');
+test("should display data preview table with records", async ({ page }) => {
+  await selectConfig(page, "Test Record");
   await page.waitForTimeout(2000);
 
   const previewTable = page.locator('[data-testid="query-preview-table"]');
@@ -122,6 +123,7 @@ npm run test:e2e
 ### Step 3: Fix Based on Errors (One at a time)
 
 #### Fix #1: Toast Dismissal
+
 ```javascript
 // ❌ Before (Error: mode not set)
 showSuccessToast(message) {
@@ -294,9 +296,9 @@ static void testExecuteQueryPreview() {
 ### LWC E2E Tests (Playwright)
 
 ```javascript
-test('should paginate preview data', async ({ page }) => {
+test("should paginate preview data", async ({ page }) => {
   // Arrange
-  await selectConfig(page, 'All Active');
+  await selectConfig(page, "All Active");
   await page.waitForTimeout(2000);
 
   // Act
@@ -305,16 +307,16 @@ test('should paginate preview data', async ({ page }) => {
 
   // Assert
   const pageInfo = page.locator('[data-testid="preview-page-info"]');
-  await expect(pageInfo).toContainText('Page 2 of');
+  await expect(pageInfo).toContainText("Page 2 of");
 });
 ```
 
 ### LWC Jest Tests (Unit)
 
 ```javascript
-describe('jtQueryViewer', () => {
-  it('should initialize with empty preview data', () => {
-    const element = createElement('c-jt-query-viewer', {
+describe("jtQueryViewer", () => {
+  it("should initialize with empty preview data", () => {
+    const element = createElement("c-jt-query-viewer", {
       is: JtQueryViewer
     });
     document.body.appendChild(element);
@@ -330,9 +332,11 @@ describe('jtQueryViewer', () => {
 ## 📊 Real Example: Today's Implementation
 
 ### Feature Request
+
 > "Add data preview to show actual query results (not just SOQL text)"
 
 ### BDD Scenario
+
 ```gherkin
 Scenario: Preview shows query data
   Given I select "Test Record" configuration
@@ -345,8 +349,9 @@ Scenario: Preview shows query data
 ### Error-Driven Implementation Flow
 
 #### Step 1: Write E2E Test
+
 ```javascript
-test('should show data preview table', async ({ page }) => {
+test("should show data preview table", async ({ page }) => {
   const table = page.locator('[data-testid="query-preview-table"]');
   await expect(table).toBeVisible();
 });
@@ -355,18 +360,20 @@ test('should show data preview table', async ({ page }) => {
 **Result:** ❌ `Error: Locator not found`
 
 #### Step 2: Add HTML Element
+
 ```html
 <lightning-datatable
   data-testid="query-preview-table"
   key-field="Id"
-  data={previewPaginatedData}
-  columns={previewColumns}
+  data="{previewPaginatedData}"
+  columns="{previewColumns}"
 ></lightning-datatable>
 ```
 
 **Result:** ❌ `Error: Cannot read property 'previewPaginatedData'`
 
 #### Step 3: Add LWC Properties
+
 ```javascript
 @track queryPreviewData = [];
 @track previewColumns = [];
@@ -381,6 +388,7 @@ get previewPaginatedData() {
 **Result:** ❌ `Error: executeQueryPreview is not a function`
 
 #### Step 4: Import Apex Method
+
 ```javascript
 import executeQueryPreview from "@salesforce/apex/JT_QueryViewerController.executeQueryPreview";
 ```
@@ -388,6 +396,7 @@ import executeQueryPreview from "@salesforce/apex/JT_QueryViewerController.execu
 **Result:** ❌ `Error: Method does not exist`
 
 #### Step 5: Create Apex Method
+
 ```apex
 @AuraEnabled
 public static QueryResult executeQueryPreview(
@@ -413,6 +422,7 @@ public static QueryResult executeQueryPreview(
 **Result:** ❌ `Error: List has no rows for assignment`
 
 #### Step 6: Add LIMIT to Config Query
+
 ```apex
 JT_DynamicQueryConfiguration__mdt config = [
   SELECT JT_BaseQuery__c
@@ -426,6 +436,7 @@ JT_DynamicQueryConfiguration__mdt config = [
 **Result:** ✅ **Test passes!**
 
 #### Step 7: Write Apex Unit Test
+
 ```apex
 @isTest
 static void testExecuteQueryPreview() {
@@ -444,6 +455,7 @@ static void testExecuteQueryPreview() {
 **Result:** ✅ **All tests pass (E2E + Apex)**
 
 #### Step 8: Commit
+
 ```bash
 git add -A
 git commit -m "feat(preview): Add query data preview with pagination
@@ -474,18 +486,21 @@ TDD: All tests green (11/11) ✓"
 ## 🎓 Benefits of This Approach (Salesforce Context)
 
 ### BDD Benefits in Salesforce
+
 - ✅ **Business-readable tests** - PMs understand Gherkin scenarios
 - ✅ **Living documentation** - Feature files = Jira acceptance criteria
 - ✅ **Cross-team alignment** - Devs, QA, and stakeholders speak same language
 - ✅ **Requirement traceability** - Each scenario maps to a user story
 
 ### EDD Benefits in Salesforce
+
 - ✅ **No guessing Salesforce limits** - Errors reveal governor limits
 - ✅ **Minimal code** - Build only what errors demand
 - ✅ **Fast feedback loop** - Run → error → fix → repeat
 - ✅ **Learn platform constraints** - Errors teach Salesforce best practices
 
 ### TDD Benefits in Salesforce
+
 - ✅ **Deployment confidence** - Tests prevent bad deploys
 - ✅ **Code coverage** - Meet 75% requirement naturally
 - ✅ **Refactor safely** - Tests catch regressions
@@ -531,24 +546,24 @@ Does your change involve Apex?
 ```mermaid
 graph TD
     A[1. Modificar Código Apex] --> B[2. Escribir/Actualizar Unit Test Apex<br/>- @isTest method<br/>- Test happy path + error cases]
-    
+
     B --> C[3. Deploy Cambios<br/>sf project deploy start]
-    
+
     C --> D[4. Run Apex Tests del Proyecto<br/>sf apex run test --test-level RunLocalTests]
-    
+
     D --> E{Tests Pass?}
-    
+
     E -->|❌ Failure| F[Revisar Errores<br/>- Stack trace<br/>- Assertions]
     F --> G[Corregir<br/>- Fix code<br/>- Update test]
     G --> H[Reiterar<br/>Back to Step 3]
     H --> C
-    
+
     E -->|✅ Success| I[5. Pasar a E2E Tests<br/>npm run test:e2e]
-    
+
     I --> J[6. Review E2E Videos]
     J --> K[7. Manual Validation]
     K --> L[8. ✅ Commit & Push]
-    
+
     style A fill:#e1f5ff
     style B fill:#fff4e1
     style C fill:#ffe1f5
@@ -579,6 +594,7 @@ Local Tests → Deploy to Org → Validate in Org → Commit → Push
 #### **Phase 1: Local Development (Error-Driven)**
 
 **Option A: With Local Dev (Hot Reload) - For UI/Style Changes**
+
 1. Write BDD scenario (Gherkin or plain English)
 2. Start Local Dev server: `sf lightning dev app --name "Dynamic Queries"`
 3. Make HTML/CSS/JS changes
@@ -587,6 +603,7 @@ Local Tests → Deploy to Org → Validate in Org → Commit → Push
 6. When UI looks good → Proceed to Phase 2
 
 **Option B: Traditional (No Hot Reload) - For Backend/API Changes**
+
 1. Write BDD scenario
 2. Write E2E test (Playwright for LWC)
 3. Make changes to Apex/@api/@wire
@@ -594,6 +611,7 @@ Local Tests → Deploy to Org → Validate in Org → Commit → Push
 5. Proceed to Phase 2 (must deploy to see changes)
 
 **💡 Use Local Dev when:**
+
 - Changing HTML structure
 - Adjusting CSS styles
 - Refining UI/UX
@@ -601,6 +619,7 @@ Local Tests → Deploy to Org → Validate in Org → Commit → Push
 - Visual polish
 
 **💡 Use Traditional when:**
+
 - Adding @api properties
 - Changing Apex methods
 - Modifying @wire adapters
@@ -608,33 +627,40 @@ Local Tests → Deploy to Org → Validate in Org → Commit → Push
 - Backend logic changes
 
 #### **Phase 2: Org Validation (MANDATORY)**
+
 9. **Deploy to target org (sandbox/scratch)**
    ```bash
    sf project deploy start --target-org <alias>
    ```
 10. **Run Apex tests in org**
-   ```bash
-   sf apex run test --target-org <alias> --test-level RunLocalTests
-   ```
+
+```bash
+sf apex run test --target-org <alias> --test-level RunLocalTests
+```
+
 11. **Run E2E tests AFTER deploy (they test against the org)**
-   ```bash
-   npm run test:e2e
-   ```
-   ⚠️ **Important:** E2E tests run against deployed code in org, so deploy MUST happen first!
-   
+
+```bash
+npm run test:e2e
+```
+
+⚠️ **Important:** E2E tests run against deployed code in org, so deploy MUST happen first!
+
 12. **Review E2E videos/screenshots (MANDATORY):**
-   - Check `test-results/` folder for videos
-   - Watch all recorded test runs
-   - Validate UI/UX visually:
-     * ✅ Styles render correctly
-     * ✅ Spacing and alignment proper
-     * ✅ Colors match design
-     * ✅ Responsive layout works
-     * ✅ Animations smooth
-     * ✅ No visual glitches
-     * ❌ No UI elements cut off
-     * ❌ No overlapping elements
-     * ❌ No broken layouts
+
+- Check `test-results/` folder for videos
+- Watch all recorded test runs
+- Validate UI/UX visually:
+  - ✅ Styles render correctly
+  - ✅ Spacing and alignment proper
+  - ✅ Colors match design
+  - ✅ Responsive layout works
+  - ✅ Animations smooth
+  - ✅ No visual glitches
+  - ❌ No UI elements cut off
+  - ❌ No overlapping elements
+  - ❌ No broken layouts
+
 13. Verify deployment success and test results
 14. **Manual validation in org UI:**
     - Navigate to component
@@ -646,6 +672,7 @@ Local Tests → Deploy to Org → Validate in Org → Commit → Push
 15. If any issues found → Fix → Redeploy → Revalidate
 
 #### **Phase 3: Commit (Only After Org Validation)**
+
 14. All tests pass in org ✅
 15. Manual validation complete ✅
 16. No console errors ✅
@@ -661,11 +688,13 @@ Local Tests → Deploy to Org → Validate in Org → Commit → Push
 ### For Bug Fixes:
 
 #### **Phase 1: Reproduce in Target Org**
+
 1. Reproduce bug in target org first
 2. Document exact steps to reproduce
 3. Take screenshots/video if helpful
 
 #### **Phase 2: Local Fix (Error-Driven)**
+
 4. Write E2E test that reproduces bug
 5. Verify test fails
 6. Let error guide fix
@@ -674,6 +703,7 @@ Local Tests → Deploy to Org → Validate in Org → Commit → Push
 9. Write regression Apex test if needed
 
 #### **Phase 3: Org Validation (MANDATORY)**
+
 10. Deploy fix to target org
 11. Run Apex tests in org
 12. **Manually verify bug is fixed:**
@@ -684,6 +714,7 @@ Local Tests → Deploy to Org → Validate in Org → Commit → Push
 13. If bug persists → Fix → Redeploy → Revalidate
 
 #### **Phase 4: Commit (Only After Org Validation)**
+
 14. Bug confirmed fixed in org ✅
 15. No regressions introduced ✅
 16. All tests pass ✅
@@ -699,6 +730,7 @@ Local Tests → Deploy to Org → Validate in Org → Commit → Push
 ## 🛠️ Tools & Stack
 
 ### Testing Stack
+
 ```
 E2E Tests (User Flows)
   ├─ Playwright (JavaScript)
@@ -717,6 +749,7 @@ LWC Tests (Component Logic)
 ```
 
 ### CI/CD Pipeline
+
 ```yaml
 # .github/workflows/ci.yml
 - Run Apex tests (sf apex run test)

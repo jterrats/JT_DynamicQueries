@@ -56,6 +56,10 @@ export default class JtCacheModal extends LightningElement {
     );
   }
 
+  get isClearDisabled() {
+    return !this.hasSelections;
+  }
+
   // Event handlers
   handleConfigChange(event) {
     this.clearConfigurations = event.target.checked;

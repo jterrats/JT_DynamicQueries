@@ -23,6 +23,8 @@ import updateUsageTrackingSetting from "@salesforce/apex/JT_ProductionSettingsCo
 import logUsageSearch from "@salesforce/apex/JT_ProductionSettingsController.logUsageSearch";
 import findConfigurationUsage from "@salesforce/apex/JT_UsageFinder.findConfigurationUsage";
 import findAllUsagesResilient from "@salesforce/apex/JT_UsageFinder.findAllUsagesResilient";
+import assessQueryRisk from "@salesforce/apex/JT_QueryViewerController.assessQueryRisk";
+import executeQueryWithBatchProcessing from "@salesforce/apex/JT_QueryViewerController.executeQueryWithBatchProcessing";
 
 export default class JtQueryViewer extends LightningElement {
   @track selectedConfig = "";
@@ -88,6 +90,12 @@ export default class JtQueryViewer extends LightningElement {
   @track queryValidation = { isValid: false, message: "" };
   @track isSaving = false;
   @track showCacheModal = false;
+
+  // Query Risk Assessment
+  @track showRiskWarningModal = false;
+  @track queryRiskAssessment = null;
+  @track isAssessingRisk = false;
+  @track pendingExecutionMode = "normal"; // 'normal' or 'batch'
 
   // Store wired results for refreshing
   wiredConfigsResult;
@@ -170,16 +178,23 @@ export default class JtQueryViewer extends LightningElement {
     if (!this.orgInfo) return "";
     const orgType = this.orgInfo.organizationType || "";
 
-    if (this.orgInfo.isSandbox) return "Sandbox";
-    if (this.orgInfo.isScratch) return "Scratch Org";
-    if (orgType === "Developer Edition") return "Developer";
+    if (this.orgInfo.isSandbox) return "Org Type: Sandbox";
+    if (this.orgInfo.isScratch) return "Org Type: Scratch Org";
+    if (orgType === "Developer Edition") return "Org Type: Developer Edition";
 
     // All other orgs are considered production (including Starter/Free)
-    return "Production";
+    return "Org Type: Production";
   }
 
   get orgTypeBadgeTitle() {
-    return `This is a ${this.orgTypeBadge} environment - metadata editing is allowed`;
+    const orgType = this.orgInfo?.organizationType || "";
+    if (this.orgInfo?.isSandbox)
+      return "This is a Sandbox environment - metadata editing is allowed";
+    if (this.orgInfo?.isScratch)
+      return "This is a Scratch Org - metadata editing is allowed";
+    if (orgType === "Developer Edition")
+      return "This is a Developer Edition org - metadata editing is allowed";
+    return "This is a Production environment - metadata editing is restricted";
   }
 
   // Wire to check if user can use Run As feature
@@ -291,7 +306,7 @@ export default class JtQueryViewer extends LightningElement {
         }
       })
       .catch((error) => {
-        console.error('Preview error:', error);
+        console.error("Preview error:", error);
         this.showPreviewData = false;
         this.queryPreviewData = [];
       })
@@ -448,6 +463,12 @@ export default class JtQueryViewer extends LightningElement {
 
   // Phase 1 Refactor: Updated to use generic combobox event
   handleConfigSelect(event) {
+    console.log("📋 handleConfigSelect CALLED");
+    console.log(
+      "📋 Current runAsUserId BEFORE config change:",
+      this.runAsUserId
+    );
+
     const { value, data } = event.detail; // label unused
 
     this.selectedConfig = value;
@@ -465,9 +486,14 @@ export default class JtQueryViewer extends LightningElement {
     }
 
     this.resetResults();
-    
+
     // Load query preview data
     this.loadQueryPreview();
+
+    console.log(
+      "📋 Current runAsUserId AFTER config change:",
+      this.runAsUserId
+    );
   }
 
   // Phase 1 Refactor: Clear configuration
@@ -517,8 +543,34 @@ export default class JtQueryViewer extends LightningElement {
   // Phase 2 Refactor: Updated to use jtParameterInputs event
   handleParameterChange(event) {
     // Event from jtParameterInputs component
-    const { allValues } = event.detail;
+    console.log("🔥 handleParameterChange CALLED!");
+    console.log("🔥 event.detail:", JSON.stringify(event.detail, null, 2));
+
+    const { paramName, value, allValues } = event.detail;
+
+    // 🛡️ CRITICAL FIX: Validate allValues exists
+    // This prevents native 'change' event from overwriting with undefined
+    if (!allValues || typeof allValues !== "object") {
+      console.log(
+        "⚠️ IGNORING: Invalid event (missing allValues) - likely native change event"
+      );
+      console.log(
+        "⚠️ This is expected - lightning-input fires both custom and native events"
+      );
+      return; // Early exit - ignore this event
+    }
+
+    console.log("🔥 paramName:", paramName);
+    console.log("🔥 single value:", value);
+    console.log("🔥 allValues:", JSON.stringify(allValues, null, 2));
+
     this.parameterValues = allValues;
+
+    console.log(
+      "✅ this.parameterValues AFTER assignment:",
+      JSON.stringify(this.parameterValues, null, 2)
+    );
+    console.log("✅ typeof this.parameterValues:", typeof this.parameterValues);
   }
 
   // Handle user selection from dropdown
@@ -527,8 +579,16 @@ export default class JtQueryViewer extends LightningElement {
   // Phase 1 Refactor: Updated to use generic combobox event
   handleUserSelect(event) {
     const { value, label } = event.detail;
+    console.log("👤 handleUserSelect CALLED");
+    console.log("👤 value (userId):", value);
+    console.log("👤 label (userName):", label);
+
     this.runAsUserId = value;
     this.runAsUserName = label;
+
+    console.log("👤 AFTER assignment:");
+    console.log("👤 this.runAsUserId:", this.runAsUserId);
+    console.log("👤 this.runAsUserName:", this.runAsUserName);
   }
 
   // Phase 1 Refactor: Clear user selection (from combobox)
@@ -538,6 +598,8 @@ export default class JtQueryViewer extends LightningElement {
 
   // Clear Run As user
   handleClearRunAs() {
+    console.log("🗑️ handleClearRunAs CALLED - Clearing runAsUserId");
+    console.trace("🗑️ Stack trace:");
     this.runAsUserId = "";
     this.runAsUserName = "";
   }
@@ -573,10 +635,7 @@ export default class JtQueryViewer extends LightningElement {
       .then((result) => {
         if (result.success) {
           this.testJobId = result.jobId;
-          this.showInfoToast(
-            "Test Execution Started",
-            result.message || "Polling for results..."
-          );
+          // Don't show toast here - only show final result to avoid stacking
           // Start polling for results
           this.startPollingTestResults();
         } else {
@@ -597,9 +656,29 @@ export default class JtQueryViewer extends LightningElement {
   // Build bindings JSON helper
   buildBindingsJson() {
     if (this.hasBindings && !this.hasParameters) {
+      // Config has predefined bindings
       return this.bindings;
     } else if (this.hasParameters) {
-      return JSON.stringify(this.parameterValues);
+      // Has dynamic parameters
+      const paramValues = this.parameterValues || {};
+      const hasAnyValues = Object.keys(paramValues).some(
+        (key) =>
+          paramValues[key] !== "" &&
+          paramValues[key] !== null &&
+          paramValues[key] !== undefined
+      );
+
+      // ⚠️ VALIDATION: Don't overwrite config bindings with empty values
+      if (!hasAnyValues && this.hasBindings) {
+        // Parameters empty → Fall back to config bindings
+        return this.bindings;
+      } else if (!hasAnyValues) {
+        // No values at all → Empty JSON
+        return JSON.stringify({});
+      } else {
+        // Has values → Use them
+        return JSON.stringify(paramValues);
+      }
     }
     return null;
   }
@@ -698,10 +777,10 @@ export default class JtQueryViewer extends LightningElement {
     } else {
       // Show empty table with columns
       this.queryResults = [];
-      this.hasResults = true; // Changed: show table even with 0 results
-      this.showTestResults = true; // Changed: show section
+      this.hasResults = true; // Show table even with 0 results
+      this.showTestResults = true; // Show section
       this.resetPagination();
-      this.showInfoToast("No Results", "Test query returned no records.");
+      // Don't show "No Results" toast - the success toast already indicates record count
     }
   }
 
@@ -1151,7 +1230,7 @@ export default class JtQueryViewer extends LightningElement {
     );
   }
 
-  // Execute the query
+  // Execute the query (entry point with risk assessment)
   handleExecuteQuery() {
     if (!this.selectedConfig) {
       this.showErrorToast(
@@ -1161,38 +1240,135 @@ export default class JtQueryViewer extends LightningElement {
       return;
     }
 
+    // 🐛 DEBUG: Log current state
+    console.log("=== handleExecuteQuery CALLED ===");
+    console.log("this.runAsUserId:", this.runAsUserId);
+    console.log("this.runAsUserName:", this.runAsUserName);
+    console.log("typeof runAsUserId:", typeof this.runAsUserId);
+    console.log("Boolean check:", !!this.runAsUserId);
+
+    // 🎯 SMART ROUTING: If runAsUserId is selected, use System.runAs() flow
+    if (this.runAsUserId) {
+      console.log("🔀 User selected for Run As → Using System.runAs() flow");
+      console.log("🔀 Calling handleExecuteAsUserTest()...");
+      this.handleExecuteAsUserTest(); // Use test class with System.runAs()
+      return;
+    }
+
+    // 🚨 RISK ASSESSMENT: Check if query is dangerous before executing
+    console.log("🔀 No Run As user → Assessing query risk...");
+    this.assessQueryRiskAndExecute();
+  }
+
+  // Assess query risk and show warning if necessary
+  assessQueryRiskAndExecute() {
+    this.isAssessingRisk = true;
+    this.isLoading = true;
+
+    // Build bindings JSON (same logic as before)
+    const bindingsToSend = this.buildBindingsJson();
+
+    console.log("📊 Calling assessQueryRisk...");
+    assessQueryRisk({
+      devName: this.selectedConfig,
+      bindingsJson: bindingsToSend
+    })
+      .then((assessment) => {
+        console.log("📊 Risk Assessment:", assessment);
+        this.queryRiskAssessment = assessment;
+
+        // If critical risk (>50K) → MUST use batch processing
+        if (assessment.isCriticalRisk) {
+          this.showRiskWarningModal = true;
+          this.pendingExecutionMode = "batch"; // Force batch mode
+        }
+        // If high risk (>10K) → Recommend batch processing
+        else if (assessment.isHighRisk || assessment.recommendBatchProcessing) {
+          this.showRiskWarningModal = true;
+          this.pendingExecutionMode = "batch"; // Suggest batch mode
+        }
+        // Low risk → Execute normally
+        else {
+          console.log("✅ Low risk detected, executing normally...");
+          this.executeQueryNormal();
+        }
+      })
+      .catch((error) => {
+        console.error("⚠️ Risk assessment failed:", error);
+        // If assessment fails, proceed with caution (execute normally)
+        this.executeQueryNormal();
+      })
+      .finally(() => {
+        this.isAssessingRisk = false;
+      });
+  }
+
+  // Build bindings JSON (extracted from handleExecuteQuery)
+  buildBindingsJson() {
+    let bindingsToSend;
+
+    // 🐛 DEBUG: Log binding construction
+    console.log("🔍 Building bindings...");
+    console.log("🔍 hasBindings:", this.hasBindings);
+    console.log("🔍 hasParameters:", this.hasParameters);
+    console.log("🔍 this.bindings:", this.bindings);
+    console.log(
+      "🔍 this.parameters:",
+      JSON.stringify(this.parameters, null, 2)
+    );
+    console.log(
+      "🔍 this.parameterValues BEFORE stringify:",
+      JSON.stringify(this.parameterValues, null, 2)
+    );
+
+    if (this.hasBindings && !this.hasParameters) {
+      // Use bindings from configuration
+      bindingsToSend = this.bindings;
+      console.log("✅ Using config bindings:", bindingsToSend);
+    } else if (this.hasParameters) {
+      // Use parameter values entered by user
+      // ⚠️ VALIDATION: Don't overwrite config bindings with empty/null values
+      const paramValues = this.parameterValues || {};
+      const hasAnyValues = Object.keys(paramValues).some(
+        (key) =>
+          paramValues[key] !== "" &&
+          paramValues[key] !== null &&
+          paramValues[key] !== undefined
+      );
+
+      if (!hasAnyValues && this.hasBindings) {
+        // Parameters are empty but config has bindings → Use config bindings
+        console.log("⚠️ Parameters empty, falling back to config bindings");
+        bindingsToSend = this.bindings;
+      } else if (!hasAnyValues && !this.hasBindings) {
+        // No values and no config bindings → Send empty object
+        console.log("⚠️ No parameter values entered, sending empty bindings");
+        bindingsToSend = JSON.stringify({});
+      } else {
+        // Has values → Use parameter values
+        bindingsToSend = JSON.stringify(paramValues);
+        console.log("✅ Using parameter values");
+        console.log("✅ parameterValues object:", paramValues);
+        console.log("✅ Stringified bindings:", bindingsToSend);
+        console.log("✅ Keys in parameterValues:", Object.keys(paramValues));
+      }
+    } else {
+      bindingsToSend = null;
+      console.log("⚠️ No bindings needed");
+    }
+
+    console.log("🚀 Final bindingsToSend:", bindingsToSend);
+    return bindingsToSend;
+  }
+
+  // Execute query normally (without batch processing)
+  executeQueryNormal() {
+    console.log("🔀 Executing query normally...");
     this.isLoading = true;
     this.showError = false;
     this.resetResults();
 
-    // Build bindings JSON
-    let bindingsToSend;
-    
-    // 🐛 DEBUG: Log binding construction
-    console.log('🔍 Building bindings...');
-    console.log('🔍 hasBindings:', this.hasBindings);
-    console.log('🔍 hasParameters:', this.hasParameters);
-    console.log('🔍 this.bindings:', this.bindings);
-    console.log('🔍 this.parameters:', JSON.stringify(this.parameters, null, 2));
-    console.log('🔍 this.parameterValues BEFORE stringify:', JSON.stringify(this.parameterValues, null, 2));
-    
-    if (this.hasBindings && !this.hasParameters) {
-      // Use bindings from configuration
-      bindingsToSend = this.bindings;
-      console.log('✅ Using config bindings:', bindingsToSend);
-    } else if (this.hasParameters) {
-      // Use parameter values entered by user
-      bindingsToSend = JSON.stringify(this.parameterValues);
-      console.log('✅ Using parameter values');
-      console.log('✅ parameterValues object:', this.parameterValues);
-      console.log('✅ Stringified bindings:', bindingsToSend);
-      console.log('✅ Keys in parameterValues:', Object.keys(this.parameterValues));
-    } else {
-      bindingsToSend = null;
-      console.log('⚠️ No bindings needed');
-    }
-    
-    console.log('🚀 Final bindingsToSend:', bindingsToSend);
+    const bindingsToSend = this.buildBindingsJson();
 
     executeQuery({
       devName: this.selectedConfig,
@@ -1221,6 +1397,62 @@ export default class JtQueryViewer extends LightningElement {
       .finally(() => {
         this.isLoading = false;
       });
+  }
+
+  // Execute query with batch processing (for large result sets)
+  executeQueryWithBatches() {
+    console.log("🔀 Executing query with batch processing...");
+    this.isLoading = true;
+    this.showError = false;
+    this.resetResults();
+
+    const bindingsToSend = this.buildBindingsJson();
+
+    executeQueryWithBatchProcessing({
+      devName: this.selectedConfig,
+      bindingsJson: bindingsToSend,
+      batchSize: 200 // Process 200 records at a time
+    })
+      .then((result) => {
+        if (result.success) {
+          this.processQueryResults(result);
+          this.showSuccessToast(
+            `Found ${result.recordCount} record(s) (Batch Processing)`
+          );
+        } else {
+          this.showError = true;
+          this.errorMessage = result.errorMessage;
+          this.showErrorToast("Query Error", result.errorMessage);
+        }
+      })
+      .catch((error) => {
+        this.showError = true;
+        this.errorMessage = error.body?.message || "Unknown error occurred";
+        this.showErrorToast("Execution Error", this.errorMessage);
+      })
+      .finally(() => {
+        this.isLoading = false;
+      });
+  }
+
+  // Handle risk warning modal actions
+  handleProceedWithBatch() {
+    console.log("✅ User confirmed: Proceeding with batch processing");
+    this.showRiskWarningModal = false;
+    this.executeQueryWithBatches();
+  }
+
+  handleProceedNormal() {
+    console.log("✅ User confirmed: Proceeding with normal execution");
+    this.showRiskWarningModal = false;
+    this.executeQueryNormal();
+  }
+
+  handleCancelExecution() {
+    console.log("❌ User cancelled execution");
+    this.showRiskWarningModal = false;
+    this.isLoading = false;
+    this.showInfoToast("Execution Cancelled", "Query execution was cancelled.");
   }
 
   // Process query results for datatable

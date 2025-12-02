@@ -5,6 +5,7 @@
 **E2E test videos/screenshots are not just for debugging—they're a critical part of UI/UX validation.**
 
 ### What Videos/Screenshots Reveal:
+
 - ✅ Actual rendered styles (not just code)
 - ✅ User experience flow
 - ✅ Timing and animations
@@ -21,6 +22,7 @@
 ### Before Every Commit, Review E2E Videos For:
 
 #### **Layout & Spacing**
+
 - [ ] Components are properly aligned
 - [ ] Margins and padding are consistent
 - [ ] No overlapping elements
@@ -28,6 +30,7 @@
 - [ ] Grid/flex layouts work correctly
 
 #### **Typography**
+
 - [ ] Font sizes are correct
 - [ ] Font weights match design
 - [ ] Line heights are readable
@@ -35,6 +38,7 @@
 - [ ] No text truncation issues
 
 #### **Colors & Theming**
+
 - [ ] Brand colors applied correctly
 - [ ] Hover states work
 - [ ] Focus states visible
@@ -43,6 +47,7 @@
 - [ ] Success states show green
 
 #### **Components**
+
 - [ ] Buttons render correctly
 - [ ] Dropdowns open smoothly
 - [ ] Tables format properly
@@ -53,6 +58,7 @@
 - [ ] Pagination controls visible
 
 #### **Responsive Design**
+
 - [ ] Mobile viewport renders correctly
 - [ ] Tablet viewport works
 - [ ] Desktop viewport optimal
@@ -60,6 +66,7 @@
 - [ ] Touch targets adequate size
 
 #### **Interactions**
+
 - [ ] Click animations smooth
 - [ ] Hover effects work
 - [ ] Focus indicators visible
@@ -67,6 +74,7 @@
 - [ ] Loading states clear
 
 #### **Salesforce-Specific**
+
 - [ ] SLDS components styled correctly
 - [ ] Lightning Design System consistency
 - [ ] Salesforce theme compatibility
@@ -78,6 +86,7 @@
 ## 🎬 How to Review E2E Videos
 
 ### Step 1: Run E2E Tests
+
 ```bash
 npm run test:e2e
 ```
@@ -85,6 +94,7 @@ npm run test:e2e
 **Result:** Videos saved to `test-results/` folder
 
 ### Step 2: Locate Videos
+
 ```bash
 # List all generated videos
 find test-results -name "*.webm" -type f
@@ -95,6 +105,7 @@ find test-results -name "*.webm" -type f
 ```
 
 ### Step 3: Watch All Videos
+
 ```bash
 # Open video folder
 open test-results/
@@ -104,7 +115,9 @@ open test-results/
 ```
 
 ### Step 4: Validate Against Checklist
+
 For each video, check:
+
 1. **Does the UI look correct?**
 2. **Are styles applied properly?**
 3. **Is spacing/alignment good?**
@@ -112,6 +125,7 @@ For each video, check:
 5. **Are there any visual glitches?**
 
 ### Step 5: Compare with Design
+
 - Compare video with design mockups
 - Check against SLDS guidelines
 - Verify brand consistency
@@ -122,6 +136,7 @@ For each video, check:
 ## 🚨 Common Visual Issues to Catch
 
 ### Layout Issues
+
 ```
 ❌ Elements overlapping
 ❌ Components cut off at edge
@@ -131,6 +146,7 @@ For each video, check:
 ```
 
 ### Styling Issues
+
 ```
 ❌ Wrong font family
 ❌ Incorrect colors
@@ -140,6 +156,7 @@ For each video, check:
 ```
 
 ### Component Issues
+
 ```
 ❌ Dropdown doesn't open
 ❌ Modal not centered
@@ -149,6 +166,7 @@ For each video, check:
 ```
 
 ### Responsive Issues
+
 ```
 ❌ Horizontal scroll on mobile
 ❌ Text too small on mobile
@@ -164,6 +182,7 @@ For each video, check:
 ### Test: "should show data preview table"
 
 #### Video Location:
+
 ```
 test-results/queryViewerPreview-should-load-and-display/video.webm
 ```
@@ -171,22 +190,26 @@ test-results/queryViewerPreview-should-load-and-display/video.webm
 #### What to Check:
 
 **0:00-0:02** - Page Load
+
 - [ ] Component loads smoothly
 - [ ] No flash of unstyled content
 - [ ] Layout stable on load
 
 **0:02-0:04** - Config Selection
+
 - [ ] Dropdown opens correctly
 - [ ] Options styled properly
 - [ ] Hover state works
 - [ ] Selection feedback clear
 
 **0:04-0:06** - Preview Loading
+
 - [ ] Loading spinner appears
 - [ ] Spinner centered correctly
 - [ ] No layout shift
 
 **0:06-0:08** - Preview Display
+
 - [ ] Table renders properly
 - [ ] Columns aligned
 - [ ] Headers styled correctly
@@ -194,11 +217,13 @@ test-results/queryViewerPreview-should-load-and-display/video.webm
 - [ ] Pagination controls visible
 
 **0:08-0:10** - User Interaction
+
 - [ ] Hover effects work
 - [ ] Click feedback clear
 - [ ] Focus states visible
 
 #### Pass/Fail Decision:
+
 - ✅ **PASS**: All visual elements correct
 - ❌ **FAIL**: Any visual issue found → Fix before commit
 
@@ -207,12 +232,14 @@ test-results/queryViewerPreview-should-load-and-display/video.webm
 ## 🛠️ Tools for Video Review
 
 ### Recommended Players:
+
 - **VLC Media Player** - Frame-by-frame review
 - **QuickTime** - macOS native, smooth playback
 - **Chrome Browser** - Drag .webm file into browser
 - **VS Code** - Some extensions play .webm
 
 ### Frame-by-Frame Review:
+
 ```bash
 # In VLC:
 # - Press 'E' for frame-by-frame forward
@@ -226,6 +253,7 @@ test-results/queryViewerPreview-should-load-and-display/video.webm
 ```
 
 ### Screenshot Extraction:
+
 ```bash
 # Extract frame from video at 3 seconds
 ffmpeg -i test-results/video.webm -ss 00:00:03 -vframes 1 frame.png
@@ -241,6 +269,7 @@ ffmpeg -i test-results/video.webm -ss 00:00:03 -vframes 1 frame.png
 When you find a visual issue in E2E video:
 
 ### Issue Template:
+
 ```markdown
 ## Visual Issue: [Title]
 
@@ -249,19 +278,25 @@ When you find a visual issue in E2E video:
 **Timestamp:** 0:05
 
 ### Issue Description:
+
 Pagination buttons are misaligned on mobile viewport.
 
 ### Expected:
+
 Buttons should be centered horizontally.
 
 ### Actual:
+
 Buttons are left-aligned and partially cut off.
 
 ### Screenshot:
+
 [Attach frame from video]
 
 ### Fix:
+
 Update CSS in jtQueryResults.css:
+
 - Add `text-align: center` to pagination container
 - Add `justify-content: center` for flex container
 ```
@@ -271,26 +306,31 @@ Update CSS in jtQueryResults.css:
 ## 🎯 Visual Validation Best Practices
 
 ### 1. **Watch at Normal Speed First**
+
 - Get overall impression
 - Spot obvious issues
 - Check user flow
 
 ### 2. **Watch Again at 0.5x Speed**
+
 - Catch subtle issues
 - Check animations
 - Verify transitions
 
 ### 3. **Pause and Inspect**
+
 - Freeze on key screens
 - Check alignment
 - Validate spacing
 
 ### 4. **Compare Multiple Videos**
+
 - Look for consistency
 - Check patterns
 - Spot anomalies
 
 ### 5. **Document Everything**
+
 - Take screenshots
 - Note timestamps
 - Write descriptions
@@ -300,6 +340,7 @@ Update CSS in jtQueryResults.css:
 ## 📈 Integration with Workflow
 
 ### In Development Cycle:
+
 ```
 1. Write feature code
 2. Write E2E test
@@ -314,6 +355,7 @@ Update CSS in jtQueryResults.css:
 ```
 
 ### Before Every Commit:
+
 ```bash
 # 1. Run E2E tests
 npm run test:e2e
@@ -333,12 +375,14 @@ open test-results/
 ## 🎨 Visual Standards
 
 ### Salesforce Lightning Design System (SLDS)
+
 - Follow SLDS spacing scale (0.25rem, 0.5rem, 1rem, etc)
 - Use SLDS color tokens
 - Apply SLDS typography scale
 - Use SLDS component variants
 
 ### Brand Colors:
+
 - Primary: `#667eea` (purple)
 - Secondary: `#48bb78` (green)
 - Error: `#ef4444` (red)
@@ -346,6 +390,7 @@ open test-results/
 - Success: `#10b981` (green)
 
 ### Spacing Scale:
+
 - xs: `0.25rem` (4px)
 - small: `0.5rem` (8px)
 - medium: `1rem` (16px)
@@ -375,7 +420,6 @@ After reviewing ALL E2E videos:
 
 ## 🚀 Remember
 
-> **E2E videos are your eyes into the user experience.**  
-> **If it looks wrong in the video, it will look wrong to users.**  
+> **E2E videos are your eyes into the user experience.**
+> **If it looks wrong in the video, it will look wrong to users.**
 > **Never skip video review before commit!**
-

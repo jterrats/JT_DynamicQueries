@@ -16,6 +16,7 @@
 ## 📋 Setup Instructions
 
 ### 1. Install Local Dev Plugin
+
 ```bash
 # Install the plugin
 sf plugins install @salesforce/plugin-lightning-dev
@@ -27,13 +28,16 @@ sf plugins
 ### 2. Enable in Org
 
 #### For Sandbox/Production:
+
 1. Login to org
 2. Setup → Quick Find → "Local Dev"
 3. Check "Enable Local Dev (Beta)"
 4. Save
 
 #### For Scratch Org:
+
 Edit `config/project-scratch-def.json`:
+
 ```json
 {
   "settings": {
@@ -43,7 +47,9 @@ Edit `config/project-scratch-def.json`:
 ```
 
 ### 3. Disable Cookie Restriction
+
 Setup → Quick Find → "My Domain"
+
 - Uncheck "Require first-party use of Salesforce cookies"
 
 ---
@@ -51,6 +57,7 @@ Setup → Quick Find → "My Domain"
 ## 🚀 How to Use Local Dev
 
 ### Start Local Dev Server
+
 ```bash
 # For Lightning Experience app
 sf lightning dev app --name "Dynamic Queries"
@@ -66,6 +73,7 @@ sf lightning dev app --device-type android
 ```
 
 ### What Happens:
+
 1. Browser opens at special dev preview URL
 2. WebSocket connection established
 3. **Save any LWC file → Changes appear instantly!**
@@ -77,13 +85,13 @@ sf lightning dev app --device-type android
 
 Changes that **automatically update** without deploy:
 
-| Change Type | Example | Auto-Reload |
-|------------|---------|------------|
-| HTML changes | `<div>` → `<section>` | ✅ Yes |
-| CSS changes | `color: blue` → `color: red` | ✅ Yes |
-| JavaScript logic | Event handlers, methods | ✅ Yes |
-| Component references | Add `<c-my-component>` | ✅ Yes |
-| Template conditionals | `if:true={show}` changes | ✅ Yes |
+| Change Type           | Example                      | Auto-Reload |
+| --------------------- | ---------------------------- | ----------- |
+| HTML changes          | `<div>` → `<section>`        | ✅ Yes      |
+| CSS changes           | `color: blue` → `color: red` | ✅ Yes      |
+| JavaScript logic      | Event handlers, methods      | ✅ Yes      |
+| Component references  | Add `<c-my-component>`       | ✅ Yes      |
+| Template conditionals | `if:true={show}` changes     | ✅ Yes      |
 
 ---
 
@@ -91,14 +99,14 @@ Changes that **automatically update** without deploy:
 
 Changes that **require deploy + restart**:
 
-| Change Type | Example | Auto-Reload |
-|------------|---------|------------|
-| `@api` properties | Add new `@api myProp` | ❌ No - Deploy |
-| `@wire` adapters | Add/change wire config | ❌ No - Deploy |
-| Apex methods | Change `@AuraEnabled` method | ❌ No - Deploy |
-| `@salesforce` imports | Import new module | ❌ No - Deploy |
-| `.js-meta.xml` | Change metadata | ❌ No - Deploy |
-| Service components | Revise library | ❌ No - Deploy |
+| Change Type           | Example                      | Auto-Reload    |
+| --------------------- | ---------------------------- | -------------- |
+| `@api` properties     | Add new `@api myProp`        | ❌ No - Deploy |
+| `@wire` adapters      | Add/change wire config       | ❌ No - Deploy |
+| Apex methods          | Change `@AuraEnabled` method | ❌ No - Deploy |
+| `@salesforce` imports | Import new module            | ❌ No - Deploy |
+| `.js-meta.xml`        | Change metadata              | ❌ No - Deploy |
+| Service components    | Revise library               | ❌ No - Deploy |
 
 ---
 
@@ -158,6 +166,7 @@ npm run test:e2e
 ## 🎯 When to Use Local Dev vs Traditional Deploy
 
 ### Use Local Dev For:
+
 - ✅ UI/UX iterations (HTML/CSS changes)
 - ✅ Styling adjustments
 - ✅ Layout refinements
@@ -166,6 +175,7 @@ npm run test:e2e
 - ✅ Quick prototyping
 
 ### Use Traditional Deploy For:
+
 - ❌ Apex method changes
 - ❌ Adding @api/@wire properties
 - ❌ Metadata changes
@@ -211,6 +221,7 @@ git commit -m "fix(styles): Align dropdown correctly"
 ```
 
 **Time Saved:**
+
 - Without Local Dev: 10 seconds per change × 20 changes = **200 seconds (3.3 min)**
 - With Local Dev: 0 seconds per change × 20 changes = **0 seconds**
 
@@ -228,6 +239,7 @@ git commit -m "fix(styles): Align dropdown correctly"
 6. **Commit**
 
 This gives you:
+
 - ✅ Fast iteration (Local Dev)
 - ✅ Automated validation (E2E tests)
 - ✅ Visual proof (E2E videos)
@@ -238,6 +250,7 @@ This gives you:
 ## 🚨 Limitations to Know
 
 ### Not Supported in Local Dev:
+
 - ❌ Testing with real Salesforce data
 - ❌ Testing governor limits
 - ❌ Testing USER_MODE security
@@ -246,6 +259,7 @@ This gives you:
 - ❌ Platform Cache testing
 
 ### Still Need Org Testing For:
+
 - Security validation
 - Data access validation
 - Governor limit testing
@@ -302,4 +316,3 @@ sf lightning dev component --name "jtQueryViewer"
 ---
 
 **Local Dev = Game Changer for UI development! 🚀**
-

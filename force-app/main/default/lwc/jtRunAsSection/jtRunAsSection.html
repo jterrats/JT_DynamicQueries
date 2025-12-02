@@ -27,6 +27,17 @@
         </div>
         <div class="slds-media__body">
           <p class="slds-text-body_regular">{noteText}</p>
+          <p class="slds-text-body_small slds-m-top_xx-small">
+            <lightning-icon
+              icon-name="utility:success"
+              size="xx-small"
+              class="slds-m-right_xx-small"
+            ></lightning-icon>
+            <strong
+              >When you select a user and click "Execute Query", the query will
+              run as that user using System.runAs() in test context.</strong
+            >
+          </p>
         </div>
       </div>
     </div>
@@ -60,10 +71,10 @@
       </div>
     </template>
 
-    <!-- Action Buttons (when user selected) -->
+    <!-- Action Button (when user selected) -->
     <template if:true={showButtons}>
       <div
-        class="slds-p-top_x-small slds-grid slds-grid_align-spread"
+        class="slds-p-top_x-small slds-grid slds-grid_align-end"
         role="group"
         aria-label="User impersonation actions"
       >
@@ -78,21 +89,6 @@
           name="run-as-clear"
           aria-label="Clear selected user"
         ></lightning-button>
-
-        <template if:true={showRunAsTest}>
-          <lightning-button
-            label={executeAsUserLabel}
-            title={executeAsUserLabel}
-            onclick={handleExecuteAsUser}
-            variant="brand"
-            icon-name="utility:shield"
-            disabled={isRunningTest}
-            class="slds-m-left_small"
-            data-testid="run-as-execute-button"
-            name="run-as-execute"
-            aria-label="Execute query as selected user"
-          ></lightning-button>
-        </template>
       </div>
     </template>
 

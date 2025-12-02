@@ -1,0 +1,659 @@
+<template>
+  <lightning-card
+    title="Dynamic Query Viewer - Documentation"
+    icon-name="custom:custom63"
+  >
+    <!-- Navigation Tabs -->
+    <div class="slds-tabs_default">
+      <ul class="slds-tabs_default__nav" role="tablist">
+        <template for:each={sectionsWithActive} for:item="section">
+          <li key={section.id} class={section.className} role="presentation">
+            <a
+              class="slds-tabs_default__link"
+              role="tab"
+              data-section={section.id}
+              onclick={handleSectionClick}
+              aria-selected={section.isActive}
+              aria-controls={section.id}
+            >
+              <lightning-icon
+                icon-name={section.icon}
+                size="x-small"
+                class="slds-m-right_x-small"
+              ></lightning-icon>
+              {section.label}
+            </a>
+          </li>
+        </template>
+      </ul>
+
+      <!-- Content Panels -->
+      <div class="slds-tabs_default__content" role="tabpanel">
+        <!-- OVERVIEW -->
+        <template if:true={showOverview}>
+          <div class="slds-p-around_medium">
+            <h2 class="slds-text-heading_large slds-m-bottom_medium">
+              Welcome to Dynamic Query Framework
+            </h2>
+
+            <p class="slds-text-body_regular slds-m-bottom_medium">
+              A metadata-driven SOQL execution framework with built-in security,
+              batch processing, and risk assessment. Stop writing boilerplate
+              query code - configure once, execute anywhere.
+            </p>
+
+            <div
+              class="slds-box slds-theme_alt-inverse slds-text-align_center slds-m-bottom_medium"
+            >
+              <p class="slds-text-body_small" style="color: #fff">
+                <strong>Framework Philosophy:</strong> Provide infrastructure
+                and conventions for configurable queries, not just isolated
+                utilities.
+              </p>
+            </div>
+
+            <div class="slds-box slds-theme_shade slds-m-bottom_medium">
+              <h3 class="slds-text-heading_medium slds-m-bottom_small">
+                Key Capabilities
+              </h3>
+              <ul class="slds-list_dotted">
+                <li>Execute configurable SOQL queries with parameters</li>
+                <li>
+                  Automatic risk assessment for large queries (>50K records)
+                </li>
+                <li>Batch processing for complex queries</li>
+                <li>Run As User (impersonation for testing)</li>
+                <li>Configuration management via Custom Metadata</li>
+                <li>Usage tracking across Apex classes and Flows</li>
+                <li>Multi-language support (EN, ES)</li>
+                <li>WCAG 2.1 AA accessibility compliant</li>
+              </ul>
+            </div>
+
+            <div class="slds-box slds-theme_info">
+              <h3 class="slds-text-heading_small slds-m-bottom_x-small">
+                <lightning-icon
+                  icon-name="utility:info"
+                  size="xx-small"
+                  class="slds-m-right_xx-small"
+                ></lightning-icon>
+                Quick Start
+              </h3>
+              <p class="slds-text-body_small">
+                Select <strong>Getting Started</strong> tab to see installation
+                and setup instructions.
+              </p>
+            </div>
+          </div>
+        </template>
+
+        <!-- FEATURES -->
+        <template if:true={showFeatures}>
+          <div class="slds-p-around_medium">
+            <h2 class="slds-text-heading_large slds-m-bottom_medium">
+              Features
+            </h2>
+
+            <!-- Feature 1 -->
+            <div class="slds-box slds-m-bottom_medium">
+              <h3 class="slds-text-heading_medium slds-m-bottom_small">
+                <lightning-icon
+                  icon-name="utility:database"
+                  size="small"
+                  class="slds-m-right_small"
+                ></lightning-icon>
+                Query Risk Assessment & Batch Processing
+              </h3>
+              <p class="slds-text-body_regular slds-m-bottom_small">
+                Automatically detects queries that might return >50K records and
+                offers batch processing options.
+              </p>
+              <ul class="slds-list_dotted">
+                <li>
+                  <strong>LOW Risk</strong> (&lt;5K): Executes immediately
+                </li>
+                <li>
+                  <strong>MEDIUM/HIGH Risk</strong> (5-50K): Shows warning,
+                  recommends batch
+                </li>
+                <li>
+                  <strong>CRITICAL Risk</strong> (&gt;50K): Forces batch
+                  processing
+                </li>
+              </ul>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="slds-box slds-m-bottom_medium">
+              <h3 class="slds-text-heading_medium slds-m-bottom_small">
+                <lightning-icon
+                  icon-name="utility:user"
+                  size="small"
+                  class="slds-m-right_small"
+                ></lightning-icon>
+                Run As User (Impersonation)
+              </h3>
+              <p class="slds-text-body_regular">
+                Test queries with different user permissions using
+                System.runAs() in a test context.
+              </p>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="slds-box slds-m-bottom_medium">
+              <h3 class="slds-text-heading_medium slds-m-bottom_small">
+                <lightning-icon
+                  icon-name="utility:search"
+                  size="small"
+                  class="slds-m-right_small"
+                ></lightning-icon>
+                Configuration Usage Tracking
+              </h3>
+              <p class="slds-text-body_regular">
+                Find where configurations are used in Apex classes and Flows via
+                Tooling API.
+              </p>
+            </div>
+
+            <!-- Feature 4 -->
+            <div class="slds-box">
+              <h3 class="slds-text-heading_medium slds-m-bottom_small">
+                <lightning-icon
+                  icon-name="utility:world"
+                  size="small"
+                  class="slds-m-right_small"
+                ></lightning-icon>
+                Multi-Language Support
+              </h3>
+              <p class="slds-text-body_regular">
+                Available in English and Spanish with extensible i18n framework.
+              </p>
+            </div>
+          </div>
+        </template>
+
+        <!-- GETTING STARTED -->
+        <template if:true={showGettingStarted}>
+          <div class="slds-p-around_medium">
+            <h2 class="slds-text-heading_large slds-m-bottom_medium">
+              Getting Started
+            </h2>
+
+            <div class="slds-box slds-theme_warning slds-m-bottom_medium">
+              <p class="slds-text-body_small">
+                <strong>⚠️ Prerequisites:</strong> Salesforce API version 65.0+,
+                Custom Metadata Types enabled
+              </p>
+            </div>
+
+            <h3 class="slds-text-heading_medium slds-m-bottom_small">
+              1. Installation
+            </h3>
+            <div class="slds-box slds-theme_shade slds-m-bottom_medium">
+              <pre class="slds-text-body_small">
+sf project deploy start --source-dir force-app/main/default
+              </pre>
+            </div>
+
+            <h3 class="slds-text-heading_medium slds-m-bottom_small">
+              2. Assign Permission Set
+            </h3>
+            <p class="slds-text-body_regular slds-m-bottom_small">
+              Assign the <strong>JT_Dynamic_Queries_User</strong> permission set
+              to users:
+            </p>
+            <div class="slds-box slds-theme_shade slds-m-bottom_medium">
+              <pre class="slds-text-body_small">
+sf org assign permset --name JT_Dynamic_Queries_User
+              </pre>
+            </div>
+
+            <h3 class="slds-text-heading_medium slds-m-bottom_small">
+              3. Create Your First Query
+            </h3>
+            <p class="slds-text-body_regular slds-m-bottom_small">
+              Navigate to <strong>Query Viewer</strong> tab → Click
+              <strong>Create Configuration</strong>
+            </p>
+
+            <div class="slds-box">
+              <p class="slds-text-body_small">
+                <lightning-icon
+                  icon-name="utility:success"
+                  size="xx-small"
+                  class="slds-m-right_xx-small"
+                ></lightning-icon>
+                <strong>Tip:</strong> Use bind variables like
+                <code>:paramName</code> for dynamic queries
+              </p>
+            </div>
+          </div>
+        </template>
+
+        <!-- BATCH PROCESSING -->
+        <template if:true={showBatchProcessing}>
+          <div class="slds-p-around_medium">
+            <h2 class="slds-text-heading_large slds-m-bottom_medium">
+              Batch Processing
+            </h2>
+
+            <p class="slds-text-body_regular slds-m-bottom_medium">
+              For queries that might return >50K records, the system
+              automatically offers batch processing.
+            </p>
+
+            <div class="slds-box slds-theme_info slds-m-bottom_medium">
+              <h3 class="slds-text-heading_small slds-m-bottom_small">
+                How It Works
+              </h3>
+              <ol class="slds-list_ordered">
+                <li>
+                  System runs
+                  <strong class="slds-text-color_default"
+                    >SELECT COUNT()</strong
+                  >
+                  to estimate result size
+                </li>
+                <li>If &gt;10K records, shows warning modal</li>
+                <li>
+                  User chooses: Cancel, Proceed Normally, or Use Batch
+                  Processing
+                </li>
+                <li>Batch processing splits query into 200-record chunks</li>
+                <li>Results are aggregated and displayed</li>
+              </ol>
+            </div>
+
+            <h3 class="slds-text-heading_medium slds-m-bottom_small">
+              Risk Thresholds
+            </h3>
+            <table
+              class="slds-table slds-table_cell-buffer slds-table_bordered"
+            >
+              <thead>
+                <tr class="slds-line-height_reset">
+                  <th scope="col">Risk Level</th>
+                  <th scope="col">Record Count</th>
+                  <th scope="col">Behavior</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <lightning-badge
+                      label="LOW"
+                      class="slds-theme_success"
+                    ></lightning-badge>
+                  </td>
+                  <td>&lt;5,000</td>
+                  <td>Executes immediately</td>
+                </tr>
+                <tr>
+                  <td><lightning-badge label="MEDIUM"></lightning-badge></td>
+                  <td>5,000 - 10,000</td>
+                  <td>Warning shown</td>
+                </tr>
+                <tr>
+                  <td>
+                    <lightning-badge
+                      label="HIGH"
+                      class="slds-theme_warning"
+                    ></lightning-badge>
+                  </td>
+                  <td>10,000 - 50,000</td>
+                  <td>Batch recommended</td>
+                </tr>
+                <tr>
+                  <td>
+                    <lightning-badge
+                      label="CRITICAL"
+                      class="slds-theme_error"
+                    ></lightning-badge>
+                  </td>
+                  <td>&gt;50,000</td>
+                  <td>Batch required</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </template>
+
+        <!-- TOOLING API -->
+        <template if:true={showToolingApi}>
+          <div class="slds-p-around_medium">
+            <h2 class="slds-text-heading_large slds-m-bottom_medium">
+              Tooling API Setup
+            </h2>
+
+            <p class="slds-text-body_regular slds-m-bottom_medium">
+              Required for "Where is this used?" and "Create/Edit
+              Configurations" features.
+            </p>
+
+            <div class="slds-box slds-theme_warning slds-m-bottom_medium">
+              <p class="slds-text-body_small">
+                <strong>⚠️ Important:</strong> Named Credential must be
+                configured in each org separately.
+              </p>
+            </div>
+
+            <h3 class="slds-text-heading_medium slds-m-bottom_small">
+              Setup Steps
+            </h3>
+
+            <div class="slds-box slds-m-bottom_medium">
+              <h4 class="slds-text-heading_small slds-m-bottom_x-small">
+                1. Create Named Credential
+              </h4>
+              <ul class="slds-list_dotted">
+                <li>Go to <strong>Setup → Named Credentials</strong></li>
+                <li>Click <strong>New Named Credential</strong></li>
+                <li>Name: <code>JT_Tooling_API</code></li>
+                <li>URL: <code>callout:JT_Tooling_API</code></li>
+                <li>Authentication: <strong>Salesforce</strong></li>
+              </ul>
+            </div>
+
+            <div class="slds-box">
+              <p class="slds-text-body_small">
+                <lightning-icon
+                  icon-name="utility:info"
+                  size="xx-small"
+                  class="slds-m-right_xx-small"
+                ></lightning-icon>
+                See full documentation:
+                <strong>docs/TOOLING_API_SETUP.md</strong>
+              </p>
+            </div>
+          </div>
+        </template>
+
+        <!-- ACCESSIBILITY -->
+        <template if:true={showAccessibility}>
+          <div class="slds-p-around_medium">
+            <h2 class="slds-text-heading_large slds-m-bottom_medium">
+              Accessibility (WCAG 2.1 AA)
+            </h2>
+
+            <p class="slds-text-body_regular slds-m-bottom_medium">
+              All components are designed with accessibility in mind.
+            </p>
+
+            <div class="slds-box slds-m-bottom_medium">
+              <h3 class="slds-text-heading_medium slds-m-bottom_small">
+                Features
+              </h3>
+              <ul class="slds-list_dotted">
+                <li>
+                  <strong>Keyboard Navigation:</strong> All interactive elements
+                  accessible via keyboard
+                </li>
+                <li>
+                  <strong>Screen Reader Support:</strong> ARIA labels and roles
+                  throughout
+                </li>
+                <li>
+                  <strong>Color Contrast:</strong> Meets WCAG AA standards
+                  (4.5:1)
+                </li>
+                <li>
+                  <strong>Focus Management:</strong> Clear focus indicators
+                </li>
+                <li>
+                  <strong>Touch Targets:</strong> Minimum 44x44px for mobile
+                </li>
+              </ul>
+            </div>
+
+            <div class="slds-box slds-theme_success">
+              <p class="slds-text-body_small">
+                <lightning-icon
+                  icon-name="utility:success"
+                  size="xx-small"
+                  class="slds-m-right_xx-small"
+                ></lightning-icon>
+                <strong>Tested with:</strong> Axe-core, Playwright, NVDA,
+                VoiceOver
+              </p>
+            </div>
+          </div>
+        </template>
+
+        <!-- ARCHITECTURE -->
+        <template if:true={showArchitecture}>
+          <div class="slds-p-around_medium">
+            <h2 class="slds-text-heading_large slds-m-bottom_medium">
+              Architecture
+            </h2>
+
+            <p class="slds-text-body_regular slds-m-bottom_medium">
+              Built with modular, reusable components following SOLID
+              principles.
+            </p>
+
+            <div class="slds-box slds-m-bottom_medium">
+              <h3 class="slds-text-heading_medium slds-m-bottom_small">
+                Component Hierarchy
+              </h3>
+              <p class="slds-text-body_small slds-m-bottom_small">
+                <code>jtQueryViewer</code> (orchestrator)
+              </p>
+              <ul class="slds-list_dotted slds-m-left_medium">
+                <li>
+                  <code>jtSearchableCombobox</code> - Generic dropdown with
+                  search
+                </li>
+                <li><code>jtParameterInputs</code> - Dynamic parameter form</li>
+                <li>
+                  <code>jtExecuteButton</code> - Smart button with validation
+                </li>
+                <li>
+                  <code>jtQueryResults</code> - Results display (table/JSON/CSV)
+                </li>
+                <li>
+                  <code>jtConfigModal</code> - Configuration creation/editing
+                </li>
+                <li><code>jtUsageModal</code> - Usage tracking display</li>
+                <li>
+                  <code>jtRunAsSection</code> - User impersonation controls
+                </li>
+                <li><code>jtCacheModal</code> - Cache management</li>
+              </ul>
+            </div>
+
+            <div class="slds-box">
+              <h3 class="slds-text-heading_small slds-m-bottom_small">
+                Design Patterns
+              </h3>
+              <ul class="slds-list_dotted">
+                <li>
+                  <strong>Microservices:</strong> Isolated Apex services for
+                  fault tolerance
+                </li>
+                <li><strong>Error Boundaries:</strong> Graceful degradation</li>
+                <li>
+                  <strong>Functional Programming:</strong> Pure functions,
+                  immutable state
+                </li>
+                <li>
+                  <strong>Event-Driven:</strong> Custom events for component
+                  communication
+                </li>
+              </ul>
+            </div>
+          </div>
+        </template>
+
+        <!-- API REFERENCE -->
+        <template if:true={showApi}>
+          <div class="slds-p-around_medium">
+            <h2 class="slds-text-heading_large slds-m-bottom_medium">
+              API Reference
+            </h2>
+
+            <div class="slds-box slds-theme_info slds-m-bottom_medium">
+              <p class="slds-text-body_small">
+                <lightning-icon
+                  icon-name="utility:info"
+                  size="xx-small"
+                  class="slds-m-right_xx-small"
+                ></lightning-icon>
+                <strong>Public APIs:</strong> Only classes in the Permission Set
+                are available to end users. Internal framework classes
+                (JT_SystemSelector, JT_AuditLogDomain) are not exposed.
+              </p>
+            </div>
+
+            <h3 class="slds-text-heading_medium slds-m-bottom_small">
+              Public Apex Controllers
+            </h3>
+
+            <div class="slds-box slds-m-bottom_medium">
+              <h4 class="slds-text-heading_small slds-m-bottom_x-small">
+                <code>JT_QueryViewerController</code>
+              </h4>
+              <table
+                class="slds-table slds-table_cell-buffer slds-table_bordered slds-text-body_small"
+              >
+                <thead>
+                  <tr>
+                    <th>Method</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>getConfigurations()</code></td>
+                    <td>Retrieve all query configurations</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <code
+                        >executeQuery(devName, bindingsJson, runAsUserId)</code
+                      >
+                    </td>
+                    <td>Execute a query with parameters</td>
+                  </tr>
+                  <tr>
+                    <td><code>assessQueryRisk(devName, bindingsJson)</code></td>
+                    <td>Estimate record count and risk level</td>
+                  </tr>
+                  <tr>
+                    <td><code>executeQueryWithBatchProcessing(...)</code></td>
+                    <td>Execute with cursor/batch processing</td>
+                  </tr>
+                  <tr>
+                    <td><code>getAllActiveUsers()</code></td>
+                    <td>Get user list for Run As feature</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="slds-box slds-m-bottom_medium">
+              <h4 class="slds-text-heading_small slds-m-bottom_x-small">
+                <code>JT_DataSelector</code>
+                <lightning-badge
+                  label="PUBLIC API"
+                  class="slds-theme_success"
+                ></lightning-badge>
+              </h4>
+              <p class="slds-text-body_small slds-m-bottom_small">
+                <strong>Data Access Layer (SELECT)</strong> - Query framework
+                for retrieving records via Custom Metadata configurations.
+              </p>
+              <table
+                class="slds-table slds-table_cell-buffer slds-table_bordered slds-text-body_small"
+              >
+                <thead>
+                  <tr>
+                    <th>Method</th>
+                    <th>Parameters</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>getRecords</code></td>
+                    <td>devName, enforceSecurity, bindings</td>
+                    <td>
+                      Query records from configuration with dynamic parameters
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><code>processRecordsWithCursor</code></td>
+                    <td>query, bindings, processor, batchSize</td>
+                    <td>Batch process large result sets (&gt;50K records)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3
+              class="slds-text-heading_medium slds-m-top_large slds-m-bottom_small"
+            >
+              Internal Framework Classes
+            </h3>
+
+            <div class="slds-box slds-theme_shade slds-m-bottom_medium">
+              <h4 class="slds-text-heading_small slds-m-bottom_x-small">
+                <lightning-icon
+                  icon-name="utility:lock"
+                  size="xx-small"
+                  class="slds-m-right_xx-small"
+                ></lightning-icon>
+                Internal Only (Not in Permission Set)
+              </h4>
+              <ul class="slds-list_dotted slds-text-body_small">
+                <li>
+                  <code>JT_SystemSelector</code> - Infrastructure queries
+                  (Organization, Audit Logs)
+                </li>
+                <li>
+                  <code>JT_AuditLogDomain</code> - DML operations for audit
+                  trail (without sharing)
+                </li>
+                <li>
+                  <code>JT_SettingsService</code> - Business logic for settings
+                  management
+                </li>
+              </ul>
+              <p class="slds-text-body_small slds-m-top_small">
+                <strong>Note:</strong> These classes are used internally by the
+                framework and follow the Selector/Domain/Service layer pattern
+                for separation of concerns.
+              </p>
+            </div>
+
+            <h3
+              class="slds-text-heading_medium slds-m-top_large slds-m-bottom_small"
+            >
+              Future Considerations
+            </h3>
+
+            <div class="slds-box slds-theme_warning">
+              <h4 class="slds-text-heading_small slds-m-bottom_x-small">
+                <lightning-icon
+                  icon-name="utility:forward"
+                  size="xx-small"
+                  class="slds-m-right_xx-small"
+                ></lightning-icon>
+                DML Framework (User Story - v3.0)
+              </h4>
+              <p class="slds-text-body_small">
+                Currently, this framework focuses on
+                <strong>queries (SELECT)</strong>. A complementary DML framework
+                (<code>JT_DataModifier</code>) for INSERT/UPDATE/DELETE/UPSERT
+                operations is being considered based on user feedback.
+              </p>
+              <p class="slds-text-body_small slds-m-top_x-small">
+                If you're interested in this feature, please open a GitHub Issue
+                or contact the development team.
+              </p>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+  </lightning-card>
+</template>

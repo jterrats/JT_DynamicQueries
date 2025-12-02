@@ -9,23 +9,15 @@
 ## 📋 Complete Workflow
 
 ### 1. Local Development
+
 ```bash
 # Make your changes
 # Write/update tests
-
-# Run E2E tests with video recording
-npm run test:e2e
-
-# MANDATORY: Review test videos/screenshots
-# Location: test-results/**/*.webm
-# Validate:
-# - UI styles render correctly
-# - Spacing and alignment proper
-# - No visual glitches
-# - Responsive layout works
+# Code is ready locally
 ```
 
-### 2. Deploy to Org
+### 2. Deploy to Org (FIRST!)
+
 ```bash
 # Deploy to your target org (sandbox/scratch)
 sf project deploy start --target-org <your-alias>
@@ -34,7 +26,11 @@ sf project deploy start --target-org <your-alias>
 # Check for any deployment errors
 ```
 
+⚠️ **CRITICAL:** Deploy MUST happen before E2E tests!
+E2E tests run against the org, so they need deployed code.
+
 ### 3. Run Apex Tests in Org
+
 ```bash
 # Run all local tests in the org
 sf apex run test --target-org <your-alias> \
@@ -48,9 +44,40 @@ sf apex run test --target-org <your-alias> \
 # - No failures ✓
 ```
 
+### 4. Run E2E Tests (AFTER Deploy)
+
+```bash
+# NOW run E2E tests against deployed code
+npm run test:e2e
+
+# E2E tests will:
+# - Navigate to org URL
+# - Test deployed components
+# - Record videos
+# - Validate UI/UX
+```
+
+### 5. Review E2E Videos (MANDATORY)
+
+```bash
+# MANDATORY: Review test videos/screenshots
+# Location: test-results/**/*.webm
+
+# Open videos folder
+open test-results/
+
+# Validate:
+# - UI styles render correctly
+# - Spacing and alignment proper
+# - No visual glitches
+# - Responsive layout works
+# - All interactions smooth
+```
+
 ### 4. Manual Validation in Org UI
 
 #### Navigate to Component
+
 ```
 1. Login to org
 2. Navigate to App Launcher → Dynamic Queries
@@ -58,6 +85,7 @@ sf apex run test --target-org <your-alias> \
 ```
 
 #### Test All Scenarios
+
 ```
 □ Select configuration from dropdown
 □ Verify query preview shows SOQL
@@ -82,6 +110,7 @@ sf apex run test --target-org <your-alias> \
 ```
 
 #### Check for Errors
+
 ```
 □ Open browser DevTools (F12)
 □ Check Console tab for errors
@@ -91,6 +120,7 @@ sf apex run test --target-org <your-alias> \
 ```
 
 #### Test Edge Cases
+
 ```
 □ Select config with no records → Empty table displays
 □ Select config with parameters → Inputs appear
@@ -102,6 +132,7 @@ sf apex run test --target-org <your-alias> \
 ```
 
 ### 5. Validate Deployment (Optional but Recommended)
+
 ```bash
 # Validate deployment without actually deploying
 sf project deploy validate --target-org <your-alias>
@@ -111,6 +142,7 @@ sf project deploy validate --target-org <your-alias>
 ```
 
 ### 6. Commit and Push (Only After ALL Above Pass)
+
 ```bash
 # Stage changes
 git add -A
@@ -138,6 +170,7 @@ git push origin main
 ## 🎯 Quick Commands
 
 ### Deploy + Test (One Command)
+
 ```bash
 # Deploy and run tests in one go
 sf project deploy start --target-org <alias> --test-level RunLocalTests
@@ -147,6 +180,7 @@ alias sf-deploy-test='sf project deploy start --target-org $(sf config get targe
 ```
 
 ### Validate Only (No Deploy)
+
 ```bash
 # Run validation without deploying
 sf project deploy validate --target-org <alias> --test-level RunLocalTests
@@ -155,6 +189,7 @@ sf project deploy validate --target-org <alias> --test-level RunLocalTests
 ```
 
 ### Quick Deploy (If Already Validated)
+
 ```bash
 # If you just ran validate, you can quick deploy
 sf project deploy quick --target-org <alias> --use-most-recent
@@ -167,6 +202,7 @@ sf project deploy quick --target-org <alias> --use-most-recent
 ## 🔴 Common Issues and Fixes
 
 ### Issue: "Test Failures in Org"
+
 ```bash
 # Get detailed test results
 sf apex get test --test-run-id <id> --target-org <alias>
@@ -178,6 +214,7 @@ sf apex get test --test-run-id <id> --target-org <alias> --output-dir ./test-res
 **Action:** Fix the failing test, redeploy, revalidate.
 
 ### Issue: "Deployment Failed"
+
 ```bash
 # Get deployment status
 sf project deploy report --target-org <alias>
@@ -187,6 +224,7 @@ sf project deploy report --target-org <alias> --verbose
 ```
 
 **Common causes:**
+
 - Missing dependencies
 - Invalid field references
 - Permission issues
@@ -195,13 +233,16 @@ sf project deploy report --target-org <alias> --verbose
 **Action:** Fix the deployment error, redeploy, revalidate.
 
 ### Issue: "Manual Validation Failed"
+
 **Action:**
+
 1. Fix the issue locally
 2. Redeploy
 3. Revalidate manually
 4. Do NOT commit until validation passes
 
 ### Issue: "Code Coverage Below 75%"
+
 ```bash
 # Check which classes need coverage
 sf apex run test --target-org <alias> \
@@ -216,35 +257,44 @@ cat coverage.json | jq '.result.coverage.coverage'
 
 ---
 
-## 📊 Example: Complete Workflow
+## 📊 Example: Complete Workflow (CORRECT ORDER)
 
 ```bash
 # 1. Make changes locally
 # ... edit files ...
 
-# 2. Run local E2E tests
-npm run test:e2e
-# ✅ 11/11 tests pass
-
-# 3. Deploy to org
+# 2. Deploy to org FIRST
 sf project deploy start --target-org my-sandbox
 # ✅ Deploy Succeeded
 
-# 4. Run Apex tests in org
+# 3. Run Apex tests in org
 sf apex run test --target-org my-sandbox \
   --test-level RunLocalTests \
   --code-coverage
 # ✅ 723 tests pass
 # ✅ Coverage: 84.5%
 
-# 5. Manual validation in org
+# 4. Run E2E tests (AFTER deploy!)
+npm run test:e2e
+# ✅ 14/14 tests pass
+# ✅ Videos recorded in test-results/
+
+# 5. Review E2E videos
+open test-results/
+# Watch ALL .webm files
+# ✅ UI looks correct
+# ✅ No visual glitches
+# ✅ Styles render properly
+
+# 6. Manual validation in org
 # ... login to org ...
 # ... test all scenarios ...
 # ✅ All scenarios work
 # ✅ No console errors
 # ✅ Edge cases tested
+# ✅ Matches E2E videos
 
-# 6. Commit and push
+# 7. Commit and push
 git add -A
 git commit -m "feat: Add data preview"
 git push origin main
@@ -256,6 +306,7 @@ git push origin main
 ## 🎓 Why This Process Matters
 
 ### Prevents Issues:
+
 - ❌ Deploying broken code
 - ❌ Breaking existing functionality
 - ❌ Governor limit violations
@@ -263,6 +314,7 @@ git push origin main
 - ❌ UI bugs in production
 
 ### Ensures Quality:
+
 - ✅ Code works in real Salesforce environment
 - ✅ All tests pass in target org
 - ✅ Manual validation confirms UX
@@ -300,4 +352,3 @@ git push origin main
 ---
 
 Remember: **Local tests are not enough. Org validation is mandatory.**
-

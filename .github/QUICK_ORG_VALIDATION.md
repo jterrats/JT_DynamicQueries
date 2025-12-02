@@ -61,6 +61,7 @@ Final Bindings JSON: {"accountType":"Customer","industry":"Technology"}
 ## If Error Occurs
 
 **Copy this info:**
+
 1. All console logs
 2. Error toast message
 3. Screenshot of UI
@@ -68,4 +69,3 @@ Final Bindings JSON: {"accountType":"Customer","industry":"Technology"}
 5. Values entered
 
 **Then we analyze and fix!**
-

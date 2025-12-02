@@ -66,15 +66,17 @@ public with sharing class JT_RunAsTestExecutor {
     String configName,
     String bindingsJson
   ) {
-    // Store in Platform Cache or Custom Setting for test to retrieve
+    // Store in Platform Cache as JSON string (keys must be alphanumeric)
     Cache.Org.put(
-      'RunAsTest_' + userId,
-      new Map<String, Object>{
-        'userId' => userId,
-        'configName' => configName,
-        'bindingsJson' => bindingsJson,
-        'timestamp' => System.now().getTime()
-      },
+      'RunAsTest' + userId,
+      JSON.serialize(
+        new Map<String, Object>{
+          'userId' => userId,
+          'configName' => configName,
+          'bindingsJson' => bindingsJson,
+          'timestamp' => System.now().getTime()
+        }
+      ),
       300
     ); // 5 minute TTL
   }
@@ -126,13 +128,11 @@ public with sharing class JT_RunAsTestExecutor {
     TestExecutionResult result = new TestExecutionResult();
 
     try {
-      // Retrieve JSON string from cache
+      // Retrieve JSON string from cache (keys must be alphanumeric)
       String cachedResultJson = (String) Cache.Org.get(
-        'RunAsTestResult_' + userId
+        'RunAsTestResult' + userId
       );
-      String assertMessage = (String) Cache.Org.get(
-        'RunAsTestAssert_' + userId
-      );
+      String assertMessage = (String) Cache.Org.get('RunAsTestAssert' + userId);
 
       if (String.isNotBlank(cachedResultJson)) {
         // Parse JSON result
@@ -180,13 +180,13 @@ public with sharing class JT_RunAsTestExecutor {
     Map<String, Object> status = new Map<String, Object>();
 
     try {
-      String cachedResult = (String) Cache.Org.get('RunAsTestResult_' + userId);
+      String cachedResult = (String) Cache.Org.get('RunAsTestResult' + userId);
 
       if (String.isNotBlank(cachedResult)) {
         status.put('status', 'COMPLETED');
         status.put('hasResults', true);
       } else {
-        String cachedParams = (String) Cache.Org.get('RunAsTest_' + userId);
+        String cachedParams = (String) Cache.Org.get('RunAsTest' + userId);
         if (String.isNotBlank(cachedParams)) {
           status.put('status', 'RUNNING');
           status.put('hasResults', false);
@@ -287,29 +287,33 @@ public with sharing class JT_RunAsTestExecutor {
         );
         Long endTime = System.now().getTime();
 
-        // Store results in cache (functional state management)
+        // Store results in cache as JSON string (keys must be alphanumeric)
         Cache.Org.put(
-          'RunAsTestResult_' + userId,
-          new Map<String, Object>{
-            'success' => true,
-            'queryResults' => JSON.serialize(records),
-            'recordCount' => records.size(),
-            'errorMessage' => null,
-            'executionTime' => (Integer) (endTime - startTime)
-          },
+          'RunAsTestResult' + userId,
+          JSON.serialize(
+            new Map<String, Object>{
+              'success' => true,
+              'queryResults' => JSON.serialize(records),
+              'recordCount' => records.size(),
+              'errorMessage' => null,
+              'executionTime' => (Integer) (endTime - startTime)
+            }
+          ),
           300
         );
       } catch (Exception e) {
-        // Store error functionally
+        // Store error as JSON string
         Cache.Org.put(
-          'RunAsTestResult_' + userId,
-          new Map<String, Object>{
-            'success' => false,
-            'queryResults' => null,
-            'recordCount' => 0,
-            'errorMessage' => e.getMessage(),
-            'executionTime' => 0
-          },
+          'RunAsTestResult' + userId,
+          JSON.serialize(
+            new Map<String, Object>{
+              'success' => false,
+              'queryResults' => null,
+              'recordCount' => 0,
+              'errorMessage' => e.getMessage(),
+              'executionTime' => 0
+            }
+          ),
           300
         );
       }
@@ -348,7 +352,7 @@ public with sharing class JT_RunAsTestExecutor {
 
         // Store error in cache
         Cache.Org.put(
-          'RunAsTestResult_' + userId,
+          'RunAsTestResult' + userId,
           JSON.serialize(
             new Map<String, Object>{
               'success' => false,

@@ -4,8 +4,8 @@
 
 This document provides an overview of the features planned for version 3.0 and future releases. All features have been documented as GitHub issues for tracking and community feedback.
 
-**Total Features:** 18  
-**Total Story Points:** ~198  
+**Total Features:** 18
+**Total Story Points:** ~198
 **Estimated Duration:** 12-18 months
 
 ---
@@ -22,7 +22,7 @@ This document provides an overview of the features planned for version 3.0 and f
 
 ### 1. Visual SOQL Builder 🎨
 
-**Issue:** [#5](https://github.com/jterrats/JT_DynamicQueries/issues/5)  
+**Issue:** [#5](https://github.com/jterrats/JT_DynamicQueries/issues/5)
 **Priority:** High | **Effort:** 13 points
 
 Drag-and-drop SOQL builder for users without SOQL knowledge. Select objects, add fields visually, build WHERE clauses with UI controls, and preview generated SOQL in real-time.
@@ -37,7 +37,7 @@ Drag-and-drop SOQL builder for users without SOQL knowledge. Select objects, add
 
 ### 2. Bulk Query Execution ⚡
 
-**Issue:** [#7](https://github.com/jterrats/JT_DynamicQueries/issues/7)  
+**Issue:** [#7](https://github.com/jterrats/JT_DynamicQueries/issues/7)
 **Priority:** High | **Effort:** 13 points
 
 Execute multiple query configurations simultaneously with Queueable Apex. Download combined results as ZIP, track progress per query, and receive email notifications.
@@ -52,7 +52,7 @@ Execute multiple query configurations simultaneously with Queueable Apex. Downlo
 
 ### 3. Query History & Favorites ⭐
 
-**Issue:** [#6](https://github.com/jterrats/JT_DynamicQueries/issues/6)  
+**Issue:** [#6](https://github.com/jterrats/JT_DynamicQueries/issues/6)
 **Priority:** Medium | **Effort:** 8 points
 
 Track last 50 queries per user, star favorites, re-execute with one click. Includes search/filter capabilities and export to CSV.
@@ -67,7 +67,7 @@ Track last 50 queries per user, star favorites, re-execute with one click. Inclu
 
 ### 4. Advanced Result Filtering 🔍
 
-**Issue:** [#8](https://github.com/jterrats/JT_DynamicQueries/issues/8)  
+**Issue:** [#8](https://github.com/jterrats/JT_DynamicQueries/issues/8)
 **Priority:** Medium | **Effort:** 8 points
 
 Client-side filtering with column-specific filters (text, number, date), global search, multi-column sort, and filter presets.
@@ -82,7 +82,7 @@ Client-side filtering with column-specific filters (text, number, date), global 
 
 ### 5. Query Templates Library 📚
 
-**Issue:** [#9](https://github.com/jterrats/JT_DynamicQueries/issues/9)  
+**Issue:** [#9](https://github.com/jterrats/JT_DynamicQueries/issues/9)
 **Priority:** Medium | **Effort:** 5 points
 
 20+ pre-built query templates for common use cases (Sales, Service, Admin). One-click template usage with customizable parameters.
@@ -97,7 +97,7 @@ Client-side filtering with column-specific filters (text, number, date), global 
 
 ### 6. Real-time Query Validation ✅
 
-**Issue:** [#10](https://github.com/jterrats/JT_DynamicQueries/issues/10)  
+**Issue:** [#10](https://github.com/jterrats/JT_DynamicQueries/issues/10)
 **Priority:** Medium | **Effort:** 8 points
 
 Syntax highlighting, error detection as you type, auto-complete for objects/fields, and intelligent fix suggestions.
@@ -112,7 +112,7 @@ Syntax highlighting, error detection as you type, auto-complete for objects/fiel
 
 ### 7. Performance Analytics Dashboard 📊
 
-**Issue:** [#11](https://github.com/jterrats/JT_DynamicQueries/issues/11)  
+**Issue:** [#11](https://github.com/jterrats/JT_DynamicQueries/issues/11)
 **Priority:** Low | **Effort:** 13 points
 
 Monitor query execution metrics, identify slow queries, track API consumption, and view usage trends over time.
@@ -127,7 +127,7 @@ Monitor query execution metrics, identify slow queries, track API consumption, a
 
 ### 8. Additional Language Support 🌍
 
-**Issue:** [#16](https://github.com/jterrats/JT_DynamicQueries/issues/16)  
+**Issue:** [#16](https://github.com/jterrats/JT_DynamicQueries/issues/16)
 **Priority:** Low | **Effort:** 20 points
 
 Expand from 4 to 8 languages: Add Italian, Japanese, Portuguese (BR), and Chinese (Simplified).
@@ -146,14 +146,14 @@ Expand from 4 to 8 languages: Add Italian, Japanese, Portuguese (BR), and Chines
 
 #### Platform Cache Implementation 🚀
 
-**Issue:** [#12](https://github.com/jterrats/JT_DynamicQueries/issues/12)  
+**Issue:** [#12](https://github.com/jterrats/JT_DynamicQueries/issues/12)
 **Priority:** Medium | **Effort:** 5 points
 
 Cache configurations (5 min), users (10 min), and query results (1 hour) to reduce API calls and improve response times.
 
 #### Queueable Apex for Usage Search 🔄
 
-**Issue:** [#15](https://github.com/jterrats/JT_DynamicQueries/issues/15)  
+**Issue:** [#15](https://github.com/jterrats/JT_DynamicQueries/issues/15)
 **Priority:** Medium | **Effort:** 8 points
 
 Background processing for "Where is this used?" in large orgs (500+ Apex classes) with progress tracking and email notifications.
@@ -164,14 +164,14 @@ Background processing for "Where is this used?" in large orgs (500+ Apex classes
 
 #### Scheduled Query Execution ⏰
 
-**Issue:** [#13](https://github.com/jterrats/JT_DynamicQueries/issues/13)  
+**Issue:** [#13](https://github.com/jterrats/JT_DynamicQueries/issues/13)
 **Priority:** Medium | **Effort:** 13 points
 
 Schedule queries to run daily/weekly/monthly with email delivery. Perfect for automated reporting workflows.
 
 #### Advanced Agentforce Actions 🤖
 
-**Issue:** [#20](https://github.com/jterrats/JT_DynamicQueries/issues/20)  
+**Issue:** [#20](https://github.com/jterrats/JT_DynamicQueries/issues/20)
 **Priority:** Medium | **Effort:** 8 points
 
 Extended `@InvocableMethod` actions: validate configs, get metadata, count results, list configs, execute with dynamic filters.
@@ -182,21 +182,21 @@ Extended `@InvocableMethod` actions: validate configs, get metadata, count resul
 
 #### Metadata Export/Import 📦
 
-**Issue:** [#14](https://github.com/jterrats/JT_DynamicQueries/issues/14)  
+**Issue:** [#14](https://github.com/jterrats/JT_DynamicQueries/issues/14)
 **Priority:** High | **Effort:** 13 points
 
 Export/import configurations as JSON for org migration. Includes conflict resolution, validation, and rollback options.
 
 #### Security Enhancements Suite 🔒
 
-**Issue:** [#21](https://github.com/jterrats/JT_DynamicQueries/issues/21)  
+**Issue:** [#21](https://github.com/jterrats/JT_DynamicQueries/issues/21)
 **Priority:** High | **Effort:** 21 points
 
 CSRF protection, rate limiting, complete audit trail (90-day retention), and IP whitelisting for production environments.
 
 #### Reports & Analytics Dashboard 📈
 
-**Issue:** [#22](https://github.com/jterrats/JT_DynamicQueries/issues/22)  
+**Issue:** [#22](https://github.com/jterrats/JT_DynamicQueries/issues/22)
 **Priority:** Medium | **Effort:** 8 points
 
 Standard Report Type and Dashboard for usage statistics, trending analysis, and cleanup recommendations.
@@ -207,21 +207,21 @@ Standard Report Type and Dashboard for usage statistics, trending analysis, and 
 
 #### GraphQL Support 🔌
 
-**Issue:** [#17](https://github.com/jterrats/JT_DynamicQueries/issues/17)  
+**Issue:** [#17](https://github.com/jterrats/JT_DynamicQueries/issues/17)
 **Priority:** Low | **Effort:** 21 points
 
 Query Salesforce data using GraphQL alongside SOQL. Includes SOQL-to-GraphQL converter and schema explorer.
 
 #### Result Comparison Tool 🔀
 
-**Issue:** [#18](https://github.com/jterrats/JT_DynamicQueries/issues/18)  
+**Issue:** [#18](https://github.com/jterrats/JT_DynamicQueries/issues/18)
 **Priority:** Low | **Effort:** 13 points
 
 Compare two query result sets side-by-side. Highlight added, removed, and modified records with field-level diff.
 
 #### Query Optimization Suggestions 💡
 
-**Issue:** [#19](https://github.com/jterrats/JT_DynamicQueries/issues/19)  
+**Issue:** [#19](https://github.com/jterrats/JT_DynamicQueries/issues/19)
 **Priority:** Low | **Effort:** 21 points
 
 AI-powered query analysis with optimization suggestions. Detect missing indexes, suggest selective WHERE clauses, and provide performance impact estimates.
@@ -411,10 +411,10 @@ Have an idea for v3.0 or beyond?
 - Add enterprise-grade features (export/import, security)
 - Expand international reach with more languages
 
-**Total Investment:** ~198 story points (~12-18 months)  
+**Total Investment:** ~198 story points (~12-18 months)
 **Expected Impact:** 3x increase in user adoption, 50% reduction in query creation time
 
 ---
 
-_Last Updated: December 1, 2025_  
+_Last Updated: December 1, 2025_
 _Document Version: 1.0_

@@ -17,8 +17,8 @@
 ```markdown
 ## 🎯 User Story
 
-**As a** Salesforce Administrator with limited SOQL knowledge  
-**I want** a visual drag-and-drop SOQL builder  
+**As a** Salesforce Administrator with limited SOQL knowledge
+**I want** a visual drag-and-drop SOQL builder
 **So that** I can create queries without writing code manually
 
 ## 📝 Description
@@ -106,8 +106,8 @@ Implement a visual SOQL builder that allows users to:
 ```markdown
 ## 🎯 User Story
 
-**As a** power user who runs queries frequently  
-**I want** to track my query history and mark favorites  
+**As a** power user who runs queries frequently
+**I want** to track my query history and mark favorites
 **So that** I can quickly re-run my most common queries
 
 ## 📝 Description
@@ -1162,8 +1162,8 @@ force-app/main/default/
 ```markdown
 ## 🎯 User Story
 
-**As a** developer integrating with external systems  
-**I want** to query Salesforce data using GraphQL  
+**As a** developer integrating with external systems
+**I want** to query Salesforce data using GraphQL
 **So that** I can fetch exactly the data I need with one request
 
 ## 📝 Description

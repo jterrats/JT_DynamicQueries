@@ -28,8 +28,8 @@ gh issue create \
   --label "enhancement,v3.0,high-priority,ui/ux" \
   --body "## 🎯 User Story
 
-**As a** Salesforce Administrator with limited SOQL knowledge  
-**I want** a visual drag-and-drop SOQL builder  
+**As a** Salesforce Administrator with limited SOQL knowledge
+**I want** a visual drag-and-drop SOQL builder
 **So that** I can create queries without writing code manually
 
 ## 📝 Description
@@ -74,8 +74,8 @@ gh issue create \
   --label "enhancement,v3.0,medium-priority,user-experience" \
   --body "## 🎯 User Story
 
-**As a** power user who runs queries frequently  
-**I want** to track my query history and mark favorites  
+**As a** power user who runs queries frequently
+**I want** to track my query history and mark favorites
 **So that** I can quickly re-run my most common queries
 
 ## 📝 Description
@@ -127,8 +127,8 @@ gh issue create \
   --label "enhancement,v3.0,performance,high-priority" \
   --body "## 🎯 User Story
 
-**As a** data analyst running multiple reports  
-**I want** to execute multiple query configurations at once  
+**As a** data analyst running multiple reports
+**I want** to execute multiple query configurations at once
 **So that** I can save time and get all results in one batch
 
 ## 📝 Description
@@ -158,7 +158,7 @@ Enable bulk execution of multiple query configurations:
 public class JT_BulkQueryExecutor implements Queueable {
   private List<String> configNames;
   private Integer currentIndex = 0;
-  
+
   public void execute(QueueableContext ctx) {
     // Execute current query
     // Store results
@@ -185,8 +185,8 @@ gh issue create \
   --label "enhancement,v3.0,ui/ux,medium-priority" \
   --body "## 🎯 User Story
 
-**As a** user viewing large result sets  
-**I want** to filter and search within results  
+**As a** user viewing large result sets
+**I want** to filter and search within results
 **So that** I can quickly find specific records without re-running queries
 
 ## 📝 Description
@@ -227,8 +227,8 @@ gh issue create \
   --label "enhancement,v3.0,documentation,medium-priority" \
   --body "## 🎯 User Story
 
-**As a** new user learning the system  
-**I want** access to pre-built query templates  
+**As a** new user learning the system
+**I want** access to pre-built query templates
 **So that** I can quickly get started with common use cases
 
 ## 📝 Description
@@ -253,8 +253,8 @@ Create a library of pre-built query templates for common scenarios:
 
 ## 📚 Template Examples
 
-**Sales Cloud:** Accounts by Industry, Open Opportunities by Stage, Won Deals This Quarter  
-**Service Cloud:** Open Cases by Priority, Case Resolution Time Analysis  
+**Sales Cloud:** Accounts by Industry, Open Opportunities by Stage, Won Deals This Quarter
+**Service Cloud:** Open Cases by Priority, Case Resolution Time Analysis
 **Admin:** Inactive Users Last 90 Days, Permission Set Assignments, Failed Login Attempts
 
 ## 🎯 Priority
@@ -272,8 +272,8 @@ gh issue create \
   --label "enhancement,v3.0,developer-experience,medium-priority" \
   --body "## 🎯 User Story
 
-**As a** user creating a new query configuration  
-**I want** real-time validation as I type my SOQL  
+**As a** user creating a new query configuration
+**I want** real-time validation as I type my SOQL
 **So that** I can catch syntax errors before saving
 
 ## 📝 Description
@@ -313,8 +313,8 @@ gh issue create \
   --label "enhancement,v3.0,analytics,low-priority" \
   --body "## 🎯 User Story
 
-**As an** Admin monitoring query performance  
-**I want** a dashboard showing query execution metrics  
+**As an** Admin monitoring query performance
+**I want** a dashboard showing query execution metrics
 **So that** I can identify slow queries and optimize them
 
 ## 📝 Description
@@ -355,8 +355,8 @@ gh issue create \
   --label "enhancement,performance,future,medium-priority" \
   --body "## 🎯 User Story
 
-**As a** user running the same queries frequently  
-**I want** cached results for recent queries  
+**As a** user running the same queries frequently
+**I want** cached results for recent queries
 **So that** I get instant results without hitting governor limits
 
 ## 📝 Description
@@ -393,8 +393,8 @@ gh issue create \
   --label "enhancement,future,automation,medium-priority" \
   --body "## 🎯 User Story
 
-**As a** manager needing daily/weekly reports  
-**I want** to schedule automatic query execution  
+**As a** manager needing daily/weekly reports
+**I want** to schedule automatic query execution
 **So that** I receive results via email without manual work
 
 ## 📝 Description
@@ -431,8 +431,8 @@ gh issue create \
   --label "enhancement,future,deployment,high-priority" \
   --body "## 🎯 User Story
 
-**As a** DevOps engineer managing multiple orgs  
-**I want** to export/import configurations as JSON  
+**As a** DevOps engineer managing multiple orgs
+**I want** to export/import configurations as JSON
 **So that** I can migrate configs between sandbox and production
 
 ## 📝 Description
@@ -470,8 +470,8 @@ gh issue create \
   --label "enhancement,performance,scalability,medium-priority" \
   --body "## 🎯 User Story
 
-**As a** user in an org with 500+ Apex classes  
-**I want** \"Where is this used?\" to run in background  
+**As a** user in an org with 500+ Apex classes
+**I want** \"Where is this used?\" to run in background
 **So that** I don't hit timeout limits and get complete results
 
 ## 📝 Description
@@ -507,8 +507,8 @@ gh issue create \
   --label "enhancement,i18n,v3.0,low-priority" \
   --body "## 🎯 User Story
 
-**As a** global user speaking Italian/Japanese/Portuguese/Chinese  
-**I want** the app in my native language  
+**As a** global user speaking Italian/Japanese/Portuguese/Chinese
+**I want** the app in my native language
 **So that** I can use it more effectively
 
 ## 📝 Description
@@ -542,8 +542,8 @@ gh issue create \
   --label "enhancement,future,api,low-priority" \
   --body "## 🎯 User Story
 
-**As a** developer integrating with external systems  
-**I want** to query Salesforce data using GraphQL  
+**As a** developer integrating with external systems
+**I want** to query Salesforce data using GraphQL
 **So that** I can fetch exactly the data I need with one request
 
 ## 📝 Description
@@ -581,8 +581,8 @@ gh issue create \
   --label "enhancement,future,analytics,low-priority" \
   --body "## 🎯 User Story
 
-**As an** analyst comparing data over time  
-**I want** to compare two query result sets  
+**As an** analyst comparing data over time
+**I want** to compare two query result sets
 **So that** I can identify changes, additions, and deletions
 
 ## 📝 Description
@@ -620,8 +620,8 @@ gh issue create \
   --label "enhancement,future,ai,performance,low-priority" \
   --body "## 🎯 User Story
 
-**As a** developer writing SOQL queries  
-**I want** automatic optimization suggestions  
+**As a** developer writing SOQL queries
+**I want** automatic optimization suggestions
 **So that** my queries run faster and consume fewer resources
 
 ## 📝 Description
@@ -658,8 +658,8 @@ gh issue create \
   --label "enhancement,future,agentforce,ai,medium-priority" \
   --body "## 🎯 User Story
 
-**As an** Agentforce AI agent  
-**I want** more granular query actions  
+**As an** Agentforce AI agent
+**I want** more granular query actions
 **So that** I can help users more effectively with data queries
 
 ## 📝 Description
@@ -694,8 +694,8 @@ gh issue create \
   --label "enhancement,security,future,high-priority" \
   --body "## 🎯 User Story
 
-**As a** Security Administrator  
-**I want** enhanced security controls  
+**As a** Security Administrator
+**I want** enhanced security controls
 **So that** I can protect against abuse and maintain audit compliance
 
 ## 📝 Description
@@ -738,8 +738,8 @@ gh issue create \
   --label "enhancement,future,analytics,reporting,medium-priority" \
   --body "## 🎯 User Story
 
-**As an** Admin managing the application  
-**I want** pre-built reports and dashboards  
+**As an** Admin managing the application
+**I want** pre-built reports and dashboards
 **So that** I can track usage patterns and identify optimization opportunities
 
 ## 📝 Description

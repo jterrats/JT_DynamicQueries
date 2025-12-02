@@ -1,6 +1,8 @@
-# Dynamic Query Viewer for Salesforce
+# Dynamic Query Framework for Salesforce ⚡
 
-A powerful, enterprise-ready Salesforce solution for executing dynamic, configurable SOQL queries with advanced security controls, multi-language support, and a modern Lightning Web Component interface.
+A metadata-driven SOQL execution framework with built-in security, batch processing, and risk assessment. Stop writing boilerplate query code - configure once, execute anywhere.
+
+> **Framework Philosophy:** Provide infrastructure and conventions for configurable queries, not just isolated utilities.
 
 <a href="https://githubsfdeploy.herokuapp.com?owner=jterrats&repo=JT_DynamicQueries&ref=main">
   <img alt="Deploy to Salesforce"
@@ -91,7 +93,7 @@ A powerful, enterprise-ready Salesforce solution for executing dynamic, configur
 - **Searchable Dropdowns** - Real-time client-side filtering
 - **Toggle Result Views** - Table, JSON, or CSV formats
 - **Mobile-First Design** - Expandable cards for mobile, tables for desktop
-- **Multi-Language Support** - 8 languages (EN, ES, FR, DE, IT, JA, PT, ZH)
+- **Multi-Language Support** - 2 languages (EN, ES) with extensible i18n framework
 - **Responsive Design** - Optimized for all screen sizes
 - **Dark Theme Compatible** - Works with all Salesforce themes
 - **Loading Indicators** - Clear feedback for all async operations
@@ -123,13 +125,13 @@ A powerful, enterprise-ready Salesforce solution for executing dynamic, configur
 
 ---
 
-## 🧩 Component Overview (v2.0)
+## 🧩 Framework Architecture (v2.0)
 
-### Lightning Web Components
+### Lightning Web Components (UI Layer)
 
 | Component                | Purpose              | Reusable | Key Features                                     |
 | ------------------------ | -------------------- | -------- | ------------------------------------------------ |
-| **jtQueryViewer**        | Main container       | No       | Orchestrates all components, error boundaries    |
+| **jtQueryViewer**        | Main orchestrator    | No       | Orchestrates all components, error boundaries    |
 | **jtSearchableCombobox** | Generic dropdown     | ✅ Yes   | Client-side filtering, keyboard navigation, ARIA |
 | **jtParameterInputs**    | Dynamic inputs       | Partial  | Auto-generates from SOQL, tooltips               |
 | **jtExecuteButton**      | Query trigger        | ✅ Yes   | State-driven disabled logic, loading states      |
@@ -213,7 +215,7 @@ To enable advanced features like **"Where is this used?"** (search in Flows) and
 
 Follow the step-by-step guide: [**Tooling API Setup Guide**](./docs/TOOLING_API_SETUP.md)
 
-**Note:** The application works WITHOUT Tooling API (core query execution features remain fully functional). Tooling API is only required for:
+**Note:** The framework works WITHOUT Tooling API (core query execution features remain fully functional). Tooling API is only required for:
 
 - Searching configuration references in Flows
 - Creating/editing configurations via UI
@@ -231,7 +233,7 @@ Complete documentation is available within the app in the **Documentation** tab,
 - Troubleshooting
 - API reference
 
-Documentation automatically displays in your browser's language (English, Spanish, French, or German).
+Documentation automatically displays in your browser's language (English or Spanish). Additional languages can be added via the extensible i18n framework.
 
 ### External Documentation
 
@@ -352,7 +354,7 @@ Main component for query execution with features:
 - Results datatable with pagination
 - Run As user selection (admin only)
 - Create/edit configuration modal (sandbox only)
-- Multi-language support (EN, ES, FR, DE)
+- Multi-language support (EN, ES)
 
 #### `jtProjectDocs`
 
@@ -647,7 +649,7 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 
 - Export results to CSV
 - Query configuration UI (Create/Edit via modal)
-- Multi-language support (6 languages)
+- Multi-language support (2 languages: EN, ES)
 - Advanced filtering (Searchable dropdown)
 - Cache management
 
@@ -662,7 +664,7 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 - Query templates library
 - Real-time query validation (as you type)
 - Performance analytics dashboard
-- Additional language support (Italian, Japanese, Portuguese, Chinese)
+- Additional language support (extensible i18n framework for future languages)
 
 ### 💡 Future Considerations
 

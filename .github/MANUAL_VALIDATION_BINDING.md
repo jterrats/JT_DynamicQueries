@@ -3,11 +3,13 @@
 ## Current Status
 
 ✅ **Deploy Successful:**
+
 - All LWC components deployed
 - `executeQueryPreview` method deployed
 - Debug logging added to `jtQueryViewer.js`
 
 ✅ **Apex Tests: 99% Pass Rate (67/68)**
+
 - ❌ 1 failing: `testLogUsageSearch` (unrelated to binding)
 
 ---
@@ -137,11 +139,13 @@ Run As User ID: null
 ### Step 7: Check for Errors
 
 **If binding works correctly:**
+
 - ✅ Query executes successfully
 - ✅ Results table shows data
 - ✅ No error toast
 
 **If binding fails (current bug):**
+
 - ❌ Error toast appears: "Key 'accountType' does not exist in the bindMap"
 - ❌ No results displayed
 
@@ -154,6 +158,7 @@ Run As User ID: null
 3. Or manually copy all relevant logs
 
 **Send to developer:**
+
 - All console output
 - Screenshot of error (if any)
 - Configuration selected
@@ -166,6 +171,7 @@ Run As User ID: null
 ### Critical Questions:
 
 1. **Is `parameterValues` populated correctly after input?**
+
    ```javascript
    Current Parameter Values (from inputs): {
      "accountType": "Customer",  // ✅ Should be here
@@ -174,9 +180,11 @@ Run As User ID: null
    ```
 
 2. **Is the JSON stringified correctly?**
+
    ```javascript
    Final Bindings JSON to send to Apex: {"accountType":"Customer","industry":"Technology"}
    ```
+
    - ✅ Should be valid JSON
    - ✅ Should have both keys
    - ❌ Should NOT be empty: `{}`
@@ -196,6 +204,7 @@ Run As User ID: null
 ### Issue #1: `parameterValues` is empty `{}`
 
 **Console shows:**
+
 ```javascript
 Current Parameter Values (from inputs): {}
 ```
@@ -209,6 +218,7 @@ Current Parameter Values (from inputs): {}
 ### Issue #2: `parameterValues` has wrong structure
 
 **Console shows:**
+
 ```javascript
 Current Parameter Values (from inputs): {
   "param1": { "value": "Customer" }  // ❌ Nested object
@@ -224,6 +234,7 @@ Current Parameter Values (from inputs): {
 ### Issue #3: JSON stringify fails
 
 **Console shows:**
+
 ```javascript
 Final Bindings JSON to send to Apex: "[object Object]"
 ```
@@ -237,6 +248,7 @@ Final Bindings JSON to send to Apex: "[object Object]"
 ### Issue #4: Keys have wrong names
 
 **Console shows:**
+
 ```javascript
 Current Parameter Values (from inputs): {
   "accountType_input": "Customer"  // ❌ Wrong key name
@@ -301,6 +313,7 @@ Final Bindings JSON to send to Apex: {"accountType":"Customer","industry":"Techn
 **Problem:** Frontend is correct, Apex is receiving wrong data
 
 **Actions:**
+
 1. Check `JT_QueryViewerController.executeQuery()`
 2. Add `System.debug()` in Apex
 3. Check if `bindingsJson` parameter is received correctly
@@ -313,6 +326,7 @@ Final Bindings JSON to send to Apex: {"accountType":"Customer","industry":"Techn
 **Problem:** Frontend is not capturing parameters correctly
 
 **Actions:**
+
 1. Check `jtParameterInputs.js` event dispatch
 2. Check `jtQueryViewer.js` event handler
 3. Verify `this.parameterValues` is being updated
@@ -325,6 +339,7 @@ Final Bindings JSON to send to Apex: {"accountType":"Customer","industry":"Techn
 **Problem:** Code not deployed or browser cache
 
 **Actions:**
+
 1. Hard refresh: `Ctrl+Shift+R` (Windows) or `Cmd+Shift+R` (Mac)
 2. Clear browser cache
 3. Re-verify deployment
@@ -383,8 +398,8 @@ Result:
 ✅ Results are displayed
 
 Once validated, we can:
+
 1. Remove debug logging (performance)
 2. Commit the fix
 3. Run E2E tests
 4. Deploy to production
-

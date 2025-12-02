@@ -1,0 +1,28 @@
+.slds-tabs_default__content {
+  min-height: 500px;
+  max-height: calc(100vh - 300px);
+  overflow-y: auto;
+}
+
+/* Code blocks - SLDS style (light background, readable text) */
+pre {
+  background-color: #f4f6f9;
+  color: #080707;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  overflow-x: auto;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+  border: 1px solid #dddbda;
+}
+
+/* Inline code - SLDS style (light background, blue accent) */
+code {
+  background-color: #f4f6f9;
+  color: #0176d3;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid #dddbda;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+  font-size: 0.9em;
+  font-weight: 500;
+}

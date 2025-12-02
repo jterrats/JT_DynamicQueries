@@ -32,7 +32,7 @@ export default class JtSearchableCombobox extends LightningElement {
   @api debugMode = false; // Force dropdown open for CSS debugging
 
   // Semantic HTML attributes (for E2E testing & accessibility)
-  @api dataTestId = "searchable-combobox"; // Base testId for this instance
+  @api testId = "searchable-combobox"; // Base testId for this instance
   @api name = "searchable-combobox"; // Form element name
 
   // Translatable texts (passed from parent)
@@ -105,7 +105,7 @@ export default class JtSearchableCombobox extends LightningElement {
 
   // Semantic HTML computed properties (for E2E testing)
   get inputId() {
-    return `${this.dataTestId}-input`;
+    return `${this.testId}-input`;
   }
 
   get inputName() {
@@ -113,19 +113,19 @@ export default class JtSearchableCombobox extends LightningElement {
   }
 
   get inputTestId() {
-    return `${this.dataTestId}-input`;
+    return `${this.testId}-input`;
   }
 
   get listboxId() {
-    return `${this.dataTestId}-listbox`;
+    return `${this.testId}-listbox`;
   }
 
   get dropdownTestId() {
-    return `${this.dataTestId}-dropdown`;
+    return `${this.testId}-dropdown`;
   }
 
   get comboboxTestId() {
-    return `${this.dataTestId}-combobox`;
+    return `${this.testId}-combobox`;
   }
 
   get ariaLabel() {
@@ -234,7 +234,7 @@ export default class JtSearchableCombobox extends LightningElement {
     // Add semantic test ID to each option
     this.filteredOptions = filtered.map((opt) => ({
       ...opt,
-      optionTestId: `${this.dataTestId}-option-${opt.value}`
+      optionTestId: `${this.testId}-option-${opt.value}`
     }));
   }
 

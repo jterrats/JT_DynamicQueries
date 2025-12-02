@@ -19,9 +19,9 @@ export default class JtRunAsSection extends LightningElement {
   @api isRunningTest = false;
 
   // Translatable labels
-  @api title = "Run As User (Advanced)";
+  @api title = "Run As User";
   @api noteText =
-    "Note: This validates user permissions but executes with USER_MODE security. Results reflect sharing rules and field-level security.";
+    "Select a user to test their permissions. The query will execute with System.runAs() in test context, showing only what that user can see.";
   @api selectUserLabel = "Select User to Impersonate (Optional)";
   @api selectUserPlaceholder =
     "Type to search users... (leave blank to run as current user)";
@@ -41,10 +41,21 @@ export default class JtRunAsSection extends LightningElement {
 
   // Event Handlers
   handleUserSelect(event) {
+    console.log("🔵 jtRunAsSection.handleUserSelect CALLED");
+    console.log("🔵 event.detail:", event.detail);
+
     const { value, label } = event.detail;
+
+    console.log("🔵 Extracted value:", value);
+    console.log("🔵 Extracted label:", label);
+    console.log("🔵 Dispatching userselect with:", {
+      userId: value,
+      userName: label
+    });
+
     this.dispatchEvent(
       new CustomEvent("userselect", {
-        detail: { userId: value, userName: label }
+        detail: { value, label } // ✅ Fix: Use value/label directly
       })
     );
   }

@@ -53,6 +53,7 @@ git commit -m "fix: binding issue"
 ## 🚨 Cambios en Código: Flujo Obligatorio
 
 Si tu commit incluye **cualquier cambio** en:
+
 - `force-app/` (Apex, LWC, metadata)
 - `tests/` (test files)
 - `.github/workflows/` (CI/CD)
@@ -62,33 +63,33 @@ Si tu commit incluye **cualquier cambio** en:
 ```mermaid
 graph TD
     A[Modificar Código] --> B{Tipo de Cambio?}
-    
+
     B -->|Apex| C[Unit Test Apex]
     B -->|LWC HTML/CSS/JS| D[Local Dev + Manual Test]
-    
+
     C --> E[Deploy to Org]
     D --> E
-    
+
     E --> F[Run Apex Tests in Org]
     F --> G{Tests Pass?}
-    
+
     G -->|❌ NO| H[Review Errors]
     H --> I[Fix Code]
     I --> E
-    
+
     G -->|✅ SÍ| J[Run E2E Tests]
     J --> K{E2E Pass?}
-    
+
     K -->|❌ NO| L[Review Videos]
     L --> M[Fix Issues]
     M --> E
-    
+
     K -->|✅ SÍ| N[Manual Validation]
     N --> O{Validated?}
-    
+
     O -->|❌ NO| P[Fix Issues]
     P --> E
-    
+
     O -->|✅ SÍ| Q[✅ COMMIT ALLOWED]
     Q --> R[git commit && git push]
 ```
@@ -238,11 +239,13 @@ npm run precommit
 ```
 
 **Qué valida:**
+
 1. **Prettier**: Formato de código
 2. **Linter**: Calidad de código (Apex, LWC)
 3. **YAML Lint**: Sintaxis de YAMLs
 
 **Qué NO valida (debes hacerlo manualmente):**
+
 - ❌ Apex Tests (requiere org)
 - ❌ E2E Tests (requiere deployed code)
 - ❌ Manual Testing
@@ -274,19 +277,20 @@ npm run precommit
 ```mermaid
 graph LR
     A[Want to Commit] --> B{What Changed?}
-    
+
     B -->|Only Docs| C[✅ Commit Allowed]
     B -->|Code| D{Tests Pass?}
-    
+
     D -->|✅ YES| E[✅ Commit Allowed]
     D -->|❌ NO| F[🚫 Fix & Retest]
-    
+
     C --> G[git push]
     E --> G
     F --> D
 ```
 
 **Simple:**
+
 - 📄 **Docs only?** → Commit sin tests
 - 💻 **Code changed?** → MUST pass ALL tests
 - 🚫 **Tests fail?** → NO COMMIT until fixed
@@ -301,4 +305,3 @@ graph LR
 - [E2E Visual Validation](.github/E2E_VISUAL_VALIDATION.md)
 
 **Recuerda: Tests primero, commits después!** 🚀
-

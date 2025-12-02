@@ -9,7 +9,7 @@ on:
 
   # Run daily at 2 AM UTC to monitor site health
   schedule:
-    - cron: '0 2 * * *'
+    - cron: "0 2 * * *"
 
   # Allow manual trigger
   workflow_dispatch:
@@ -18,9 +18,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'docs/**'
-      - 'tests/e2e/github-pages.spec.js'
-      - '.github/workflows/test-github-pages.yml'
+      - "docs/**"
+      - "tests/e2e/github-pages.spec.js"
+      - ".github/workflows/test-github-pages.yml"
 
 jobs:
   test-github-pages:
@@ -37,8 +37,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'npm'
+          node-version: "18"
+          cache: "npm"
 
       - name: Install Dependencies
         run: npm ci --legacy-peer-deps
@@ -129,4 +129,3 @@ jobs:
           echo "❌ GitHub Pages E2E tests failed"
           echo "Check the test results artifact for details"
           exit 1
-

@@ -118,18 +118,21 @@ sfdx force:user:permset:assign -n JT_Dynamic_Queries -u YOUR_ORG_ALIAS
 ## 📚 Available Documentation
 
 ### Core Documentation
+
 - [Features v2.0](FEATURES_v2.html) - Complete feature list
 - [Architecture Layers](ARCHITECTURE_LAYERS.html) - System design
 - [Accessibility](ACCESSIBILITY.html) - WCAG 2.1 AA compliance
 - [Microservices Pattern](MICROSERVICES_PATTERN.html) - Design patterns
 
 ### Setup & Configuration
+
 - [Tooling API Setup](TOOLING_API_SETUP.html) - English guide
 - [Configuración Tooling API](TOOLING_API_SETUP_ES.html) - Guía en español
 - [Setup Tooling API](SETUP_TOOLING_API.html) - Alternative guide
 - [Report Type Setup](REPORT_TYPE_SETUP.html) - Reports configuration
 
 ### Technical Documentation
+
 - [Run As User Feature](RUN_AS_USER_FEATURE.html) - User context execution
 - [Functional Run As](FUNCTIONAL_RUN_AS.html) - Functional implementation
 - [Searchable Combobox Usage](SEARCHABLE_COMBOBOX_USAGE.html) - Component guide
@@ -137,12 +140,14 @@ sfdx force:user:permset:assign -n JT_Dynamic_Queries -u YOUR_ORG_ALIAS
 - [Translations Architecture](TRANSLATIONS_ARCHITECTURE.html) - i18n system
 
 ### E2E & Testing
+
 - [E2E Complete Success](E2E_COMPLETE_SUCCESS.html) - Test results
 - [E2E Tests Update](E2E_TESTS_UPDATE_SUMMARY.html) - Test updates
 - [Semantic HTML Report](SEMANTIC_HTML_FINAL_REPORT.html) - HTML improvements
 - [Semantic HTML Summary](SEMANTIC_HTML_IMPLEMENTATION_SUMMARY.html) - Implementation
 
 ### Release Notes
+
 - [V2 Release Summary](V2_RELEASE_SUMMARY.html) - Version 2.0 overview
 - [Changelog v2](CHANGELOG_v2.html) - Version history
 - [V3.0 Roadmap](V3_ROADMAP.html) ⭐ - Future plans
@@ -165,6 +170,7 @@ MIT License - See [LICENSE](https://github.com/jterrats/JT_DynamicQueries/blob/m
 - 🚀 [**View Issues on GitHub**](https://github.com/jterrats/JT_DynamicQueries/issues) - Track progress and contribute
 
 **Planned Features:**
+
 - Visual SOQL Builder with drag & drop
 - Query history and favorites
 - Bulk query execution

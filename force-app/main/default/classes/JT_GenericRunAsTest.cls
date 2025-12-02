@@ -34,9 +34,14 @@ public class JT_GenericRunAsTest {
    **/
   private static TestParameters getTestParameters() {
     try {
-      Object cached = Cache.Org.get('RunAsTest_Params');
-      if (cached != null) {
-        Map<String, Object> paramsMap = (Map<String, Object>) cached;
+      // Keys must be alphanumeric - try to get params for current user
+      String userId = UserInfo.getUserId();
+      String cachedJson = (String) Cache.Org.get('RunAsTest' + userId);
+
+      if (String.isNotBlank(cachedJson)) {
+        Map<String, Object> paramsMap = (Map<String, Object>) JSON.deserializeUntyped(
+          cachedJson
+        );
         return new TestParameters(
           (String) paramsMap.get('userId'),
           (String) paramsMap.get('configName'),
@@ -148,9 +153,9 @@ public class JT_GenericRunAsTest {
         resultData.put('fields', new List<String>());
       }
 
-      // Store as JSON string for easy parsing
+      // Store as JSON string for easy parsing (keys must be alphanumeric)
       Cache.Org.put(
-        'RunAsTestResult_' + userId,
+        'RunAsTestResult' + userId,
         JSON.serialize(resultData),
         300
       );
@@ -163,7 +168,7 @@ public class JT_GenericRunAsTest {
           queryResult.runAsUser
         : 'FAILURE: ' + queryResult.errorMessage;
 
-      Cache.Org.put('RunAsTestAssert_' + userId, assertMessage, 300);
+      Cache.Org.put('RunAsTestAssert' + userId, assertMessage, 300);
 
       return new TestResult(true, 'Results stored successfully');
     } catch (Exception e) {

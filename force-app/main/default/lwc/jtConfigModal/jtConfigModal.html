@@ -161,12 +161,18 @@
           <!-- Info Box -->
           <lightning-layout-item size="12" class="slds-p-top_small">
             <div class="slds-box slds-theme_info slds-text-body_small">
-              <lightning-icon
-                icon-name="utility:info"
-                size="x-small"
-                class="slds-m-right_xx-small"
-              ></lightning-icon>
-              <strong>Note:</strong> {toolingNote}
+              <div class="slds-media slds-media_small">
+                <div class="slds-media__figure">
+                  <lightning-icon
+                    icon-name="utility:info"
+                    size="xx-small"
+                    variant="info"
+                  ></lightning-icon>
+                </div>
+                <div class="slds-media__body">
+                  <strong>Note:</strong> {toolingNote}
+                </div>
+              </div>
             </div>
           </lightning-layout-item>
         </lightning-layout>

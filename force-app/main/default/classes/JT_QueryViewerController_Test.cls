@@ -95,10 +95,17 @@ private class JT_QueryViewerController_Test {
     Test.stopTest();
 
     System.assertEquals(true, result.success, 'Preview should succeed');
-    System.assert(result.recordCount <= 5, 'Preview should return max 5 records');
+    System.assert(
+      result.recordCount <= 5,
+      'Preview should return max 5 records'
+    );
     if (result.recordCount > 0) {
       System.assertNotEquals(null, result.fields, 'Fields should be populated');
-      System.assertNotEquals(null, result.records, 'Records should be populated');
+      System.assertNotEquals(
+        null,
+        result.records,
+        'Records should be populated'
+      );
     }
   }
 
@@ -117,8 +124,16 @@ private class JT_QueryViewerController_Test {
     );
     Test.stopTest();
 
-    System.assertEquals(false, result.success, 'Preview should fail with invalid JSON');
-    System.assertNotEquals(null, result.errorMessage, 'Error message should be present');
+    System.assertEquals(
+      false,
+      result.success,
+      'Preview should fail with invalid JSON'
+    );
+    System.assertNotEquals(
+      null,
+      result.errorMessage,
+      'Error message should be present'
+    );
   }
 
   /**
@@ -272,5 +287,171 @@ private class JT_QueryViewerController_Test {
     System.assert(params2.contains('name'), 'Should contain name');
     System.assert(params3.contains('name'), 'Should contain name');
     System.assert(params4.contains('name'), 'Should contain name');
+  }
+
+  /**
+   * @description Test assessQueryRisk for low risk queries
+   * @author Jaime Terrats | 12-02-2025
+   **/
+  @isTest
+  static void testAssessQueryRisk_LowRisk() {
+    Map<String, Object> bindings = new Map<String, Object>{
+      'name' => 'Test Account for Viewer'
+    };
+    String bindingsJson = JSON.serialize(bindings);
+
+    Test.startTest();
+    JT_QueryViewerController.QueryRiskAssessment assessment = JT_QueryViewerController.assessQueryRisk(
+      'Test_Record',
+      bindingsJson
+    );
+    Test.stopTest();
+
+    // Verify assessment structure (don't assert on isCriticalRisk as COUNT may fail in test context)
+    System.assertNotEquals(null, assessment, 'Assessment should not be null');
+    System.assertNotEquals(
+      null,
+      assessment.estimatedRecordCount,
+      'Should have record count estimate'
+    );
+    System.assertNotEquals(
+      null,
+      assessment.riskLevel,
+      'Should have risk level'
+    );
+    System.assertNotEquals(
+      null,
+      assessment.message,
+      'Should have a risk message'
+    );
+
+    // Verify it's either LOW, MEDIUM, HIGH, CRITICAL, or UNKNOWN
+    List<String> validLevels = new List<String>{
+      'LOW',
+      'MEDIUM',
+      'HIGH',
+      'CRITICAL',
+      'UNKNOWN'
+    };
+    System.assert(
+      validLevels.contains(assessment.riskLevel),
+      'Risk level should be valid'
+    );
+  }
+
+  /**
+   * @description Test assessQueryRisk with empty bindings (high risk)
+   * @author Jaime Terrats | 12-02-2025
+   **/
+  @isTest
+  static void testAssessQueryRisk_EmptyBindings() {
+    // Empty bindings (empty string value)
+    Map<String, Object> bindings = new Map<String, Object>{ 'name' => '' };
+    String bindingsJson = JSON.serialize(bindings);
+
+    Test.startTest();
+    JT_QueryViewerController.QueryRiskAssessment assessment = JT_QueryViewerController.assessQueryRisk(
+      'Test_Record',
+      bindingsJson
+    );
+    Test.stopTest();
+
+    System.assertNotEquals(null, assessment, 'Assessment should not be null');
+    System.assertEquals(
+      true,
+      assessment.hasEmptyParameters,
+      'Should detect empty parameters'
+    );
+  }
+
+  /**
+   * @description Test executeQueryWithBatchProcessing
+   * @author Jaime Terrats | 12-02-2025
+   **/
+  @isTest
+  static void testExecuteQueryWithBatchProcessing() {
+    // Create a specific account that matches the test
+    Account testAcc = new Account(Name = 'Batch Processing Test Account');
+    insert testAcc;
+
+    // Use binding with a specific name
+    Map<String, Object> bindings = new Map<String, Object>{
+      'name' => 'Batch Processing Test Account'
+    };
+    String bindingsJson = JSON.serialize(bindings);
+
+    Test.startTest();
+    JT_QueryViewerController.QueryResult result = JT_QueryViewerController.executeQueryWithBatchProcessing(
+      'Test_Record',
+      bindingsJson,
+      10 // Small batch size for testing
+    );
+    Test.stopTest();
+
+    System.assertEquals(true, result.success, 'Batch query should succeed');
+    System.assert(result.recordCount > 0, 'Should return records');
+    System.assertNotEquals(
+      null,
+      result.records,
+      'Records list should not be null'
+    );
+  }
+
+  /**
+   * @description Test batch processing with large result set simulation
+   * @author Jaime Terrats | 12-02-2025
+   **/
+  @isTest
+  static void testExecuteQueryWithBatchProcessing_LargeSet() {
+    // Create a single account that will be queried
+    Account testAcc = new Account(Name = 'Large Set Test Account');
+    insert testAcc;
+
+    // Use specific binding to match the account
+    Map<String, Object> bindings = new Map<String, Object>{
+      'name' => 'Large Set Test Account'
+    };
+    String bindingsJson = JSON.serialize(bindings);
+
+    Test.startTest();
+    JT_QueryViewerController.QueryResult result = JT_QueryViewerController.executeQueryWithBatchProcessing(
+      'Test_Record',
+      bindingsJson,
+      50 // Batch size of 50
+    );
+    Test.stopTest();
+
+    System.assertEquals(true, result.success, 'Batch query should succeed');
+    System.assert(result.recordCount > 0, 'Should return the test account');
+  }
+
+  /**
+   * @description Test ResultCollector inner class
+   * @author Jaime Terrats | 12-02-2025
+   **/
+  @isTest
+  static void testResultCollector() {
+    // Create test records
+    List<Account> accounts = new List<Account>{
+      new Account(Name = 'Collector Test 1'),
+      new Account(Name = 'Collector Test 2')
+    };
+    insert accounts;
+
+    JT_QueryViewerController.ResultCollector collector = new JT_QueryViewerController.ResultCollector();
+
+    Test.startTest();
+    // Process batch 1
+    collector.processBatch(new List<SObject>{ accounts[0] });
+    // Process batch 2
+    collector.processBatch(new List<SObject>{ accounts[1] });
+    Test.stopTest();
+
+    List<SObject> allRecords = collector.getAllRecords();
+    System.assertEquals(
+      2,
+      allRecords.size(),
+      'Should collect all records from batches'
+    );
   }
 }

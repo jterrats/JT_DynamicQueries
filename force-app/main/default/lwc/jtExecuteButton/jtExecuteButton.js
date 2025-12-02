@@ -16,7 +16,7 @@ export default class JtExecuteButton extends LightningElement {
   @api isLoading = false;
 
   // Semantic HTML attributes (for E2E testing & accessibility)
-  @api dataTestId = "execute-query-button";
+  @api testId = "execute-query-button";
   @api name = "execute-query";
 
   // Validation requirements (defaults handled in getter)
@@ -26,6 +26,7 @@ export default class JtExecuteButton extends LightningElement {
   // State from parent
   @api selectedConfig;
   @api hasParameters;
+  @api parameterValues; // Object with parameter values
 
   // Computed
   get isDisabled() {
@@ -33,7 +34,20 @@ export default class JtExecuteButton extends LightningElement {
     // 1. Explicitly disabled
     // 2. Loading
     // 3. No config selected (always required)
-    return this.disabled || this.isLoading || !this.selectedConfig;
+    // 4. Has parameters but all are empty (avoid 50k+ records query)
+    if (this.disabled || this.isLoading || !this.selectedConfig) {
+      return true;
+    }
+
+    // If config has parameters, at least one must have a value
+    if (this.hasParameters && this.parameterValues) {
+      const hasAnyValue = Object.values(this.parameterValues).some(
+        (val) => val !== "" && val !== null && val !== undefined
+      );
+      return !hasAnyValue; // Disabled if all params are empty
+    }
+
+    return false;
   }
 
   get buttonClass() {
@@ -51,6 +65,14 @@ export default class JtExecuteButton extends LightningElement {
     }
     if (!this.selectedConfig) {
       return `${this.label} - Disabled: Select a configuration first`;
+    }
+    if (this.hasParameters && this.parameterValues) {
+      const hasAnyValue = Object.values(this.parameterValues).some(
+        (val) => val !== "" && val !== null && val !== undefined
+      );
+      if (!hasAnyValue) {
+        return `${this.label} - Disabled: Enter at least one parameter value to avoid returning too many records`;
+      }
     }
     return this.label;
   }

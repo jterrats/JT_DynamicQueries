@@ -485,3 +485,22 @@ lightning-badge {
 .dropdown-button lightning-icon {
   pointer-events: none;
 }
+
+/* ========================================
+   FULL HEIGHT: Minimal CSS using SLDS patterns
+   ======================================== */
+
+/* Host: Full viewport height */
+:host {
+  display: block;
+  min-height: calc(100vh - 100px);
+}
+
+/* ========================================
+   CONTROLS COLUMN: Minimal scroll styles
+   ======================================== */
+
+/* Parameters: Scrollable if too many (using SLDS utility classes in HTML) */
+.parameters-scrollable {
+  max-height: 400px;
+}

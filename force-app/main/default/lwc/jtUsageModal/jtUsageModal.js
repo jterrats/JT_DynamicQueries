@@ -84,6 +84,16 @@ export default class JtUsageModal extends LightningElement {
     return this.flowSuccess ? "success" : "error";
   }
 
+  // Only show "Partial Results" warning if we have SOME results but SOME services failed
+  get shouldShowPartialWarning() {
+    return this.hasPartialResults && this.hasUsage;
+  }
+
+  // Show service status even when no results (so user knows why)
+  get shouldShowServiceStatus() {
+    return this.hasPartialResults;
+  }
+
   // Event Handlers
   handleClose() {
     this.dispatchEvent(new CustomEvent("close"));

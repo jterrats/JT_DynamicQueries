@@ -8,6 +8,12 @@ on:
     branches:
       - main
 
+# Required permissions for github-script to create comments
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
 jobs:
   e2e-tests:
     runs-on: ubuntu-latest

@@ -10,9 +10,11 @@ function getSFSession() {
     console.log("🔑 Using SF CLI active session (no login needed)...");
 
     // Get org info from SF CLI - uses active session
+    // Force plain JSON output (no colors) with SF_USE_PROGRESS_BAR=false
     const orgInfoJson = execSync("sf org display --json", {
       encoding: "utf-8",
-      stdio: ["pipe", "pipe", "pipe"]
+      stdio: ["pipe", "pipe", "pipe"],
+      env: { ...process.env, SF_USE_PROGRESS_BAR: "false", SF_AUTOUPDATE_DISABLE: "true" }
     });
 
     const orgInfo = JSON.parse(orgInfoJson);

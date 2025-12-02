@@ -101,6 +101,102 @@ const LABELS = {
     documentationTitle: "Documentación",
     issuesTitle: "Reportar Problemas",
     contributingTitle: "Contribuir"
+  },
+  fr: {
+    // Header
+    welcomeTitle: "Bienvenue dans Dynamic Query Framework",
+    welcomeSubtitle:
+      "Un framework d'exécution SOQL piloté par les métadonnées avec sécurité intégrée, traitement par lots et évaluation des risques.",
+    frameworkPhilosophy: "Philosophie du Framework:",
+    philosophyText:
+      "Fournir une infrastructure et des conventions pour les requêtes configurables, pas seulement des utilitaires isolés.",
+
+    // Tabs
+    overviewTab: "Aperçu",
+    gettingStartedTab: "Commencer",
+    apiReferenceTab: "Référence API",
+    batchProcessingTab: "Traitement par Lots",
+    supportTab: "Support",
+
+    // Overview Section
+    overviewTitle: "Qu'est-ce que Dynamic Query Framework?",
+    overviewDescription:
+      "Un framework puissant pour exécuter des requêtes SOQL dynamiques avec des configurations pilotées par les métadonnées.",
+
+    // Getting Started Section
+    gettingStartedTitle: "Commencer",
+    installationTitle: "Installation",
+    quickStartTitle: "Démarrage Rapide",
+
+    // API Reference Section
+    apiReferenceTitle: "Référence API",
+    publicAPIsTitle: "APIs Publiques",
+    internalFrameworkTitle: "Classes Internes du Framework",
+    publicAPIsDescription: "Ces classes font partie de l'API publique:",
+    internalDescription:
+      "Ces classes sont uniquement pour un usage interne du framework:",
+
+    // Batch Processing Section
+    batchProcessingTitle: "Évaluation des Risques et Traitement par Lots",
+    riskLevelsTitle: "Niveaux de Risque",
+    riskLevelLow: "Faible",
+    riskLevelMedium: "Moyen",
+    riskLevelHigh: "Élevé",
+    riskLevelCritical: "Critique",
+
+    // Support Section
+    supportTitle: "Besoin d'Aide?",
+    documentationTitle: "Documentation",
+    issuesTitle: "Signaler des Problèmes",
+    contributingTitle: "Contribuer"
+  },
+  de: {
+    // Header
+    welcomeTitle: "Willkommen bei Dynamic Query Framework",
+    welcomeSubtitle:
+      "Ein metadatengesteuertes SOQL-Ausführungs-Framework mit integrierter Sicherheit, Batch-Verarbeitung und Risikobewertung.",
+    frameworkPhilosophy: "Framework-Philosophie:",
+    philosophyText:
+      "Infrastruktur und Konventionen für konfigurierbare Abfragen bereitstellen, nicht nur isolierte Dienstprogramme.",
+
+    // Tabs
+    overviewTab: "Übersicht",
+    gettingStartedTab: "Erste Schritte",
+    apiReferenceTab: "API-Referenz",
+    batchProcessingTab: "Batch-Verarbeitung",
+    supportTab: "Unterstützung",
+
+    // Overview Section
+    overviewTitle: "Was ist Dynamic Query Framework?",
+    overviewDescription:
+      "Ein leistungsstarkes Framework zur Ausführung dynamischer SOQL-Abfragen mit metadatengesteuerten Konfigurationen.",
+
+    // Getting Started Section
+    gettingStartedTitle: "Erste Schritte",
+    installationTitle: "Installation",
+    quickStartTitle: "Schnellstart",
+
+    // API Reference Section
+    apiReferenceTitle: "API-Referenz",
+    publicAPIsTitle: "Öffentliche APIs",
+    internalFrameworkTitle: "Interne Framework-Klassen",
+    publicAPIsDescription: "Diese Klassen sind Teil der öffentlichen API:",
+    internalDescription:
+      "Diese Klassen sind nur für die interne Framework-Verwendung:",
+
+    // Batch Processing Section
+    batchProcessingTitle: "Risikobewertung und Batch-Verarbeitung",
+    riskLevelsTitle: "Risikoebenen",
+    riskLevelLow: "Niedrig",
+    riskLevelMedium: "Mittel",
+    riskLevelHigh: "Hoch",
+    riskLevelCritical: "Kritisch",
+
+    // Support Section
+    supportTitle: "Benötigen Sie Hilfe?",
+    documentationTitle: "Dokumentation",
+    issuesTitle: "Probleme Melden",
+    contributingTitle: "Beitragen"
   }
 };
 

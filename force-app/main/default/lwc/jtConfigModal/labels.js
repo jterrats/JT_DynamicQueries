@@ -33,6 +33,35 @@ const LABELS = {
     developerNameCannotEndWithUnderscore: "No puede terminar con guión bajo",
     developerNameNoConsecutiveUnderscores:
       "No puede contener guiones bajos consecutivos"
+  },
+  fr: {
+    // Validation Messages
+    labelRequired: "Le libellé est requis",
+    labelTooLong: "Le libellé doit contenir 40 caractères ou moins",
+    developerNameRequired: "Le nom du développeur est requis",
+    developerNameTooLong:
+      "Le nom du développeur doit contenir 40 caractères ou moins",
+    developerNameInvalidChars:
+      "Seuls les lettres, chiffres et underscores sont autorisés",
+    developerNameMustStartWithLetter: "Doit commencer par une lettre",
+    developerNameCannotEndWithUnderscore:
+      "Ne peut pas se terminer par un underscore",
+    developerNameNoConsecutiveUnderscores:
+      "Ne peut pas contenir d'underscores consécutifs"
+  },
+  de: {
+    // Validation Messages
+    labelRequired: "Bezeichnung ist erforderlich",
+    labelTooLong: "Bezeichnung darf maximal 40 Zeichen lang sein",
+    developerNameRequired: "Entwicklername ist erforderlich",
+    developerNameTooLong: "Entwicklername darf maximal 40 Zeichen lang sein",
+    developerNameInvalidChars:
+      "Nur Buchstaben, Zahlen und Unterstriche erlaubt",
+    developerNameMustStartWithLetter: "Muss mit einem Buchstaben beginnen",
+    developerNameCannotEndWithUnderscore:
+      "Kann nicht mit einem Unterstrich enden",
+    developerNameNoConsecutiveUnderscores:
+      "Kann keine aufeinanderfolgenden Unterstriche enthalten"
   }
 };
 

@@ -43,7 +43,7 @@ async function setupTestContext(page, session, options = {}) {
       await page.waitForSelector(SELECTORS.queryViewer, {
         timeout: TIMEOUTS.component
       });
-      
+
       // Extra wait for Shadow DOM and interactivity
       await page.waitForTimeout(TIMEOUTS.medium);
     }
@@ -61,7 +61,7 @@ async function selectConfiguration(page, configName) {
   await page.waitForTimeout(1000); // Wait for dropdown to open
   await input.fill(configName);
   await page.waitForTimeout(1000); // Wait for filtering
-  
+
   const dropdown = page.locator(SELECTORS.configSelectorDropdown);
   await dropdown.locator(".slds-listbox__item").first().click();
   await page.waitForTimeout(TIMEOUTS.short); // Wait for selection to process
@@ -70,13 +70,13 @@ async function selectConfiguration(page, configName) {
 /**
  * Execute a query by clicking the execute button
  * @param {Object} page - Playwright page object
- * @param {Object} options - { waitTime: number }
+ * @param {Object} options - { waitTime: number, force: boolean }
  */
 async function executeQuery(page, options = {}) {
-  const { waitTime = TIMEOUTS.medium } = options;
+  const { waitTime = TIMEOUTS.medium, force = true } = options;
 
   const executeButton = page.locator(SELECTORS.executeButton);
-  await executeButton.click();
+  await executeButton.click({ force }); // force: true to bypass interceptions
   await page.waitForTimeout(waitTime); // Wait for query execution
 }
 

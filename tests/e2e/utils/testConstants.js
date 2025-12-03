@@ -17,26 +17,26 @@ const SELECTORS = {
   configSelectorDropdown: '[data-testid="config-selector-dropdown"]',
   executeButton: "c-jt-execute-button lightning-button",
   executeButtonTestId: '[data-testid="execute-query-button"]',
-  
+
   // Results
   queryResults: "c-jt-query-results",
   resultsTable: ".slds-table",
-  
+
   // Modals
   configModal: "c-jt-config-modal",
   usageModal: "c-jt-usage-modal",
   cacheModal: "c-jt-cache-modal",
-  
+
   // Inputs
   parameterInputs: "c-jt-parameter-inputs",
-  
+
   // Run As User
   runAsSection: "c-jt-run-as-section",
   runAsUserSelector: '[data-testid="run-as-user-selector"]',
-  
+
   // Tabs/Navigation
   tabLink: (tabName) => `a[title="${tabName}"]`,
-  
+
   // Toast Messages
   toastContainer: "lightning-toast",
   toastMessage: ".toastMessage"
@@ -54,10 +54,10 @@ const TIMEOUTS = {
 
 // Test Data Configuration Names
 const TEST_CONFIGS = {
-  simple: "Test Record",
-  withParams: "Test Account",
-  allActive: "All Active Accounts",
-  customer360: "Customer 360 View"
+  noParams: "Customer 360 View", // Has bindings, no empty params
+  simple: "Test Record", // Simple query
+  withParams: "Test Account", // Has parameters
+  allActive: "All Active Accounts" // Many records
 };
 
 // Expected Messages

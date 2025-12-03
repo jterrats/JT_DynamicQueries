@@ -5,41 +5,29 @@
  */
 
 const { test, expect } = require("@playwright/test");
+const {
+  setupTestContext,
+  selectConfiguration,
+  getTestSession
+} = require("./utils/testHelpers");
+const { SELECTORS, TIMEOUTS } = require("./utils/testConstants");
 
 test.describe("Query Data Preview", () => {
+  let session;
+
+  test.beforeAll(() => {
+    session = getTestSession();
+  });
+
   test.beforeEach(async ({ page }) => {
-    // Login and navigate to the app
-    await page.goto(process.env.SF_INSTANCE_URL + "/lightning", {
-      waitUntil: "domcontentloaded"
-    });
-
-    // Wait for login if needed (or assume already logged in)
-    await page.waitForTimeout(2000);
-
-    // Navigate to Dynamic Query Framework app
-    await page.goto(process.env.SF_INSTANCE_URL + "/lightning/n/Query_Viewer", {
-      waitUntil: "domcontentloaded",
-      timeout: 30000
-    });
-
-    // Wait for the component to load
-    await page.waitForSelector("c-jt-query-viewer", { timeout: 30000 });
+    await setupTestContext(page, session);
   });
 
   test("should show query preview SOQL text when config selected", async ({
     page
   }) => {
     // Select a configuration
-    const combobox = page.locator(
-      'c-jt-searchable-combobox[data-testid="config-selector"]'
-    );
-    await combobox.locator("input").click();
-    await combobox.locator("input").fill("Test");
-    await page.waitForTimeout(500);
-
-    // Click first option
-    await combobox.locator('li[role="option"]').first().click();
-    await page.waitForTimeout(1000);
+    await selectConfiguration(page, "Test");
 
     // Check that Query Preview section is visible
     const queryPreview = page.locator("text=Query Preview:");

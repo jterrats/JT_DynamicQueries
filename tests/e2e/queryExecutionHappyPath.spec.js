@@ -11,23 +11,35 @@
  */
 
 const { test, expect } = require("@playwright/test");
+const { getSFSession, injectSFSession, navigateToApp } = require("./utils/sfAuth");
+
+const TARGET_APP_NAME = "Dynamic Query Framework";
+const QUERY_VIEWER_TAB = "Query Viewer";
 
 test.describe("Query Execution Happy Path", () => {
+  let session;
+
+  test.beforeAll(() => {
+    // Get SF CLI active session once for all tests
+    session = getSFSession();
+  });
+
   test.beforeEach(async ({ page }) => {
-    // Login and navigate to the app
-    await page.goto(process.env.SF_INSTANCE_URL + "/lightning", {
-      waitUntil: "domcontentloaded"
-    });
-    await page.waitForTimeout(2000);
+    // Inject SF CLI session (frontdoor.jsp auth)
+    await injectSFSession(page, session);
 
-    // Navigate to Dynamic Query Framework app
-    await page.goto(process.env.SF_INSTANCE_URL + "/lightning/n/Query_Viewer", {
-      waitUntil: "domcontentloaded",
-      timeout: 30000
-    });
+    // Navigate to app via App Launcher
+    const navigated = await navigateToApp(page, TARGET_APP_NAME);
 
-    // Wait for the component to load
-    await page.waitForSelector("c-jt-query-viewer", { timeout: 30000 });
+    if (navigated) {
+      // Click on Query Viewer tab
+      const tabLink = page.locator(`a[title="${QUERY_VIEWER_TAB}"]`).first();
+      await tabLink.click({ timeout: 5000 });
+      await page.waitForLoadState("domcontentloaded");
+    }
+
+    // Wait for LWC to load
+    await page.waitForSelector("c-jt-query-viewer", { timeout: 15000 });
   });
 
   test("should execute query and return records without errors", async ({

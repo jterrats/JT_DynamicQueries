@@ -122,7 +122,7 @@ async function injectSFSession(page, session) {
     console.log("⚠️  Lightning navigation not found, checking page state...");
     const currentUrl = page.url();
     console.log(`   Current URL: ${currentUrl}`);
-    
+
     // Take screenshot for debugging
     await page.screenshot({
       path: `test-results/lightning-not-found-${Date.now()}.png`,

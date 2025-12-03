@@ -48,13 +48,13 @@ if [ "$CURRENT_URL" != "$CACHED_URL" ]; then
     echo "   Current: $CURRENT_URL"
     echo ""
     echo "🔄 Updating environment..."
-    
+
     # Run setup to update .env
     ./scripts/setup-org-url.sh "$CURRENT_ORG"
-    
+
     # Reload .env
     source .env
-    
+
     echo ""
     echo "✅ Environment updated!"
 else

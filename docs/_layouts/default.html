@@ -180,29 +180,32 @@
         margin: 2rem 0;
       }
 
-      /* Mermaid diagram styling - optimized for space */
+      /* Mermaid diagram styling - consistent compact size */
       .mermaid {
         text-align: center;
         margin: 0;
         background: white;
-        padding: 20px;
-        min-height: 300px; /* ✅ Reduced from 600px */
+        padding: 15px;
+        min-height: 250px; /* ✅ Compact consistent height */
+        max-height: 600px; /* ✅ Prevent excessive vertical space */
         display: flex;
         justify-content: center;
         align-items: center;
+        overflow: hidden;
       }
 
       .mermaid svg {
         max-width: 100%;
         width: 100%;
         height: auto;
-        /* ✅ Removed fixed min-height, let it adapt */
+        max-height: 550px; /* ✅ Limit diagram height */
       }
 
       .mermaid-interactive-wrapper {
         position: relative;
         overflow: hidden;
-        min-height: auto; /* ✅ Auto-adjust to content */
+        min-height: 250px; /* ✅ Consistent with .mermaid */
+        max-height: 600px; /* ✅ Consistent max height */
       }
 
       .mermaid-interactive-wrapper:hover {
@@ -303,25 +306,25 @@
             lineColor: "#667eea",
             secondaryColor: "#48bb78",
             tertiaryColor: "#f59e0b",
-            fontSize: "18px",
+            fontSize: "14px", /* ✅ Reduced from 18px for consistency */
             fontFamily: "Arial, sans-serif"
           },
           flowchart: {
             curve: "basis",
-            padding: 30,
-            nodeSpacing: 80,
-            rankSpacing: 80,
-            diagramPadding: 30
+            padding: 20, /* ✅ Reduced from 30px */
+            nodeSpacing: 60, /* ✅ Reduced from 80px */
+            rankSpacing: 60, /* ✅ Reduced from 80px */
+            diagramPadding: 20 /* ✅ Reduced from 30px */
           },
           sequence: {
-            actorMargin: 100,
-            messageFontSize: 16,
-            width: 200,
-            height: 65
+            actorMargin: 80, /* ✅ Reduced from 100px */
+            messageFontSize: 13, /* ✅ Reduced from 16px */
+            width: 160, /* ✅ Reduced from 200px */
+            height: 50 /* ✅ Reduced from 65px */
           },
           classDiagram: {
-            padding: 30,
-            textHeight: 20
+            padding: 20, /* ✅ Reduced from 30px */
+            textHeight: 16 /* ✅ Reduced from 20px */
           }
         });
 
@@ -462,10 +465,11 @@
                 }
               });
 
-              // Set initial zoom to 120% for better visibility
+              // Set initial zoom to fit perfectly for consistency
               setTimeout(function () {
-                panZoomInstance.zoom(1.2);
+                panZoomInstance.fit();
                 panZoomInstance.center();
+                panZoomInstance.zoom(0.95); /* ✅ Slight zoom out for consistent margins */
               }, 100);
 
               // Connect buttons to pan-zoom instance

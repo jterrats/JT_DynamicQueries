@@ -25,7 +25,8 @@
     "postinstall": "husky install",
     "precommit": "npm run prettier && npm run lint:staged && npm run yamllint",
     "screenshots:appexchange": "node tests/screenshots/captureAppExchangeScreenshots.js",
-    "videos:appexchange": "node tests/screenshots/captureAppExchangeVideos.js"
+    "videos:appexchange": "node tests/screenshots/captureAppExchangeVideos.js",
+    "deploy:named-credential": "node scripts/smart-deploy.js"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.0",

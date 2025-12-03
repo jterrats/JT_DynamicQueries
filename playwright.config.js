@@ -6,6 +6,9 @@ const { defineConfig, devices } = require("@playwright/test");
 module.exports = defineConfig({
   testDir: "./tests/e2e",
 
+  /* Global setup to load SF session */
+  globalSetup: require.resolve("./tests/e2e/globalSetup"),
+
   /* Run tests in files in parallel */
   fullyParallel: false,
 

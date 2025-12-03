@@ -1,5 +1,21 @@
 # Scripts - Named Credential Setup
 
+## 🖥️ Cross-Platform Support
+
+All scripts are now available in **Node.js** for maximum compatibility:
+
+| Platform | Shell Scripts (`.sh`) | Node.js Scripts (`.js`) | Recommended |
+|----------|----------------------|-------------------------|-------------|
+| **macOS / Linux** | ✅ Supported | ✅ Supported | Either |
+| **Windows (CMD/PowerShell)** | ❌ Not supported | ✅ Supported | **Node.js** |
+| **Windows (Git Bash/WSL)** | ✅ Supported | ✅ Supported | Either |
+| **CI/CD (GitHub Actions)** | ✅ Supported | ✅ Supported | Either |
+
+**🚀 Quick Command:**
+```bash
+npm run deploy:named-credential
+```
+
 ## 🎯 Problema a Resolver
 
 Named Credentials necesitan la URL del org. Cada org tiene una URL diferente:
@@ -13,29 +29,33 @@ Named Credentials necesitan la URL del org. Cada org tiene una URL diferente:
 
 ## 🚀 Quick Start
 
-### Opción 1: Manual (Run cada vez que cambies org)
+### ⭐ Opción 1: Node.js (Cross-Platform - RECOMENDADO)
 
 ```bash
 # Cambiar org
 sf config set target-org my-sandbox
 
-# Setup y deploy
-./scripts/setup-org-url.sh
-source .env
-./scripts/deploy-with-replacement.sh
+# Smart deploy con Node.js (funciona en Windows, Mac, Linux)
+npm run deploy:named-credential
 ```
 
-### Opción 2: Smart Deploy (Auto-detecta cambios)
+O directamente:
+
+```bash
+node scripts/smart-deploy.js
+```
+
+### Opción 2: Shell Scripts (Unix/Linux/Mac/Git Bash)
 
 ```bash
 # Cambiar org
 sf config set target-org my-sandbox
 
-# Smart deploy (detecta que cambió el org y actualiza automáticamente)
+# Smart deploy con shell script
 ./scripts/smart-deploy.sh
 ```
 
-### Opción 3: Shell Aliases (Más conveniente)
+### Opción 3: Shell Aliases (Más conveniente para Unix/Linux/Mac)
 
 ```bash
 # Setup ONE TIME
@@ -49,7 +69,45 @@ jt-deploy  # 🚀 Auto!
 
 ## 📁 Scripts Disponibles
 
-### `setup-org-url.sh`
+### `smart-deploy.js` ⭐ (RECOMENDADO)
+Deploy inteligente **cross-platform** (Node.js)
+
+```bash
+npm run deploy:named-credential
+# o
+node scripts/smart-deploy.js [org-alias]
+```
+
+**Qué hace:**
+1. Detecta URL del org actual
+2. Compara con URL cacheada en `.env`
+3. Si cambió, actualiza `.env` automáticamente
+4. Deploya Named Credential con string replacement
+5. ✅ Funciona en **Windows, Mac, Linux**!
+
+**Ventajas:**
+- ✅ No requiere `bash`, `jq`, o herramientas Unix
+- ✅ Funciona nativamente en Windows CMD/PowerShell
+- ✅ Auto-limpieza de archivos temporales
+- ✅ Error handling robusto
+
+---
+
+### `smart-deploy.sh` (Unix/Linux/Mac)
+Deploy inteligente shell script
+
+```bash
+./scripts/smart-deploy.sh [org-alias]
+```
+
+**Qué hace:**
+1. Detecta URL del org actual
+2. Compara con URL cacheada en `.env`
+3. Si cambió, ejecuta `setup-org-url.sh` automáticamente
+4. Deploya Named Credential
+5. ✅ Siempre correcto!
+
+### `setup-org-url.sh` (Unix/Linux/Mac)
 Detecta la URL del org actual y genera `.env`
 
 ```bash
@@ -60,7 +118,7 @@ Detecta la URL del org actual y genera `.env`
 - Crea/actualiza `.env` con `SF_ORG_SQF=https://...`
 - Exporta variable de entorno
 
-### `deploy-with-replacement.sh`
+### `deploy-with-replacement.sh` (Unix/Linux/Mac)
 Deploya Named Credential con string replacement
 
 ```bash
@@ -73,20 +131,6 @@ source .env
 2. Crea temp file con URL real
 3. Deploya a Salesforce
 4. Restaura archivo original
-
-### `smart-deploy.sh` ⭐
-Deploy inteligente que auto-detecta cambios de org
-
-```bash
-./scripts/smart-deploy.sh [org-alias]
-```
-
-**Qué hace:**
-1. Detecta URL del org actual
-2. Compara con URL cacheada en `.env`
-3. Si cambió, ejecuta `setup-org-url.sh` automáticamente
-4. Deploya Named Credential
-5. ✅ Siempre correcto!
 
 ### `deploy-alias.sh`
 Setup de aliases para tu shell
@@ -164,7 +208,7 @@ sf config set target-org <username-or-alias>
 
 ## 💡 Recomendación
 
-Para **desarrollo local**: Usa `deploy-alias.sh` + `jt-deploy`  
+Para **desarrollo local**: Usa `deploy-alias.sh` + `jt-deploy`
 Para **CI/CD**: Usa `setup-org-url.sh` + `deploy-with-replacement.sh`
 
 ## 🔐 Seguridad

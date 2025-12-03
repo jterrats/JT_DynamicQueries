@@ -43,7 +43,7 @@ else
     echo "# JT Dynamic Queries - Auto aliases" >> "$SHELL_RC"
     echo "$ALIAS_DEPLOY" >> "$SHELL_RC"
     echo "$ALIAS_SETUP" >> "$SHELL_RC"
-    
+
     echo "✅ Aliases added to $SHELL_RC"
     echo ""
 fi

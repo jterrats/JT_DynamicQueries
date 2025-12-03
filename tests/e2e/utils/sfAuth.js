@@ -14,7 +14,11 @@ function getSFSession() {
     const orgInfoJson = execSync("sf org display --json", {
       encoding: "utf-8",
       stdio: ["pipe", "pipe", "pipe"],
-      env: { ...process.env, SF_USE_PROGRESS_BAR: "false", SF_AUTOUPDATE_DISABLE: "true" }
+      env: {
+        ...process.env,
+        SF_USE_PROGRESS_BAR: "false",
+        SF_AUTOUPDATE_DISABLE: "true"
+      }
     });
 
     const orgInfo = JSON.parse(orgInfoJson);
@@ -79,56 +83,54 @@ async function createAuthenticatedContext(browser) {
  * @param {Object} session - Session object from getSFSession()
  */
 async function injectSFSession(page, session) {
-  const url = new URL(session.instanceUrl);
+  console.log("🔐 Authenticating via frontdoor.jsp...");
 
-  // CRITICAL: Add cookies BEFORE navigating to avoid login redirect
-  await page.context().addCookies([
-    {
-      name: "sid",
-      value: session.accessToken,
-      domain: url.hostname,
-      path: "/",
-      httpOnly: false, // Changed to false for Lightning
-      secure: true,
-      sameSite: "None" // Required for cross-site cookies
-    },
-    {
-      name: "sid_Client",
-      value: session.accessToken,
-      domain: url.hostname,
-      path: "/",
-      httpOnly: false,
-      secure: true,
-      sameSite: "None"
-    }
-  ]);
+  // Use Salesforce frontdoor.jsp for programmatic authentication
+  const frontdoorUrl = `${session.instanceUrl}/secur/frontdoor.jsp?sid=${session.accessToken}&retURL=/lightning/page/home`;
 
-  console.log("🔐 Cookies injected, navigating to org...");
-
-  // Navigate with authenticated session (no login page)
-  await page.goto(session.instanceUrl + "/lightning/page/home", {
-    waitUntil: "domcontentloaded",
+  // Navigate using frontdoor (official Salesforce auth method)
+  await page.goto(frontdoorUrl, {
+    waitUntil: "domcontentloaded", // Changed from networkidle (SF has continuous polling)
     timeout: 30000
   });
 
-  // Verify we're authenticated (no login form)
+  console.log("✅ Frontdoor navigation complete");
+
+  // Wait a bit for redirect to complete
+  await page.waitForTimeout(3000);
+
+  // Verify we're authenticated (check for Lightning UI, not login form)
   const isLoginPage = await page
     .locator('input[type="password"]')
-    .isVisible({ timeout: 2000 })
+    .isVisible({ timeout: 5000 })
     .catch(() => false);
 
   if (isLoginPage) {
+    // Take screenshot for debugging
+    await page.screenshot({
+      path: `test-results/auth-failed-${Date.now()}.png`,
+      fullPage: true
+    });
     throw new Error(
-      "❌ Authentication failed - still on login page. Make sure your SF CLI session is active."
+      "❌ Authentication failed - still on login page after frontdoor. Check screenshot and verify SF CLI session is active."
     );
   }
 
-  console.log("✅ Authenticated successfully - no login required");
-
-  // Wait for Lightning to load
-  await page.waitForSelector("one-appnav", { timeout: 15000 }).catch(() => {
-    console.log("⚠️  Lightning navigation not found, continuing...");
+  // Wait for Lightning to fully load
+  console.log("⏳ Waiting for Lightning to load...");
+  await page.waitForSelector("one-appnav", { timeout: 20000 }).catch(async () => {
+    console.log("⚠️  Lightning navigation not found, checking page state...");
+    const currentUrl = page.url();
+    console.log(`   Current URL: ${currentUrl}`);
+    
+    // Take screenshot for debugging
+    await page.screenshot({
+      path: `test-results/lightning-not-found-${Date.now()}.png`,
+      fullPage: true
+    });
   });
+
+  console.log("✅ Authenticated successfully - Lightning loaded");
 }
 
 /**

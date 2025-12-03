@@ -232,6 +232,7 @@ sf config set target-org my-sandbox
 ```
 
 **📚 Detailed Guides:**
+
 - [Named Credential Setup](./scripts/SETUP_NAMED_CREDENTIAL.md) - Automation guide
 - [Multi-Org Workflow](./scripts/WORKFLOW_EXAMPLE.md) - Dev/Sandbox/Production examples
 - [Scripts README](./scripts/README.md) - All available scripts and aliases

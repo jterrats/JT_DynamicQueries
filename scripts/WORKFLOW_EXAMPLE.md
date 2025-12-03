@@ -3,6 +3,7 @@
 ## 🎯 Escenario: Cambiar entre Orgs
 
 ### Org 1: Developer (therionpolux-dev-ed)
+
 ```bash
 # Cambiar a org dev
 sf config set target-org my-dev-org
@@ -16,6 +17,7 @@ source .env && ./scripts/deploy-with-replacement.sh
 ```
 
 ### Org 2: Sandbox (company-staging.sandbox)
+
 ```bash
 # Cambiar a org sandbox
 sf config set target-org my-staging-sandbox
@@ -29,6 +31,7 @@ source .env && ./scripts/deploy-with-replacement.sh
 ```
 
 ### Org 3: Production (company.my)
+
 ```bash
 # Cambiar a org production
 sf config set target-org my-prod-org
@@ -89,6 +92,7 @@ source .env && ./scripts/deploy-with-replacement.sh
 ## 📝 Ventajas del Approach
 
 ### ✅ Con Scripts (Placeholder)
+
 - 📦 **Un mismo código** funciona en todos los orgs
 - 🔄 **Auto-detecta** la URL del org actual
 - 🛡️ **Git limpio** (no hay cambios locales)
@@ -96,6 +100,7 @@ source .env && ./scripts/deploy-with-replacement.sh
 - 🎯 **Siempre correcto** (no hay chance de error)
 
 ### ❌ Sin Scripts (Hardcoded)
+
 - 📦 **Código específico** por org (no escalable)
 - 🔄 **Manual** (cambiar XML cada vez)
 - 🛡️ **Git sucio** (merge conflicts)
@@ -134,6 +139,7 @@ git status
 ## 🔐 Seguridad
 
 El placeholder `{!$Credential.JT_Tooling_API}` en Git es **seguro**:
+
 - ❌ No expone URLs de orgs reales
 - ✅ Compatible con repos públicos de GitHub
 - ✅ Cada org tiene su propia URL en runtime
@@ -142,6 +148,7 @@ El placeholder `{!$Credential.JT_Tooling_API}` en Git es **seguro**:
 ## 🌍 Use Case: Open Source Project
 
 Si publicas el proyecto en GitHub:
+
 1. Los usuarios clonen el repo
 2. Ejecutan `./scripts/setup-org-url.sh`
 3. El script detecta **su org** automáticamente
@@ -149,4 +156,3 @@ Si publicas el proyecto en GitHub:
 
 **Sin placeholder**: Tendrían tu URL hardcodeada (therionpolux-dev-ed) ❌  
 **Con placeholder**: Auto-detecta su org ✅
-

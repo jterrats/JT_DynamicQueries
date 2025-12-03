@@ -17,11 +17,13 @@ Este proyecto incluye scripts automatizados para configurar Named Credentials co
 ```
 
 **¿Qué hace?**
+
 - Detecta la URL de tu org actual (`sf config get target-org`)
 - Crea/actualiza archivo `.env` con `SF_ORG_SQF=https://your-org.my.salesforce.com`
 - Exporta la variable de entorno
 
 **Parámetros opcionales:**
+
 ```bash
 ./scripts/setup-org-url.sh my-hub  # Usar org específico
 ```
@@ -39,6 +41,7 @@ source .env
 ```
 
 **¿Qué hace?**
+
 - Lee `SF_ORG_SQF` del environment
 - Reemplaza `{!$Credential.JT_Tooling_API}` con la URL real
 - Deploya el Named Credential al org
@@ -119,6 +122,7 @@ source .env
 ## ⚠️ Troubleshooting
 
 ### Error: "SF_ORG_SQF not set"
+
 ```bash
 # Re-run setup
 ./scripts/setup-org-url.sh
@@ -126,6 +130,7 @@ source .env
 ```
 
 ### Error: "No target org found"
+
 ```bash
 # Set default org
 sf config set target-org <username-or-alias>
@@ -135,6 +140,7 @@ sf config set target-org <username-or-alias>
 ```
 
 ### Error: "Failed to get org URL"
+
 ```bash
 # Verify authentication
 sf org list
@@ -156,4 +162,3 @@ Para usar en GitHub Actions o CI/CD:
   env:
     SF_ORG_SQF: ${{ secrets.SF_ORG_URL }}
 ```
-

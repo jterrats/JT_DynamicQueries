@@ -4,14 +4,15 @@
 
 All scripts are now available in **Node.js** for maximum compatibility:
 
-| Platform | Shell Scripts (`.sh`) | Node.js Scripts (`.js`) | Recommended |
-|----------|----------------------|-------------------------|-------------|
-| **macOS / Linux** | ✅ Supported | ✅ Supported | Either |
-| **Windows (CMD/PowerShell)** | ❌ Not supported | ✅ Supported | **Node.js** |
-| **Windows (Git Bash/WSL)** | ✅ Supported | ✅ Supported | Either |
-| **CI/CD (GitHub Actions)** | ✅ Supported | ✅ Supported | Either |
+| Platform                     | Shell Scripts (`.sh`) | Node.js Scripts (`.js`) | Recommended |
+| ---------------------------- | --------------------- | ----------------------- | ----------- |
+| **macOS / Linux**            | ✅ Supported          | ✅ Supported            | Either      |
+| **Windows (CMD/PowerShell)** | ❌ Not supported      | ✅ Supported            | **Node.js** |
+| **Windows (Git Bash/WSL)**   | ✅ Supported          | ✅ Supported            | Either      |
+| **CI/CD (GitHub Actions)**   | ✅ Supported          | ✅ Supported            | Either      |
 
 **🚀 Quick Command:**
+
 ```bash
 npm run deploy:named-credential
 ```
@@ -19,6 +20,7 @@ npm run deploy:named-credential
 ## 🎯 Problema a Resolver
 
 Named Credentials necesitan la URL del org. Cada org tiene una URL diferente:
+
 - Dev: `https://therionpolux-dev-ed.my.salesforce.com`
 - Sandbox: `https://company--staging.sandbox.my.salesforce.com`
 - Production: `https://company.my.salesforce.com`
@@ -70,6 +72,7 @@ jt-deploy  # 🚀 Auto!
 ## 📁 Scripts Disponibles
 
 ### `smart-deploy.js` ⭐ (RECOMENDADO)
+
 Deploy inteligente **cross-platform** (Node.js)
 
 ```bash
@@ -79,6 +82,7 @@ node scripts/smart-deploy.js [org-alias]
 ```
 
 **Qué hace:**
+
 1. Detecta URL del org actual
 2. Compara con URL cacheada en `.env`
 3. Si cambió, actualiza `.env` automáticamente
@@ -86,6 +90,7 @@ node scripts/smart-deploy.js [org-alias]
 5. ✅ Funciona en **Windows, Mac, Linux**!
 
 **Ventajas:**
+
 - ✅ No requiere `bash`, `jq`, o herramientas Unix
 - ✅ Funciona nativamente en Windows CMD/PowerShell
 - ✅ Auto-limpieza de archivos temporales
@@ -94,6 +99,7 @@ node scripts/smart-deploy.js [org-alias]
 ---
 
 ### `smart-deploy.sh` (Unix/Linux/Mac)
+
 Deploy inteligente shell script
 
 ```bash
@@ -101,6 +107,7 @@ Deploy inteligente shell script
 ```
 
 **Qué hace:**
+
 1. Detecta URL del org actual
 2. Compara con URL cacheada en `.env`
 3. Si cambió, ejecuta `setup-org-url.sh` automáticamente
@@ -108,6 +115,7 @@ Deploy inteligente shell script
 5. ✅ Siempre correcto!
 
 ### `setup-org-url.sh` (Unix/Linux/Mac)
+
 Detecta la URL del org actual y genera `.env`
 
 ```bash
@@ -115,10 +123,12 @@ Detecta la URL del org actual y genera `.env`
 ```
 
 **Output:**
+
 - Crea/actualiza `.env` con `SF_ORG_SQF=https://...`
 - Exporta variable de entorno
 
 ### `deploy-with-replacement.sh` (Unix/Linux/Mac)
+
 Deploya Named Credential con string replacement
 
 ```bash
@@ -127,12 +137,14 @@ source .env
 ```
 
 **Qué hace:**
+
 1. Lee `SF_ORG_SQF` del environment
 2. Crea temp file con URL real
 3. Deploya a Salesforce
 4. Restaura archivo original
 
 ### `deploy-alias.sh`
+
 Setup de aliases para tu shell
 
 ```bash
@@ -140,6 +152,7 @@ Setup de aliases para tu shell
 ```
 
 **Agrega a tu shell:**
+
 - `jt-setup` → Shortcut para setup
 - `jt-deploy` → Shortcut para smart deploy
 
@@ -199,12 +212,12 @@ sf config set target-org <username-or-alias>
 
 ## 📊 Comparación de Approaches
 
-| Approach | Auto-detect | Escalable | Git Clean | Effort |
-|----------|-------------|-----------|-----------|--------|
-| Hardcoded URL | ❌ | ❌ | ❌ | Low |
-| Manual setup script | ❌ | ✅ | ✅ | Medium |
-| Smart deploy | ✅ | ✅ | ✅ | Low |
-| Shell aliases | ✅ | ✅ | ✅ | **Lowest** |
+| Approach            | Auto-detect | Escalable | Git Clean | Effort     |
+| ------------------- | ----------- | --------- | --------- | ---------- |
+| Hardcoded URL       | ❌          | ❌        | ❌        | Low        |
+| Manual setup script | ❌          | ✅        | ✅        | Medium     |
+| Smart deploy        | ✅          | ✅        | ✅        | Low        |
+| Shell aliases       | ✅          | ✅        | ✅        | **Lowest** |
 
 ## 💡 Recomendación
 
@@ -217,4 +230,3 @@ Para **CI/CD**: Usa `setup-org-url.sh` + `deploy-with-replacement.sh`
 - ✅ Placeholder `{!$Credential.JT_Tooling_API}` es seguro para repos públicos
 - ✅ Cada org tiene su propia URL en runtime
 - ✅ No hay secrets expuestos
-

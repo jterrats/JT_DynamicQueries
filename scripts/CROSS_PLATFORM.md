@@ -14,15 +14,15 @@ Los scripts `.sh` (Bash) **NO funcionan** en Windows nativo (CMD/PowerShell):
 
 Creamos `smart-deploy.js` que funciona en **todos** los sistemas operativos:
 
-| Platform | `.sh` (Bash) | `.js` (Node.js) | Status |
-|----------|--------------|-----------------|--------|
-| Windows CMD | ❌ | ✅ | **FUNCIONA** |
-| Windows PowerShell | ❌ | ✅ | **FUNCIONA** |
-| Windows Git Bash | ✅ | ✅ | Ambos funcionan |
-| Windows WSL | ✅ | ✅ | Ambos funcionan |
-| macOS | ✅ | ✅ | Ambos funcionan |
-| Linux | ✅ | ✅ | Ambos funcionan |
-| GitHub Actions | ✅ | ✅ | Ambos funcionan |
+| Platform           | `.sh` (Bash) | `.js` (Node.js) | Status          |
+| ------------------ | ------------ | --------------- | --------------- |
+| Windows CMD        | ❌           | ✅              | **FUNCIONA**    |
+| Windows PowerShell | ❌           | ✅              | **FUNCIONA**    |
+| Windows Git Bash   | ✅           | ✅              | Ambos funcionan |
+| Windows WSL        | ✅           | ✅              | Ambos funcionan |
+| macOS              | ✅           | ✅              | Ambos funcionan |
+| Linux              | ✅           | ✅              | Ambos funcionan |
+| GitHub Actions     | ✅           | ✅              | Ambos funcionan |
 
 ## 🚀 Uso
 
@@ -68,16 +68,16 @@ node scripts/smart-deploy.js
 
 ## 📊 Comparación Técnica
 
-| Feature | Bash Script | Node.js Script |
-|---------|-------------|----------------|
-| Windows CMD support | ❌ | ✅ |
-| PowerShell support | ❌ | ✅ |
-| Unix/Linux support | ✅ | ✅ |
-| External dependencies | `jq`, `bash` | Solo Node.js |
-| Error handling | Basic | Advanced |
-| Auto-cleanup | Manual | Automático |
-| JSON parsing | Via `jq` | Nativo |
-| File operations | `sed`, `awk` | Nativo |
+| Feature               | Bash Script  | Node.js Script |
+| --------------------- | ------------ | -------------- |
+| Windows CMD support   | ❌           | ✅             |
+| PowerShell support    | ❌           | ✅             |
+| Unix/Linux support    | ✅           | ✅             |
+| External dependencies | `jq`, `bash` | Solo Node.js   |
+| Error handling        | Basic        | Advanced       |
+| Auto-cleanup          | Manual       | Automático     |
+| JSON parsing          | Via `jq`     | Nativo         |
+| File operations       | `sed`, `awk` | Nativo         |
 
 ## 🔧 Implementación
 
@@ -176,4 +176,3 @@ npm run deploy:named-credential
 - [Node.js File System API](https://nodejs.org/api/fs.html)
 - [Node.js Child Process API](https://nodejs.org/api/child_process.html)
 - [Cross-Platform Node.js Best Practices](https://nodejs.org/en/docs/guides/writing-cross-platform-code/)
-

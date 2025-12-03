@@ -306,24 +306,24 @@
             lineColor: "#667eea",
             secondaryColor: "#48bb78",
             tertiaryColor: "#f59e0b",
-            fontSize: "14px", /* ✅ Reduced from 18px for consistency */
+            fontSize: "14px" /* ✅ Reduced from 18px for consistency */,
             fontFamily: "Arial, sans-serif"
           },
           flowchart: {
             curve: "basis",
-            padding: 20, /* ✅ Reduced from 30px */
-            nodeSpacing: 60, /* ✅ Reduced from 80px */
-            rankSpacing: 60, /* ✅ Reduced from 80px */
+            padding: 20 /* ✅ Reduced from 30px */,
+            nodeSpacing: 60 /* ✅ Reduced from 80px */,
+            rankSpacing: 60 /* ✅ Reduced from 80px */,
             diagramPadding: 20 /* ✅ Reduced from 30px */
           },
           sequence: {
-            actorMargin: 80, /* ✅ Reduced from 100px */
-            messageFontSize: 13, /* ✅ Reduced from 16px */
-            width: 160, /* ✅ Reduced from 200px */
+            actorMargin: 80 /* ✅ Reduced from 100px */,
+            messageFontSize: 13 /* ✅ Reduced from 16px */,
+            width: 160 /* ✅ Reduced from 200px */,
             height: 50 /* ✅ Reduced from 65px */
           },
           classDiagram: {
-            padding: 20, /* ✅ Reduced from 30px */
+            padding: 20 /* ✅ Reduced from 30px */,
             textHeight: 16 /* ✅ Reduced from 20px */
           }
         });
@@ -469,7 +469,9 @@
               setTimeout(function () {
                 panZoomInstance.fit();
                 panZoomInstance.center();
-                panZoomInstance.zoom(0.95); /* ✅ Slight zoom out for consistent margins */
+                panZoomInstance.zoom(
+                  0.95
+                ); /* ✅ Slight zoom out for consistent margins */
               }, 100);
 
               // Connect buttons to pan-zoom instance

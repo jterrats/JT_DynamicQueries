@@ -15,6 +15,7 @@ sf apex run --file scripts/setup-named-credential-auto.apex
 ```
 
 ✅ **Ventajas:**
+
 - Detecta automáticamente la URL del org
 - Funciona en cualquier org (dev, sandbox, production)
 - No necesitas hardcodear URLs
@@ -130,4 +131,3 @@ Si quieres usar la versión moderna (Named Credential v2), sigue estos pasos:
 - **Legacy vs Modern**: Ambos funcionan, pero Legacy es más simple para este caso
 - **No Authentication**: Porque el session ID se pasa manualmente en el código
 - **callout:NAME**: El prefijo `callout:` es obligatorio cuando usas Named Credentials
-

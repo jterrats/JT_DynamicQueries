@@ -1,14 +1,12 @@
 const { test, expect } = require("@playwright/test");
-const {
-  getSFSession,
-  injectSFSession,
-  navigateToApp
-} = require("./utils/sfAuth");
+const { getSFSession } = require("./utils/sfAuth");
 const { setupTestData } = require("./utils/setupTestData");
-
-const TARGET_APP_NAME = "Dynamic Query Framework";
-const QUERY_VIEWER_TAB = "Query Viewer";
-const DOCUMENTATION_TAB = "Documentation";
+const { setupTestContext } = require("./utils/testHelpers");
+const {
+  TARGET_APP_NAME,
+  QUERY_VIEWER_TAB,
+  DOCUMENTATION_TAB
+} = require("./utils/testConstants");
 
 test.describe("Dynamic Query Viewer E2E Tests", () => {
   let session;
@@ -25,42 +23,11 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
   });
 
   test.beforeEach(async ({ page }) => {
-    // Inject SF CLI session (no login, direct authentication)
-    await injectSFSession(page, session);
-
-    // Navigate via App Launcher (simulates real user flow)
-    console.log(`📱 Navigating to ${TARGET_APP_NAME} via App Launcher...`);
-
-    const navigated = await navigateToApp(page, TARGET_APP_NAME);
-
-    if (navigated) {
-      console.log(`✅ In ${TARGET_APP_NAME} app`);
-
-      // Now click on the Query Viewer tab
-      console.log(`🎯 Looking for "${QUERY_VIEWER_TAB}" tab...`);
-
-      const tabLink = page
-        .locator(
-          [
-            `one-app-nav-bar-item-root a[title="${QUERY_VIEWER_TAB}"]`,
-            `a[title="${QUERY_VIEWER_TAB}"]`,
-            `a:has-text("${QUERY_VIEWER_TAB}")`
-          ].join(", ")
-        )
-        .first();
-
-      await tabLink.click({ timeout: 5000 });
-      console.log(`✅ Clicked on "${QUERY_VIEWER_TAB}" tab`);
-
-      await page.waitForLoadState("domcontentloaded");
-    } else {
-      console.log(`⚠️  Navigation failed, trying direct approach...`);
-    }
-
-    // Wait for LWC to load
-    console.log(`⏳ Waiting for LWC to load...`);
-    await page.waitForSelector("c-jt-query-viewer", { timeout: 15000 });
-    console.log(`✅ LWC loaded successfully`);
+    // Use centralized helper for setup
+    await setupTestContext(page, session, {
+      targetTab: QUERY_VIEWER_TAB,
+      waitForComponent: true
+    });
   });
 
   // ═══════════════════════════════════════════════════════════════

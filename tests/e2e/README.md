@@ -55,7 +55,7 @@ await page.goto(session.instanceUrl);
 ### 1. Node.js y npm instalados
 
 ```bash
-node --version  # v18 o superior
+node --version  # v24 o superior
 npm --version
 ```
 

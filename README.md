@@ -624,7 +624,7 @@ private static Map<String, JT_DynamicQueryConfiguration__mdt> configCache;
 
 ### Optional for Development
 
-- Node.js 18+ (for E2E tests)
+- Node.js 24+ (for E2E tests)
 - Playwright (for E2E tests)
 - Salesforce CLI (for deployment)
 

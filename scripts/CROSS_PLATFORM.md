@@ -145,7 +145,7 @@ Para verificar que funciona en tu sistema:
 ```bash
 # Test 1: Verifica que Node.js esté disponible
 node --version
-# Debe mostrar: v18.x.x o superior
+# Debe mostrar: v24.x.x o superior
 
 # Test 2: Ejecuta el script
 npm run deploy:named-credential

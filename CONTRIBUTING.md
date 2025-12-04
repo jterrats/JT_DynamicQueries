@@ -19,7 +19,7 @@ Thank you for your interest in contributing! This document provides guidelines a
 
 - Salesforce Developer Org or Scratch Org
 - Salesforce CLI (`sf` command)
-- Node.js 18+ and npm
+- Node.js 24+ and npm
 - Git
 
 ### Setup Development Environment

@@ -165,35 +165,23 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
   test("should execute query and display results or empty table", async ({
     page
   }) => {
-    await page.waitForTimeout(2000);
+    const { selectConfiguration, executeQuery } = require("./utils/testHelpers");
+    const { SELECTORS, TIMEOUTS } = require("./utils/testConstants");
 
-    // Select configuration using semantic selector
-    const input = page.locator('[data-testid="config-selector-input"]');
-    await input.click({ timeout: 10000 });
-    await page.waitForTimeout(1500);
+    // Use helpers for consistent behavior
+    await selectConfiguration(page, "All Active");
+    await executeQuery(page, { waitTime: TIMEOUTS.long });
 
-    const dropdown = page.locator('[data-testid="config-selector-dropdown"]');
-    const firstOption = dropdown.locator(".slds-listbox__item").first();
-    await firstOption.click({ timeout: 5000 });
-    await page.waitForTimeout(2000);
-
-    // Execute query using semantic selector
-    const executeButton = page.locator('[data-testid="execute-query-button"]');
-    await executeButton.click({ timeout: 10000 });
-
-    // Wait for execution
-    await page.waitForTimeout(5000);
-
-    // Verify datatable is ALWAYS visible (even with 0 results)
-    const datatable = page.locator("lightning-datatable").first();
-    const isVisible = await datatable
-      .isVisible({ timeout: 15000 })
+    // Verify results table is visible (custom HTML table, not lightning-datatable)
+    const resultsTable = page.locator(`${SELECTORS.queryResults} ${SELECTORS.resultsTable}`);
+    const isVisible = await resultsTable
+      .isVisible({ timeout: 10000 })
       .catch(() => false);
 
     if (isVisible) {
-      console.log("✅ Datatable visible (with or without results)");
+      console.log("✅ Results table visible (with or without results)");
     } else {
-      console.log("⚠️  Datatable not visible - query may have failed");
+      console.log("⚠️  Results table not visible - query may have failed");
     }
   });
 
@@ -205,21 +193,12 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     page
   }) => {
     console.log("🧪 Testing pagination...");
-    await page.waitForTimeout(2000);
+    const { selectConfiguration, executeQuery } = require("./utils/testHelpers");
+    const { TIMEOUTS } = require("./utils/testConstants");
 
-    // Use semantic selectors
-    const input = page.locator('[data-testid="config-selector-input"]');
-    await input.click({ timeout: 10000 });
-    await page.waitForTimeout(1500);
-
-    const dropdown = page.locator('[data-testid="config-selector-dropdown"]');
-    const firstOption = dropdown.locator(".slds-listbox__item").first();
-    await firstOption.click({ timeout: 5000 });
-    await page.waitForTimeout(2000);
-
-    const executeButton = page.locator('[data-testid="execute-query-button"]');
-    await executeButton.click({ timeout: 10000 });
-    await page.waitForTimeout(5000);
+    // Use helpers for consistent behavior
+    await selectConfiguration(page, "All Active");
+    await executeQuery(page, { waitTime: TIMEOUTS.long });
 
     // Check for pagination controls using semantic selectors
     const nextButton = page.locator('[data-testid="pagination-next"]');

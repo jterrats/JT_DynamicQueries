@@ -649,6 +649,7 @@
   <!-- Cache Management Modal -->
   <template if:true={showCacheModal}>
     <c-jt-cache-modal
+      lwc:ref="cacheModal"
       labels={labels}
       onclearcache={handleClearCache}
       onclose={handleCloseCacheModal}

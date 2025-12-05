@@ -1,6 +1,22 @@
 const { execSync } = require("child_process");
 
 /**
+ * Removes ANSI color codes and other escape sequences from a string
+ * ANSI codes follow the pattern: ESC[...m where ESC is \x1b (char code 27)
+ * @param {string} str - String potentially containing ANSI codes
+ * @returns {string} Clean string without ANSI codes
+ */
+function stripAnsiCodes(str) {
+  // Remove ANSI escape codes: \x1b[...m (color codes)
+  // Also remove other common escape sequences
+  return str
+    .replace(/\x1b\[[0-9;]*m/g, '') // Standard ANSI color codes
+    .replace(/\x1b\[[0-9;]*[A-Za-z]/g, '') // Other ANSI sequences (cursor movement, etc)
+    .replace(/\x1b\][0-9;]*\x07/g, '') // OSC sequences
+    .replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F]/g, ''); // Other control characters except \n and \r
+}
+
+/**
  * Gets the active Salesforce org session from SF CLI
  * Uses the already authenticated session - NO LOGIN REQUIRED
  * @returns {Object} Object containing instanceUrl, accessToken, and username
@@ -11,15 +27,20 @@ function getSFSession() {
 
     // Get org info from SF CLI - uses active session
     // Force plain JSON output (no colors) with SF_USE_PROGRESS_BAR=false
-    const orgInfoJson = execSync("sf org display --json", {
+    let orgInfoJson = execSync("sf org display --json", {
       encoding: "utf-8",
       stdio: ["pipe", "pipe", "pipe"],
       env: {
         ...process.env,
         SF_USE_PROGRESS_BAR: "false",
-        SF_AUTOUPDATE_DISABLE: "true"
+        SF_AUTOUPDATE_DISABLE: "true",
+        NO_COLOR: "1",  // Disable colors
+        FORCE_COLOR: "0" // Disable colors (alternative)
       }
     });
+
+    // Strip ANSI color codes that SF CLI might include in CI environments
+    orgInfoJson = stripAnsiCodes(orgInfoJson);
 
     // Extract JSON from output - SF CLI may output extra text
     // Find the first '{' and last '}' to extract complete JSON object
@@ -34,7 +55,7 @@ function getSFSession() {
     }
 
     const jsonString = orgInfoJson.substring(firstBrace, lastBrace + 1);
-    
+
     // Check if this looks like an error message instead of org info
     if (jsonString.includes('"status":1') || jsonString.includes('"name":"NoOrgFound"')) {
       console.error("❌ SF CLI returned an error (no org found)");
@@ -53,7 +74,7 @@ function getSFSession() {
       console.error("Extracted JSON length:", jsonString.length, "chars");
       console.error("Extracted first 200 chars:", jsonString.substring(0, 200));
       console.error("Parse error:", parseError.message);
-      
+
       // Try to find problematic characters
       for (let i = 0; i < Math.min(jsonString.length, 50); i++) {
         const char = jsonString[i];
@@ -62,7 +83,7 @@ function getSFSession() {
           console.error(`⚠️  Non-printable char at position ${i}: code=${code}`);
         }
       }
-      
+
       throw new Error(`JSON parse failed: ${parseError.message}. Check if SF org is authenticated.`);
     }
 

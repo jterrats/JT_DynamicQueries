@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <Translations xmlns="http://soap.sforce.com/2006/04/metadata">
     <customLabels>
         <name>JT_jtSupport_additionalResources</name>
@@ -66,7 +66,8 @@
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_clearCacheDescription</name>
-        <label>Select which cached data you want to clear. This will force a refresh from the server.</label>
+        <label
+    >Select which cached data you want to clear. This will force a refresh from the server.</label>
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_clearCacheTitle</name>
@@ -74,11 +75,13 @@
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_clearCacheWarning</name>
-        <label>Selected data will be cleared and refreshed from the server.</label>
+        <label
+    >Selected data will be cleared and refreshed from the server.</label>
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_clearConfigurationsHelp</name>
-        <label>Refresh the list of available query configurations from metadata</label>
+        <label
+    >Refresh the list of available query configurations from metadata</label>
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_clearConfigurationsLabel</name>
@@ -86,7 +89,8 @@
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_clearRecentHelp</name>
-        <label>Clear recently selected configurations and user preferences</label>
+        <label
+    >Clear recently selected configurations and user preferences</label>
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_clearRecentLabel</name>
@@ -122,7 +126,8 @@
     </customLabels>
     <customLabels>
         <name>JT_jtSupport_communityDescription</name>
-        <label>Join discussions and connect with other users on GitHub Discussions</label>
+        <label
+    >Join discussions and connect with other users on GitHub Discussions</label>
     </customLabels>
     <customLabels>
         <name>JT_jtSupport_contactEmail</name>
@@ -134,7 +139,8 @@
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_createConfigTooltip</name>
-        <label>Create a new query configuration with a SOQL query (SELECT fields FROM object WHERE condition), optional bind variables in JSON format, and field mappings.</label>
+        <label
+    >Create a new query configuration with a SOQL query (SELECT fields FROM object WHERE condition), optional bind variables in JSON format, and field mappings.</label>
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_createNewConfiguration</name>
@@ -178,7 +184,8 @@
     </customLabels>
     <customLabels>
         <name>JT_jtSupport_documentationDescription</name>
-        <label>Check the Documentation tab for complete guides and API reference</label>
+        <label
+    >Check the Documentation tab for complete guides and API reference</label>
     </customLabels>
     <customLabels>
         <name>JT_jtDocumentation_documentationTitle</name>
@@ -234,7 +241,8 @@
     </customLabels>
     <customLabels>
         <name>JT_jtSupport_githubDescription</name>
-        <label>This project is open-source and hosted on GitHub. You can view the code, report issues, and contribute to the project.</label>
+        <label
+    >This project is open-source and hosted on GitHub. You can view the code, report issues, and contribute to the project.</label>
     </customLabels>
     <customLabels>
         <name>JT_jtSupport_githubIntegration</name>
@@ -302,7 +310,8 @@
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_noReferencesFound</name>
-        <label>This configuration is not currently referenced in any Apex classes or Flows.</label>
+        <label
+    >This configuration is not currently referenced in any Apex classes or Flows.</label>
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_noResults</name>
@@ -314,7 +323,8 @@
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_noUsageMessage</name>
-        <label>This configuration is not currently referenced in any Apex class or Flow</label>
+        <label
+    >This configuration is not currently referenced in any Apex class or Flow</label>
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_object</name>
@@ -334,7 +344,8 @@
     </customLabels>
     <customLabels>
         <name>JT_jtDocumentation_overviewDescription</name>
-        <label>A powerful framework for executing dynamic SOQL queries with metadata-driven configurations.</label>
+        <label
+    >A powerful framework for executing dynamic SOQL queries with metadata-driven configurations.</label>
     </customLabels>
     <customLabels>
         <name>JT_jtDocumentation_overviewTab</name>
@@ -350,7 +361,8 @@
     </customLabels>
     <customLabels>
         <name>JT_jtDocumentation_philosophyText</name>
-        <label>Provide infrastructure and conventions for configurable queries, not just isolated utilities.</label>
+        <label
+    >Provide infrastructure and conventions for configurable queries, not just isolated utilities.</label>
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_predefinedBindings</name>
@@ -358,7 +370,8 @@
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_predefinedBindingsDesc</name>
-        <label>This configuration has predefined bindings that will be used automatically.</label>
+        <label
+    >This configuration has predefined bindings that will be used automatically.</label>
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_previous</name>
@@ -438,7 +451,8 @@
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_runAsNote</name>
-        <label>Note: This validates user permissions but executes with USER_MODE security. Results reflect sharing rules and field-level security.</label>
+        <label
+    >Note: This validates user permissions but executes with USER_MODE security. Results reflect sharing rules and field-level security.</label>
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_runAsUser</name>
@@ -446,7 +460,8 @@
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_sandboxOnlyWarning</name>
-        <label>Only available in Sandbox/Scratch/Developer Orgs. Use Setup UI in Production.</label>
+        <label
+    >Only available in Sandbox/Scratch/Developer Orgs. Use Setup UI in Production.</label>
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_save</name>
@@ -458,7 +473,8 @@
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_searchUsersPlaceholder</name>
-        <label>Type to search users... (leave blank to run as current user)</label>
+        <label
+    >Type to search users... (leave blank to run as current user)</label>
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_searchingFlows</name>
@@ -498,7 +514,8 @@
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_toolingAPINote</name>
-        <label>This creates a Custom Metadata record via Tooling API. The configuration will be immediately available for use.</label>
+        <label
+    >This creates a Custom Metadata record via Tooling API. The configuration will be immediately available for use.</label>
     </customLabels>
     <customLabels>
         <name>JT_jtSupport_tutorials</name>
@@ -522,7 +539,8 @@
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_usageModalSubtitle</name>
-        <label>Searching Apex classes and Flows for references to this configuration</label>
+        <label
+    >Searching Apex classes and Flows for references to this configuration</label>
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_usageModalTitle</name>
@@ -554,7 +572,8 @@
     </customLabels>
     <customLabels>
         <name>JT_jtDocumentation_welcomeSubtitle</name>
-        <label>A metadata-driven SOQL execution framework with built-in security, batch processing, and risk assessment.</label>
+        <label
+    >A metadata-driven SOQL execution framework with built-in security, batch processing, and risk assessment.</label>
     </customLabels>
     <customLabels>
         <name>JT_jtSupport_welcomeTitle</name>
@@ -566,6 +585,7 @@
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_whereIsThisUsedTooltip</name>
-        <label>Find where this configuration is used in Apex classes and Flows</label>
+        <label
+    >Find where this configuration is used in Apex classes and Flows</label>
     </customLabels>
 </Translations>

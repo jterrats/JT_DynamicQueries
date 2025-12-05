@@ -7,13 +7,29 @@
  * @fires cancel - When Cancel/Close is clicked
  */
 import { LightningElement, api, track } from "lwc";
-import { getLabels } from "./labels";
+
+// Import Custom Labels from Salesforce Translation Workbench
+import labelRequired from "@salesforce/label/c.JT_jtConfigModal_labelRequired";
+import labelTooLong from "@salesforce/label/c.JT_jtConfigModal_labelTooLong";
+import developerNameRequired from "@salesforce/label/c.JT_jtConfigModal_developerNameRequired";
+import developerNameTooLong from "@salesforce/label/c.JT_jtConfigModal_developerNameTooLong";
+import developerNameInvalidChars from "@salesforce/label/c.JT_jtConfigModal_developerNameInvalidChars";
+import developerNameMustStartWithLetter from "@salesforce/label/c.JT_jtConfigModal_developerNameMustStartWithLetter";
+import developerNameCannotEndWithUnderscore from "@salesforce/label/c.JT_jtConfigModal_developerNameCannotEndWithUnderscore";
+import developerNameNoConsecutiveUnderscores from "@salesforce/label/c.JT_jtConfigModal_developerNameNoConsecutiveUnderscores";
 
 export default class JtConfigModal extends LightningElement {
-  // Labels
-  get labels() {
-    return getLabels();
-  }
+  // Custom Labels (imported from Translation Workbench)
+  labels = {
+    labelRequired,
+    labelTooLong,
+    developerNameRequired,
+    developerNameTooLong,
+    developerNameInvalidChars,
+    developerNameMustStartWithLetter,
+    developerNameCannotEndWithUnderscore,
+    developerNameNoConsecutiveUnderscores
+  };
 
   // Public API
   @api mode = "create"; // 'create' | 'edit'

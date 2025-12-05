@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <Translations xmlns="http://soap.sforce.com/2006/04/metadata">
     <customLabels>
         <name>JT_jtSupport_additionalResources</name>
@@ -66,7 +66,8 @@
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_clearCacheDescription</name>
-        <label>Selecciona qué datos en caché deseas limpiar. Esto forzará una actualización desde el servidor.</label>
+        <label
+    >Selecciona qué datos en caché deseas limpiar. Esto forzará una actualización desde el servidor.</label>
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_clearCacheTitle</name>
@@ -74,11 +75,13 @@
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_clearCacheWarning</name>
-        <label>Los datos seleccionados se limpiarán y actualizarán desde el servidor.</label>
+        <label
+    >Los datos seleccionados se limpiarán y actualizarán desde el servidor.</label>
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_clearConfigurationsHelp</name>
-        <label>Actualizar la lista de configuraciones disponibles desde metadatos</label>
+        <label
+    >Actualizar la lista de configuraciones disponibles desde metadatos</label>
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_clearConfigurationsLabel</name>
@@ -86,7 +89,8 @@
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_clearRecentHelp</name>
-        <label>Limpiar configuraciones seleccionadas recientemente y preferencias</label>
+        <label
+    >Limpiar configuraciones seleccionadas recientemente y preferencias</label>
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_clearRecentLabel</name>
@@ -106,7 +110,8 @@
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_clearUsersHelp</name>
-        <label>Actualizar la lista de usuarios activos para funcionalidad Run As</label>
+        <label
+    >Actualizar la lista de usuarios activos para funcionalidad Run As</label>
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_clearUsersLabel</name>
@@ -122,7 +127,8 @@
     </customLabels>
     <customLabels>
         <name>JT_jtSupport_communityDescription</name>
-        <label>Únete a discusiones y conéctate con otros usuarios en GitHub Discussions</label>
+        <label
+    >Únete a discusiones y conéctate con otros usuarios en GitHub Discussions</label>
     </customLabels>
     <customLabels>
         <name>JT_jtSupport_contactEmail</name>
@@ -134,7 +140,8 @@
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_createConfigTooltip</name>
-        <label>Crea una nueva configuración de consulta con una consulta SOQL (SELECT campos FROM objeto WHERE condición), variables de enlace opcionales en formato JSON y mapeos de campos.</label>
+        <label
+    >Crea una nueva configuración de consulta con una consulta SOQL (SELECT campos FROM objeto WHERE condición), variables de enlace opcionales en formato JSON y mapeos de campos.</label>
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_createNewConfiguration</name>
@@ -166,7 +173,8 @@
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_developerNameTooLong</name>
-        <label>El nombre de desarrollador debe tener 40 caracteres o menos</label>
+        <label
+    >El nombre de desarrollador debe tener 40 caracteres o menos</label>
     </customLabels>
     <customLabels>
         <name>JT_jtSupport_directContact</name>
@@ -178,7 +186,8 @@
     </customLabels>
     <customLabels>
         <name>JT_jtSupport_documentationDescription</name>
-        <label>Consulta la pestaña Documentación para guías completas y referencia API</label>
+        <label
+    >Consulta la pestaña Documentación para guías completas y referencia API</label>
     </customLabels>
     <customLabels>
         <name>JT_jtDocumentation_documentationTitle</name>
@@ -234,7 +243,8 @@
     </customLabels>
     <customLabels>
         <name>JT_jtSupport_githubDescription</name>
-        <label>Este proyecto es de código abierto y está alojado en GitHub. Puedes ver el código, reportar problemas y contribuir al proyecto.</label>
+        <label
+    >Este proyecto es de código abierto y está alojado en GitHub. Puedes ver el código, reportar problemas y contribuir al proyecto.</label>
     </customLabels>
     <customLabels>
         <name>JT_jtSupport_githubIntegration</name>
@@ -302,7 +312,8 @@
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_noReferencesFound</name>
-        <label>Esta configuración no está referenciada en ninguna clase Apex o Flow actualmente.</label>
+        <label
+    >Esta configuración no está referenciada en ninguna clase Apex o Flow actualmente.</label>
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_noResults</name>
@@ -314,7 +325,8 @@
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_noUsageMessage</name>
-        <label>Esta configuración no está referenciada en ninguna clase Apex actualmente</label>
+        <label
+    >Esta configuración no está referenciada en ninguna clase Apex actualmente</label>
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_object</name>
@@ -334,7 +346,8 @@
     </customLabels>
     <customLabels>
         <name>JT_jtDocumentation_overviewDescription</name>
-        <label>Un framework potente para ejecutar consultas SOQL dinámicas con configuraciones basadas en metadatos.</label>
+        <label
+    >Un framework potente para ejecutar consultas SOQL dinámicas con configuraciones basadas en metadatos.</label>
     </customLabels>
     <customLabels>
         <name>JT_jtDocumentation_overviewTab</name>
@@ -350,7 +363,8 @@
     </customLabels>
     <customLabels>
         <name>JT_jtDocumentation_philosophyText</name>
-        <label>Proporcionar infraestructura y convenciones para consultas configurables, no solo utilidades aisladas.</label>
+        <label
+    >Proporcionar infraestructura y convenciones para consultas configurables, no solo utilidades aisladas.</label>
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_predefinedBindings</name>
@@ -358,7 +372,8 @@
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_predefinedBindingsDesc</name>
-        <label>Esta configuración tiene enlaces predefinidos que se usarán automáticamente.</label>
+        <label
+    >Esta configuración tiene enlaces predefinidos que se usarán automáticamente.</label>
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_previous</name>
@@ -406,7 +421,8 @@
     </customLabels>
     <customLabels>
         <name>JT_jtSupport_reportBugDescription</name>
-        <label>¿Encontraste un error? Háznoslo saber para que podamos solucionarlo.</label>
+        <label
+    >¿Encontraste un error? Háznoslo saber para que podamos solucionarlo.</label>
     </customLabels>
     <customLabels>
         <name>JT_jtSupport_responseTime</name>
@@ -438,7 +454,8 @@
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_runAsNote</name>
-        <label>Nota: Esto valida permisos de usuario pero ejecuta con seguridad USER_MODE. Los resultados reflejan reglas de uso compartido y seguridad a nivel de campo.</label>
+        <label
+    >Nota: Esto valida permisos de usuario pero ejecuta con seguridad USER_MODE. Los resultados reflejan reglas de uso compartido y seguridad a nivel de campo.</label>
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_runAsUser</name>
@@ -446,7 +463,8 @@
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_sandboxOnlyWarning</name>
-        <label>Solo disponible en Sandbox/Scratch/Developer Orgs. Use la UI de Configuración en Producción.</label>
+        <label
+    >Solo disponible en Sandbox/Scratch/Developer Orgs. Use la UI de Configuración en Producción.</label>
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_save</name>
@@ -458,7 +476,8 @@
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_searchUsersPlaceholder</name>
-        <label>Escribe para buscar usuarios... (deja en blanco para ejecutar como usuario actual)</label>
+        <label
+    >Escribe para buscar usuarios... (deja en blanco para ejecutar como usuario actual)</label>
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_searchingFlows</name>
@@ -498,7 +517,8 @@
     </customLabels>
     <customLabels>
         <name>JT_jtQueryViewer_toolingAPINote</name>
-        <label>Esto crea un registro de Custom Metadata vía Tooling API. La configuración estará disponible de inmediato.</label>
+        <label
+    >Esto crea un registro de Custom Metadata vía Tooling API. La configuración estará disponible de inmediato.</label>
     </customLabels>
     <customLabels>
         <name>JT_jtSupport_tutorials</name>
@@ -546,15 +566,18 @@
     </customLabels>
     <customLabels>
         <name>JT_jtSupport_viewIssuesDescription</name>
-        <label>Explora problemas existentes y ve en qué estamos trabajando.</label>
+        <label
+    >Explora problemas existentes y ve en qué estamos trabajando.</label>
     </customLabels>
     <customLabels>
         <name>JT_jtSupport_welcomeMessage</name>
-        <label>¿Necesitas ayuda o quieres reportar un problema? Estamos aquí para asistirte. Todas las solicitudes de soporte se gestionan a través de nuestro repositorio de GitHub para transparencia y colaboración comunitaria.</label>
+        <label
+    >¿Necesitas ayuda o quieres reportar un problema? Estamos aquí para asistirte. Todas las solicitudes de soporte se gestionan a través de nuestro repositorio de GitHub para transparencia y colaboración comunitaria.</label>
     </customLabels>
     <customLabels>
         <name>JT_jtDocumentation_welcomeSubtitle</name>
-        <label>Un framework de ejecución SOQL basado en metadatos con seguridad integrada, procesamiento por lotes y evaluación de riesgos.</label>
+        <label
+    >Un framework de ejecución SOQL basado en metadatos con seguridad integrada, procesamiento por lotes y evaluación de riesgos.</label>
     </customLabels>
     <customLabels>
         <name>JT_jtSupport_welcomeTitle</name>

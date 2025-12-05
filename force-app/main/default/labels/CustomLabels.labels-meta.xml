@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
     <labels>
         <fullName>JT_jtSupport_additionalResources</fullName>
@@ -32,7 +32,8 @@
         <fullName>JT_jtQueryViewer_autoDetectedFromQuery</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - autoDetectedFromQuery</shortDescription>
+        <shortDescription
+    >jtQueryViewer - autoDetectedFromQuery</shortDescription>
         <value>Auto-detected from query</value>
     </labels>
     <labels>
@@ -46,14 +47,16 @@
         <fullName>JT_jtDocumentation_batchProcessingTab</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtDocumentation - batchProcessingTab</shortDescription>
+        <shortDescription
+    >jtDocumentation - batchProcessingTab</shortDescription>
         <value>Batch Processing</value>
     </labels>
     <labels>
         <fullName>JT_jtDocumentation_batchProcessingTitle</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtDocumentation - batchProcessingTitle</shortDescription>
+        <shortDescription
+    >jtDocumentation - batchProcessingTitle</shortDescription>
         <value>Query Risk Assessment &amp; Batch Processing</value>
     </labels>
     <labels>
@@ -116,8 +119,10 @@
         <fullName>JT_jtQueryViewer_clearCacheDescription</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - clearCacheDescription</shortDescription>
-        <value>Select which cached data you want to clear. This will force a refresh from the server.</value>
+        <shortDescription
+    >jtQueryViewer - clearCacheDescription</shortDescription>
+        <value
+    >Select which cached data you want to clear. This will force a refresh from the server.</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_clearCacheTitle</fullName>
@@ -131,20 +136,24 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>jtQueryViewer - clearCacheWarning</shortDescription>
-        <value>Selected data will be cleared and refreshed from the server.</value>
+        <value
+    >Selected data will be cleared and refreshed from the server.</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_clearConfigurationsHelp</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - clearConfigurationsHelp</shortDescription>
-        <value>Refresh the list of available query configurations from metadata</value>
+        <shortDescription
+    >jtQueryViewer - clearConfigurationsHelp</shortDescription>
+        <value
+    >Refresh the list of available query configurations from metadata</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_clearConfigurationsLabel</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - clearConfigurationsLabel</shortDescription>
+        <shortDescription
+    >jtQueryViewer - clearConfigurationsLabel</shortDescription>
         <value>Query Configurations</value>
     </labels>
     <labels>
@@ -152,7 +161,8 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>jtQueryViewer - clearRecentHelp</shortDescription>
-        <value>Clear recently selected configurations and user preferences</value>
+        <value
+    >Clear recently selected configurations and user preferences</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_clearRecentLabel</fullName>
@@ -215,7 +225,8 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>jtSupport - communityDescription</shortDescription>
-        <value>Join discussions and connect with other users on GitHub Discussions</value>
+        <value
+    >Join discussions and connect with other users on GitHub Discussions</value>
     </labels>
     <labels>
         <fullName>JT_jtSupport_contactEmail</fullName>
@@ -236,13 +247,15 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>jtQueryViewer - createConfigTooltip</shortDescription>
-        <value>Create a new query configuration with a SOQL query (SELECT fields FROM object WHERE condition), optional bind variables in JSON format, and field mappings.</value>
+        <value
+    >Create a new query configuration with a SOQL query (SELECT fields FROM object WHERE condition), optional bind variables in JSON format, and field mappings.</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_createNewConfiguration</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - createNewConfiguration</shortDescription>
+        <shortDescription
+    >jtQueryViewer - createNewConfiguration</shortDescription>
         <value>Create New Configuration</value>
     </labels>
     <labels>
@@ -253,45 +266,53 @@
         <value>Developer Name</value>
     </labels>
     <labels>
-        <fullName>JT_jtQueryViewer_developerNameCannotEndWithUnderscore</fullName>
+        <fullName
+    >JT_jtQueryViewer_developerNameCannotEndWithUnderscore</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - developerNameCannotEndWithUnderscore</shortDescription>
+        <shortDescription
+    >jtQueryViewer - developerNameCannotEndWithUnderscore</shortDescription>
         <value>Cannot end with an underscore</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_developerNameInvalidChars</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - developerNameInvalidChars</shortDescription>
+        <shortDescription
+    >jtQueryViewer - developerNameInvalidChars</shortDescription>
         <value>Only letters, numbers, and underscores allowed</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_developerNameMustStartWithLetter</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - developerNameMustStartWithLetter</shortDescription>
+        <shortDescription
+    >jtQueryViewer - developerNameMustStartWithLetter</shortDescription>
         <value>Must start with a letter</value>
     </labels>
     <labels>
-        <fullName>JT_jtQueryViewer_developerNameNoConsecutiveUnderscores</fullName>
+        <fullName
+    >JT_jtQueryViewer_developerNameNoConsecutiveUnderscores</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - developerNameNoConsecutiveUnderscores</shortDescription>
+        <shortDescription
+    >jtQueryViewer - developerNameNoConsecutiveUnderscores</shortDescription>
         <value>Cannot contain consecutive underscores</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_developerNameRequired</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - developerNameRequired</shortDescription>
+        <shortDescription
+    >jtQueryViewer - developerNameRequired</shortDescription>
         <value>Developer Name is required</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_developerNameTooLong</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - developerNameTooLong</shortDescription>
+        <shortDescription
+    >jtQueryViewer - developerNameTooLong</shortDescription>
         <value>Developer Name must be 40 characters or less</value>
     </labels>
     <labels>
@@ -312,14 +333,17 @@
         <fullName>JT_jtSupport_documentationDescription</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtSupport - documentationDescription</shortDescription>
-        <value>Check the Documentation tab for complete guides and API reference</value>
+        <shortDescription
+    >jtSupport - documentationDescription</shortDescription>
+        <value
+    >Check the Documentation tab for complete guides and API reference</value>
     </labels>
     <labels>
         <fullName>JT_jtDocumentation_documentationTitle</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtDocumentation - documentationTitle</shortDescription>
+        <shortDescription
+    >jtDocumentation - documentationTitle</shortDescription>
         <value>Documentation</value>
     </labels>
     <labels>
@@ -368,7 +392,8 @@
         <fullName>JT_jtSupport_featureRequestDescription</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtSupport - featureRequestDescription</shortDescription>
+        <shortDescription
+    >jtSupport - featureRequestDescription</shortDescription>
         <value>Have an idea? Suggest a new feature or improvement.</value>
     </labels>
     <labels>
@@ -389,7 +414,8 @@
         <fullName>JT_jtDocumentation_frameworkPhilosophy</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtDocumentation - frameworkPhilosophy</shortDescription>
+        <shortDescription
+    >jtDocumentation - frameworkPhilosophy</shortDescription>
         <value>Framework Philosophy:</value>
     </labels>
     <labels>
@@ -403,7 +429,8 @@
         <fullName>JT_jtDocumentation_gettingStartedTitle</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtDocumentation - gettingStartedTitle</shortDescription>
+        <shortDescription
+    >jtDocumentation - gettingStartedTitle</shortDescription>
         <value>Getting Started</value>
     </labels>
     <labels>
@@ -411,7 +438,8 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>jtSupport - githubDescription</shortDescription>
-        <value>This project is open-source and hosted on GitHub. You can view the code, report issues, and contribute to the project.</value>
+        <value
+    >This project is open-source and hosted on GitHub. You can view the code, report issues, and contribute to the project.</value>
     </labels>
     <labels>
         <fullName>JT_jtSupport_githubIntegration</fullName>
@@ -438,14 +466,16 @@
         <fullName>JT_jtDocumentation_internalDescription</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtDocumentation - internalDescription</shortDescription>
+        <shortDescription
+    >jtDocumentation - internalDescription</shortDescription>
         <value>These classes are for internal framework use only:</value>
     </labels>
     <labels>
         <fullName>JT_jtDocumentation_internalFrameworkTitle</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtDocumentation - internalFrameworkTitle</shortDescription>
+        <shortDescription
+    >jtDocumentation - internalFrameworkTitle</shortDescription>
         <value>Internal Framework Classes</value>
     </labels>
     <labels>
@@ -522,7 +552,8 @@
         <fullName>JT_jtQueryViewer_noParametersRequired</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - noParametersRequired</shortDescription>
+        <shortDescription
+    >jtQueryViewer - noParametersRequired</shortDescription>
         <value>No parameters required for this query</value>
     </labels>
     <labels>
@@ -530,7 +561,8 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>jtQueryViewer - noReferencesFound</shortDescription>
-        <value>This configuration is not currently referenced in any Apex classes or Flows.</value>
+        <value
+    >This configuration is not currently referenced in any Apex classes or Flows.</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_noResults</fullName>
@@ -551,7 +583,8 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>jtQueryViewer - noUsageMessage</shortDescription>
-        <value>This configuration is not currently referenced in any Apex class or Flow</value>
+        <value
+    >This configuration is not currently referenced in any Apex class or Flow</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_object</fullName>
@@ -585,8 +618,10 @@
         <fullName>JT_jtDocumentation_overviewDescription</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtDocumentation - overviewDescription</shortDescription>
-        <value>A powerful framework for executing dynamic SOQL queries with metadata-driven configurations.</value>
+        <shortDescription
+    >jtDocumentation - overviewDescription</shortDescription>
+        <value
+    >A powerful framework for executing dynamic SOQL queries with metadata-driven configurations.</value>
     </labels>
     <labels>
         <fullName>JT_jtDocumentation_overviewTab</fullName>
@@ -614,7 +649,8 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>jtDocumentation - philosophyText</shortDescription>
-        <value>Provide infrastructure and conventions for configurable queries, not just isolated utilities.</value>
+        <value
+    >Provide infrastructure and conventions for configurable queries, not just isolated utilities.</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_predefinedBindings</fullName>
@@ -627,8 +663,10 @@
         <fullName>JT_jtQueryViewer_predefinedBindingsDesc</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - predefinedBindingsDesc</shortDescription>
-        <value>This configuration has predefined bindings that will be used automatically.</value>
+        <shortDescription
+    >jtQueryViewer - predefinedBindingsDesc</shortDescription>
+        <value
+    >This configuration has predefined bindings that will be used automatically.</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_previous</fullName>
@@ -641,7 +679,8 @@
         <fullName>JT_jtDocumentation_publicAPIsDescription</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtDocumentation - publicAPIsDescription</shortDescription>
+        <shortDescription
+    >jtDocumentation - publicAPIsDescription</shortDescription>
         <value>These classes are part of the public API:</value>
     </labels>
     <labels>
@@ -768,7 +807,8 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>jtQueryViewer - runAsNote</shortDescription>
-        <value>Note: This validates user permissions but executes with USER_MODE security. Results reflect sharing rules and field-level security.</value>
+        <value
+    >Note: This validates user permissions but executes with USER_MODE security. Results reflect sharing rules and field-level security.</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_runAsUser</fullName>
@@ -782,7 +822,8 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>jtQueryViewer - sandboxOnlyWarning</shortDescription>
-        <value>Only available in Sandbox/Scratch/Developer Orgs. Use Setup UI in Production.</value>
+        <value
+    >Only available in Sandbox/Scratch/Developer Orgs. Use Setup UI in Production.</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_save</fullName>
@@ -795,15 +836,18 @@
         <fullName>JT_jtQueryViewer_searchConfigsPlaceholder</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - searchConfigsPlaceholder</shortDescription>
+        <shortDescription
+    >jtQueryViewer - searchConfigsPlaceholder</shortDescription>
         <value>Type to search configurations...</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_searchUsersPlaceholder</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - searchUsersPlaceholder</shortDescription>
-        <value>Type to search users... (leave blank to run as current user)</value>
+        <shortDescription
+    >jtQueryViewer - searchUsersPlaceholder</shortDescription>
+        <value
+    >Type to search users... (leave blank to run as current user)</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_searchingFlows</fullName>
@@ -873,7 +917,8 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>jtQueryViewer - toolingAPINote</shortDescription>
-        <value>This creates a Custom Metadata record via Tooling API. The configuration will be immediately available for use.</value>
+        <value
+    >This creates a Custom Metadata record via Tooling API. The configuration will be immediately available for use.</value>
     </labels>
     <labels>
         <fullName>JT_jtSupport_tutorials</fullName>
@@ -915,7 +960,8 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>jtQueryViewer - usageModalSubtitle</shortDescription>
-        <value>Searching Apex classes and Flows for references to this configuration</value>
+        <value
+    >Searching Apex classes and Flows for references to this configuration</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_usageModalTitle</fullName>
@@ -971,7 +1017,8 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>jtDocumentation - welcomeSubtitle</shortDescription>
-        <value>A metadata-driven SOQL execution framework with built-in security, batch processing, and risk assessment.</value>
+        <value
+    >A metadata-driven SOQL execution framework with built-in security, batch processing, and risk assessment.</value>
     </labels>
     <labels>
         <fullName>JT_jtSupport_welcomeTitle</fullName>
@@ -991,7 +1038,9 @@
         <fullName>JT_jtQueryViewer_whereIsThisUsedTooltip</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - whereIsThisUsedTooltip</shortDescription>
-        <value>Find where this configuration is used in Apex classes and Flows</value>
+        <shortDescription
+    >jtQueryViewer - whereIsThisUsedTooltip</shortDescription>
+        <value
+    >Find where this configuration is used in Apex classes and Flows</value>
     </labels>
 </CustomLabels>

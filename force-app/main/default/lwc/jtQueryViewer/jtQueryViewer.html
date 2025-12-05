@@ -168,6 +168,76 @@
         </div>
       </template>
 
+      <!-- API Features & Tooling API Section (Always Visible) -->
+      <div class="slds-box slds-theme_shade slds-m-bottom_medium">
+        <h3 class="slds-text-heading_small slds-m-bottom_small">
+          <lightning-icon
+            icon-name="utility:settings"
+            size="x-small"
+            class="slds-m-right_xx-small"
+          ></lightning-icon>
+          API Features & Tooling API
+        </h3>
+
+        <!-- Global API Disclaimer -->
+        <div
+          class="slds-box slds-box_x-small slds-theme_warning slds-m-bottom_small"
+          role="alert"
+          aria-label="Tooling API consumption warning"
+        >
+          <div class="slds-media slds-media_center">
+            <div class="slds-media__figure">
+              <lightning-icon
+                icon-name="utility:warning"
+                size="medium"
+                variant="warning"
+                alternative-text="Warning"
+              ></lightning-icon>
+            </div>
+            <div class="slds-media__body">
+              <p class="slds-text-body_small">
+                <strong>Tooling API Required:</strong> This application
+                uses Salesforce Tooling API for:
+              </p>
+              <ul
+                class="slds-list_dotted slds-m-top_xx-small slds-m-left_medium"
+              >
+                <li>
+                  <strong>"Where is this used?"</strong> - Searches
+                  Flows (1-5 API calls per search)
+                </li>
+                <template if:true={canCreateMetadata}>
+                  <li>
+                    <strong>Create/Edit Configurations</strong> -
+                    Deploys metadata (2-3 API calls per operation)
+                  </li>
+                </template>
+              </ul>
+              <p class="slds-text-body_small slds-m-top_xx-small">
+                <strong>Setup Required:</strong> Named Credential must
+                be configured. See
+                <a href="#" onclick={handleGoToDocumentation}
+                  >Documentation → Tooling API Setup</a
+                >
+                for details.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Usage Tracking Toggle -->
+        <div class="slds-m-top_small">
+          <lightning-input
+            type="checkbox"
+            label='Enable "Where is this used?" search'
+            checked={usageTrackingEnabled}
+            onchange={handleUsageTrackingChange}
+            disabled={isUpdatingSettings}
+            field-level-help="When enabled, searches for configuration references in Apex and Flows. Consumes API calls for Flow searches."
+          ></lightning-input>
+        </div>
+      </div>
+
       <!-- Two-Column Responsive Layout: Mobile (1 col) | Tablet+ (2 cols: 8/4) -->
       <lightning-layout multiple-rows="true" class="slds-gutters">
         <!-- RIGHT COLUMN: Controls Panel (Order: mobile=first, desktop=second) -->
@@ -217,80 +287,12 @@
             </template>
           </div>
 
-          <!-- Collapsible Sections: API Features & Run As -->
-          <lightning-accordion
-            allow-multiple-sections-open
-            active-section-name="api-features"
-            class="slds-m-bottom_medium"
-          >
-            <!-- API Features Section -->
-            <lightning-accordion-section
-              name="api-features"
-              label="API Features & Tooling API"
+          <!-- Collapsible Sections: Run As User (Admin Only) -->
+          <template if:true={showRunAs}>
+            <lightning-accordion
+              allow-multiple-sections-open
+              class="slds-m-bottom_medium"
             >
-              <div class="slds-box slds-theme_shade slds-p-around_small">
-                <!-- Global API Disclaimer -->
-                <div
-                  class="slds-box slds-box_x-small slds-theme_warning slds-m-bottom_medium"
-                  role="alert"
-                  aria-label="Tooling API consumption warning"
-                >
-                  <div class="slds-media slds-media_center">
-                    <div class="slds-media__figure">
-                      <lightning-icon
-                        icon-name="utility:warning"
-                        size="medium"
-                        variant="warning"
-                        alternative-text="Warning"
-                      ></lightning-icon>
-                    </div>
-                    <div class="slds-media__body">
-                      <p class="slds-text-body_small">
-                        <strong>Tooling API Required:</strong> This application
-                        uses Salesforce Tooling API for:
-                      </p>
-                      <ul
-                        class="slds-list_dotted slds-m-top_xx-small slds-m-left_medium"
-                      >
-                        <li>
-                          <strong>"Where is this used?"</strong> - Searches
-                          Flows (1-5 API calls per search)
-                        </li>
-                        <template if:true={canCreateMetadata}>
-                          <li>
-                            <strong>Create/Edit Configurations</strong> -
-                            Deploys metadata (2-3 API calls per operation)
-                          </li>
-                        </template>
-                      </ul>
-                      <p class="slds-text-body_small slds-m-top_xx-small">
-                        <strong>Setup Required:</strong> Named Credential must
-                        be configured. See
-                        <a href="#" onclick={handleGoToDocumentation}
-                          >Documentation → Tooling API Setup</a
-                        >
-                        for details.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Usage Tracking Toggle -->
-                <div class="slds-m-top_medium">
-                  <lightning-input
-                    type="checkbox"
-                    label='Enable "Where is this used?" search'
-                    checked={usageTrackingEnabled}
-                    onchange={handleUsageTrackingChange}
-                    disabled={isUpdatingSettings}
-                    field-level-help="When enabled, searches for configuration references in Apex and Flows. Consumes API calls for Flow searches."
-                  ></lightning-input>
-                </div>
-              </div>
-            </lightning-accordion-section>
-
-            <!-- Run As User Section (Admin Only) -->
-            <template if:true={showRunAs}>
               <lightning-accordion-section
                 name="run-as"
                 label="Run As User (Advanced)"
@@ -317,8 +319,8 @@
                   ></c-jt-run-as-section>
                 </div>
               </lightning-accordion-section>
-            </template>
-          </lightning-accordion>
+            </lightning-accordion>
+          </template>
 
           <!-- Dynamic Parameters Input -->
           <template if:true={hasParameters}>

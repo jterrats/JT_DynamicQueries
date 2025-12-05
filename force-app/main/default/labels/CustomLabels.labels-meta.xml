@@ -1,0 +1,997 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
+    <labels>
+        <fullName>JT_jtSupport_additionalResources</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtSupport - additionalResources</shortDescription>
+        <value>Additional Resources</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_apexClass</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - apexClass</shortDescription>
+        <value>Apex Class</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_apiReferenceTab</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtDocumentation - apiReferenceTab</shortDescription>
+        <value>API Reference</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_apiReferenceTitle</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtDocumentation - apiReferenceTitle</shortDescription>
+        <value>API Reference</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_autoDetectedFromQuery</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - autoDetectedFromQuery</shortDescription>
+        <value>Auto-detected from query</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_baseQuery</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - baseQuery</shortDescription>
+        <value>Base Query (SOQL)</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_batchProcessingTab</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtDocumentation - batchProcessingTab</shortDescription>
+        <value>Batch Processing</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_batchProcessingTitle</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtDocumentation - batchProcessingTitle</shortDescription>
+        <value>Query Risk Assessment &amp; Batch Processing</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_bindings</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - bindings</shortDescription>
+        <value>Bindings (JSON)</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_cacheCleared</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - cacheCleared</shortDescription>
+        <value>Cache cleared successfully</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_cacheClearedDetail</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - cacheClearedDetail</shortDescription>
+        <value>Cleared: {0}</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_cancel</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - cancel</shortDescription>
+        <value>Cancel</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_chooseConfiguration</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - chooseConfiguration</shortDescription>
+        <value>Choose a configuration...</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_clear</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - clear</shortDescription>
+        <value>Clear</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_clearCache</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - clearCache</shortDescription>
+        <value>Clear Cache</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_clearCacheButton</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - clearCacheButton</shortDescription>
+        <value>Clear Selected</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_clearCacheDescription</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - clearCacheDescription</shortDescription>
+        <value>Select which cached data you want to clear. This will force a refresh from the server.</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_clearCacheTitle</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - clearCacheTitle</shortDescription>
+        <value>Clear Cache &amp; Refresh Data</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_clearCacheWarning</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - clearCacheWarning</shortDescription>
+        <value>Selected data will be cleared and refreshed from the server.</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_clearConfigurationsHelp</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - clearConfigurationsHelp</shortDescription>
+        <value>Refresh the list of available query configurations from metadata</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_clearConfigurationsLabel</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - clearConfigurationsLabel</shortDescription>
+        <value>Query Configurations</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_clearRecentHelp</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - clearRecentHelp</shortDescription>
+        <value>Clear recently selected configurations and user preferences</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_clearRecentLabel</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - clearRecentLabel</shortDescription>
+        <value>Recent Selections</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_clearResultsHelp</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - clearResultsHelp</shortDescription>
+        <value>Clear current query results and reset the view</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_clearResultsLabel</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - clearResultsLabel</shortDescription>
+        <value>Query Results</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_clearSelection</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - clearSelection</shortDescription>
+        <value>Clear Selection</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_clearUsersHelp</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - clearUsersHelp</shortDescription>
+        <value>Refresh the list of active users for Run As functionality</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_clearUsersLabel</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - clearUsersLabel</shortDescription>
+        <value>User List</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_code</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - code</shortDescription>
+        <value>Code</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtSupport_community</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtSupport - community</shortDescription>
+        <value>Community Forum</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtSupport_communityDescription</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtSupport - communityDescription</shortDescription>
+        <value>Join discussions and connect with other users on GitHub Discussions</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtSupport_contactEmail</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtSupport - contactEmail</shortDescription>
+        <value>jaime.terrats@gmail.com</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_contributingTitle</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtDocumentation - contributingTitle</shortDescription>
+        <value>Contributing</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_createConfigTooltip</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - createConfigTooltip</shortDescription>
+        <value>Create a new query configuration with a SOQL query (SELECT fields FROM object WHERE condition), optional bind variables in JSON format, and field mappings.</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_createNewConfiguration</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - createNewConfiguration</shortDescription>
+        <value>Create New Configuration</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_developerName</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - developerName</shortDescription>
+        <value>Developer Name</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_developerNameCannotEndWithUnderscore</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - developerNameCannotEndWithUnderscore</shortDescription>
+        <value>Cannot end with an underscore</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_developerNameInvalidChars</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - developerNameInvalidChars</shortDescription>
+        <value>Only letters, numbers, and underscores allowed</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_developerNameMustStartWithLetter</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - developerNameMustStartWithLetter</shortDescription>
+        <value>Must start with a letter</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_developerNameNoConsecutiveUnderscores</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - developerNameNoConsecutiveUnderscores</shortDescription>
+        <value>Cannot contain consecutive underscores</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_developerNameRequired</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - developerNameRequired</shortDescription>
+        <value>Developer Name is required</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_developerNameTooLong</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - developerNameTooLong</shortDescription>
+        <value>Developer Name must be 40 characters or less</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtSupport_directContact</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtSupport - directContact</shortDescription>
+        <value>Direct Contact</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtSupport_documentation</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtSupport - documentation</shortDescription>
+        <value>Documentation</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtSupport_documentationDescription</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtSupport - documentationDescription</shortDescription>
+        <value>Check the Documentation tab for complete guides and API reference</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_documentationTitle</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtDocumentation - documentationTitle</shortDescription>
+        <value>Documentation</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_editConfiguration</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - editConfiguration</shortDescription>
+        <value>Edit Configuration</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_executeQuery</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - executeQuery</shortDescription>
+        <value>Execute Query</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_executeSystemRunAs</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - executeSystemRunAs</shortDescription>
+        <value>Execute with System.runAs (Test)</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_executingTest</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - executingTest</shortDescription>
+        <value>Executing test with System.runAs()...</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtSupport_featureRequest</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtSupport - featureRequest</shortDescription>
+        <value>Feature Request</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtSupport_featureRequestButton</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtSupport - featureRequestButton</shortDescription>
+        <value>Request Feature</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtSupport_featureRequestDescription</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtSupport - featureRequestDescription</shortDescription>
+        <value>Have an idea? Suggest a new feature or improvement.</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_findingUsage</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - findingUsage</shortDescription>
+        <value>Searching Apex classes and Flows...</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_foundReferences</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - foundReferences</shortDescription>
+        <value>Found {0} reference(s) in Apex/Flows</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_frameworkPhilosophy</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtDocumentation - frameworkPhilosophy</shortDescription>
+        <value>Framework Philosophy:</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_gettingStartedTab</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtDocumentation - gettingStartedTab</shortDescription>
+        <value>Getting Started</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_gettingStartedTitle</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtDocumentation - gettingStartedTitle</shortDescription>
+        <value>Getting Started</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtSupport_githubDescription</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtSupport - githubDescription</shortDescription>
+        <value>This project is open-source and hosted on GitHub. You can view the code, report issues, and contribute to the project.</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtSupport_githubIntegration</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtSupport - githubIntegration</shortDescription>
+        <value>GitHub Integration</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtSupport_githubRepo</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtSupport - githubRepo</shortDescription>
+        <value>Repository</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_installationTitle</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtDocumentation - installationTitle</shortDescription>
+        <value>Installation</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_internalDescription</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtDocumentation - internalDescription</shortDescription>
+        <value>These classes are for internal framework use only:</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_internalFrameworkTitle</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtDocumentation - internalFrameworkTitle</shortDescription>
+        <value>Internal Framework Classes</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_invalidQuery</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - invalidQuery</shortDescription>
+        <value>Invalid Query</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_issuesTitle</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtDocumentation - issuesTitle</shortDescription>
+        <value>Report Issues</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_label</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - label</shortDescription>
+        <value>Label</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_labelRequired</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - labelRequired</shortDescription>
+        <value>Label is required</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_labelTooLong</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - labelTooLong</shortDescription>
+        <value>Label must be 40 characters or less</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_line</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - line</shortDescription>
+        <value>Line</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_lineNumber</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - lineNumber</shortDescription>
+        <value>Line #</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_loadingUsers</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - loadingUsers</shortDescription>
+        <value>Loading users...</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_name</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - name</shortDescription>
+        <value>Name</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_next</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - next</shortDescription>
+        <value>Next</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_noParametersRequired</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - noParametersRequired</shortDescription>
+        <value>No parameters required for this query</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_noReferencesFound</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - noReferencesFound</shortDescription>
+        <value>This configuration is not currently referenced in any Apex classes or Flows.</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_noResults</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - noResults</shortDescription>
+        <value>No results found</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_noUsageFound</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - noUsageFound</shortDescription>
+        <value>No usage found</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_noUsageMessage</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - noUsageMessage</shortDescription>
+        <value>This configuration is not currently referenced in any Apex class or Flow</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_object</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - object</shortDescription>
+        <value>Object</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_objectName</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - objectName</shortDescription>
+        <value>Object Name</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_objectNameReadOnly</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - objectNameReadOnly</shortDescription>
+        <value>Automatically extracted from the SOQL query</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_of</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - of</shortDescription>
+        <value>of</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_overviewDescription</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtDocumentation - overviewDescription</shortDescription>
+        <value>A powerful framework for executing dynamic SOQL queries with metadata-driven configurations.</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_overviewTab</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtDocumentation - overviewTab</shortDescription>
+        <value>Overview</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_overviewTitle</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtDocumentation - overviewTitle</shortDescription>
+        <value>What is Dynamic Query Framework?</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_page</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - page</shortDescription>
+        <value>Page</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_philosophyText</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtDocumentation - philosophyText</shortDescription>
+        <value>Provide infrastructure and conventions for configurable queries, not just isolated utilities.</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_predefinedBindings</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - predefinedBindings</shortDescription>
+        <value>Predefined Bindings:</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_predefinedBindingsDesc</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - predefinedBindingsDesc</shortDescription>
+        <value>This configuration has predefined bindings that will be used automatically.</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_previous</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - previous</shortDescription>
+        <value>Previous</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_publicAPIsDescription</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtDocumentation - publicAPIsDescription</shortDescription>
+        <value>These classes are part of the public API:</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_publicAPIsTitle</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtDocumentation - publicAPIsTitle</shortDescription>
+        <value>Public APIs</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_queryParameters</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - queryParameters</shortDescription>
+        <value>Query Parameters:</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_queryPreview</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - queryPreview</shortDescription>
+        <value>Query Preview:</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_queryPreviewTitle</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - queryPreviewTitle</shortDescription>
+        <value>Query Preview</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_quickStartTitle</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtDocumentation - quickStartTitle</shortDescription>
+        <value>Quick Start</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_record</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - record</shortDescription>
+        <value>record</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_records</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - records</shortDescription>
+        <value>records</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtSupport_reportBug</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtSupport - reportBug</shortDescription>
+        <value>Report a Bug</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtSupport_reportBugButton</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtSupport - reportBugButton</shortDescription>
+        <value>Report Bug</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtSupport_reportBugDescription</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtSupport - reportBugDescription</shortDescription>
+        <value>Found a bug? Let us know so we can fix it.</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtSupport_responseTime</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtSupport - responseTime</shortDescription>
+        <value>We typically respond within 24-48 hours</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_results</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - results</shortDescription>
+        <value>Results</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_riskLevelCritical</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtDocumentation - riskLevelCritical</shortDescription>
+        <value>Critical</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_riskLevelHigh</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtDocumentation - riskLevelHigh</shortDescription>
+        <value>High</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_riskLevelLow</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtDocumentation - riskLevelLow</shortDescription>
+        <value>Low</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_riskLevelMedium</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtDocumentation - riskLevelMedium</shortDescription>
+        <value>Medium</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_riskLevelsTitle</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtDocumentation - riskLevelsTitle</shortDescription>
+        <value>Risk Levels</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_runAsNote</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - runAsNote</shortDescription>
+        <value>Note: This validates user permissions but executes with USER_MODE security. Results reflect sharing rules and field-level security.</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_runAsUser</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - runAsUser</shortDescription>
+        <value>Run As User (Advanced)</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_sandboxOnlyWarning</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - sandboxOnlyWarning</shortDescription>
+        <value>Only available in Sandbox/Scratch/Developer Orgs. Use Setup UI in Production.</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_save</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - save</shortDescription>
+        <value>Save</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_searchConfigsPlaceholder</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - searchConfigsPlaceholder</shortDescription>
+        <value>Type to search configurations...</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_searchUsersPlaceholder</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - searchUsersPlaceholder</shortDescription>
+        <value>Type to search users... (leave blank to run as current user)</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_searchingFlows</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - searchingFlows</shortDescription>
+        <value>Searching Apex classes and Flows...</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_selectAll</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - selectAll</shortDescription>
+        <value>Select All</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_selectConfiguration</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - selectConfiguration</shortDescription>
+        <value>Select Query Configuration</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_selectOption</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - selectOption</shortDescription>
+        <value>Please select an option</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_selectUser</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - selectUser</shortDescription>
+        <value>Select User to Impersonate</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_showing</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - showing</shortDescription>
+        <value>Showing</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_supportTab</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtDocumentation - supportTab</shortDescription>
+        <value>Support</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_supportTitle</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtDocumentation - supportTitle</shortDescription>
+        <value>Need Help?</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtSupport_title</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtSupport - title</shortDescription>
+        <value>Support &amp; Help</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_toolingAPINote</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - toolingAPINote</shortDescription>
+        <value>This creates a Custom Metadata record via Tooling API. The configuration will be immediately available for use.</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtSupport_tutorials</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtSupport - tutorials</shortDescription>
+        <value>Video Tutorials</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtSupport_tutorialsDescription</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtSupport - tutorialsDescription</shortDescription>
+        <value>Coming soon - Video guides and walkthroughs</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_type</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - type</shortDescription>
+        <value>Type</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_typeToFilter</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - typeToFilter</shortDescription>
+        <value>Type to filter users...</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_updateConfiguration</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - updateConfiguration</shortDescription>
+        <value>Update Configuration</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_usageModalSubtitle</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - usageModalSubtitle</shortDescription>
+        <value>Searching Apex classes and Flows for references to this configuration</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_usageModalTitle</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - usageModalTitle</shortDescription>
+        <value>Where is </value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_validQuery</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - validQuery</shortDescription>
+        <value>Valid Query</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_validSOQLSyntax</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - validSOQLSyntax</shortDescription>
+        <value>Valid SOQL syntax</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtSupport_viewIssues</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtSupport - viewIssues</shortDescription>
+        <value>View Issues</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtSupport_viewIssuesButton</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtSupport - viewIssuesButton</shortDescription>
+        <value>View All Issues</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtSupport_viewIssuesDescription</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtSupport - viewIssuesDescription</shortDescription>
+        <value>Browse existing issues and see what</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtSupport_welcomeMessage</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtSupport - welcomeMessage</shortDescription>
+        <value>Need help or want to report an issue? We</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_welcomeSubtitle</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtDocumentation - welcomeSubtitle</shortDescription>
+        <value>A metadata-driven SOQL execution framework with built-in security, batch processing, and risk assessment.</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtSupport_welcomeTitle</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtSupport - welcomeTitle</shortDescription>
+        <value>Welcome to Support</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_whereIsThisUsed</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - whereIsThisUsed</shortDescription>
+        <value>Where is this used?</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_whereIsThisUsedTooltip</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - whereIsThisUsedTooltip</shortDescription>
+        <value>Find where this configuration is used in Apex classes and Flows</value>
+    </labels>
+</CustomLabels>

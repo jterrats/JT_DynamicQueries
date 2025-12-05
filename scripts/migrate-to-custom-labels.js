@@ -159,7 +159,7 @@ function generateCustomLabelsXML(allLabels) {
  */
 function generateTranslations(allLabels) {
   console.log('\n🌍 Generating translation files...');
-  
+
   const langMap = {
     'es': 'es_MX',
     'fr': 'fr',
@@ -169,10 +169,10 @@ function generateTranslations(allLabels) {
     'pt': 'pt_BR',
     'zh': 'zh_CN'
   };
-  
+
   Object.entries(langMap).forEach(([shortLang, salesforceLang]) => {
     const translationFile = path.join(TRANSLATIONS_DIR, `${salesforceLang}.translation-meta.xml`);
-    
+
     let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <Translations xmlns="http://soap.sforce.com/2006/04/metadata">
 `;
@@ -183,10 +183,10 @@ function generateTranslations(allLabels) {
       if (!data.en || data.en.trim() === '') {
         return;
       }
-      
+
       const fullName = `JT_${data.component}_${key}`;
       const translation = (data[shortLang] || data.en || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-      
+
       if (translation) {
         xml += `    <customLabels>
         <name>${fullName}</name>

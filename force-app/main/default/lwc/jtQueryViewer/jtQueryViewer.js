@@ -91,6 +91,32 @@ import validQueryLabel from "@salesforce/label/c.JT_jtQueryViewer_validQuery";
 import validSOQLSyntaxLabel from "@salesforce/label/c.JT_jtQueryViewer_validSOQLSyntax";
 import whereIsThisUsedLabel from "@salesforce/label/c.JT_jtQueryViewer_whereIsThisUsed";
 import whereIsThisUsedTooltipLabel from "@salesforce/label/c.JT_jtQueryViewer_whereIsThisUsedTooltip";
+
+// Apex imports
+import getConfigurations from "@salesforce/apex/JT_QueryViewerController.getConfigurations";
+import extractParameters from "@salesforce/apex/JT_QueryViewerController.extractParameters";
+import executeQuery from "@salesforce/apex/JT_QueryViewerController.executeQuery";
+import executeQueryPreview from "@salesforce/apex/JT_QueryViewerController.executeQueryPreview";
+import canUseRunAs from "@salesforce/apex/JT_QueryViewerController.canUseRunAs";
+import getAllActiveUsers from "@salesforce/apex/JT_QueryViewerController.getAllActiveUsers";
+import executeAsUser from "@salesforce/apex/JT_RunAsTestExecutor.executeAsUser";
+import getTestResults from "@salesforce/apex/JT_RunAsTestExecutor.getTestResults";
+import canUseRunAsTest from "@salesforce/apex/JT_RunAsTestExecutor.canUseRunAsTest";
+import isSandboxOrScratch from "@salesforce/apex/JT_MetadataCreator.isSandboxOrScratch";
+import getOrgInfo from "@salesforce/apex/JT_MetadataCreator.getOrgInfo";
+import createConfiguration from "@salesforce/apex/JT_MetadataCreator.createConfiguration";
+// import updateConfiguration from "@salesforce/apex/JT_MetadataCreator.updateConfiguration"; // Unused, reserved for future
+import validateQuery from "@salesforce/apex/JT_MetadataCreator.validateQuery";
+// import getProductionEditingSetting from "@salesforce/apex/JT_ProductionSettingsController.getProductionEditingSetting"; // Unused
+import updateProductionEditingSetting from "@salesforce/apex/JT_ProductionSettingsController.updateProductionEditingSetting";
+import getUsageTrackingSetting from "@salesforce/apex/JT_ProductionSettingsController.getUsageTrackingSetting";
+import updateUsageTrackingSetting from "@salesforce/apex/JT_ProductionSettingsController.updateUsageTrackingSetting";
+import logUsageSearch from "@salesforce/apex/JT_ProductionSettingsController.logUsageSearch";
+import findConfigurationUsage from "@salesforce/apex/JT_UsageFinder.findConfigurationUsage";
+import findAllUsagesResilient from "@salesforce/apex/JT_UsageFinder.findAllUsagesResilient";
+import assessQueryRisk from "@salesforce/apex/JT_QueryViewerController.assessQueryRisk";
+import executeQueryWithBatchProcessing from "@salesforce/apex/JT_QueryViewerController.executeQueryWithBatchProcessing";
+
 export default class JtQueryViewer extends LightningElement {
   @track selectedConfig = "";
   @track baseQuery = "";

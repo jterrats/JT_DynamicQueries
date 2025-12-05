@@ -122,7 +122,7 @@ async function captureHappyPaths() {
     if (await jsonButton.isVisible()) {
       await jsonButton.click();
       await page1.waitForTimeout(1500);
-      
+
       // Back to Table
       const tableButton = page1.locator('button:has-text("Table")').first();
       await tableButton.click();
@@ -208,7 +208,7 @@ async function captureHappyPaths() {
     const newConfigButton = page3
       .locator('button:has-text("New Configuration")')
       .first();
-    
+
     if (await newConfigButton.isVisible()) {
       await newConfigButton.click();
       await page3.waitForTimeout(1500);
@@ -217,7 +217,7 @@ async function captureHappyPaths() {
       const nameInput = page3
         .locator('lightning-input[data-field="name"] input')
         .first();
-      
+
       if (await nameInput.isVisible().catch(() => false)) {
         await nameInput.click();
         await page3.waitForTimeout(500);
@@ -228,7 +228,7 @@ async function captureHappyPaths() {
         const objectInput = page3
           .locator('lightning-input[data-field="object"] input')
           .first();
-        
+
         if (await objectInput.isVisible().catch(() => false)) {
           await objectInput.click();
           await page3.waitForTimeout(500);
@@ -240,7 +240,7 @@ async function captureHappyPaths() {
         const fieldsTextarea = page3
           .locator('lightning-textarea[data-field="fields"] textarea')
           .first();
-        
+
         if (await fieldsTextarea.isVisible().catch(() => false)) {
           await fieldsTextarea.click();
           await page3.waitForTimeout(500);

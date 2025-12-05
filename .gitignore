@@ -40,6 +40,10 @@ certs/
 !.env.example
 !.env.act.example
 
+# Act (GitHub Actions local runner) - local only
+.actrc
+.env.act
+
 # Backup files
 *.backup
 

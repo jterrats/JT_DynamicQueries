@@ -21,7 +21,13 @@ function getSFSession() {
       }
     });
 
-    const orgInfo = JSON.parse(orgInfoJson);
+    // Extract JSON from output (SF CLI may output extra text in GitHub Actions)
+    const jsonMatch = orgInfoJson.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      throw new Error("No JSON found in SF CLI output");
+    }
+
+    const orgInfo = JSON.parse(jsonMatch[0]);
 
     if (orgInfo.status !== 0) {
       throw new Error(

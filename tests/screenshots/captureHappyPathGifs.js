@@ -34,9 +34,10 @@ const VIEWPORT = { width: 1200, height: 750 };
 
 /**
  * Convert video to optimized GIF using ffmpeg
+ * Lower FPS = slower, more visible GIF
  */
-async function convertToGif(videoPath, gifPath, fps = 10) {
-  console.log(`   🎨 Converting to GIF: ${path.basename(gifPath)}`);
+async function convertToGif(videoPath, gifPath, fps = 6) {
+  console.log(`   🎨 Converting to GIF: ${path.basename(gifPath)} @ ${fps} FPS`);
 
   // Generate palette for better quality
   const palettePath = videoPath.replace(".webm", "_palette.png");
@@ -59,7 +60,7 @@ async function convertToGif(videoPath, gifPath, fps = 10) {
 
     const stats = fs.statSync(gifPath);
     const sizeMB = (stats.size / (1024 * 1024)).toFixed(2);
-    console.log(`   ✅ GIF created: ${sizeMB} MB`);
+    console.log(`   ✅ GIF created: ${sizeMB} MB (${fps} FPS)`);
   } catch (error) {
     console.error(`   ❌ Failed to convert: ${error.message}`);
     throw error;
@@ -82,6 +83,7 @@ async function captureHappyPaths() {
   console.log("🎬 Starting Functional GIF Capture");
   console.log("📁 Output directory:", GIFS_DIR);
   console.log("📐 Viewport:", `${VIEWPORT.width}x${VIEWPORT.height}`);
+  console.log("⏱️  Slower GIFs for better visibility");
   console.log("");
 
   const browser = await chromium.launch({
@@ -93,10 +95,10 @@ async function captureHappyPaths() {
   console.log("");
 
   // ==================================================================
-  // GIF 1: Query Execution (12 seconds)
-  // Show: Select config → Execute → View results (Table/JSON)
+  // GIF 1: Basic Query Execution (10 seconds)
+  // Show: Select config → Execute → View results
   // ==================================================================
-  console.log("🎥 1/3: Capturing Query Execution...");
+  console.log("🎥 1/4: Capturing Basic Query Execution...");
   const context1 = await browser.newContext({
     viewport: VIEWPORT,
     recordVideo: {
@@ -109,36 +111,30 @@ async function captureHappyPaths() {
   try {
     await setupAndStartRecording(page1, session, 1000);
 
-    // Select configuration
+    // Select configuration (slower)
     await selectConfiguration(page1, "Customer 360");
+    await page1.waitForTimeout(1500);
+
+    // Execute query (slower)
+    await executeQuery(page1);
+    await page1.waitForTimeout(3000);
+
+    // Scroll to see results
+    await page1.evaluate(() => window.scrollTo({ top: 300, behavior: "smooth" }));
+    await page1.waitForTimeout(2000);
+    await page1.evaluate(() => window.scrollTo({ top: 0, behavior: "smooth" }));
     await page1.waitForTimeout(1000);
 
-    // Execute query
-    await executeQuery(page1);
-    await page1.waitForTimeout(2500);
-
-    // Switch to JSON view
-    const jsonButton = page1.locator('button:has-text("JSON")').first();
-    if (await jsonButton.isVisible()) {
-      await jsonButton.click();
-      await page1.waitForTimeout(1500);
-
-      // Back to Table
-      const tableButton = page1.locator('button:has-text("Table")').first();
-      await tableButton.click();
-      await page1.waitForTimeout(1500);
-    }
-
-    console.log("   ✅ Query Execution captured");
+    console.log("   ✅ Basic Query Execution captured");
   } finally {
     await context1.close();
   }
 
   // ==================================================================
-  // GIF 2: Run As User (10 seconds)
-  // Show: Open Run As → Select user → Execute → See personalized results
+  // GIF 2: Multiple Views - JSON, CSV (15 seconds)
+  // Show: Execute query → Switch to JSON → Switch to CSV → Back to Table
   // ==================================================================
-  console.log("🎥 2/3: Capturing Run As User...");
+  console.log("🎥 2/4: Capturing Multiple Views (JSON, CSV)...");
   const context2 = await browser.newContext({
     viewport: VIEWPORT,
     recordVideo: {
@@ -151,47 +147,59 @@ async function captureHappyPaths() {
   try {
     await setupAndStartRecording(page2, session, 1000);
 
-    // Select a configuration first
+    // Select configuration
     await selectConfiguration(page2, "Customer 360");
-    await page2.waitForTimeout(800);
+    await page2.waitForTimeout(1500);
 
-    // Open Run As modal
-    const runAsButton = page2.locator('button:has-text("Run As")').first();
-    if (await runAsButton.isVisible()) {
-      await runAsButton.click();
-      await page2.waitForTimeout(1000);
-
-      // Select a user from dropdown
-      const userCombobox = page2.locator('c-jt-searchable-combobox input').nth(1);
-      if (await userCombobox.isVisible().catch(() => false)) {
-        await userCombobox.click();
-        await page2.waitForTimeout(800);
-        await userCombobox.fill("User");
-        await page2.waitForTimeout(800);
-        await page2.keyboard.press("ArrowDown");
-        await page2.keyboard.press("Enter");
-        await page2.waitForTimeout(1000);
-      }
-
-      // Close modal
-      await page2.keyboard.press("Escape");
-      await page2.waitForTimeout(800);
-    }
-
-    // Execute query to show results
+    // Execute query
     await executeQuery(page2);
     await page2.waitForTimeout(2000);
 
-    console.log("   ✅ Run As User captured");
+    // Switch to JSON view
+    const jsonButton = page2.locator('button:has-text("JSON")').first();
+    if (await jsonButton.isVisible()) {
+      await jsonButton.click();
+      await page2.waitForTimeout(2500);
+      
+      // Scroll JSON to show content
+      await page2.evaluate(() => {
+        const jsonView = document.querySelector('.json-content');
+        if (jsonView) jsonView.scrollTop = 100;
+      });
+      await page2.waitForTimeout(2000);
+    }
+
+    // Switch to CSV view
+    const csvButton = page2.locator('button:has-text("CSV")').first();
+    if (await csvButton.isVisible()) {
+      await csvButton.click();
+      await page2.waitForTimeout(2500);
+      
+      // Scroll CSV to show content
+      await page2.evaluate(() => {
+        const csvView = document.querySelector('.csv-content');
+        if (csvView) csvView.scrollTop = 50;
+      });
+      await page2.waitForTimeout(2000);
+    }
+
+    // Back to Table view
+    const tableButton = page2.locator('button:has-text("Table")').first();
+    if (await tableButton.isVisible()) {
+      await tableButton.click();
+      await page2.waitForTimeout(1500);
+    }
+
+    console.log("   ✅ Multiple Views captured");
   } finally {
     await context2.close();
   }
 
   // ==================================================================
-  // GIF 3: Create Configuration (12 seconds)
-  // Show: Click New Config → Fill form fields → Show validation
+  // GIF 3: Tree View - Child Relationships (12 seconds)
+  // Show: Execute query with relationships → Expand parent → Show children
   // ==================================================================
-  console.log("🎥 3/3: Capturing Create Configuration...");
+  console.log("🎥 3/4: Capturing Tree View with Child Relationships...");
   const context3 = await browser.newContext({
     viewport: VIEWPORT,
     recordVideo: {
@@ -204,59 +212,92 @@ async function captureHappyPaths() {
   try {
     await setupAndStartRecording(page3, session, 1000);
 
-    // Click "New Configuration" button
-    const newConfigButton = page3
-      .locator('button:has-text("New Configuration")')
+    // Select a config that has child relationships (Account usually has Contacts, Opportunities)
+    await selectConfiguration(page3, "Customer 360");
+    await page3.waitForTimeout(1500);
+
+    // Execute query
+    await executeQuery(page3);
+    await page3.waitForTimeout(2500);
+
+    // Try to expand first row with children (tree view)
+    const expandButton = page3
+      .locator('lightning-button-icon[icon-name*="chevronright"], tbody lightning-button-icon')
       .first();
-
-    if (await newConfigButton.isVisible()) {
-      await newConfigButton.click();
-      await page3.waitForTimeout(1500);
-
-      // Fill configuration name
-      const nameInput = page3
-        .locator('lightning-input[data-field="name"] input')
+    
+    if (await expandButton.isVisible().catch(() => false)) {
+      await expandButton.click();
+      await page3.waitForTimeout(2500);
+      
+      // Scroll to see expanded content
+      await page3.evaluate(() => window.scrollTo({ top: 300, behavior: "smooth" }));
+      await page3.waitForTimeout(2000);
+      
+      // Collapse it
+      const collapseButton = page3
+        .locator('lightning-button-icon[icon-name*="chevrondown"]')
         .first();
-
-      if (await nameInput.isVisible().catch(() => false)) {
-        await nameInput.click();
-        await page3.waitForTimeout(500);
-        await nameInput.fill("My Custom Query");
-        await page3.waitForTimeout(1000);
-
-        // Fill object name
-        const objectInput = page3
-          .locator('lightning-input[data-field="object"] input')
-          .first();
-
-        if (await objectInput.isVisible().catch(() => false)) {
-          await objectInput.click();
-          await page3.waitForTimeout(500);
-          await objectInput.fill("Account");
-          await page3.waitForTimeout(1000);
-        }
-
-        // Show fields selection
-        const fieldsTextarea = page3
-          .locator('lightning-textarea[data-field="fields"] textarea')
-          .first();
-
-        if (await fieldsTextarea.isVisible().catch(() => false)) {
-          await fieldsTextarea.click();
-          await page3.waitForTimeout(500);
-          await fieldsTextarea.fill("Id, Name, Type");
-          await page3.waitForTimeout(1500);
-        }
+      if (await collapseButton.isVisible().catch(() => false)) {
+        await collapseButton.click();
+        await page3.waitForTimeout(1500);
       }
-
-      // Close modal (don't save - just demo)
-      await page3.keyboard.press("Escape");
-      await page3.waitForTimeout(1000);
     }
 
-    console.log("   ✅ Create Configuration captured");
+    console.log("   ✅ Tree View captured");
   } finally {
     await context3.close();
+  }
+
+  // ==================================================================
+  // GIF 4: Large Dataset (Cursors >50k) (12 seconds)
+  // Show: Query with many records → Pagination → Performance message
+  // ==================================================================
+  console.log("🎥 4/4: Capturing Large Dataset with Cursors...");
+  const context4 = await browser.newContext({
+    viewport: VIEWPORT,
+    recordVideo: {
+      dir: VIDEOS_DIR,
+      size: VIEWPORT
+    }
+  });
+  const page4 = await context4.newPage();
+
+  try {
+    await setupAndStartRecording(page4, session, 1000);
+
+    // Select configuration (ideally one that returns many records)
+    // If "All Accounts" exists, use it, otherwise use first available
+    const combobox = page4.locator("c-jt-searchable-combobox input").first();
+    await combobox.waitFor({ state: "visible", timeout: 15000 });
+    await combobox.click();
+    await page4.waitForTimeout(800);
+    
+    // Try to find a config with many records
+    await combobox.fill("Account");
+    await page4.waitForTimeout(800);
+    await page4.keyboard.press("ArrowDown");
+    await page4.keyboard.press("Enter");
+    await page4.waitForTimeout(1500);
+
+    // Execute query
+    await executeQuery(page4);
+    await page4.waitForTimeout(3000);
+
+    // Look for pagination or performance message
+    const paginationInfo = page4.locator('text=/showing|results|records/i').first();
+    if (await paginationInfo.isVisible().catch(() => false)) {
+      await page4.waitForTimeout(2000);
+    }
+
+    // Scroll through results
+    await page4.evaluate(() => window.scrollTo({ top: 400, behavior: "smooth" }));
+    await page4.waitForTimeout(1500);
+    await page4.evaluate(() => window.scrollTo({ top: 0, behavior: "smooth" }));
+    await page4.waitForTimeout(1500);
+
+    console.log("   ✅ Large Dataset captured");
+  } finally {
+    await context4.close();
   }
 
   await browser.close();
@@ -272,23 +313,29 @@ async function captureHappyPaths() {
     .filter((f) => f.endsWith(".webm"))
     .sort();
 
-  if (videoFiles.length >= 3) {
+  if (videoFiles.length >= 4) {
     await convertToGif(
       path.join(VIDEOS_DIR, videoFiles[0]),
       path.join(GIFS_DIR, "01-query-execution.gif"),
-      10
+      6 // Slower for better visibility
     );
 
     await convertToGif(
       path.join(VIDEOS_DIR, videoFiles[1]),
-      path.join(GIFS_DIR, "02-run-as-user.gif"),
-      10
+      path.join(GIFS_DIR, "02-multiple-views.gif"),
+      6 // Slower to see JSON/CSV content
     );
 
     await convertToGif(
       path.join(VIDEOS_DIR, videoFiles[2]),
-      path.join(GIFS_DIR, "03-create-config.gif"),
-      10
+      path.join(GIFS_DIR, "03-tree-view.gif"),
+      6 // Slower to see relationships expand
+    );
+
+    await convertToGif(
+      path.join(VIDEOS_DIR, videoFiles[3]),
+      path.join(GIFS_DIR, "04-large-dataset.gif"),
+      6 // Slower to see pagination
     );
   }
 
@@ -301,10 +348,11 @@ async function captureHappyPaths() {
   console.log("✨ All GIFs created successfully!");
   console.log("📁 Location:", GIFS_DIR);
   console.log("");
-  console.log("🎬 GIFs:");
-  console.log("   1. 01-query-execution.gif - Execute queries and view results");
-  console.log("   2. 02-run-as-user.gif - Run queries as different users");
-  console.log("   3. 03-create-config.gif - Create custom configurations");
+  console.log("🎬 GIFs (6 FPS for better visibility):");
+  console.log("   1. 01-query-execution.gif - Basic query execution");
+  console.log("   2. 02-multiple-views.gif - Table, JSON, CSV views");
+  console.log("   3. 03-tree-view.gif - Child relationships (tree view)");
+  console.log("   4. 04-large-dataset.gif - Large datasets with cursors (>50k)");
   console.log("");
 }
 

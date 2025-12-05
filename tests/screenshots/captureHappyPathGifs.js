@@ -160,7 +160,7 @@ async function captureHappyPaths() {
     if (await jsonButton.isVisible()) {
       await jsonButton.click();
       await page2.waitForTimeout(2500);
-      
+
       // Scroll JSON to show content
       await page2.evaluate(() => {
         const jsonView = document.querySelector('.json-content');
@@ -174,7 +174,7 @@ async function captureHappyPaths() {
     if (await csvButton.isVisible()) {
       await csvButton.click();
       await page2.waitForTimeout(2500);
-      
+
       // Scroll CSV to show content
       await page2.evaluate(() => {
         const csvView = document.querySelector('.csv-content');
@@ -224,15 +224,15 @@ async function captureHappyPaths() {
     const expandButton = page3
       .locator('lightning-button-icon[icon-name*="chevronright"], tbody lightning-button-icon')
       .first();
-    
+
     if (await expandButton.isVisible().catch(() => false)) {
       await expandButton.click();
       await page3.waitForTimeout(2500);
-      
+
       // Scroll to see expanded content
       await page3.evaluate(() => window.scrollTo({ top: 300, behavior: "smooth" }));
       await page3.waitForTimeout(2000);
-      
+
       // Collapse it
       const collapseButton = page3
         .locator('lightning-button-icon[icon-name*="chevrondown"]')
@@ -271,7 +271,7 @@ async function captureHappyPaths() {
     await combobox.waitFor({ state: "visible", timeout: 15000 });
     await combobox.click();
     await page4.waitForTimeout(800);
-    
+
     // Try to find a config with many records
     await combobox.fill("Account");
     await page4.waitForTimeout(800);
@@ -300,6 +300,131 @@ async function captureHappyPaths() {
     await context4.close();
   }
 
+  // ==================================================================
+  // GIF 5: Create Configuration (12 seconds)
+  // Show: Click New Config → Fill form → Show validation
+  // ==================================================================
+  console.log("🎥 5/6: Capturing Create Configuration...");
+  const context5 = await browser.newContext({
+    viewport: VIEWPORT,
+    recordVideo: {
+      dir: VIDEOS_DIR,
+      size: VIEWPORT
+    }
+  });
+  const page5 = await context5.newPage();
+
+  try {
+    await setupAndStartRecording(page5, session, 1000);
+
+    // Click "New Configuration" button
+    const newConfigButton = page5
+      .locator('button:has-text("New Configuration")')
+      .first();
+
+    if (await newConfigButton.isVisible()) {
+      await newConfigButton.click();
+      await page5.waitForTimeout(1500);
+
+      // Fill configuration name
+      const nameInput = page5
+        .locator('lightning-input[data-field="name"] input')
+        .first();
+
+      if (await nameInput.isVisible().catch(() => false)) {
+        await nameInput.click();
+        await page5.waitForTimeout(500);
+        await nameInput.fill("My Custom Query");
+        await page5.waitForTimeout(1200);
+
+        // Fill object name
+        const objectInput = page5
+          .locator('lightning-input[data-field="object"] input')
+          .first();
+
+        if (await objectInput.isVisible().catch(() => false)) {
+          await objectInput.click();
+          await page5.waitForTimeout(500);
+          await objectInput.fill("Account");
+          await page5.waitForTimeout(1200);
+        }
+
+        // Show fields selection
+        const fieldsTextarea = page5
+          .locator('lightning-textarea[data-field="fields"] textarea')
+          .first();
+
+        if (await fieldsTextarea.isVisible().catch(() => false)) {
+          await fieldsTextarea.click();
+          await page5.waitForTimeout(500);
+          await fieldsTextarea.fill("Id, Name, Type, Industry");
+          await page5.waitForTimeout(1500);
+        }
+      }
+
+      // Close modal (don't save - just demo)
+      await page5.keyboard.press("Escape");
+      await page5.waitForTimeout(1000);
+    }
+
+    console.log("   ✅ Create Configuration captured");
+  } finally {
+    await context5.close();
+  }
+
+  // ==================================================================
+  // GIF 6: Run As User (12 seconds)
+  // Show: Open Run As → Select user → Execute query
+  // ==================================================================
+  console.log("🎥 6/6: Capturing Run As User...");
+  const context6 = await browser.newContext({
+    viewport: VIEWPORT,
+    recordVideo: {
+      dir: VIDEOS_DIR,
+      size: VIEWPORT
+    }
+  });
+  const page6 = await context6.newPage();
+
+  try {
+    await setupAndStartRecording(page6, session, 1000);
+
+    // Select a configuration first
+    await selectConfiguration(page6, "Customer 360");
+    await page6.waitForTimeout(1200);
+
+    // Open Run As modal
+    const runAsButton = page6.locator('button:has-text("Run As")').first();
+    if (await runAsButton.isVisible()) {
+      await runAsButton.click();
+      await page6.waitForTimeout(1500);
+
+      // Select a user from dropdown
+      const userCombobox = page6.locator('c-jt-searchable-combobox input').nth(1);
+      if (await userCombobox.isVisible().catch(() => false)) {
+        await userCombobox.click();
+        await page6.waitForTimeout(1000);
+        await userCombobox.fill("User");
+        await page6.waitForTimeout(1000);
+        await page6.keyboard.press("ArrowDown");
+        await page6.keyboard.press("Enter");
+        await page6.waitForTimeout(1500);
+      }
+
+      // Close modal
+      await page6.keyboard.press("Escape");
+      await page6.waitForTimeout(1000);
+    }
+
+    // Execute query to show personalized results
+    await executeQuery(page6);
+    await page6.waitForTimeout(2500);
+
+    console.log("   ✅ Run As User captured");
+  } finally {
+    await context6.close();
+  }
+
   await browser.close();
 
   // ==================================================================
@@ -313,7 +438,7 @@ async function captureHappyPaths() {
     .filter((f) => f.endsWith(".webm"))
     .sort();
 
-  if (videoFiles.length >= 4) {
+  if (videoFiles.length >= 6) {
     await convertToGif(
       path.join(VIDEOS_DIR, videoFiles[0]),
       path.join(GIFS_DIR, "01-query-execution.gif"),
@@ -337,6 +462,18 @@ async function captureHappyPaths() {
       path.join(GIFS_DIR, "04-large-dataset.gif"),
       6 // Slower to see pagination
     );
+
+    await convertToGif(
+      path.join(VIDEOS_DIR, videoFiles[4]),
+      path.join(GIFS_DIR, "05-create-config.gif"),
+      6 // Slower to see form filling
+    );
+
+    await convertToGif(
+      path.join(VIDEOS_DIR, videoFiles[5]),
+      path.join(GIFS_DIR, "06-run-as-user.gif"),
+      6 // Slower to see user selection
+    );
   }
 
   // Cleanup temp videos
@@ -353,6 +490,8 @@ async function captureHappyPaths() {
   console.log("   2. 02-multiple-views.gif - Table, JSON, CSV views");
   console.log("   3. 03-tree-view.gif - Child relationships (tree view)");
   console.log("   4. 04-large-dataset.gif - Large datasets with cursors (>50k)");
+  console.log("   5. 05-create-config.gif - Create custom configuration");
+  console.log("   6. 06-run-as-user.gif - Run queries as different users");
   console.log("");
 }
 

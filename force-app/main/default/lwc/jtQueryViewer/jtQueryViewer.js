@@ -1,31 +1,96 @@
 import { LightningElement, track, wire } from "lwc";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { refreshApex } from "@salesforce/apex";
-import { getLabels } from "./labels";
-import getConfigurations from "@salesforce/apex/JT_QueryViewerController.getConfigurations";
-import extractParameters from "@salesforce/apex/JT_QueryViewerController.extractParameters";
-import executeQuery from "@salesforce/apex/JT_QueryViewerController.executeQuery";
-import executeQueryPreview from "@salesforce/apex/JT_QueryViewerController.executeQueryPreview";
-import canUseRunAs from "@salesforce/apex/JT_QueryViewerController.canUseRunAs";
-import getAllActiveUsers from "@salesforce/apex/JT_QueryViewerController.getAllActiveUsers";
-import executeAsUser from "@salesforce/apex/JT_RunAsTestExecutor.executeAsUser";
-import getTestResults from "@salesforce/apex/JT_RunAsTestExecutor.getTestResults";
-import canUseRunAsTest from "@salesforce/apex/JT_RunAsTestExecutor.canUseRunAsTest";
-import isSandboxOrScratch from "@salesforce/apex/JT_MetadataCreator.isSandboxOrScratch";
-import getOrgInfo from "@salesforce/apex/JT_MetadataCreator.getOrgInfo";
-import createConfiguration from "@salesforce/apex/JT_MetadataCreator.createConfiguration";
-// import updateConfiguration from "@salesforce/apex/JT_MetadataCreator.updateConfiguration"; // Unused, reserved for future
-import validateQuery from "@salesforce/apex/JT_MetadataCreator.validateQuery";
-// import getProductionEditingSetting from "@salesforce/apex/JT_ProductionSettingsController.getProductionEditingSetting"; // Unused
-import updateProductionEditingSetting from "@salesforce/apex/JT_ProductionSettingsController.updateProductionEditingSetting";
-import getUsageTrackingSetting from "@salesforce/apex/JT_ProductionSettingsController.getUsageTrackingSetting";
-import updateUsageTrackingSetting from "@salesforce/apex/JT_ProductionSettingsController.updateUsageTrackingSetting";
-import logUsageSearch from "@salesforce/apex/JT_ProductionSettingsController.logUsageSearch";
-import findConfigurationUsage from "@salesforce/apex/JT_UsageFinder.findConfigurationUsage";
-import findAllUsagesResilient from "@salesforce/apex/JT_UsageFinder.findAllUsagesResilient";
-import assessQueryRisk from "@salesforce/apex/JT_QueryViewerController.assessQueryRisk";
-import executeQueryWithBatchProcessing from "@salesforce/apex/JT_QueryViewerController.executeQueryWithBatchProcessing";
-
+// Import Custom Labels from Salesforce Translation Workbench (89 labels)
+import apexClassLabel from "@salesforce/label/c.JT_jtQueryViewer_apexClass";
+import autoDetectedFromQueryLabel from "@salesforce/label/c.JT_jtQueryViewer_autoDetectedFromQuery";
+import baseQueryLabel from "@salesforce/label/c.JT_jtQueryViewer_baseQuery";
+import bindingsLabel from "@salesforce/label/c.JT_jtQueryViewer_bindings";
+import cacheClearedLabel from "@salesforce/label/c.JT_jtQueryViewer_cacheCleared";
+import cacheClearedDetailLabel from "@salesforce/label/c.JT_jtQueryViewer_cacheClearedDetail";
+import cancelLabel from "@salesforce/label/c.JT_jtQueryViewer_cancel";
+import chooseConfigurationLabel from "@salesforce/label/c.JT_jtQueryViewer_chooseConfiguration";
+import clearLabel from "@salesforce/label/c.JT_jtQueryViewer_clear";
+import clearCacheLabel from "@salesforce/label/c.JT_jtQueryViewer_clearCache";
+import clearCacheButtonLabel from "@salesforce/label/c.JT_jtQueryViewer_clearCacheButton";
+import clearCacheDescriptionLabel from "@salesforce/label/c.JT_jtQueryViewer_clearCacheDescription";
+import clearCacheTitleLabel from "@salesforce/label/c.JT_jtQueryViewer_clearCacheTitle";
+import clearCacheWarningLabel from "@salesforce/label/c.JT_jtQueryViewer_clearCacheWarning";
+import clearConfigurationsHelpLabel from "@salesforce/label/c.JT_jtQueryViewer_clearConfigurationsHelp";
+import clearConfigurationsLabelLabel from "@salesforce/label/c.JT_jtQueryViewer_clearConfigurationsLabel";
+import clearRecentHelpLabel from "@salesforce/label/c.JT_jtQueryViewer_clearRecentHelp";
+import clearRecentLabelLabel from "@salesforce/label/c.JT_jtQueryViewer_clearRecentLabel";
+import clearResultsHelpLabel from "@salesforce/label/c.JT_jtQueryViewer_clearResultsHelp";
+import clearResultsLabelLabel from "@salesforce/label/c.JT_jtQueryViewer_clearResultsLabel";
+import clearSelectionLabel from "@salesforce/label/c.JT_jtQueryViewer_clearSelection";
+import clearUsersHelpLabel from "@salesforce/label/c.JT_jtQueryViewer_clearUsersHelp";
+import clearUsersLabelLabel from "@salesforce/label/c.JT_jtQueryViewer_clearUsersLabel";
+import codeLabel from "@salesforce/label/c.JT_jtQueryViewer_code";
+import createConfigTooltipLabel from "@salesforce/label/c.JT_jtQueryViewer_createConfigTooltip";
+import createNewConfigurationLabel from "@salesforce/label/c.JT_jtQueryViewer_createNewConfiguration";
+import developerNameLabel from "@salesforce/label/c.JT_jtQueryViewer_developerName";
+import developerNameCannotEndWithUnderscoreLabel from "@salesforce/label/c.JT_jtQueryViewer_developerNameCannotEndWithUnderscore";
+import developerNameInvalidCharsLabel from "@salesforce/label/c.JT_jtQueryViewer_developerNameInvalidChars";
+import developerNameMustStartWithLetterLabel from "@salesforce/label/c.JT_jtQueryViewer_developerNameMustStartWithLetter";
+import developerNameNoConsecutiveUnderscoresLabel from "@salesforce/label/c.JT_jtQueryViewer_developerNameNoConsecutiveUnderscores";
+import developerNameRequiredLabel from "@salesforce/label/c.JT_jtQueryViewer_developerNameRequired";
+import developerNameTooLongLabel from "@salesforce/label/c.JT_jtQueryViewer_developerNameTooLong";
+import editConfigurationLabel from "@salesforce/label/c.JT_jtQueryViewer_editConfiguration";
+import executeQueryLabel from "@salesforce/label/c.JT_jtQueryViewer_executeQuery";
+import executeSystemRunAsLabel from "@salesforce/label/c.JT_jtQueryViewer_executeSystemRunAs";
+import executingTestLabel from "@salesforce/label/c.JT_jtQueryViewer_executingTest";
+import findingUsageLabel from "@salesforce/label/c.JT_jtQueryViewer_findingUsage";
+import foundReferencesLabel from "@salesforce/label/c.JT_jtQueryViewer_foundReferences";
+import invalidQueryLabel from "@salesforce/label/c.JT_jtQueryViewer_invalidQuery";
+import labelLabel from "@salesforce/label/c.JT_jtQueryViewer_label";
+import labelRequiredLabel from "@salesforce/label/c.JT_jtQueryViewer_labelRequired";
+import labelTooLongLabel from "@salesforce/label/c.JT_jtQueryViewer_labelTooLong";
+import lineLabel from "@salesforce/label/c.JT_jtQueryViewer_line";
+import lineNumberLabel from "@salesforce/label/c.JT_jtQueryViewer_lineNumber";
+import loadingUsersLabel from "@salesforce/label/c.JT_jtQueryViewer_loadingUsers";
+import nameLabel from "@salesforce/label/c.JT_jtQueryViewer_name";
+import nextLabel from "@salesforce/label/c.JT_jtQueryViewer_next";
+import noParametersRequiredLabel from "@salesforce/label/c.JT_jtQueryViewer_noParametersRequired";
+import noReferencesFoundLabel from "@salesforce/label/c.JT_jtQueryViewer_noReferencesFound";
+import noResultsLabel from "@salesforce/label/c.JT_jtQueryViewer_noResults";
+import noUsageFoundLabel from "@salesforce/label/c.JT_jtQueryViewer_noUsageFound";
+import noUsageMessageLabel from "@salesforce/label/c.JT_jtQueryViewer_noUsageMessage";
+import objectLabel from "@salesforce/label/c.JT_jtQueryViewer_object";
+import objectNameLabel from "@salesforce/label/c.JT_jtQueryViewer_objectName";
+import objectNameReadOnlyLabel from "@salesforce/label/c.JT_jtQueryViewer_objectNameReadOnly";
+import ofLabel from "@salesforce/label/c.JT_jtQueryViewer_of";
+import pageLabel from "@salesforce/label/c.JT_jtQueryViewer_page";
+import predefinedBindingsLabel from "@salesforce/label/c.JT_jtQueryViewer_predefinedBindings";
+import predefinedBindingsDescLabel from "@salesforce/label/c.JT_jtQueryViewer_predefinedBindingsDesc";
+import previousLabel from "@salesforce/label/c.JT_jtQueryViewer_previous";
+import queryParametersLabel from "@salesforce/label/c.JT_jtQueryViewer_queryParameters";
+import queryPreviewLabel from "@salesforce/label/c.JT_jtQueryViewer_queryPreview";
+import queryPreviewTitleLabel from "@salesforce/label/c.JT_jtQueryViewer_queryPreviewTitle";
+import recordLabel from "@salesforce/label/c.JT_jtQueryViewer_record";
+import recordsLabel from "@salesforce/label/c.JT_jtQueryViewer_records";
+import resultsLabel from "@salesforce/label/c.JT_jtQueryViewer_results";
+import runAsNoteLabel from "@salesforce/label/c.JT_jtQueryViewer_runAsNote";
+import runAsUserLabel from "@salesforce/label/c.JT_jtQueryViewer_runAsUser";
+import sandboxOnlyWarningLabel from "@salesforce/label/c.JT_jtQueryViewer_sandboxOnlyWarning";
+import saveLabel from "@salesforce/label/c.JT_jtQueryViewer_save";
+import searchConfigsPlaceholderLabel from "@salesforce/label/c.JT_jtQueryViewer_searchConfigsPlaceholder";
+import searchUsersPlaceholderLabel from "@salesforce/label/c.JT_jtQueryViewer_searchUsersPlaceholder";
+import searchingFlowsLabel from "@salesforce/label/c.JT_jtQueryViewer_searchingFlows";
+import selectAllLabel from "@salesforce/label/c.JT_jtQueryViewer_selectAll";
+import selectConfigurationLabel from "@salesforce/label/c.JT_jtQueryViewer_selectConfiguration";
+import selectOptionLabel from "@salesforce/label/c.JT_jtQueryViewer_selectOption";
+import selectUserLabel from "@salesforce/label/c.JT_jtQueryViewer_selectUser";
+import showingLabel from "@salesforce/label/c.JT_jtQueryViewer_showing";
+import toolingAPINoteLabel from "@salesforce/label/c.JT_jtQueryViewer_toolingAPINote";
+import typeLabel from "@salesforce/label/c.JT_jtQueryViewer_type";
+import typeToFilterLabel from "@salesforce/label/c.JT_jtQueryViewer_typeToFilter";
+import updateConfigurationLabel from "@salesforce/label/c.JT_jtQueryViewer_updateConfiguration";
+import usageModalSubtitleLabel from "@salesforce/label/c.JT_jtQueryViewer_usageModalSubtitle";
+import usageModalTitleLabel from "@salesforce/label/c.JT_jtQueryViewer_usageModalTitle";
+import validQueryLabel from "@salesforce/label/c.JT_jtQueryViewer_validQuery";
+import validSOQLSyntaxLabel from "@salesforce/label/c.JT_jtQueryViewer_validSOQLSyntax";
+import whereIsThisUsedLabel from "@salesforce/label/c.JT_jtQueryViewer_whereIsThisUsed";
+import whereIsThisUsedTooltipLabel from "@salesforce/label/c.JT_jtQueryViewer_whereIsThisUsedTooltip";
 export default class JtQueryViewer extends LightningElement {
   @track selectedConfig = "";
   @track baseQuery = "";
@@ -108,9 +173,52 @@ export default class JtQueryViewer extends LightningElement {
   pollInterval;
 
   // Computed property for labels (cannot call functions at class level)
-  get labels() {
-    return getLabels();
-  }
+// Custom Labels (89 labels from Translation Workbench)
+  labels = {
+    apexClass: apexClassLabel,
+    autoDetectedFromQuery: autoDetectedFromQueryLabel,
+    baseQuery: baseQueryLabel,
+    bindings: bindingsLabel,
+    cacheCleared: cacheClearedLabel,
+    cacheClearedDetail: cacheClearedDetailLabel,
+    cancel: cancelLabel,
+    chooseConfiguration: chooseConfigurationLabel,
+    clear: clearLabel,
+    clearCache: clearCacheLabel,
+    clearCacheButton: clearCacheButtonLabel,
+    clearCacheDescription: clearCacheDescriptionLabel,
+    clearCacheTitle: clearCacheTitleLabel,
+    clearCacheWarning: clearCacheWarningLabel,
+    clearConfigurationsHelp: clearConfigurationsHelpLabel,
+    clearConfigurationsLabel: clearConfigurationsLabelLabel,
+    clearRecentHelp: clearRecentHelpLabel,
+    clearRecentLabel: clearRecentLabelLabel,
+    clearResultsHelp: clearResultsHelpLabel,
+    clearResultsLabel: clearResultsLabelLabel,
+    clearSelection: clearSelectionLabel,
+    clearUsersHelp: clearUsersHelpLabel,
+    clearUsersLabel: clearUsersLabelLabel,
+    code: codeLabel,
+    createConfigTooltip: createConfigTooltipLabel,
+    createNewConfiguration: createNewConfigurationLabel,
+    developerName: developerNameLabel,
+    developerNameCannotEndWithUnderscore: developerNameCannotEndWithUnderscoreLabel,
+    developerNameInvalidChars: developerNameInvalidCharsLabel,
+    developerNameMustStartWithLetter: developerNameMustStartWithLetterLabel,
+    developerNameNoConsecutiveUnderscores: developerNameNoConsecutiveUnderscoresLabel,
+    developerNameRequired: developerNameRequiredLabel,
+    developerNameTooLong: developerNameTooLongLabel,
+    editConfiguration: editConfigurationLabel,
+    executeQuery: executeQueryLabel,
+    executeSystemRunAs: executeSystemRunAsLabel,
+    executingTest: executingTestLabel,
+    findingUsage: findingUsageLabel,
+    foundReferences: foundReferencesLabel,
+    invalidQuery: invalidQueryLabel,
+    label: labelLabel,
+    labelRequired: labelRequiredLabel,
+    labelTooLong: labelTooLongLabel,
+    line: lineLabel,
 
   // Wire to get all configurations (cacheable for refreshApex)
   @wire(getConfigurations)

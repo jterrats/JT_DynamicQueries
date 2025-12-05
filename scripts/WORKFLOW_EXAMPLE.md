@@ -154,5 +154,5 @@ Si publicas el proyecto en GitHub:
 3. El script detecta **su org** automáticamente
 4. Deploy funciona para **su org**, no la tuya
 
-**Sin placeholder**: Tendrían tu URL hardcodeada (therionpolux-dev-ed) ❌  
+**Sin placeholder**: Tendrían tu URL hardcodeada (therionpolux-dev-ed) ❌
 **Con placeholder**: Auto-detecta su org ✅

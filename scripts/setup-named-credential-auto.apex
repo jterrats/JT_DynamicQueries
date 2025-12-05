@@ -11,21 +11,21 @@ System.debug('');
 try {
     // 1. Create External Credential
     System.debug('📋 Step 1: Creating External Credential...');
-    
+
     ConnectApi.ExternalCredentialInput extCredInput = new ConnectApi.ExternalCredentialInput();
     extCredInput.developerName = 'JT_Tooling_API_External';
     extCredInput.masterLabel = 'JT Tooling API External';
     extCredInput.authenticationProtocol = ConnectApi.CredentialAuthenticationProtocol.NoAuthentication;
-    
+
     ConnectApi.ExternalCredential extCred = ConnectApi.ExternalCredentials.createExternalCredential(extCredInput);
-    
+
     System.debug('✅ External Credential created!');
     System.debug('   Developer Name: ' + extCred.developerName);
     System.debug('');
-    
+
     // 2. Create Named Credential with DYNAMIC org URL
     System.debug('📋 Step 2: Creating Named Credential...');
-    
+
     ConnectApi.NamedCredentialInput namedCredInput = new ConnectApi.NamedCredentialInput();
     namedCredInput.developerName = 'JT_Tooling_API';
     namedCredInput.masterLabel = 'JT Tooling API';
@@ -35,14 +35,14 @@ try {
     namedCredInput.allowMergeFieldsInHeader = false;
     namedCredInput.generateAuthorizationHeader = false;
     namedCredInput.externalCredentialDeveloperName = 'JT_Tooling_API_External';
-    
+
     ConnectApi.NamedCredential namedCred = ConnectApi.NamedCredentials.createNamedCredential(namedCredInput);
-    
+
     System.debug('✅ Named Credential created!');
     System.debug('   Developer Name: ' + namedCred.developerName);
     System.debug('   Callout URL: ' + namedCred.calloutUrl);
     System.debug('');
-    
+
     System.debug('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     System.debug('✅ SETUP COMPLETE!');
     System.debug('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
@@ -53,7 +53,7 @@ try {
     System.debug('🎯 Usage:');
     System.debug('   req.setEndpoint(\'callout:JT_Tooling_API/services/data/v65.0/tooling/...\');');
     System.debug('   req.setHeader(\'Authorization\', \'Bearer \' + UserInfo.getSessionId());');
-    
+
 } catch (ConnectApi.ConnectApiException e) {
     System.debug('❌ ConnectApi Error: ' + e.getMessage());
     if (e.getMessage().contains('duplicate') || e.getMessage().contains('already exists')) {
@@ -70,4 +70,6 @@ try {
     System.debug('❌ Unexpected Error: ' + e.getMessage());
     System.debug('Stack Trace: ' + e.getStackTraceString());
 }
+
+
 

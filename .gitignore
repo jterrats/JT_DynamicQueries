@@ -38,6 +38,7 @@ certs/
 .env
 .env.*
 !.env.example
+!.env.act.example
 
 # Backup files
 *.backup

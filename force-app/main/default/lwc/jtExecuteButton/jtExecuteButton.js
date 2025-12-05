@@ -90,6 +90,10 @@ export default class JtExecuteButton extends LightningElement {
     return "execute-button-status";
   }
 
+  get ariaBusy() {
+    return this.isLoading ? "true" : "false";
+  }
+
   // Event Handler
   handleClick() {
     if (!this.isDisabled) {

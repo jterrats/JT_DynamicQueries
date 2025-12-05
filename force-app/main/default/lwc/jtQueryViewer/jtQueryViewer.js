@@ -925,9 +925,22 @@ export default class JtQueryViewer extends LightningElement {
   // ============================================
   handleOpenCacheModal() {
     this.showCacheModal = true;
+    // Call open() on the modal after it renders
+    requestAnimationFrame(() => {
+      const modal = this.refs.cacheModal;
+      if (modal) {
+        modal.open();
+      }
+    });
   }
 
   handleCloseCacheModal() {
+    // Close the modal child component first
+    const modal = this.refs.cacheModal;
+    if (modal) {
+      modal.close();
+    }
+    // Then hide it from parent
     this.showCacheModal = false;
   }
 
@@ -972,12 +985,12 @@ export default class JtQueryViewer extends LightningElement {
 
       // Show success toast
       if (cleared.length > 0) {
-        this.showToast(
-          this.labels.cacheCleared,
-          this.labels.cacheClearedDetail.replace("{0}", cleared.join(", ")),
-          "success"
-        );
+        const message = `${this.labels.cacheCleared}: ${this.labels.cacheClearedDetail.replace("{0}", cleared.join(", "))}`;
+        this.showSuccessToast(message);
       }
+
+      // Close modal after clearing
+      this.handleCloseCacheModal();
     } catch (error) {
       this.showErrorToast(
         "Error",

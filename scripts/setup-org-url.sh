@@ -76,3 +76,5 @@ echo "   1. Source the environment: source .env"
 echo "   2. Deploy with replacement: ./scripts/deploy-with-replacement.sh"
 echo ""
 
+
+

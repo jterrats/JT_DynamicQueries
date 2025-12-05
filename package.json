@@ -30,7 +30,11 @@
     "precommit": "npm run prettier && npm run lint:staged && npm run yamllint",
     "screenshots:appexchange": "node tests/screenshots/captureAppExchangeScreenshots.js",
     "videos:appexchange": "node tests/screenshots/captureAppExchangeVideos.js",
-    "deploy:named-credential": "node scripts/smart-deploy.js"
+    "gifs:happy-path": "node tests/screenshots/captureHappyPathGifs.js",
+    "deploy:named-credential": "node scripts/smart-deploy.js",
+    "validate:pipeline": "./scripts/validate-pipeline.sh",
+    "validate:pipeline:dry": "./scripts/validate-pipeline.sh --dry-run",
+    "validate:pipeline:list": "act -l"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.0",

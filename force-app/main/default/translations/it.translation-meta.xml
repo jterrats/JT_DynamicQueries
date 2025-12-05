@@ -1,0 +1,571 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Translations xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customLabels>
+        <name>JT_jtSupport_additionalResources</name>
+        <label>Additional Resources</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_apexClass</name>
+        <label>Apex Class</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtDocumentation_apiReferenceTab</name>
+        <label>API Reference</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtDocumentation_apiReferenceTitle</name>
+        <label>API Reference</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_autoDetectedFromQuery</name>
+        <label>Auto-detected from query</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_baseQuery</name>
+        <label>Base Query (SOQL)</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtDocumentation_batchProcessingTab</name>
+        <label>Batch Processing</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtDocumentation_batchProcessingTitle</name>
+        <label>Query Risk Assessment &amp; Batch Processing</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_bindings</name>
+        <label>Bindings (JSON)</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_cacheCleared</name>
+        <label>Cache cleared successfully</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_cacheClearedDetail</name>
+        <label>Cleared: {0}</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_cancel</name>
+        <label>Cancel</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_chooseConfiguration</name>
+        <label>Choose a configuration...</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_clear</name>
+        <label>Clear</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_clearCache</name>
+        <label>Clear Cache</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_clearCacheButton</name>
+        <label>Clear Selected</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_clearCacheDescription</name>
+        <label>Select which cached data you want to clear. This will force a refresh from the server.</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_clearCacheTitle</name>
+        <label>Clear Cache &amp; Refresh Data</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_clearCacheWarning</name>
+        <label>Selected data will be cleared and refreshed from the server.</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_clearConfigurationsHelp</name>
+        <label>Refresh the list of available query configurations from metadata</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_clearConfigurationsLabel</name>
+        <label>Query Configurations</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_clearRecentHelp</name>
+        <label>Clear recently selected configurations and user preferences</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_clearRecentLabel</name>
+        <label>Recent Selections</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_clearResultsHelp</name>
+        <label>Clear current query results and reset the view</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_clearResultsLabel</name>
+        <label>Query Results</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_clearSelection</name>
+        <label>Clear Selection</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_clearUsersHelp</name>
+        <label>Refresh the list of active users for Run As functionality</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_clearUsersLabel</name>
+        <label>User List</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_code</name>
+        <label>Code</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtSupport_community</name>
+        <label>Community Forum</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtSupport_communityDescription</name>
+        <label>Join discussions and connect with other users on GitHub Discussions</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtSupport_contactEmail</name>
+        <label>jaime.terrats@gmail.com</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtDocumentation_contributingTitle</name>
+        <label>Contributing</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_createConfigTooltip</name>
+        <label>Create a new query configuration with a SOQL query (SELECT fields FROM object WHERE condition), optional bind variables in JSON format, and field mappings.</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_createNewConfiguration</name>
+        <label>Create New Configuration</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_developerName</name>
+        <label>Developer Name</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_developerNameCannotEndWithUnderscore</name>
+        <label>Cannot end with an underscore</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_developerNameInvalidChars</name>
+        <label>Only letters, numbers, and underscores allowed</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_developerNameMustStartWithLetter</name>
+        <label>Must start with a letter</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_developerNameNoConsecutiveUnderscores</name>
+        <label>Cannot contain consecutive underscores</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_developerNameRequired</name>
+        <label>Developer Name is required</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_developerNameTooLong</name>
+        <label>Developer Name must be 40 characters or less</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtSupport_directContact</name>
+        <label>Direct Contact</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtSupport_documentation</name>
+        <label>Documentation</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtSupport_documentationDescription</name>
+        <label>Check the Documentation tab for complete guides and API reference</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtDocumentation_documentationTitle</name>
+        <label>Documentation</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_editConfiguration</name>
+        <label>Edit Configuration</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_executeQuery</name>
+        <label>Execute Query</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_executeSystemRunAs</name>
+        <label>Execute with System.runAs (Test)</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_executingTest</name>
+        <label>Executing test with System.runAs()...</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtSupport_featureRequest</name>
+        <label>Feature Request</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtSupport_featureRequestButton</name>
+        <label>Request Feature</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtSupport_featureRequestDescription</name>
+        <label>Have an idea? Suggest a new feature or improvement.</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_findingUsage</name>
+        <label>Searching Apex classes and Flows...</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_foundReferences</name>
+        <label>Found {0} reference(s) in Apex/Flows</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtDocumentation_frameworkPhilosophy</name>
+        <label>Framework Philosophy:</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtDocumentation_gettingStartedTab</name>
+        <label>Getting Started</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtDocumentation_gettingStartedTitle</name>
+        <label>Getting Started</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtSupport_githubDescription</name>
+        <label>This project is open-source and hosted on GitHub. You can view the code, report issues, and contribute to the project.</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtSupport_githubIntegration</name>
+        <label>GitHub Integration</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtSupport_githubRepo</name>
+        <label>Repository</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtDocumentation_installationTitle</name>
+        <label>Installation</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtDocumentation_internalDescription</name>
+        <label>These classes are for internal framework use only:</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtDocumentation_internalFrameworkTitle</name>
+        <label>Internal Framework Classes</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_invalidQuery</name>
+        <label>Invalid Query</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtDocumentation_issuesTitle</name>
+        <label>Report Issues</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_label</name>
+        <label>Label</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_labelRequired</name>
+        <label>Label is required</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_labelTooLong</name>
+        <label>Label must be 40 characters or less</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_line</name>
+        <label>Line</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_lineNumber</name>
+        <label>Line #</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_loadingUsers</name>
+        <label>Loading users...</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_name</name>
+        <label>Name</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_next</name>
+        <label>Next</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_noParametersRequired</name>
+        <label>No parameters required for this query</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_noReferencesFound</name>
+        <label>This configuration is not currently referenced in any Apex classes or Flows.</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_noResults</name>
+        <label>No results found</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_noUsageFound</name>
+        <label>No usage found</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_noUsageMessage</name>
+        <label>This configuration is not currently referenced in any Apex class or Flow</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_object</name>
+        <label>Object</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_objectName</name>
+        <label>Object Name</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_objectNameReadOnly</name>
+        <label>Automatically extracted from the SOQL query</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_of</name>
+        <label>of</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtDocumentation_overviewDescription</name>
+        <label>A powerful framework for executing dynamic SOQL queries with metadata-driven configurations.</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtDocumentation_overviewTab</name>
+        <label>Overview</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtDocumentation_overviewTitle</name>
+        <label>What is Dynamic Query Framework?</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_page</name>
+        <label>Page</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtDocumentation_philosophyText</name>
+        <label>Provide infrastructure and conventions for configurable queries, not just isolated utilities.</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_predefinedBindings</name>
+        <label>Predefined Bindings:</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_predefinedBindingsDesc</name>
+        <label>This configuration has predefined bindings that will be used automatically.</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_previous</name>
+        <label>Previous</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtDocumentation_publicAPIsDescription</name>
+        <label>These classes are part of the public API:</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtDocumentation_publicAPIsTitle</name>
+        <label>Public APIs</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_queryParameters</name>
+        <label>Query Parameters:</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_queryPreview</name>
+        <label>Query Preview:</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_queryPreviewTitle</name>
+        <label>Query Preview</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtDocumentation_quickStartTitle</name>
+        <label>Quick Start</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_record</name>
+        <label>record</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_records</name>
+        <label>records</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtSupport_reportBug</name>
+        <label>Report a Bug</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtSupport_reportBugButton</name>
+        <label>Report Bug</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtSupport_reportBugDescription</name>
+        <label>Found a bug? Let us know so we can fix it.</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtSupport_responseTime</name>
+        <label>We typically respond within 24-48 hours</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_results</name>
+        <label>Results</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtDocumentation_riskLevelCritical</name>
+        <label>Critical</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtDocumentation_riskLevelHigh</name>
+        <label>High</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtDocumentation_riskLevelLow</name>
+        <label>Low</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtDocumentation_riskLevelMedium</name>
+        <label>Medium</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtDocumentation_riskLevelsTitle</name>
+        <label>Risk Levels</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_runAsNote</name>
+        <label>Note: This validates user permissions but executes with USER_MODE security. Results reflect sharing rules and field-level security.</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_runAsUser</name>
+        <label>Run As User (Advanced)</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_sandboxOnlyWarning</name>
+        <label>Only available in Sandbox/Scratch/Developer Orgs. Use Setup UI in Production.</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_save</name>
+        <label>Save</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_searchConfigsPlaceholder</name>
+        <label>Type to search configurations...</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_searchUsersPlaceholder</name>
+        <label>Type to search users... (leave blank to run as current user)</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_searchingFlows</name>
+        <label>Searching Apex classes and Flows...</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_selectAll</name>
+        <label>Select All</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_selectConfiguration</name>
+        <label>Select Query Configuration</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_selectOption</name>
+        <label>Please select an option</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_selectUser</name>
+        <label>Select User to Impersonate</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_showing</name>
+        <label>Showing</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtDocumentation_supportTab</name>
+        <label>Support</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtDocumentation_supportTitle</name>
+        <label>Need Help?</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtSupport_title</name>
+        <label>Support &amp; Help</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_toolingAPINote</name>
+        <label>This creates a Custom Metadata record via Tooling API. The configuration will be immediately available for use.</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtSupport_tutorials</name>
+        <label>Video Tutorials</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtSupport_tutorialsDescription</name>
+        <label>Coming soon - Video guides and walkthroughs</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_type</name>
+        <label>Type</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_typeToFilter</name>
+        <label>Type to filter users...</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_updateConfiguration</name>
+        <label>Update Configuration</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_usageModalSubtitle</name>
+        <label>Searching Apex classes and Flows for references to this configuration</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_usageModalTitle</name>
+        <label>Where is </label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_validQuery</name>
+        <label>Valid Query</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_validSOQLSyntax</name>
+        <label>Valid SOQL syntax</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtSupport_viewIssues</name>
+        <label>View Issues</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtSupport_viewIssuesButton</name>
+        <label>View All Issues</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtSupport_viewIssuesDescription</name>
+        <label>Browse existing issues and see what</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtSupport_welcomeMessage</name>
+        <label>Need help or want to report an issue? We</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtDocumentation_welcomeSubtitle</name>
+        <label>A metadata-driven SOQL execution framework with built-in security, batch processing, and risk assessment.</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtSupport_welcomeTitle</name>
+        <label>Welcome to Support</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_whereIsThisUsed</name>
+        <label>Where is this used?</label>
+    </customLabels>
+    <customLabels>
+        <name>JT_jtQueryViewer_whereIsThisUsedTooltip</name>
+        <label>Find where this configuration is used in Apex classes and Flows</label>
+    </customLabels>
+</Translations>

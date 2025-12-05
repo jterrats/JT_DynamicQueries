@@ -79,3 +79,5 @@ echo ""
 echo "💡 Named Credential configured for: $CURRENT_ORG"
 echo "   URL: $CURRENT_URL"
 
+
+

@@ -82,4 +82,3 @@ module.exports = {
   TEST_CONFIGS,
   MESSAGES
 };
-

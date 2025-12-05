@@ -28,11 +28,20 @@ function getSFSession() {
     
     if (firstBrace === -1 || lastBrace === -1) {
       console.error("❌ SF CLI output:", orgInfoJson);
-      throw new Error("No valid JSON found in SF CLI output");
+      throw new Error("No valid JSON found in SF CLI output. Is there an authenticated org?");
     }
 
     const jsonString = orgInfoJson.substring(firstBrace, lastBrace + 1);
-    const orgInfo = JSON.parse(jsonString);
+    
+    let orgInfo;
+    try {
+      orgInfo = JSON.parse(jsonString);
+    } catch (parseError) {
+      console.error("❌ Failed to parse JSON from SF CLI");
+      console.error("Raw output:", orgInfoJson);
+      console.error("Extracted string:", jsonString);
+      throw new Error(`JSON parse failed: ${parseError.message}. Check if SF org is authenticated.`);
+    }
 
     if (orgInfo.status !== 0) {
       throw new Error(

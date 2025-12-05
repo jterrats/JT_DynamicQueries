@@ -1,0 +1,332 @@
+/**
+ * @description Happy Path GIF Generator for Documentation
+ * @author Jaime Terrats
+ * @date 2025-12-05
+ *
+ * Captures short, optimized GIFs showing core functionality
+ * Perfect for README and GitHub Pages
+ */
+const { chromium } = require("@playwright/test");
+const { getSFSession } = require("../e2e/utils/sfAuth");
+const {
+  setupTestContext,
+  selectConfiguration,
+  executeQuery
+} = require("../e2e/utils/testHelpers");
+const fs = require("fs");
+const path = require("path");
+const { exec } = require("child_process");
+const util = require("util");
+
+const execPromise = util.promisify(exec);
+
+const VIDEOS_DIR = path.join(__dirname, "../../docs/assets/temp-videos");
+const GIFS_DIR = path.join(__dirname, "../../docs/assets/gifs");
+const TARGET_APP_NAME = "Dynamic Query Framework";
+const VIEWPORT = { width: 1200, height: 750 };
+
+// Ensure directories exist
+[VIDEOS_DIR, GIFS_DIR].forEach((dir) => {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+});
+
+/**
+ * Convert video to optimized GIF using ffmpeg
+ */
+async function convertToGif(videoPath, gifPath, fps = 10) {
+  console.log(`   🎨 Converting to GIF: ${path.basename(gifPath)}`);
+
+  // Generate palette for better quality
+  const palettePath = videoPath.replace(".webm", "_palette.png");
+
+  try {
+    // Step 1: Generate color palette
+    await execPromise(
+      `ffmpeg -i "${videoPath}" -vf "fps=${fps},scale=800:-1:flags=lanczos,palettegen" -y "${palettePath}"`
+    );
+
+    // Step 2: Create GIF using palette
+    await execPromise(
+      `ffmpeg -i "${videoPath}" -i "${palettePath}" -filter_complex "fps=${fps},scale=800:-1:flags=lanczos[x];[x][1:v]paletteuse" -y "${gifPath}"`
+    );
+
+    // Cleanup palette
+    if (fs.existsSync(palettePath)) {
+      fs.unlinkSync(palettePath);
+    }
+
+    const stats = fs.statSync(gifPath);
+    const sizeMB = (stats.size / (1024 * 1024)).toFixed(2);
+    console.log(`   ✅ GIF created: ${sizeMB} MB`);
+  } catch (error) {
+    console.error(`   ❌ Failed to convert: ${error.message}`);
+    throw error;
+  }
+}
+
+/**
+ * Helper to start recording after navigation
+ */
+async function setupAndStartRecording(page, session, waitBeforeStart = 2000) {
+  await setupTestContext(page, session);
+  // Wait for everything to settle before starting the "interesting" part
+  await page.waitForTimeout(waitBeforeStart);
+}
+
+/**
+ * Capture scenarios
+ */
+async function captureHappyPaths() {
+  console.log("🎬 Starting Functional GIF Capture");
+  console.log("📁 Output directory:", GIFS_DIR);
+  console.log("📐 Viewport:", `${VIEWPORT.width}x${VIEWPORT.height}`);
+  console.log("");
+
+  const browser = await chromium.launch({
+    headless: true
+  });
+
+  const session = getSFSession();
+  console.log("✅ Authenticated:", session.username);
+  console.log("");
+
+  // ==================================================================
+  // GIF 1: Query Execution (12 seconds)
+  // Show: Select config → Execute → View results (Table/JSON)
+  // ==================================================================
+  console.log("🎥 1/3: Capturing Query Execution...");
+  const context1 = await browser.newContext({
+    viewport: VIEWPORT,
+    recordVideo: {
+      dir: VIDEOS_DIR,
+      size: VIEWPORT
+    }
+  });
+  const page1 = await context1.newPage();
+
+  try {
+    await setupAndStartRecording(page1, session, 1000);
+
+    // Select configuration
+    await selectConfiguration(page1, "Customer 360");
+    await page1.waitForTimeout(1000);
+
+    // Execute query
+    await executeQuery(page1);
+    await page1.waitForTimeout(2500);
+
+    // Switch to JSON view
+    const jsonButton = page1.locator('button:has-text("JSON")').first();
+    if (await jsonButton.isVisible()) {
+      await jsonButton.click();
+      await page1.waitForTimeout(1500);
+      
+      // Back to Table
+      const tableButton = page1.locator('button:has-text("Table")').first();
+      await tableButton.click();
+      await page1.waitForTimeout(1500);
+    }
+
+    console.log("   ✅ Query Execution captured");
+  } finally {
+    await context1.close();
+  }
+
+  // ==================================================================
+  // GIF 2: Run As User (10 seconds)
+  // Show: Open Run As → Select user → Execute → See personalized results
+  // ==================================================================
+  console.log("🎥 2/3: Capturing Run As User...");
+  const context2 = await browser.newContext({
+    viewport: VIEWPORT,
+    recordVideo: {
+      dir: VIDEOS_DIR,
+      size: VIEWPORT
+    }
+  });
+  const page2 = await context2.newPage();
+
+  try {
+    await setupAndStartRecording(page2, session, 1000);
+
+    // Select a configuration first
+    await selectConfiguration(page2, "Customer 360");
+    await page2.waitForTimeout(800);
+
+    // Open Run As modal
+    const runAsButton = page2.locator('button:has-text("Run As")').first();
+    if (await runAsButton.isVisible()) {
+      await runAsButton.click();
+      await page2.waitForTimeout(1000);
+
+      // Select a user from dropdown
+      const userCombobox = page2.locator('c-jt-searchable-combobox input').nth(1);
+      if (await userCombobox.isVisible().catch(() => false)) {
+        await userCombobox.click();
+        await page2.waitForTimeout(800);
+        await userCombobox.fill("User");
+        await page2.waitForTimeout(800);
+        await page2.keyboard.press("ArrowDown");
+        await page2.keyboard.press("Enter");
+        await page2.waitForTimeout(1000);
+      }
+
+      // Close modal
+      await page2.keyboard.press("Escape");
+      await page2.waitForTimeout(800);
+    }
+
+    // Execute query to show results
+    await executeQuery(page2);
+    await page2.waitForTimeout(2000);
+
+    console.log("   ✅ Run As User captured");
+  } finally {
+    await context2.close();
+  }
+
+  // ==================================================================
+  // GIF 3: Create Configuration (12 seconds)
+  // Show: Click New Config → Fill form fields → Show validation
+  // ==================================================================
+  console.log("🎥 3/3: Capturing Create Configuration...");
+  const context3 = await browser.newContext({
+    viewport: VIEWPORT,
+    recordVideo: {
+      dir: VIDEOS_DIR,
+      size: VIEWPORT
+    }
+  });
+  const page3 = await context3.newPage();
+
+  try {
+    await setupAndStartRecording(page3, session, 1000);
+
+    // Click "New Configuration" button
+    const newConfigButton = page3
+      .locator('button:has-text("New Configuration")')
+      .first();
+    
+    if (await newConfigButton.isVisible()) {
+      await newConfigButton.click();
+      await page3.waitForTimeout(1500);
+
+      // Fill configuration name
+      const nameInput = page3
+        .locator('lightning-input[data-field="name"] input')
+        .first();
+      
+      if (await nameInput.isVisible().catch(() => false)) {
+        await nameInput.click();
+        await page3.waitForTimeout(500);
+        await nameInput.fill("My Custom Query");
+        await page3.waitForTimeout(1000);
+
+        // Fill object name
+        const objectInput = page3
+          .locator('lightning-input[data-field="object"] input')
+          .first();
+        
+        if (await objectInput.isVisible().catch(() => false)) {
+          await objectInput.click();
+          await page3.waitForTimeout(500);
+          await objectInput.fill("Account");
+          await page3.waitForTimeout(1000);
+        }
+
+        // Show fields selection
+        const fieldsTextarea = page3
+          .locator('lightning-textarea[data-field="fields"] textarea')
+          .first();
+        
+        if (await fieldsTextarea.isVisible().catch(() => false)) {
+          await fieldsTextarea.click();
+          await page3.waitForTimeout(500);
+          await fieldsTextarea.fill("Id, Name, Type");
+          await page3.waitForTimeout(1500);
+        }
+      }
+
+      // Close modal (don't save - just demo)
+      await page3.keyboard.press("Escape");
+      await page3.waitForTimeout(1000);
+    }
+
+    console.log("   ✅ Create Configuration captured");
+  } finally {
+    await context3.close();
+  }
+
+  await browser.close();
+
+  // ==================================================================
+  // Convert videos to GIFs
+  // ==================================================================
+  console.log("");
+  console.log("🎨 Converting videos to GIFs...");
+
+  const videoFiles = fs
+    .readdirSync(VIDEOS_DIR)
+    .filter((f) => f.endsWith(".webm"))
+    .sort();
+
+  if (videoFiles.length >= 3) {
+    await convertToGif(
+      path.join(VIDEOS_DIR, videoFiles[0]),
+      path.join(GIFS_DIR, "01-query-execution.gif"),
+      10
+    );
+
+    await convertToGif(
+      path.join(VIDEOS_DIR, videoFiles[1]),
+      path.join(GIFS_DIR, "02-run-as-user.gif"),
+      10
+    );
+
+    await convertToGif(
+      path.join(VIDEOS_DIR, videoFiles[2]),
+      path.join(GIFS_DIR, "03-create-config.gif"),
+      10
+    );
+  }
+
+  // Cleanup temp videos
+  console.log("");
+  console.log("🧹 Cleaning up temporary files...");
+  fs.rmSync(VIDEOS_DIR, { recursive: true, force: true });
+
+  console.log("");
+  console.log("✨ All GIFs created successfully!");
+  console.log("📁 Location:", GIFS_DIR);
+  console.log("");
+  console.log("🎬 GIFs:");
+  console.log("   1. 01-query-execution.gif - Execute queries and view results");
+  console.log("   2. 02-run-as-user.gif - Run queries as different users");
+  console.log("   3. 03-create-config.gif - Create custom configurations");
+  console.log("");
+}
+
+// Run the script
+(async () => {
+  try {
+    // Check if ffmpeg is available
+    try {
+      await execPromise("ffmpeg -version");
+    } catch (error) {
+      console.error("❌ ffmpeg not found. Please install it first:");
+      console.error("   macOS: brew install ffmpeg");
+      console.error("   Linux: sudo apt-get install ffmpeg");
+      console.error("   Windows: Download from https://ffmpeg.org/download.html");
+      process.exit(1);
+    }
+
+    await captureHappyPaths();
+    process.exit(0);
+  } catch (error) {
+    console.error("❌ Error capturing GIFs:", error);
+    process.exit(1);
+  }
+})();
+

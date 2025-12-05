@@ -28,12 +28,12 @@ test.describe("GitHub Pages - Documentation Site", () => {
     try {
       const context = await browser.newContext();
       const page = await context.newPage();
-      
+
       const response = await page.goto(BASE_URL, {
         waitUntil: "domcontentloaded",
         timeout: 15000
       });
-      
+
       if (!response || response.status() !== 200) {
         siteAvailable = false;
         healthCheckError = `GitHub Pages returned status: ${response?.status()}`;
@@ -41,7 +41,7 @@ test.describe("GitHub Pages - Documentation Site", () => {
       } else {
         console.log("✅ GitHub Pages is available");
       }
-      
+
       await context.close();
     } catch (error) {
       siteAvailable = false;
@@ -53,7 +53,7 @@ test.describe("GitHub Pages - Documentation Site", () => {
   test.beforeEach(async ({ page }) => {
     // Skip if site is not available
     test.skip(!siteAvailable, `GitHub Pages not available: ${healthCheckError}`);
-    
+
     // Set longer timeout for external site
     page.setDefaultTimeout(30000);
   });
@@ -85,7 +85,7 @@ test.describe("GitHub Pages - Documentation Site", () => {
     // Check for ANY navigation links (flexible)
     const allLinks = page.locator("a[href]");
     const linkCount = await allLinks.count();
-    
+
     // Verify site has some working links
     expect(linkCount).toBeGreaterThan(0);
 
@@ -459,7 +459,7 @@ test.describe("GitHub Pages - Performance", () => {
         "raw.githubusercontent.com/afawcett", // GitHub deploy button
         "shields.io", // Status badges
       ];
-      
+
       return images
         .filter((img) => {
           const src = img.src || img.getAttribute("src");

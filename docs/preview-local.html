@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JT Dynamic Queries - Local Preview</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: #f5f5f5;
+      }
+
+      .preview-banner {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1rem;
+        text-align: center;
+        font-weight: bold;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+        background: white;
+        min-height: 100vh;
+      }
+
+      header {
+        text-align: center;
+        padding: 3rem 0;
+        border-bottom: 3px solid #667eea;
+      }
+
+      h1 {
+        font-size: 3rem;
+        color: #667eea;
+        margin-bottom: 1rem;
+      }
+
+      .tagline {
+        font-size: 1.3rem;
+        color: #666;
+        margin-bottom: 2rem;
+      }
+
+      .badges {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin: 1rem 0;
+      }
+
+      .badge {
+        background: #667eea;
+        color: white;
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 500;
+      }
+
+      section {
+        margin: 3rem 0;
+        padding: 2rem 0;
+      }
+
+      h2 {
+        font-size: 2rem;
+        color: #333;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e0e0e0;
+      }
+
+      h3 {
+        font-size: 1.5rem;
+        color: #667eea;
+        margin: 2rem 0 1rem 0;
+      }
+
+      .gif-showcase {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+        margin: 2rem 0;
+      }
+
+      .gif-card {
+        background: #f9f9f9;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .gif-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      .gif-card img {
+        width: 100%;
+        display: block;
+        border-bottom: 2px solid #e0e0e0;
+      }
+
+      .gif-card-content {
+        padding: 1.5rem;
+      }
+
+      .gif-card-content h4 {
+        font-size: 1.2rem;
+        color: #667eea;
+        margin-bottom: 0.5rem;
+      }
+
+      .gif-card-content p {
+        color: #666;
+        font-size: 0.95rem;
+      }
+
+      .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+      }
+
+      .feature-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .feature-card h4 {
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .feature-card p {
+        font-size: 0.9rem;
+        opacity: 0.95;
+      }
+
+      .cta-section {
+        text-align: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 3rem;
+        border-radius: 15px;
+        margin: 3rem 0;
+      }
+
+      .cta-section h2 {
+        color: white;
+        border: none;
+      }
+
+      .cta-button {
+        display: inline-block;
+        background: white;
+        color: #667eea;
+        padding: 1rem 2rem;
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: bold;
+        margin: 1rem 0.5rem;
+        transition: transform 0.3s ease;
+      }
+
+      .cta-button:hover {
+        transform: scale(1.05);
+      }
+
+      .status-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin: 2rem 0;
+      }
+
+      .status-item {
+        background: #f0f4ff;
+        padding: 1.5rem;
+        border-radius: 10px;
+        border-left: 4px solid #667eea;
+      }
+
+      .status-item h4 {
+        color: #667eea;
+        margin-bottom: 0.5rem;
+      }
+
+      .status-item .number {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .status-pass {
+        border-left-color: #4caf50;
+      }
+
+      .status-pass .number {
+        color: #4caf50;
+      }
+
+      footer {
+        text-align: center;
+        padding: 2rem;
+        border-top: 2px solid #e0e0e0;
+        color: #666;
+        margin-top: 3rem;
+      }
+
+      .placeholder-gif {
+        background: linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%);
+        aspect-ratio: 16 / 10;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #999;
+        font-size: 1.2rem;
+        font-weight: bold;
+      }
+
+      @media (max-width: 768px) {
+        h1 {
+          font-size: 2rem;
+        }
+
+        .tagline {
+          font-size: 1rem;
+        }
+
+        .gif-showcase {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="preview-banner">
+      🚀 LOCAL PREVIEW - This is how the GitHub Pages site will look
+    </div>
+
+    <div class="container">
+      <header>
+        <h1>⚡ JT Dynamic Queries</h1>
+        <p class="tagline">
+          Lightning Web Component for Dynamic SOQL Queries in Salesforce
+        </p>
+        <div class="badges">
+          <span class="badge">Lightning Web Component</span>
+          <span class="badge">SOQL</span>
+          <span class="badge">Dynamic Queries</span>
+          <span class="badge">Salesforce DX</span>
+          <span class="badge">Open Source</span>
+        </div>
+      </header>
+
+      <!-- Test Results Status -->
+      <section id="test-status">
+        <h2>✅ Test Results</h2>
+        <div class="status-grid">
+          <div class="status-item status-pass">
+            <h4>E2E Tests</h4>
+            <div class="number">118</div>
+            <p>Passing</p>
+          </div>
+          <div class="status-item status-pass">
+            <h4>Accessibility</h4>
+            <div class="number">20/20</div>
+            <p>WCAG 2.1 AA</p>
+          </div>
+          <div class="status-item status-pass">
+            <h4>GitHub Pages</h4>
+            <div class="number">27/27</div>
+            <p>All Docs Valid</p>
+          </div>
+          <div class="status-item status-pass">
+            <h4>Coverage</h4>
+            <div class="number">95%</div>
+            <p>Code Coverage</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- GIF Showcase -->
+      <section id="demos">
+        <h2>🎬 See It In Action</h2>
+
+        <div class="gif-showcase">
+          <div class="gif-card">
+            <img
+              src="assets/gifs/01-query-execution.gif"
+              alt="Query Execution Demo"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+            />
+            <div class="placeholder-gif" style="display: none">
+              GIF: Query Execution
+            </div>
+            <div class="gif-card-content">
+              <h4>⚡ Query Execution</h4>
+              <p>
+                Select a configuration, execute queries, and instantly view results
+                in Table or JSON format. Lightning fast and intuitive.
+              </p>
+            </div>
+          </div>
+
+          <div class="gif-card">
+            <img
+              src="assets/gifs/02-run-as-user.gif"
+              alt="Run As User Demo"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+            />
+            <div class="placeholder-gif" style="display: none">
+              GIF: Run As User
+            </div>
+            <div class="gif-card-content">
+              <h4>👤 Run As User</h4>
+              <p>
+                Execute queries as different users to test permissions and data
+                visibility. Perfect for admins validating security models.
+              </p>
+            </div>
+          </div>
+
+          <div class="gif-card">
+            <img
+              src="assets/gifs/03-create-config.gif"
+              alt="Create Configuration Demo"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+            />
+            <div class="placeholder-gif" style="display: none">
+              GIF: Create Configuration
+            </div>
+            <div class="gif-card-content">
+              <h4>⚙️ Create Configuration</h4>
+              <p>
+                Build custom query configurations with a simple form. Define
+                objects, fields, filters, and parameters in seconds.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Features -->
+      <section id="features">
+        <h2>✨ Key Features</h2>
+        <div class="feature-grid">
+          <div class="feature-card">
+            <h4>🚀 Dynamic Queries</h4>
+            <p>Execute SOQL queries dynamically without hardcoding</p>
+          </div>
+          <div class="feature-card">
+            <h4>🔐 Named Credentials</h4>
+            <p>Secure Tooling API callouts with modern Named Credentials</p>
+          </div>
+          <div class="feature-card">
+            <h4>📊 Multiple Views</h4>
+            <p>Switch between Table, JSON, and mobile card views</p>
+          </div>
+          <div class="feature-card">
+            <h4>♿ Accessible</h4>
+            <p>WCAG 2.1 AA compliant with full keyboard navigation</p>
+          </div>
+          <div class="feature-card">
+            <h4>🎨 Lightning Design</h4>
+            <p>Built with Salesforce Lightning Design System</p>
+          </div>
+          <div class="feature-card">
+            <h4>🧪 Tested</h4>
+            <p>118+ E2E tests with Playwright for reliability</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Installation -->
+      <section id="installation">
+        <h2>🚀 Quick Start</h2>
+        <h3>Prerequisites</h3>
+        <ul style="margin-left: 2rem; line-height: 2">
+          <li>Salesforce CLI (latest)</li>
+          <li>Node.js 24+</li>
+          <li>Git</li>
+        </ul>
+
+        <h3>Installation Steps</h3>
+        <pre
+          style="background: #f5f5f5; padding: 1rem; border-radius: 8px; overflow-x: auto"
+        ><code># Clone repository
+git clone https://github.com/jterrats/JT_DynamicQueries.git
+cd JT_DynamicQueries
+
+# Install dependencies
+npm install
+
+# Deploy to your org
+npm run deploy:named-credential
+
+# Run tests (optional)
+npm test</code></pre>
+      </section>
+
+      <!-- CTA -->
+      <section class="cta-section">
+        <h2>Ready to Get Started?</h2>
+        <p style="font-size: 1.2rem; margin: 1rem 0">
+          Deploy to your Salesforce org in minutes
+        </p>
+        <a href="https://github.com/jterrats/JT_DynamicQueries" class="cta-button"
+          >View on GitHub</a
+        >
+        <a
+          href="https://github.com/jterrats/JT_DynamicQueries#readme"
+          class="cta-button"
+          >Read Documentation</a
+        >
+      </section>
+
+      <!-- Documentation Links -->
+      <section id="docs">
+        <h2>📚 Documentation</h2>
+        <div class="feature-grid">
+          <div class="feature-card">
+            <h4>📖 Features v2.0</h4>
+            <p>
+              <a href="FEATURES_V2.html" style="color: white">Learn more →</a>
+            </p>
+          </div>
+          <div class="feature-card">
+            <h4>🏗️ Architecture</h4>
+            <p>
+              <a href="ARCHITECTURE.html" style="color: white">Learn more →</a>
+            </p>
+          </div>
+          <div class="feature-card">
+            <h4>🗺️ V3.0 Roadmap</h4>
+            <p>
+              <a href="V3_ROADMAP.html" style="color: white">Learn more →</a>
+            </p>
+          </div>
+          <div class="feature-card">
+            <h4>🧪 E2E Testing</h4>
+            <p>
+              <a href="E2E_TESTING.html" style="color: white">Learn more →</a>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        <p>
+          Built with ❤️ by
+          <a
+            href="https://github.com/jterrats"
+            style="color: #667eea; text-decoration: none"
+            >Jaime Terrats</a
+          >
+        </p>
+        <p style="margin-top: 0.5rem; font-size: 0.9rem">
+          Licensed under MIT | © 2025
+        </p>
+      </footer>
+    </div>
+  </body>
+</html>
+

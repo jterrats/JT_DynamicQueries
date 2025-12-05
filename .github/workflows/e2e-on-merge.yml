@@ -44,16 +44,33 @@ jobs:
 
       - name: Authenticate to Salesforce
         run: |
-          sf org login jwt \
+          echo "🔐 Attempting JWT authentication..."
+          
+          if ! sf org login jwt \
             --client-id ${{ secrets.SF_CONSUMER_KEY }} \
             --jwt-key-file server.key \
             --username ${{ secrets.SF_USERNAME }} \
             --instance-url ${{ secrets.SF_INSTANCE_URL }} \
             --set-default \
-            --alias ci-org
+            --alias ci-org; then
+            echo "❌ JWT authentication failed!"
+            echo "Please check:"
+            echo "  - SF_CONSUMER_KEY is correct"
+            echo "  - SF_JWT_KEY matches the certificate in Connected App"
+            echo "  - SF_USERNAME has access to the Connected App"
+            echo "  - SF_INSTANCE_URL is correct (e.g., https://login.salesforce.com)"
+            exit 1
+          fi
 
           echo "✅ Authenticated as ${{ secrets.SF_USERNAME }}"
-          sf org display --target-org ci-org
+          
+          # Verify authentication
+          if ! sf org display --target-org ci-org --json; then
+            echo "❌ Cannot display org info - authentication may have failed"
+            exit 1
+          fi
+          
+          echo "✅ Authentication verified successfully"
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium

@@ -34,6 +34,13 @@ function getSFSession() {
     }
 
     const jsonString = orgInfoJson.substring(firstBrace, lastBrace + 1);
+    
+    // Check if this looks like an error message instead of org info
+    if (jsonString.includes('"status":1') || jsonString.includes('"name":"NoOrgFound"')) {
+      console.error("❌ SF CLI returned an error (no org found)");
+      console.error("Response:", jsonString.substring(0, 300));
+      throw new Error("No authenticated Salesforce org found. Run 'sf org login' first.");
+    }
 
     let orgInfo;
     try {
@@ -42,7 +49,20 @@ function getSFSession() {
       console.error("❌ Failed to parse JSON from SF CLI");
       console.error("Output length:", orgInfoJson.length, "chars");
       console.error("First 100 chars:", orgInfoJson.substring(0, 100));
+      console.error("Last 100 chars:", orgInfoJson.substring(orgInfoJson.length - 100));
+      console.error("Extracted JSON length:", jsonString.length, "chars");
+      console.error("Extracted first 200 chars:", jsonString.substring(0, 200));
       console.error("Parse error:", parseError.message);
+      
+      // Try to find problematic characters
+      for (let i = 0; i < Math.min(jsonString.length, 50); i++) {
+        const char = jsonString[i];
+        const code = char.charCodeAt(0);
+        if (code < 32 || code > 126) {
+          console.error(`⚠️  Non-printable char at position ${i}: code=${code}`);
+        }
+      }
+      
       throw new Error(`JSON parse failed: ${parseError.message}. Check if SF org is authenticated.`);
     }
 

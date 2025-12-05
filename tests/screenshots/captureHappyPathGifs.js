@@ -68,12 +68,50 @@ async function convertToGif(videoPath, gifPath, fps = 6) {
 }
 
 /**
- * Helper to start recording after navigation
+ * Navigate to app and get component URL (WITHOUT recording)
  */
-async function setupAndStartRecording(page, session, waitBeforeStart = 2000) {
-  await setupTestContext(page, session);
-  // Wait for everything to settle before starting the "interesting" part
-  await page.waitForTimeout(waitBeforeStart);
+async function getComponentURL(browser, session) {
+  console.log("   📍 Getting component URL (not recorded)...");
+  const tempContext = await browser.newContext({
+    viewport: VIEWPORT
+  });
+  const tempPage = await tempContext.newPage();
+  
+  await setupTestContext(tempPage, session);
+  await tempPage.waitForTimeout(2000);
+  
+  // Get the current URL (should be the component page)
+  const componentURL = tempPage.url();
+  
+  // Save storage state (cookies)
+  const storageState = await tempContext.storageState();
+  await tempContext.close();
+  
+  console.log("   ✅ Component URL:", componentURL);
+  return { componentURL, storageState };
+}
+
+/**
+ * Create recording context and go directly to component
+ */
+async function createRecordingContextAndNavigate(browser, componentURL, storageState) {
+  const context = await browser.newContext({
+    viewport: VIEWPORT,
+    storageState: storageState,
+    recordVideo: {
+      dir: VIDEOS_DIR,
+      size: VIEWPORT
+    }
+  });
+  
+  const page = await context.newPage();
+  
+  // Go directly to component URL (skips App Launcher)
+  await page.goto(componentURL, { waitUntil: "domcontentloaded", timeout: 30000 });
+  await page.waitForSelector("c-jt-query-viewer", { timeout: 30000 });
+  await page.waitForTimeout(1500);
+  
+  return { context, page };
 }
 
 /**
@@ -94,22 +132,22 @@ async function captureHappyPaths() {
   console.log("✅ Authenticated:", session.username);
   console.log("");
 
+  // Get component URL once (skips navigation in all GIFs)
+  const { componentURL, storageState } = await getComponentURL(browser, session);
+  console.log("");
+
   // ==================================================================
   // GIF 1: Basic Query Execution (10 seconds)
   // Show: Select config → Execute → View results
   // ==================================================================
-  console.log("🎥 1/4: Capturing Basic Query Execution...");
-  const context1 = await browser.newContext({
-    viewport: VIEWPORT,
-    recordVideo: {
-      dir: VIDEOS_DIR,
-      size: VIEWPORT
-    }
-  });
-  const page1 = await context1.newPage();
+  console.log("🎥 1/6: Capturing Basic Query Execution...");
+  const { context: context1, page: page1 } = await createRecordingContextAndNavigate(
+    browser,
+    componentURL,
+    storageState
+  );
 
   try {
-    await setupAndStartRecording(page1, session, 1000);
 
     // Select configuration (slower)
     await selectConfiguration(page1, "Customer 360");
@@ -134,18 +172,14 @@ async function captureHappyPaths() {
   // GIF 2: Multiple Views - JSON, CSV (15 seconds)
   // Show: Execute query → Switch to JSON → Switch to CSV → Back to Table
   // ==================================================================
-  console.log("🎥 2/4: Capturing Multiple Views (JSON, CSV)...");
-  const context2 = await browser.newContext({
-    viewport: VIEWPORT,
-    recordVideo: {
-      dir: VIDEOS_DIR,
-      size: VIEWPORT
-    }
-  });
-  const page2 = await context2.newPage();
+  console.log("🎥 2/6: Capturing Multiple Views (JSON, CSV)...");
+  const { context: context2, page: page2 } = await createRecordingContextAndNavigate(
+    browser,
+    componentURL,
+    storageState
+  );
 
   try {
-    await setupAndStartRecording(page2, session, 1000);
 
     // Select configuration
     await selectConfiguration(page2, "Customer 360");
@@ -199,18 +233,14 @@ async function captureHappyPaths() {
   // GIF 3: Tree View - Child Relationships (12 seconds)
   // Show: Execute query with relationships → Expand parent → Show children
   // ==================================================================
-  console.log("🎥 3/4: Capturing Tree View with Child Relationships...");
-  const context3 = await browser.newContext({
-    viewport: VIEWPORT,
-    recordVideo: {
-      dir: VIDEOS_DIR,
-      size: VIEWPORT
-    }
-  });
-  const page3 = await context3.newPage();
+  console.log("🎥 3/6: Capturing Tree View with Child Relationships...");
+  const { context: context3, page: page3 } = await createRecordingContextAndNavigate(
+    browser,
+    componentURL,
+    storageState
+  );
 
   try {
-    await setupAndStartRecording(page3, session, 1000);
 
     // Select a config that has child relationships (Account usually has Contacts, Opportunities)
     await selectConfiguration(page3, "Customer 360");
@@ -252,18 +282,14 @@ async function captureHappyPaths() {
   // GIF 4: Large Dataset (Cursors >50k) (12 seconds)
   // Show: Query with many records → Pagination → Performance message
   // ==================================================================
-  console.log("🎥 4/4: Capturing Large Dataset with Cursors...");
-  const context4 = await browser.newContext({
-    viewport: VIEWPORT,
-    recordVideo: {
-      dir: VIDEOS_DIR,
-      size: VIEWPORT
-    }
-  });
-  const page4 = await context4.newPage();
+  console.log("🎥 4/6: Capturing Large Dataset with Cursors...");
+  const { context: context4, page: page4 } = await createRecordingContextAndNavigate(
+    browser,
+    componentURL,
+    storageState
+  );
 
   try {
-    await setupAndStartRecording(page4, session, 1000);
 
     // Select configuration (ideally one that returns many records)
     // If "All Accounts" exists, use it, otherwise use first available
@@ -305,17 +331,13 @@ async function captureHappyPaths() {
   // Show: Click New Config → Fill form → Show validation
   // ==================================================================
   console.log("🎥 5/6: Capturing Create Configuration...");
-  const context5 = await browser.newContext({
-    viewport: VIEWPORT,
-    recordVideo: {
-      dir: VIDEOS_DIR,
-      size: VIEWPORT
-    }
-  });
-  const page5 = await context5.newPage();
+  const { context: context5, page: page5 } = await createRecordingContextAndNavigate(
+    browser,
+    componentURL,
+    storageState
+  );
 
   try {
-    await setupAndStartRecording(page5, session, 1000);
 
     // Click "New Configuration" button
     const newConfigButton = page5
@@ -377,17 +399,13 @@ async function captureHappyPaths() {
   // Show: Open Run As → Select user → Execute query
   // ==================================================================
   console.log("🎥 6/6: Capturing Run As User...");
-  const context6 = await browser.newContext({
-    viewport: VIEWPORT,
-    recordVideo: {
-      dir: VIDEOS_DIR,
-      size: VIEWPORT
-    }
-  });
-  const page6 = await context6.newPage();
+  const { context: context6, page: page6 } = await createRecordingContextAndNavigate(
+    browser,
+    componentURL,
+    storageState
+  );
 
   try {
-    await setupAndStartRecording(page6, session, 1000);
 
     // Select a configuration first
     await selectConfiguration(page6, "Customer 360");

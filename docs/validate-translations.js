@@ -30,28 +30,28 @@ let hasErrors = false;
 
 languages.forEach(lang => {
   if (lang === 'en') return; // Skip English itself
-  
+
   const langKeys = Object.keys(contentObj[lang]).sort();
   const missing = enKeys.filter(key => !langKeys.includes(key));
   const extra = langKeys.filter(key => !enKeys.includes(key));
-  
+
   const coverage = ((langKeys.length / enKeys.length) * 100).toFixed(1);
   const icon = coverage === '100.0' ? '✅' : '⚠️';
-  
+
   console.log(`${icon} ${lang.toUpperCase()}: ${langKeys.length}/${enKeys.length} keys (${coverage}%)`);
-  
+
   if (missing.length > 0) {
     hasErrors = true;
     console.log(`   ❌ Missing ${missing.length} keys:`);
     missing.forEach(key => console.log(`      - ${key}`));
   }
-  
+
   if (extra.length > 0) {
     hasErrors = true;
     console.log(`   ⚠️  Extra ${extra.length} keys (not in English):`);
     extra.forEach(key => console.log(`      - ${key}`));
   }
-  
+
   console.log('');
 });
 

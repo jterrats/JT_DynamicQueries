@@ -199,8 +199,8 @@ export default class JtQueryViewer extends LightningElement {
   pollInterval;
 
   // Computed property for labels (cannot call functions at class level)
-// Custom Labels (89 labels from Translation Workbench)
-// Custom Labels (89 labels from Translation Workbench)
+  // Custom Labels (89 labels from Translation Workbench)
+  // Custom Labels (89 labels from Translation Workbench)
   labels = {
     apexClass: apexClassLabel,
     autoDetectedFromQuery: autoDetectedFromQueryLabel,
@@ -229,10 +229,12 @@ export default class JtQueryViewer extends LightningElement {
     createConfigTooltip: createConfigTooltipLabel,
     createNewConfiguration: createNewConfigurationLabel,
     developerName: developerNameLabel,
-    developerNameCannotEndWithUnderscore: developerNameCannotEndWithUnderscoreLabel,
+    developerNameCannotEndWithUnderscore:
+      developerNameCannotEndWithUnderscoreLabel,
     developerNameInvalidChars: developerNameInvalidCharsLabel,
     developerNameMustStartWithLetter: developerNameMustStartWithLetterLabel,
-    developerNameNoConsecutiveUnderscores: developerNameNoConsecutiveUnderscoresLabel,
+    developerNameNoConsecutiveUnderscores:
+      developerNameNoConsecutiveUnderscoresLabel,
     developerNameRequired: developerNameRequiredLabel,
     developerNameTooLong: developerNameTooLongLabel,
     editConfiguration: editConfigurationLabel,

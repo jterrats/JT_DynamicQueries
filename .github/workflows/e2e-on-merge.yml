@@ -45,7 +45,7 @@ jobs:
       - name: Authenticate to Salesforce
         run: |
           echo "🔐 Attempting JWT authentication..."
-          
+
           if ! sf org login jwt \
             --client-id ${{ secrets.SF_CONSUMER_KEY }} \
             --jwt-key-file server.key \
@@ -63,13 +63,13 @@ jobs:
           fi
 
           echo "✅ Authenticated as ${{ secrets.SF_USERNAME }}"
-          
+
           # Verify authentication
           if ! sf org display --target-org ci-org --json; then
             echo "❌ Cannot display org info - authentication may have failed"
             exit 1
           fi
-          
+
           echo "✅ Authentication verified successfully"
 
       - name: Install Playwright browsers

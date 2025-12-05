@@ -342,5 +342,3 @@ test("executes query and shows results", async ({ page }) => {
 - [Functional Programming in JavaScript](https://github.com/MostlyAdequate/mostly-adequate-guide)
 - [LWC Best Practices](https://developer.salesforce.com/docs/component-library/documentation/en/lwc)
 - [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
-
-

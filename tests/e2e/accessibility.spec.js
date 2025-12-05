@@ -74,7 +74,9 @@ test.describe("Accessibility Tests - WCAG 2.1 AA", () => {
     expect(accessibilityScanResults.violations).toEqual([]);
   });
 
-  test.skip("Color contrast should meet WCAG AA standards", async ({ page }) => {
+  test.skip("Color contrast should meet WCAG AA standards", async ({
+    page
+  }) => {
     // TODO: Fix SLDS component contrast violations (out of our control)
     const accessibilityScanResults = await new AxeBuilder({ page })
       .withTags(["wcag2aa"])

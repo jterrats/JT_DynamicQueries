@@ -275,5 +275,3 @@ Si encuentras problemas no cubiertos en esta guía:
 ---
 
 **¡Configuración Completa!** 🎉 Tu integración de Tooling API está ahora configurada y lista para usar.
-
-

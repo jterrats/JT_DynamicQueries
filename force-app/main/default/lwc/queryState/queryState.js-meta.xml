@@ -6,5 +6,3 @@
     <description
   >State manager for query execution using official Salesforce State Management API</description>
 </LightningComponentBundle>
-
-

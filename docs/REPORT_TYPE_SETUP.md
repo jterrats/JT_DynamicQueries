@@ -88,5 +88,3 @@ If you don't need reporting functionality, you can access configurations directl
 ---
 
 _This setup is required only once per org_
-
-

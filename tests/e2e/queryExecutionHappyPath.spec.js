@@ -40,7 +40,9 @@ test.describe("Query Execution Happy Path", () => {
     await executeQuery(page, { waitTime: TIMEOUTS.long });
 
     // ✅ HAPPY PATH: Verify results table appears (fixed selector)
-    const resultsTable = page.locator(`${SELECTORS.queryResults} ${SELECTORS.resultsTable}`);
+    const resultsTable = page.locator(
+      `${SELECTORS.queryResults} ${SELECTORS.resultsTable}`
+    );
     await expect(resultsTable).toBeVisible({ timeout: 10000 });
 
     // ✅ HAPPY PATH: Verify records are displayed (not empty)
@@ -114,9 +116,7 @@ test.describe("Query Execution Happy Path", () => {
       await page.waitForTimeout(3000);
 
       // ✅ HAPPY PATH: Verify results appear
-      const resultsTable = page.locator(
-        "c-jt-query-results table.slds-table"
-      );
+      const resultsTable = page.locator("c-jt-query-results table.slds-table");
       await expect(resultsTable).toBeVisible({ timeout: 10000 });
 
       // ✅ HAPPY PATH: Verify records returned
@@ -151,7 +151,9 @@ test.describe("Query Execution Happy Path", () => {
 
     // Then check if table exists (it should for any successful query)
     const resultsTable = queryResults.locator(SELECTORS.resultsTable);
-    const tableVisible = await resultsTable.isVisible({ timeout: 5000 }).catch(() => false);
+    const tableVisible = await resultsTable
+      .isVisible({ timeout: 5000 })
+      .catch(() => false);
 
     if (!tableVisible) {
       console.log("⚠️  Table not visible - query may have returned no results");
@@ -202,7 +204,9 @@ test.describe("Query Execution Happy Path", () => {
     await executeQuery(page, { waitTime: TIMEOUTS.long });
 
     // ✅ HAPPY PATH: Verify results are displayed first (more reliable than toast)
-    const resultsTable = page.locator(`${SELECTORS.queryResults} ${SELECTORS.resultsTable}`);
+    const resultsTable = page.locator(
+      `${SELECTORS.queryResults} ${SELECTORS.resultsTable}`
+    );
     await expect(resultsTable).toBeVisible({ timeout: 5000 });
     const rows = resultsTable.locator("tbody tr");
     const actualRowCount = await rows.count();
@@ -212,8 +216,12 @@ test.describe("Query Execution Happy Path", () => {
 
     // ✅ HAPPY PATH: Check toast if still visible (optional, toasts auto-dismiss)
     await page.waitForTimeout(300);
-    const successToast = page.locator(".slds-notify--success, .slds-notify--toast");
-    const toastVisible = await successToast.isVisible({ timeout: 1000 }).catch(() => false);
+    const successToast = page.locator(
+      ".slds-notify--success, .slds-notify--toast"
+    );
+    const toastVisible = await successToast
+      .isVisible({ timeout: 1000 })
+      .catch(() => false);
 
     if (toastVisible) {
       const toastText = await successToast.textContent();

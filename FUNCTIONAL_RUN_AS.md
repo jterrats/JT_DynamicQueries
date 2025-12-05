@@ -437,5 +437,3 @@ Si bien Apex tiene limitaciones para programación funcional pura (no true gener
 **Autor**: Jaime Terrats
 **Fecha**: 29 de Noviembre, 2025
 **Versión**: 1.0
-
-

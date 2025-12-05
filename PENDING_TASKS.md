@@ -326,5 +326,3 @@
 **Opción C:** Demo video para validar UX (1 hora)
 
 **¿Qué prefieres atacar primero?**
-
-

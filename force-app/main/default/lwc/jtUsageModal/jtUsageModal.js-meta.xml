@@ -6,5 +6,3 @@
     <description
   >Modal to display where a configuration is used (Apex, Flows). Phase 4 refactor.</description>
 </LightningComponentBundle>
-
-

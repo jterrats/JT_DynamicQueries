@@ -157,5 +157,3 @@ Monitorea el workflow en: **GitHub** → **Actions** → **E2E Tests on Main Mer
 **Certificado expira**: December 2, 2027
 
 Crear calendar reminder para rotar certificado 1 mes antes.
-
-

@@ -334,5 +334,3 @@ Este patrón se puede aplicar a:
 - ✅ Platform events + callouts híbridos
 
 **Salesforce SÍ soporta "microservicios" conceptuales!** 💪
-
-

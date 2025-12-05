@@ -138,5 +138,3 @@ private class JT_SettingsService_Test {
     );
   }
 }
-
-

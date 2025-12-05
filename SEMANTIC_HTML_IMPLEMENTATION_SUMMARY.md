@@ -496,5 +496,3 @@ Los tests E2E serán:
 - ✅ Sin selectores ambiguos (no más "strict mode violations")
 
 **¡Listo para implementar en los tests E2E!** 🚀
-
-

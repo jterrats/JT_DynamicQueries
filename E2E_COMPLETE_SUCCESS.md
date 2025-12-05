@@ -435,5 +435,3 @@ await tabLink.click();
 ```bash
 npm run test:e2e
 ```
-
-

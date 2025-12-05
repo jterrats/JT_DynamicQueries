@@ -403,5 +403,3 @@ Once validated, we can:
 2. Commit the fix
 3. Run E2E tests
 4. Deploy to production
-
-

@@ -357,5 +357,3 @@ const checkbox = page.locator('[data-testid="cache-option-results"]');
 - ✅ Auto-documentados
 
 **¡Listos para ejecutar y pasar! 🚀**
-
-

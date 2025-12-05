@@ -6,5 +6,3 @@
     <description
   >State manager for application settings using official Salesforce State Management API</description>
 </LightningComponentBundle>
-
-

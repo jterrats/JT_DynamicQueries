@@ -156,5 +156,3 @@ Si publicas el proyecto en GitHub:
 
 **Sin placeholder**: Tendrían tu URL hardcodeada (therionpolux-dev-ed) ❌
 **Con placeholder**: Auto-detecta su org ✅
-
-

@@ -349,5 +349,3 @@ When certificate is about to expire (730 days):
 5. ✅ Create workflow file
 6. ✅ Monitor first CI run
 7. ✅ Set calendar reminder for certificate rotation (2 years)
-
-

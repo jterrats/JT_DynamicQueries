@@ -178,5 +178,3 @@ handleUserClear() {
 - [ ] Update jtQueryViewer JS (Remove duplicate logic)
 - [ ] Update E2E tests
 - [ ] Final deploy & test
-
-

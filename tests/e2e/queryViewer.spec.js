@@ -165,7 +165,10 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
   test("should execute query and display results or empty table", async ({
     page
   }) => {
-    const { selectConfiguration, executeQuery } = require("./utils/testHelpers");
+    const {
+      selectConfiguration,
+      executeQuery
+    } = require("./utils/testHelpers");
     const { SELECTORS, TIMEOUTS } = require("./utils/testConstants");
 
     // Use helpers for consistent behavior
@@ -173,7 +176,9 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     await executeQuery(page, { waitTime: TIMEOUTS.long });
 
     // Verify results table is visible (custom HTML table, not lightning-datatable)
-    const resultsTable = page.locator(`${SELECTORS.queryResults} ${SELECTORS.resultsTable}`);
+    const resultsTable = page.locator(
+      `${SELECTORS.queryResults} ${SELECTORS.resultsTable}`
+    );
     const isVisible = await resultsTable
       .isVisible({ timeout: 10000 })
       .catch(() => false);
@@ -193,7 +198,10 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     page
   }) => {
     console.log("🧪 Testing pagination...");
-    const { selectConfiguration, executeQuery } = require("./utils/testHelpers");
+    const {
+      selectConfiguration,
+      executeQuery
+    } = require("./utils/testHelpers");
     const { TIMEOUTS } = require("./utils/testConstants");
 
     // Use helpers for consistent behavior

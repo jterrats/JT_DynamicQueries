@@ -247,5 +247,3 @@ Tests cover:
 The Run As User feature is a valuable tool for administrators to understand and validate permissions in their org. While it has limitations compared to true user impersonation, it provides practical value for everyday permission testing and troubleshooting within Salesforce's security constraints.
 
 For questions or issues, please refer to the main project documentation or create an issue in the repository.
-
-

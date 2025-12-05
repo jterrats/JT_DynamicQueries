@@ -316,5 +316,3 @@ sf lightning dev component --name "jtQueryViewer"
 ---
 
 **Local Dev = Game Changer for UI development! 🚀**
-
-

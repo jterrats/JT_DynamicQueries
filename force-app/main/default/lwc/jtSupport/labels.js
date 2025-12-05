@@ -153,5 +153,3 @@ export function getLabel(key) {
   const labels = getLabels();
   return labels[key] || LABELS["en"][key] || key;
 }
-
-

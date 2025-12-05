@@ -162,5 +162,3 @@ Para usar en GitHub Actions o CI/CD:
   env:
     SF_ORG_SQF: ${{ secrets.SF_ORG_URL }}
 ```
-
-

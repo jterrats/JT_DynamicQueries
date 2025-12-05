@@ -423,5 +423,3 @@ After reviewing ALL E2E videos:
 > **E2E videos are your eyes into the user experience.**
 > **If it looks wrong in the video, it will look wrong to users.**
 > **Never skip video review before commit!**
-
-

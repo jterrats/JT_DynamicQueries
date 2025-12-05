@@ -118,17 +118,19 @@ async function injectSFSession(page, session) {
 
   // Wait for Lightning to fully load
   console.log("⏳ Waiting for Lightning to load...");
-  await page.waitForSelector("one-appnav", { timeout: 20000 }).catch(async () => {
-    console.log("⚠️  Lightning navigation not found, checking page state...");
-    const currentUrl = page.url();
-    console.log(`   Current URL: ${currentUrl}`);
+  await page
+    .waitForSelector("one-appnav", { timeout: 20000 })
+    .catch(async () => {
+      console.log("⚠️  Lightning navigation not found, checking page state...");
+      const currentUrl = page.url();
+      console.log(`   Current URL: ${currentUrl}`);
 
-    // Take screenshot for debugging
-    await page.screenshot({
-      path: `test-results/lightning-not-found-${Date.now()}.png`,
-      fullPage: true
+      // Take screenshot for debugging
+      await page.screenshot({
+        path: `test-results/lightning-not-found-${Date.now()}.png`,
+        fullPage: true
+      });
     });
-  });
 
   console.log("✅ Authenticated successfully - Lightning loaded");
 }

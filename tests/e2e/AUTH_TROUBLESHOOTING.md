@@ -423,3 +423,5 @@ node test-auth.js  # Script de debug manual
 ```
 
 Y comparte el output para debugging adicional.
+
+

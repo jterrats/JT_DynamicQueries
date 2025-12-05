@@ -27,14 +27,14 @@ System.debug('Response Body: ' + res1.getBody());
 
 if (res1.getStatusCode() == 201 || res1.getStatusCode() == 200) {
     System.debug('✅ External Credential created successfully');
-    
+
     // 2. Create Named Credential pointing to External Credential
     HttpRequest req2 = new HttpRequest();
     req2.setEndpoint(orgUrl + '/services/data/v65.0/tooling/sobjects/NamedCredential');
     req2.setMethod('POST');
     req2.setHeader('Authorization', 'Bearer ' + UserInfo.getSessionId());
     req2.setHeader('Content-Type', 'application/json');
-    
+
     Map<String, Object> namedCred = new Map<String, Object>{
         'DeveloperName' => 'JT_Tooling_API',
         'MasterLabel' => 'JT Tooling API',
@@ -42,14 +42,14 @@ if (res1.getStatusCode() == 201 || res1.getStatusCode() == 200) {
         'PrincipalType' => 'NamedUser',
         'Protocol' => 'NoAuthentication'
     };
-    
+
     req2.setBody(JSON.serialize(namedCred));
-    
+
     HttpResponse res2 = http.send(req2);
-    
+
     System.debug('Named Credential Response: ' + res2.getStatusCode());
     System.debug('Response Body: ' + res2.getBody());
-    
+
     if (res2.getStatusCode() == 201 || res2.getStatusCode() == 200) {
         System.debug('✅ Named Credential created successfully');
         System.debug('');
@@ -67,4 +67,6 @@ if (res1.getStatusCode() == 201 || res1.getStatusCode() == 200) {
     System.debug('❌ Failed to create External Credential');
     System.debug('Error: ' + res1.getBody());
 }
+
+
 

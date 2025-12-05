@@ -257,3 +257,5 @@ export const COMPONENT_LABELS = {
 ```
 
 **Próximo paso:** ¿Proceder con implementación de labels híbridos?
+
+

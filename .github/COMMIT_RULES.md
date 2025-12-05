@@ -305,3 +305,5 @@ graph LR
 - [E2E Visual Validation](.github/E2E_VISUAL_VALIDATION.md)
 
 **Recuerda: Tests primero, commits después!** 🚀
+
+

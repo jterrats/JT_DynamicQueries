@@ -149,3 +149,5 @@ public with sharing class JT_SetupWizardController {
     return result;
   }
 }
+
+

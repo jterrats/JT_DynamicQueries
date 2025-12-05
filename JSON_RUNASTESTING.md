@@ -510,3 +510,5 @@ Este enfoque funcional con serialización JSON proporciona:
 **Autor**: Jaime Terrats
 **Fecha**: 29 de Noviembre, 2025
 **Versión**: 1.0
+
+

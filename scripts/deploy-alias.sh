@@ -64,3 +64,5 @@ echo "🎯 Usage example:"
 echo "  sf config set target-org my-sandbox"
 echo "  jt-deploy  # Auto-detects change and updates!"
 
+
+

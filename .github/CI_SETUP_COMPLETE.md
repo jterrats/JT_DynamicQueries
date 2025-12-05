@@ -138,3 +138,5 @@ on:
 - **Rotación de certificado**: Diciembre 2, 2027 (crear calendar reminder)
 - **Review de permisos**: Cada 6 meses
 - **Audit logs**: Revisar accesos de CI user mensualmente
+
+

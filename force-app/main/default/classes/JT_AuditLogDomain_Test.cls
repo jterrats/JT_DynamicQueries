@@ -160,3 +160,5 @@ private class JT_AuditLogDomain_Test {
     System.assertEquals(0, remainingLogs.size(), 'Old logs should be deleted');
   }
 }
+
+

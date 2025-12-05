@@ -59,3 +59,5 @@ Once Salesforce Lightning stability improves or we implement better wait strateg
 - Implement retry logic with exponential backoff
 - Mock Salesforce background requests
 - Run tests in isolated scratch orgs
+
+

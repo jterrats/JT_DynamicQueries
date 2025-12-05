@@ -305,3 +305,5 @@ Organization org = [
 ---
 
 **Conclusión**: Cada enfoque es óptimo para su contexto. El LWC hace lo correcto para producción, y los tests E2E hacen lo correcto para velocidad de testing. 🎯
+
+

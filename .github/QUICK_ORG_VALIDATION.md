@@ -69,3 +69,5 @@ Final Bindings JSON: {"accountType":"Customer","industry":"Technology"}
 5. Values entered
 
 **Then we analyze and fix!**
+
+

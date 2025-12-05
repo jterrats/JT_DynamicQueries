@@ -42,7 +42,7 @@ if (res.getStatusCode() == 201 || res.getStatusCode() == 200) {
     System.debug('   No Named Credential needed - use session ID directly');
 } else if (res.getStatusCode() == 400) {
     Map<String, Object> errorBody = (Map<String, Object>) JSON.deserializeUntyped(res.getBody());
-    if (res.getBody().contains('duplicate value found') || 
+    if (res.getBody().contains('duplicate value found') ||
         res.getBody().contains('already exists')) {
         System.debug('⚠️  Remote Site Setting already exists');
         System.debug('✅ Configuration is already complete');
@@ -54,4 +54,6 @@ if (res.getStatusCode() == 201 || res.getStatusCode() == 200) {
     System.debug('❌ Failed to create Remote Site Setting');
     System.debug('Error: ' + res.getBody());
 }
+
+
 

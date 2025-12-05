@@ -17,3 +17,5 @@ sed -i '' 's/^│ \([^ ]\)/│  \1/g' "$FILE"
 
 echo "✅ ASCII diagrams fixed!"
 
+
+

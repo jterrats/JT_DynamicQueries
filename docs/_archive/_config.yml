@@ -1,0 +1,79 @@
+# Jekyll Configuration for JT Dynamic Queries Documentation
+
+# Site settings
+title: JT Dynamic Queries
+description: Dynamic SOQL Query Execution Tool for Salesforce
+baseurl: "/JT_DynamicQueries"
+url: "https://jterrats.github.io"
+
+# Repository
+repository: jterrats/JT_DynamicQueries
+
+# Theme
+theme: jekyll-theme-cayman
+remote_theme: pages-themes/cayman@v0.2.0
+
+# Plugins
+plugins:
+  - jekyll-remote-theme
+  - jekyll-feed
+  - jekyll-seo-tag
+
+# Build settings
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+
+# Exclude from processing
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+  - .sass-cache
+  - .jekyll-cache
+  - .DS_Store
+
+# Collections
+collections:
+  docs:
+    output: true
+    permalink: /:collection/:path/
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "default"
+  - scope:
+      path: "api"
+    values:
+      layout: "default"
+  - scope:
+      path: "**/*.md"
+    values:
+      layout: "default"
+
+# Navigation
+navigation:
+  - title: Home
+    url: /
+  - title: Getting Started
+    url: /getting-started/
+  - title: Features
+    url: /FEATURES_v2.html
+  - title: Architecture
+    url: /ARCHITECTURE_LAYERS.html
+  - title: API Reference
+    url: /api/
+  - title: Gallery
+    url: /gallery.html
+
+# GitHub metadata (simplified to avoid build issues)
+github:
+  repository_url: https://github.com/jterrats/JT_DynamicQueries
+  project_title: JT Dynamic Queries
+  project_tagline: Dynamic SOQL Query Execution Tool for Salesforce

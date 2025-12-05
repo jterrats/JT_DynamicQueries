@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -12,7 +12,8 @@
       }
 
       body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
           "Helvetica Neue", Arial, sans-serif;
         line-height: 1.6;
         color: #333;
@@ -140,7 +141,9 @@
         border: 2px solid #e0e0e0;
         border-radius: 12px;
         overflow: hidden;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        transition:
+          transform 0.3s ease,
+          box-shadow 0.3s ease;
       }
 
       .gif-card:hover {
@@ -295,7 +298,10 @@
     <div class="preview-banner">
       <div style="width: 200px"></div>
       <div class="preview-banner-text">
-        🚀 LOCAL PREVIEW - <span id="banner-text">This is how the GitHub Pages site will look</span>
+        🚀 LOCAL PREVIEW -
+        <span id="banner-text"
+          >This is how the GitHub Pages site will look</span
+        >
       </div>
       <div class="language-selector">
         <label for="language">🌍</label>
@@ -363,7 +369,10 @@
             <img
               src="assets/gifs/01-query-execution.gif"
               alt="Query Execution Demo"
-              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+              onerror="
+                this.style.display = 'none';
+                this.nextElementSibling.style.display = 'flex';
+              "
             />
             <div class="placeholder-gif" style="display: none">
               GIF: Query Execution
@@ -371,8 +380,8 @@
             <div class="gif-card-content">
               <h4>⚡ Query Execution</h4>
               <p>
-                Select a configuration and execute queries instantly. View results
-                in an intuitive table format with smooth scrolling.
+                Select a configuration and execute queries instantly. View
+                results in an intuitive table format with smooth scrolling.
               </p>
             </div>
           </div>
@@ -381,7 +390,10 @@
             <img
               src="assets/gifs/02-multiple-views.gif"
               alt="Multiple Views Demo"
-              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+              onerror="
+                this.style.display = 'none';
+                this.nextElementSibling.style.display = 'flex';
+              "
             />
             <div class="placeholder-gif" style="display: none">
               GIF: Multiple Views
@@ -389,8 +401,8 @@
             <div class="gif-card-content">
               <h4>📊 Multiple Views</h4>
               <p>
-                Switch between Table, JSON, and CSV views seamlessly. Export data
-                in your preferred format for analysis or integration.
+                Switch between Table, JSON, and CSV views seamlessly. Export
+                data in your preferred format for analysis or integration.
               </p>
             </div>
           </div>
@@ -399,7 +411,10 @@
             <img
               src="assets/gifs/03-tree-view.gif"
               alt="Tree View Demo"
-              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+              onerror="
+                this.style.display = 'none';
+                this.nextElementSibling.style.display = 'flex';
+              "
             />
             <div class="placeholder-gif" style="display: none">
               GIF: Tree View
@@ -407,8 +422,9 @@
             <div class="gif-card-content">
               <h4>🌳 Tree View</h4>
               <p>
-                Expand parent records to view child relationships in a hierarchical
-                tree structure. Perfect for navigating complex data models.
+                Expand parent records to view child relationships in a
+                hierarchical tree structure. Perfect for navigating complex data
+                models.
               </p>
             </div>
           </div>
@@ -417,7 +433,10 @@
             <img
               src="assets/gifs/04-large-dataset.gif"
               alt="Large Dataset Demo"
-              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+              onerror="
+                this.style.display = 'none';
+                this.nextElementSibling.style.display = 'flex';
+              "
             />
             <div class="placeholder-gif" style="display: none">
               GIF: Large Dataset
@@ -435,7 +454,10 @@
             <img
               src="assets/gifs/05-create-config.gif"
               alt="Create Configuration Demo"
-              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+              onerror="
+                this.style.display = 'none';
+                this.nextElementSibling.style.display = 'flex';
+              "
             />
             <div class="placeholder-gif" style="display: none">
               GIF: Create Configuration
@@ -453,7 +475,10 @@
             <img
               src="assets/gifs/06-run-as-user.gif"
               alt="Run As User Demo"
-              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+              onerror="
+                this.style.display = 'none';
+                this.nextElementSibling.style.display = 'flex';
+              "
             />
             <div class="placeholder-gif" style="display: none">
               GIF: Run As User
@@ -512,7 +537,12 @@
 
         <h3>Installation Steps</h3>
         <pre
-          style="background: #f5f5f5; padding: 1rem; border-radius: 8px; overflow-x: auto"
+          style="
+            background: #f5f5f5;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+          "
         ><code># Clone repository
 git clone https://github.com/jterrats/JT_DynamicQueries.git
 cd JT_DynamicQueries
@@ -533,7 +563,9 @@ npm test</code></pre>
         <p style="font-size: 1.2rem; margin: 1rem 0">
           Deploy to your Salesforce org in minutes
         </p>
-        <a href="https://github.com/jterrats/JT_DynamicQueries" class="cta-button"
+        <a
+          href="https://github.com/jterrats/JT_DynamicQueries"
+          class="cta-button"
           >View on GitHub</a
         >
         <a
@@ -595,7 +627,8 @@ npm test</code></pre>
         en: {
           bannerText: "This is how the GitHub Pages site will look",
           title: "⚡ JT Dynamic Queries",
-          tagline: "Lightning Web Component for Dynamic SOQL Queries in Salesforce",
+          tagline:
+            "Lightning Web Component for Dynamic SOQL Queries in Salesforce",
           testStatus: "✅ Test Results",
           testsPassing: "Passing",
           accessibility: "Accessibility",
@@ -605,22 +638,29 @@ npm test</code></pre>
           codeCoverage: "Code Coverage",
           demos: "🎬 See It In Action",
           queryExecution: "⚡ Query Execution",
-          queryExecutionDesc: "Select a configuration and execute queries instantly. View results in an intuitive table format with smooth scrolling.",
+          queryExecutionDesc:
+            "Select a configuration and execute queries instantly. View results in an intuitive table format with smooth scrolling.",
           multipleViews: "📊 Multiple Views",
-          multipleViewsDesc: "Switch between Table, JSON, and CSV views seamlessly. Export data in your preferred format for analysis or integration.",
+          multipleViewsDesc:
+            "Switch between Table, JSON, and CSV views seamlessly. Export data in your preferred format for analysis or integration.",
           treeView: "🌳 Tree View",
-          treeViewDesc: "Expand parent records to view child relationships in a hierarchical tree structure. Perfect for navigating complex data models.",
+          treeViewDesc:
+            "Expand parent records to view child relationships in a hierarchical tree structure. Perfect for navigating complex data models.",
           largeDatasets: "🚀 Large Datasets",
-          largeDatasetsDesc: "Handle massive datasets (>50k records) with cursor-based pagination. Optimized performance for enterprise-scale queries.",
+          largeDatasetsDesc:
+            "Handle massive datasets (>50k records) with cursor-based pagination. Optimized performance for enterprise-scale queries.",
           createConfig: "⚙️ Create Configuration",
-          createConfigDesc: "Build custom query configurations with a simple form. Define objects, fields, filters, and parameters in seconds.",
+          createConfigDesc:
+            "Build custom query configurations with a simple form. Define objects, fields, filters, and parameters in seconds.",
           runAsUser: "👤 Run As User",
-          runAsUserDesc: "Execute queries as different users to test permissions and data visibility. Perfect for admins validating security models.",
+          runAsUserDesc:
+            "Execute queries as different users to test permissions and data visibility. Perfect for admins validating security models.",
           features: "✨ Key Features",
           feature1Title: "🚀 Dynamic Queries",
           feature1Desc: "Execute SOQL queries dynamically without hardcoding",
           feature2Title: "🔐 Named Credentials",
-          feature2Desc: "Secure Tooling API callouts with modern Named Credentials",
+          feature2Desc:
+            "Secure Tooling API callouts with modern Named Credentials",
           feature3Title: "📊 Multiple Views",
           feature3Desc: "Switch between Table, JSON, and mobile card views",
           feature4Title: "♿ Accessible",
@@ -646,7 +686,8 @@ npm test</code></pre>
         es: {
           bannerText: "Así se verá el sitio de GitHub Pages",
           title: "⚡ JT Dynamic Queries",
-          tagline: "Componente Lightning Web para Consultas SOQL Dinámicas en Salesforce",
+          tagline:
+            "Componente Lightning Web para Consultas SOQL Dinámicas en Salesforce",
           testStatus: "✅ Resultados de Pruebas",
           testsPassing: "Pasando",
           accessibility: "Accesibilidad",
@@ -656,26 +697,34 @@ npm test</code></pre>
           codeCoverage: "Cobertura de Código",
           demos: "🎬 Míralo en Acción",
           queryExecution: "⚡ Ejecución de Consultas",
-          queryExecutionDesc: "Selecciona una configuración y ejecuta consultas instantáneamente. Ve los resultados en una tabla intuitiva con desplazamiento suave.",
+          queryExecutionDesc:
+            "Selecciona una configuración y ejecuta consultas instantáneamente. Ve los resultados en una tabla intuitiva con desplazamiento suave.",
           multipleViews: "📊 Múltiples Vistas",
-          multipleViewsDesc: "Cambia entre vistas de Tabla, JSON y CSV sin problemas. Exporta datos en tu formato preferido para análisis o integración.",
+          multipleViewsDesc:
+            "Cambia entre vistas de Tabla, JSON y CSV sin problemas. Exporta datos en tu formato preferido para análisis o integración.",
           treeView: "🌳 Vista de Árbol",
-          treeViewDesc: "Expande registros padre para ver relaciones hijo en una estructura jerárquica. Perfecto para navegar modelos de datos complejos.",
+          treeViewDesc:
+            "Expande registros padre para ver relaciones hijo en una estructura jerárquica. Perfecto para navegar modelos de datos complejos.",
           largeDatasets: "🚀 Conjuntos de Datos Grandes",
-          largeDatasetsDesc: "Maneja conjuntos de datos masivos (>50k registros) con paginación basada en cursores. Rendimiento optimizado para consultas a escala empresarial.",
+          largeDatasetsDesc:
+            "Maneja conjuntos de datos masivos (>50k registros) con paginación basada en cursores. Rendimiento optimizado para consultas a escala empresarial.",
           createConfig: "⚙️ Crear Configuración",
-          createConfigDesc: "Construye configuraciones de consultas personalizadas con un formulario simple. Define objetos, campos, filtros y parámetros en segundos.",
+          createConfigDesc:
+            "Construye configuraciones de consultas personalizadas con un formulario simple. Define objetos, campos, filtros y parámetros en segundos.",
           runAsUser: "👤 Ejecutar Como Usuario",
-          runAsUserDesc: "Ejecuta consultas como diferentes usuarios para probar permisos y visibilidad de datos. Perfecto para administradores validando modelos de seguridad.",
+          runAsUserDesc:
+            "Ejecuta consultas como diferentes usuarios para probar permisos y visibilidad de datos. Perfecto para administradores validando modelos de seguridad.",
           features: "✨ Características Clave",
           feature1Title: "🚀 Consultas Dinámicas",
           feature1Desc: "Ejecuta consultas SOQL dinámicamente sin hardcodear",
           feature2Title: "🔐 Named Credentials",
-          feature2Desc: "Llamadas seguras a Tooling API con Named Credentials modernos",
+          feature2Desc:
+            "Llamadas seguras a Tooling API con Named Credentials modernos",
           feature3Title: "📊 Múltiples Vistas",
           feature3Desc: "Cambia entre vistas de Tabla, JSON y tarjetas móviles",
           feature4Title: "♿ Accesible",
-          feature4Desc: "Cumple con WCAG 2.1 AA con navegación completa por teclado",
+          feature4Desc:
+            "Cumple con WCAG 2.1 AA con navegación completa por teclado",
           feature5Title: "🎨 Diseño Lightning",
           feature5Desc: "Construido con Salesforce Lightning Design System",
           feature6Title: "🧪 Probado",
@@ -697,7 +746,8 @@ npm test</code></pre>
         fr: {
           bannerText: "Voici à quoi ressemblera le site GitHub Pages",
           title: "⚡ JT Dynamic Queries",
-          tagline: "Composant Lightning Web pour les Requêtes SOQL Dynamiques dans Salesforce",
+          tagline:
+            "Composant Lightning Web pour les Requêtes SOQL Dynamiques dans Salesforce",
           demos: "🎬 Voyez-le en Action",
           queryExecution: "⚡ Exécution de Requête",
           multipleViews: "📊 Vues Multiples",
@@ -711,7 +761,8 @@ npm test</code></pre>
         de: {
           bannerText: "So wird die GitHub Pages-Site aussehen",
           title: "⚡ JT Dynamic Queries",
-          tagline: "Lightning Web Component für Dynamische SOQL-Abfragen in Salesforce",
+          tagline:
+            "Lightning Web Component für Dynamische SOQL-Abfragen in Salesforce",
           demos: "🎬 Sehen Sie es in Aktion",
           queryExecution: "⚡ Abfrageausführung",
           multipleViews: "📊 Mehrere Ansichten",
@@ -725,7 +776,8 @@ npm test</code></pre>
         it: {
           bannerText: "Ecco come apparirà il sito GitHub Pages",
           title: "⚡ JT Dynamic Queries",
-          tagline: "Componente Lightning Web per Query SOQL Dinamiche in Salesforce",
+          tagline:
+            "Componente Lightning Web per Query SOQL Dinamiche in Salesforce",
           demos: "🎬 Guardalo in Azione",
           queryExecution: "⚡ Esecuzione Query",
           multipleViews: "📊 Viste Multiple",
@@ -739,7 +791,8 @@ npm test</code></pre>
         ja: {
           bannerText: "GitHub Pagesサイトの外観",
           title: "⚡ JT Dynamic Queries",
-          tagline: "Salesforce用の動的SOQLクエリのためのLightning Webコンポーネント",
+          tagline:
+            "Salesforce用の動的SOQLクエリのためのLightning Webコンポーネント",
           demos: "🎬 実際に見る",
           queryExecution: "⚡ クエリ実行",
           multipleViews: "📊 複数のビュー",
@@ -753,7 +806,8 @@ npm test</code></pre>
         pt: {
           bannerText: "É assim que o site do GitHub Pages ficará",
           title: "⚡ JT Dynamic Queries",
-          tagline: "Componente Lightning Web para Consultas SOQL Dinâmicas no Salesforce",
+          tagline:
+            "Componente Lightning Web para Consultas SOQL Dinâmicas no Salesforce",
           demos: "🎬 Veja em Ação",
           queryExecution: "⚡ Execução de Consulta",
           multipleViews: "📊 Múltiplas Visualizações",
@@ -783,60 +837,77 @@ npm test</code></pre>
       // Change language function
       function changeLanguage(lang) {
         const c = content[lang] || content.en;
-        
+
         // Update banner
-        if (c.bannerText) document.getElementById('banner-text').textContent = c.bannerText;
-        
+        if (c.bannerText)
+          document.getElementById("banner-text").textContent = c.bannerText;
+
         // Update title and tagline
-        if (c.title) document.querySelector('h1').textContent = c.title;
-        if (c.tagline) document.querySelector('.tagline').textContent = c.tagline;
-        
+        if (c.title) document.querySelector("h1").textContent = c.title;
+        if (c.tagline)
+          document.querySelector(".tagline").textContent = c.tagline;
+
         // Update section titles (with fallback)
-        if (c.testStatus) document.querySelector('#test-status h2').textContent = c.testStatus;
-        if (c.demos) document.querySelector('#demos h2').textContent = c.demos;
-        if (c.features) document.querySelector('#features h2').textContent = c.features;
-        if (c.quickStart) document.querySelector('#installation h2').textContent = c.quickStart;
-        if (c.documentation) document.querySelector('#docs h2').textContent = c.documentation;
-        
+        if (c.testStatus)
+          document.querySelector("#test-status h2").textContent = c.testStatus;
+        if (c.demos) document.querySelector("#demos h2").textContent = c.demos;
+        if (c.features)
+          document.querySelector("#features h2").textContent = c.features;
+        if (c.quickStart)
+          document.querySelector("#installation h2").textContent = c.quickStart;
+        if (c.documentation)
+          document.querySelector("#docs h2").textContent = c.documentation;
+
         // Update GIF cards (with fallback to keep existing text)
-        const gifCards = document.querySelectorAll('.gif-card-content h4');
-        const gifDescs = document.querySelectorAll('.gif-card-content p');
-        
-        if (c.queryExecution && gifCards[0]) gifCards[0].textContent = c.queryExecution;
-        if (c.queryExecutionDesc && gifDescs[0]) gifDescs[0].textContent = c.queryExecutionDesc;
-        
-        if (c.multipleViews && gifCards[1]) gifCards[1].textContent = c.multipleViews;
-        if (c.multipleViewsDesc && gifDescs[1]) gifDescs[1].textContent = c.multipleViewsDesc;
-        
+        const gifCards = document.querySelectorAll(".gif-card-content h4");
+        const gifDescs = document.querySelectorAll(".gif-card-content p");
+
+        if (c.queryExecution && gifCards[0])
+          gifCards[0].textContent = c.queryExecution;
+        if (c.queryExecutionDesc && gifDescs[0])
+          gifDescs[0].textContent = c.queryExecutionDesc;
+
+        if (c.multipleViews && gifCards[1])
+          gifCards[1].textContent = c.multipleViews;
+        if (c.multipleViewsDesc && gifDescs[1])
+          gifDescs[1].textContent = c.multipleViewsDesc;
+
         if (c.treeView && gifCards[2]) gifCards[2].textContent = c.treeView;
-        if (c.treeViewDesc && gifDescs[2]) gifDescs[2].textContent = c.treeViewDesc;
-        
-        if (c.largeDatasets && gifCards[3]) gifCards[3].textContent = c.largeDatasets;
-        if (c.largeDatasetsDesc && gifDescs[3]) gifDescs[3].textContent = c.largeDatasetsDesc;
-        
-        if (c.createConfig && gifCards[4]) gifCards[4].textContent = c.createConfig;
-        if (c.createConfigDesc && gifDescs[4]) gifDescs[4].textContent = c.createConfigDesc;
-        
+        if (c.treeViewDesc && gifDescs[2])
+          gifDescs[2].textContent = c.treeViewDesc;
+
+        if (c.largeDatasets && gifCards[3])
+          gifCards[3].textContent = c.largeDatasets;
+        if (c.largeDatasetsDesc && gifDescs[3])
+          gifDescs[3].textContent = c.largeDatasetsDesc;
+
+        if (c.createConfig && gifCards[4])
+          gifCards[4].textContent = c.createConfig;
+        if (c.createConfigDesc && gifDescs[4])
+          gifDescs[4].textContent = c.createConfigDesc;
+
         if (c.runAsUser && gifCards[5]) gifCards[5].textContent = c.runAsUser;
-        if (c.runAsUserDesc && gifDescs[5]) gifDescs[5].textContent = c.runAsUserDesc;
-        
+        if (c.runAsUserDesc && gifDescs[5])
+          gifDescs[5].textContent = c.runAsUserDesc;
+
         // Update CTA (with fallback)
-        if (c.ready) document.querySelector('.cta-section h2').textContent = c.ready;
-        if (c.readyDesc) document.querySelector('.cta-section p').textContent = c.readyDesc;
-        
+        if (c.ready)
+          document.querySelector(".cta-section h2").textContent = c.ready;
+        if (c.readyDesc)
+          document.querySelector(".cta-section p").textContent = c.readyDesc;
+
         // Save preference
-        localStorage.setItem('preferred-language', lang);
+        localStorage.setItem("preferred-language", lang);
       }
 
       // Load saved language preference
-      window.addEventListener('DOMContentLoaded', () => {
-        const savedLang = localStorage.getItem('preferred-language') || 'en';
-        document.getElementById('language').value = savedLang;
-        if (savedLang !== 'en') {
+      window.addEventListener("DOMContentLoaded", () => {
+        const savedLang = localStorage.getItem("preferred-language") || "en";
+        document.getElementById("language").value = savedLang;
+        if (savedLang !== "en") {
           changeLanguage(savedLang);
         }
       });
     </script>
   </body>
 </html>
-

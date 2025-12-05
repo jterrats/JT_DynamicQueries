@@ -37,7 +37,9 @@ const VIEWPORT = { width: 1200, height: 750 };
  * Lower FPS = slower, more visible GIF
  */
 async function convertToGif(videoPath, gifPath, fps = 6) {
-  console.log(`   🎨 Converting to GIF: ${path.basename(gifPath)} @ ${fps} FPS`);
+  console.log(
+    `   🎨 Converting to GIF: ${path.basename(gifPath)} @ ${fps} FPS`
+  );
 
   // Generate palette for better quality
   const palettePath = videoPath.replace(".webm", "_palette.png");
@@ -76,17 +78,17 @@ async function getComponentURL(browser, session) {
     viewport: VIEWPORT
   });
   const tempPage = await tempContext.newPage();
-  
+
   await setupTestContext(tempPage, session);
   await tempPage.waitForTimeout(2000);
-  
+
   // Get the current URL (should be the component page)
   const componentURL = tempPage.url();
-  
+
   // Save storage state (cookies)
   const storageState = await tempContext.storageState();
   await tempContext.close();
-  
+
   console.log("   ✅ Component URL:", componentURL);
   return { componentURL, storageState };
 }
@@ -94,7 +96,11 @@ async function getComponentURL(browser, session) {
 /**
  * Create recording context and go directly to component
  */
-async function createRecordingContextAndNavigate(browser, componentURL, storageState) {
+async function createRecordingContextAndNavigate(
+  browser,
+  componentURL,
+  storageState
+) {
   const context = await browser.newContext({
     viewport: VIEWPORT,
     storageState: storageState,
@@ -103,14 +109,17 @@ async function createRecordingContextAndNavigate(browser, componentURL, storageS
       size: VIEWPORT
     }
   });
-  
+
   const page = await context.newPage();
-  
+
   // Go directly to component URL (skips App Launcher)
-  await page.goto(componentURL, { waitUntil: "domcontentloaded", timeout: 30000 });
+  await page.goto(componentURL, {
+    waitUntil: "domcontentloaded",
+    timeout: 30000
+  });
   await page.waitForSelector("c-jt-query-viewer", { timeout: 30000 });
   await page.waitForTimeout(1500);
-  
+
   return { context, page };
 }
 
@@ -133,7 +142,10 @@ async function captureHappyPaths() {
   console.log("");
 
   // Get component URL once (skips navigation in all GIFs)
-  const { componentURL, storageState } = await getComponentURL(browser, session);
+  const { componentURL, storageState } = await getComponentURL(
+    browser,
+    session
+  );
   console.log("");
 
   // ==================================================================
@@ -141,14 +153,14 @@ async function captureHappyPaths() {
   // Show: Select config → Execute → View results
   // ==================================================================
   console.log("🎥 1/6: Capturing Basic Query Execution...");
-  const { context: context1, page: page1 } = await createRecordingContextAndNavigate(
-    browser,
-    componentURL,
-    storageState
-  );
+  const { context: context1, page: page1 } =
+    await createRecordingContextAndNavigate(
+      browser,
+      componentURL,
+      storageState
+    );
 
   try {
-
     // Select configuration (slower)
     await selectConfiguration(page1, "Customer 360");
     await page1.waitForTimeout(1500);
@@ -158,7 +170,9 @@ async function captureHappyPaths() {
     await page1.waitForTimeout(3000);
 
     // Scroll to see results
-    await page1.evaluate(() => window.scrollTo({ top: 300, behavior: "smooth" }));
+    await page1.evaluate(() =>
+      window.scrollTo({ top: 300, behavior: "smooth" })
+    );
     await page1.waitForTimeout(2000);
     await page1.evaluate(() => window.scrollTo({ top: 0, behavior: "smooth" }));
     await page1.waitForTimeout(1000);
@@ -173,14 +187,14 @@ async function captureHappyPaths() {
   // Show: Execute query → Switch to JSON → Switch to CSV → Back to Table
   // ==================================================================
   console.log("🎥 2/6: Capturing Multiple Views (JSON, CSV)...");
-  const { context: context2, page: page2 } = await createRecordingContextAndNavigate(
-    browser,
-    componentURL,
-    storageState
-  );
+  const { context: context2, page: page2 } =
+    await createRecordingContextAndNavigate(
+      browser,
+      componentURL,
+      storageState
+    );
 
   try {
-
     // Select configuration
     await selectConfiguration(page2, "Customer 360");
     await page2.waitForTimeout(1500);
@@ -197,7 +211,7 @@ async function captureHappyPaths() {
 
       // Scroll JSON to show content
       await page2.evaluate(() => {
-        const jsonView = document.querySelector('.json-content');
+        const jsonView = document.querySelector(".json-content");
         if (jsonView) jsonView.scrollTop = 100;
       });
       await page2.waitForTimeout(2000);
@@ -211,7 +225,7 @@ async function captureHappyPaths() {
 
       // Scroll CSV to show content
       await page2.evaluate(() => {
-        const csvView = document.querySelector('.csv-content');
+        const csvView = document.querySelector(".csv-content");
         if (csvView) csvView.scrollTop = 50;
       });
       await page2.waitForTimeout(2000);
@@ -234,14 +248,14 @@ async function captureHappyPaths() {
   // Show: Execute query with relationships → Expand parent → Show children
   // ==================================================================
   console.log("🎥 3/6: Capturing Tree View with Child Relationships...");
-  const { context: context3, page: page3 } = await createRecordingContextAndNavigate(
-    browser,
-    componentURL,
-    storageState
-  );
+  const { context: context3, page: page3 } =
+    await createRecordingContextAndNavigate(
+      browser,
+      componentURL,
+      storageState
+    );
 
   try {
-
     // Select a config that has child relationships (Account usually has Contacts, Opportunities)
     await selectConfiguration(page3, "Customer 360");
     await page3.waitForTimeout(1500);
@@ -252,7 +266,9 @@ async function captureHappyPaths() {
 
     // Try to expand first row with children (tree view)
     const expandButton = page3
-      .locator('lightning-button-icon[icon-name*="chevronright"], tbody lightning-button-icon')
+      .locator(
+        'lightning-button-icon[icon-name*="chevronright"], tbody lightning-button-icon'
+      )
       .first();
 
     if (await expandButton.isVisible().catch(() => false)) {
@@ -260,7 +276,9 @@ async function captureHappyPaths() {
       await page3.waitForTimeout(2500);
 
       // Scroll to see expanded content
-      await page3.evaluate(() => window.scrollTo({ top: 300, behavior: "smooth" }));
+      await page3.evaluate(() =>
+        window.scrollTo({ top: 300, behavior: "smooth" })
+      );
       await page3.waitForTimeout(2000);
 
       // Collapse it
@@ -283,14 +301,14 @@ async function captureHappyPaths() {
   // Show: Query with many records → Pagination → Performance message
   // ==================================================================
   console.log("🎥 4/6: Capturing Large Dataset with Cursors...");
-  const { context: context4, page: page4 } = await createRecordingContextAndNavigate(
-    browser,
-    componentURL,
-    storageState
-  );
+  const { context: context4, page: page4 } =
+    await createRecordingContextAndNavigate(
+      browser,
+      componentURL,
+      storageState
+    );
 
   try {
-
     // Select configuration (ideally one that returns many records)
     // If "All Accounts" exists, use it, otherwise use first available
     const combobox = page4.locator("c-jt-searchable-combobox input").first();
@@ -310,13 +328,17 @@ async function captureHappyPaths() {
     await page4.waitForTimeout(3000);
 
     // Look for pagination or performance message
-    const paginationInfo = page4.locator('text=/showing|results|records/i').first();
+    const paginationInfo = page4
+      .locator("text=/showing|results|records/i")
+      .first();
     if (await paginationInfo.isVisible().catch(() => false)) {
       await page4.waitForTimeout(2000);
     }
 
     // Scroll through results
-    await page4.evaluate(() => window.scrollTo({ top: 400, behavior: "smooth" }));
+    await page4.evaluate(() =>
+      window.scrollTo({ top: 400, behavior: "smooth" })
+    );
     await page4.waitForTimeout(1500);
     await page4.evaluate(() => window.scrollTo({ top: 0, behavior: "smooth" }));
     await page4.waitForTimeout(1500);
@@ -331,14 +353,14 @@ async function captureHappyPaths() {
   // Show: Click New Config → Fill form → Show validation
   // ==================================================================
   console.log("🎥 5/6: Capturing Create Configuration...");
-  const { context: context5, page: page5 } = await createRecordingContextAndNavigate(
-    browser,
-    componentURL,
-    storageState
-  );
+  const { context: context5, page: page5 } =
+    await createRecordingContextAndNavigate(
+      browser,
+      componentURL,
+      storageState
+    );
 
   try {
-
     // Click "New Configuration" button
     const newConfigButton = page5
       .locator('button:has-text("New Configuration")')
@@ -399,14 +421,14 @@ async function captureHappyPaths() {
   // Show: Open Run As → Select user → Execute query
   // ==================================================================
   console.log("🎥 6/6: Capturing Run As User...");
-  const { context: context6, page: page6 } = await createRecordingContextAndNavigate(
-    browser,
-    componentURL,
-    storageState
-  );
+  const { context: context6, page: page6 } =
+    await createRecordingContextAndNavigate(
+      browser,
+      componentURL,
+      storageState
+    );
 
   try {
-
     // Select a configuration first
     await selectConfiguration(page6, "Customer 360");
     await page6.waitForTimeout(1200);
@@ -418,7 +440,9 @@ async function captureHappyPaths() {
       await page6.waitForTimeout(1500);
 
       // Select a user from dropdown
-      const userCombobox = page6.locator('c-jt-searchable-combobox input').nth(1);
+      const userCombobox = page6
+        .locator("c-jt-searchable-combobox input")
+        .nth(1);
       if (await userCombobox.isVisible().catch(() => false)) {
         await userCombobox.click();
         await page6.waitForTimeout(1000);
@@ -507,7 +531,9 @@ async function captureHappyPaths() {
   console.log("   1. 01-query-execution.gif - Basic query execution");
   console.log("   2. 02-multiple-views.gif - Table, JSON, CSV views");
   console.log("   3. 03-tree-view.gif - Child relationships (tree view)");
-  console.log("   4. 04-large-dataset.gif - Large datasets with cursors (>50k)");
+  console.log(
+    "   4. 04-large-dataset.gif - Large datasets with cursors (>50k)"
+  );
   console.log("   5. 05-create-config.gif - Create custom configuration");
   console.log("   6. 06-run-as-user.gif - Run queries as different users");
   console.log("");
@@ -523,7 +549,9 @@ async function captureHappyPaths() {
       console.error("❌ ffmpeg not found. Please install it first:");
       console.error("   macOS: brew install ffmpeg");
       console.error("   Linux: sudo apt-get install ffmpeg");
-      console.error("   Windows: Download from https://ffmpeg.org/download.html");
+      console.error(
+        "   Windows: Download from https://ffmpeg.org/download.html"
+      );
       process.exit(1);
     }
 
@@ -534,4 +562,3 @@ async function captureHappyPaths() {
     process.exit(1);
   }
 })();
-

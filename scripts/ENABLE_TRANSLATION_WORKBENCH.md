@@ -28,15 +28,15 @@ To unlock **7 additional languages** (Español, Français, Deutsch, Italiano, �
 2. Click **Add** under "Supported Languages"
 3. Add these languages (one by one):
 
-| Language | Code | Flag |
-|----------|------|------|
-| Spanish (Mexico) | `es_MX` | 🇪🇸 |
-| French | `fr` | 🇫🇷 |
-| German | `de` | 🇩🇪 |
-| Italian | `it` | 🇮🇹 |
-| Japanese | `ja` | 🇯🇵 |
-| Portuguese (Brazil) | `pt_BR` | 🇧🇷 |
-| Chinese (Simplified) | `zh_CN` | 🇨🇳 |
+| Language             | Code    | Flag |
+| -------------------- | ------- | ---- |
+| Spanish (Mexico)     | `es_MX` | 🇪🇸   |
+| French               | `fr`    | 🇫🇷   |
+| German               | `de`    | 🇩🇪   |
+| Italian              | `it`    | 🇮🇹   |
+| Japanese             | `ja`    | 🇯🇵   |
+| Portuguese (Brazil)  | `pt_BR` | 🇧🇷   |
+| Chinese (Simplified) | `zh_CN` | 🇨🇳   |
 
 4. Click **Save** after each
 
@@ -78,14 +78,14 @@ This will deploy **7 translation files** with **~142 translations each** (994 to
 ## 📊 Translation Coverage
 
 \`\`\`
-🇺🇸 English:    142/142 (100%) ✅ DEPLOYED
-🇪🇸 Español:    142/142 (100%) ⏳ Pending Translation Workbench
-🇫🇷 Français:   142/142 (100%) ⏳ Pending Translation Workbench
-🇩🇪 Deutsch:    142/142 (100%) ⏳ Pending Translation Workbench
-🇮🇹 Italiano:   142/142 (100%) ⏳ Pending Translation Workbench
-🇯🇵 日本語:      142/142 (100%) ⏳ Pending Translation Workbench
-🇧🇷 Português:  142/142 (100%) ⏳ Pending Translation Workbench
-🇨🇳 中文:        142/142 (100%) ⏳ Pending Translation Workbench
+🇺🇸 English: 142/142 (100%) ✅ DEPLOYED
+🇪🇸 Español: 142/142 (100%) ⏳ Pending Translation Workbench
+🇫🇷 Français: 142/142 (100%) ⏳ Pending Translation Workbench
+🇩🇪 Deutsch: 142/142 (100%) ⏳ Pending Translation Workbench
+🇮🇹 Italiano: 142/142 (100%) ⏳ Pending Translation Workbench
+🇯🇵 日本語: 142/142 (100%) ⏳ Pending Translation Workbench
+🇧🇷 Português: 142/142 (100%) ⏳ Pending Translation Workbench
+🇨🇳 中文: 142/142 (100%) ⏳ Pending Translation Workbench
 \`\`\`
 
 ---
@@ -106,12 +106,14 @@ Once Translation Workbench is enabled and translations are deployed:
 ### "Translation Workbench is not available"
 
 Translation Workbench is available in:
+
 - ✅ Developer Edition
 - ✅ Enterprise Edition
 - ✅ Unlimited Edition
 - ✅ Performance Edition
 
 Not available in:
+
 - ❌ Professional Edition
 - ❌ Group Edition
 - ❌ Personal Edition
@@ -119,6 +121,7 @@ Not available in:
 ### "Can't find Translation Workbench in Setup"
 
 Try searching: `Translate` or check under:
+
 - **Setup → Company Settings → Translation Workbench**
 
 ### "Deployment failed: Not available for deploy"
@@ -136,4 +139,3 @@ This means Translation Workbench is not enabled yet. Follow steps above.
 ---
 
 Generated: ${new Date().toISOString()}
-

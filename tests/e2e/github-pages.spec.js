@@ -52,7 +52,10 @@ test.describe("GitHub Pages - Documentation Site", () => {
 
   test.beforeEach(async ({ page }) => {
     // Skip if site is not available
-    test.skip(!siteAvailable, `GitHub Pages not available: ${healthCheckError}`);
+    test.skip(
+      !siteAvailable,
+      `GitHub Pages not available: ${healthCheckError}`
+    );
 
     // Set longer timeout for external site
     page.setDefaultTimeout(30000);
@@ -68,7 +71,9 @@ test.describe("GitHub Pages - Documentation Site", () => {
     await expect(page).toHaveTitle(/JT Dynamic Queries/i);
 
     // Verify main heading (flexible - any h1 or h2 with project name)
-    const heading = page.locator("h1, h2").filter({ hasText: /dynamic.*queries/i });
+    const heading = page
+      .locator("h1, h2")
+      .filter({ hasText: /dynamic.*queries/i });
     await expect(heading.first()).toBeVisible({ timeout: 10000 });
 
     // Verify page has substantial content (at least 100 characters visible)
@@ -92,7 +97,10 @@ test.describe("GitHub Pages - Documentation Site", () => {
     // Check if at least some links are visible
     let visibleLinks = 0;
     for (let i = 0; i < Math.min(linkCount, 10); i++) {
-      const isVisible = await allLinks.nth(i).isVisible().catch(() => false);
+      const isVisible = await allLinks
+        .nth(i)
+        .isVisible()
+        .catch(() => false);
       if (isVisible) visibleLinks++;
     }
 
@@ -436,7 +444,10 @@ test.describe("GitHub Pages - Performance", () => {
 
   test.beforeEach(async () => {
     // Skip if site is not available
-    test.skip(!siteAvailable, `GitHub Pages not available: ${healthCheckError}`);
+    test.skip(
+      !siteAvailable,
+      `GitHub Pages not available: ${healthCheckError}`
+    );
   });
 
   test("Homepage loads within acceptable time", async ({ page }) => {
@@ -457,7 +468,7 @@ test.describe("GitHub Pages - Performance", () => {
       // Exclude known third-party images that may be unavailable
       const thirdPartyDomains = [
         "raw.githubusercontent.com/afawcett", // GitHub deploy button
-        "shields.io", // Status badges
+        "shields.io" // Status badges
       ];
 
       return images
@@ -466,15 +477,16 @@ test.describe("GitHub Pages - Performance", () => {
           const isThirdParty = thirdPartyDomains.some((domain) =>
             src?.includes(domain)
           );
-          return (
-            !isThirdParty && (!img.complete || img.naturalHeight === 0)
-          );
+          return !isThirdParty && (!img.complete || img.naturalHeight === 0);
         })
         .map((img) => img.src || img.getAttribute("src"));
     });
 
     if (brokenImagesSrcs.length > 0) {
-      console.log("🔴 Broken images found (excluding third-party):", brokenImagesSrcs);
+      console.log(
+        "🔴 Broken images found (excluding third-party):",
+        brokenImagesSrcs
+      );
     }
 
     expect(brokenImagesSrcs).toEqual([]);

@@ -43,6 +43,7 @@ See [`scripts/ACT_USAGE.md`](../../scripts/ACT_USAGE.md) for complete act usage 
 ### Triggers
 
 Most workflows are triggered by:
+
 - `push` to `main` branch
 - `pull_request` events
 - `workflow_dispatch` (manual trigger)
@@ -50,6 +51,7 @@ Most workflows are triggered by:
 ### Jobs
 
 Each workflow typically includes:
+
 1. **Setup** - Install dependencies, authenticate
 2. **Lint** - Code quality checks
 3. **Test** - Unit/E2E tests
@@ -59,6 +61,7 @@ Each workflow typically includes:
 ### Secrets
 
 Required secrets (set in GitHub repo settings):
+
 - `SFDX_AUTH_URL` - Salesforce org authentication
 - `SF_JWT_KEY` - JWT key for Salesforce authentication
 - (others as needed per workflow)
@@ -68,11 +71,13 @@ Required secrets (set in GitHub repo settings):
 ### Before Pushing
 
 1. **Validate locally:**
+
    ```bash
    npm run validate:pipeline -- -w your-workflow.yml
    ```
 
 2. **Run affected tests:**
+
    ```bash
    npm test
    npm run test:e2e
@@ -117,4 +122,3 @@ When modifying workflows:
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)
 - [act - Local Testing Tool](https://github.com/nektos/act)
 - [Workflow Syntax](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions)
-

@@ -29,15 +29,14 @@ Total: **144** labels
 
 ### By Component
 
-
 #### jtDocumentation (30 labels)
 
 Example imports:
 
 ```javascript
-import welcomeSubtitleLabel from '@salesforce/label/c.JT_jtDocumentation_welcomeSubtitle';
-import frameworkPhilosophyLabel from '@salesforce/label/c.JT_jtDocumentation_frameworkPhilosophy';
-import philosophyTextLabel from '@salesforce/label/c.JT_jtDocumentation_philosophyText';
+import welcomeSubtitleLabel from "@salesforce/label/c.JT_jtDocumentation_welcomeSubtitle";
+import frameworkPhilosophyLabel from "@salesforce/label/c.JT_jtDocumentation_frameworkPhilosophy";
+import philosophyTextLabel from "@salesforce/label/c.JT_jtDocumentation_philosophyText";
 // ... 27 more
 ```
 
@@ -46,9 +45,9 @@ import philosophyTextLabel from '@salesforce/label/c.JT_jtDocumentation_philosop
 Example imports:
 
 ```javascript
-import labelRequiredLabel from '@salesforce/label/c.JT_jtQueryViewer_labelRequired';
-import labelTooLongLabel from '@salesforce/label/c.JT_jtQueryViewer_labelTooLong';
-import developerNameRequiredLabel from '@salesforce/label/c.JT_jtQueryViewer_developerNameRequired';
+import labelRequiredLabel from "@salesforce/label/c.JT_jtQueryViewer_labelRequired";
+import labelTooLongLabel from "@salesforce/label/c.JT_jtQueryViewer_labelTooLong";
+import developerNameRequiredLabel from "@salesforce/label/c.JT_jtQueryViewer_developerNameRequired";
 // ... 86 more
 ```
 
@@ -57,9 +56,9 @@ import developerNameRequiredLabel from '@salesforce/label/c.JT_jtQueryViewer_dev
 Example imports:
 
 ```javascript
-import welcomeTitleLabel from '@salesforce/label/c.JT_jtSupport_welcomeTitle';
-import titleLabel from '@salesforce/label/c.JT_jtSupport_title';
-import welcomeMessageLabel from '@salesforce/label/c.JT_jtSupport_welcomeMessage';
+import welcomeTitleLabel from "@salesforce/label/c.JT_jtSupport_welcomeTitle";
+import titleLabel from "@salesforce/label/c.JT_jtSupport_title";
+import welcomeMessageLabel from "@salesforce/label/c.JT_jtSupport_welcomeMessage";
 // ... 22 more
 ```
 
@@ -68,12 +67,12 @@ import welcomeMessageLabel from '@salesforce/label/c.JT_jtSupport_welcomeMessage
 ### Before (labels.js):
 
 ```javascript
-import { getLabel } from './labels';
+import { getLabel } from "./labels";
 
 export default class MyComponent extends LightningElement {
   label = {
-    executeQuery: getLabel('executeQuery'),
-    cancel: getLabel('cancel')
+    executeQuery: getLabel("executeQuery"),
+    cancel: getLabel("cancel")
   };
 }
 ```
@@ -81,8 +80,8 @@ export default class MyComponent extends LightningElement {
 ### After (Custom Labels):
 
 ```javascript
-import executeQueryLabel from '@salesforce/label/c.JT_jtQueryViewer_executeQuery';
-import cancelLabel from '@salesforce/label/c.JT_jtQueryViewer_cancel';
+import executeQueryLabel from "@salesforce/label/c.JT_jtQueryViewer_executeQuery";
+import cancelLabel from "@salesforce/label/c.JT_jtQueryViewer_cancel";
 
 export default class MyComponent extends LightningElement {
   label = {

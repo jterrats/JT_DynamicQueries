@@ -57,6 +57,7 @@ This shows all workflows and jobs that can be executed locally.
 ### `.actrc`
 
 Configuration file for act. Already created with:
+
 - Docker image: `catthehacker/ubuntu:act-latest`
 - Secrets file: `.env.act`
 - Insecure mode (for local testing)
@@ -160,6 +161,7 @@ docker ps -a | grep act- | awk '{print $1}' | xargs docker rm
 ### Workflow Fails Locally But Works on GitHub
 
 This is expected! Some workflows use GitHub-specific features. Focus on validating:
+
 - YAML syntax
 - Job structure
 - Script logic
@@ -168,4 +170,3 @@ This is expected! Some workflows use GitHub-specific features. Focus on validati
 ---
 
 **Remember:** act is a development tool. Always verify critical changes on actual GitHub Actions before merging to main.
-

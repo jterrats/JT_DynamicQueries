@@ -302,13 +302,7 @@
   </head>
   <body>
     <div class="language-banner">
-      <div style="width: 200px"></div>
-      <div class="language-banner-text">
-        🚀 LOCAL PREVIEW -
-        <span id="banner-text"
-          >This is how the GitHub Pages site will look</span
-        >
-      </div>
+      <div style="flex: 1"></div>
       <div class="language-selector">
         <label for="language">🌍</label>
         <select id="language" onchange="changeLanguage(this.value)">
@@ -322,6 +316,7 @@
           <option value="zh">🇨🇳 中文</option>
         </select>
       </div>
+      <div style="flex: 1"></div>
     </div>
 
     <div class="container">
@@ -843,10 +838,6 @@ npm test</code></pre>
       // Change language function
       function changeLanguage(lang) {
         const c = content[lang] || content.en;
-
-        // Update banner
-        if (c.bannerText)
-          document.getElementById("banner-text").textContent = c.bannerText;
 
         // Update title and tagline
         if (c.title) document.querySelector("h1").textContent = c.title;

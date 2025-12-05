@@ -25,21 +25,24 @@ function getSFSession() {
     // Find the first '{' and last '}' to extract complete JSON object
     const firstBrace = orgInfoJson.indexOf('{');
     const lastBrace = orgInfoJson.lastIndexOf('}');
-    
+
     if (firstBrace === -1 || lastBrace === -1) {
-      console.error("❌ SF CLI output:", orgInfoJson);
+      console.error("❌ No valid JSON found in SF CLI output");
+      console.error("Output length:", orgInfoJson.length, "chars");
+      console.error("First 200 chars:", orgInfoJson.substring(0, 200));
       throw new Error("No valid JSON found in SF CLI output. Is there an authenticated org?");
     }
 
     const jsonString = orgInfoJson.substring(firstBrace, lastBrace + 1);
-    
+
     let orgInfo;
     try {
       orgInfo = JSON.parse(jsonString);
     } catch (parseError) {
       console.error("❌ Failed to parse JSON from SF CLI");
-      console.error("Raw output:", orgInfoJson);
-      console.error("Extracted string:", jsonString);
+      console.error("Output length:", orgInfoJson.length, "chars");
+      console.error("First 100 chars:", orgInfoJson.substring(0, 100));
+      console.error("Parse error:", parseError.message);
       throw new Error(`JSON parse failed: ${parseError.message}. Check if SF org is authenticated.`);
     }
 
@@ -53,6 +56,7 @@ function getSFSession() {
 
     console.log("✅ Using active session:", result.username);
     console.log("📍 Instance:", result.instanceUrl);
+    console.log("🔑 Access token:", result.accessToken ? "[REDACTED]" : "[MISSING]");
 
     return {
       instanceUrl: result.instanceUrl,

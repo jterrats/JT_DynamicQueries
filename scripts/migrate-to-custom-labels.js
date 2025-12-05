@@ -2,7 +2,7 @@
  * @description Migrate labels.js to Salesforce Custom Labels + Translation Workbench
  * @author Jaime Terrats
  * @date 2025-12-05
- * 
+ *
  * Extracts all labels from labels.js files and generates:
  * 1. CustomLabels.labels-meta.xml (English base labels)
  * 2. Translation files for 8 languages
@@ -40,33 +40,33 @@ const LANGUAGES = {
  */
 function extractLabelsFromFile(filePath, componentName) {
   console.log(`\n📖 Reading: ${path.basename(path.dirname(filePath))}/${path.basename(filePath)}`);
-  
+
   const content = fs.readFileSync(filePath, 'utf-8');
   const labels = {};
-  
+
   // Extract LABELS object using regex
   const labelsMatch = content.match(/const LABELS = \{([\s\S]*?)\};/);
   if (!labelsMatch) {
     console.log('   ⚠️  No LABELS object found, skipping');
     return labels;
   }
-  
+
   // Parse each language section
   const languages = ['en', 'es', 'fr', 'de', 'it', 'ja', 'pt', 'zh'];
-  
+
   languages.forEach(lang => {
     const langRegex = new RegExp(`${lang}\\s*:\\s*\\{([\\s\\S]*?)\\}(?=,\\s*(?:${languages.join('|')}):|\\s*\\};)`, 'g');
     const langMatch = labelsMatch[1].match(langRegex);
-    
+
     if (langMatch) {
       langMatch.forEach(match => {
         const labelPattern = /(\w+):\s*["']([^"']*?)["']/g;
         let labelMatch;
-        
+
         while ((labelMatch = labelPattern.exec(match)) !== null) {
           const key = labelMatch[1];
           const value = labelMatch[2];
-          
+
           if (!labels[key]) {
             labels[key] = {
               component: componentName,
@@ -80,16 +80,16 @@ function extractLabelsFromFile(filePath, componentName) {
               zh: ''
             };
           }
-          
+
           labels[key][lang] = value;
         }
       });
     }
   });
-  
+
   const count = Object.keys(labels).length;
   console.log(`   ✅ Extracted ${count} labels`);
-  
+
   return labels;
 }
 
@@ -99,14 +99,14 @@ function extractLabelsFromFile(filePath, componentName) {
 function findLabelsFiles() {
   const components = fs.readdirSync(LABELS_DIR);
   const labelsFiles = [];
-  
+
   components.forEach(comp => {
     const labelsPath = path.join(LABELS_DIR, comp, 'labels.js');
     if (fs.existsSync(labelsPath)) {
       labelsFiles.push({ path: labelsPath, component: comp });
     }
   });
-  
+
   return labelsFiles;
 }
 
@@ -115,7 +115,7 @@ function findLabelsFiles() {
  */
 function generateCustomLabelsXML(allLabels) {
   console.log('\n📝 Generating CustomLabels.labels-meta.xml...');
-  
+
   let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
 `;
@@ -126,11 +126,11 @@ function generateCustomLabelsXML(allLabels) {
       console.log(`   ⚠️  Skipping ${key} (no English value)`);
       return;
     }
-    
+
     const fullName = `JT_${data.component}_${key}`;
     const value = data.en.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     const shortDescription = `${data.component} - ${key}`;
-    
+
     xml += `    <labels>
         <fullName>${fullName}</fullName>
         <language>en_US</language>
@@ -146,11 +146,11 @@ function generateCustomLabelsXML(allLabels) {
 
   const outputPath = path.join(OUTPUT_DIR, 'CustomLabels.labels-meta.xml');
   fs.writeFileSync(outputPath, xml);
-  
+
   const count = Object.keys(allLabels).length;
   console.log(`   ✅ Created ${count} Custom Labels`);
   console.log(`   📁 ${outputPath}`);
-  
+
   return count;
 }
 
@@ -175,24 +175,29 @@ function generateTranslations(allLabels) {
     
     let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <Translations xmlns="http://soap.sforce.com/2006/04/metadata">
-    <customLabels>
 `;
 
     let translatedCount = 0;
     Object.entries(allLabels).sort().forEach(([key, data]) => {
+      // Skip if no English value (label doesn't exist in CustomLabels)
+      if (!data.en || data.en.trim() === '') {
+        return;
+      }
+      
       const fullName = `JT_${data.component}_${key}`;
       const translation = (data[shortLang] || data.en || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
       
       if (translation) {
-        xml += `        <name>${fullName}</name>
+        xml += `    <customLabels>
+        <name>${fullName}</name>
         <label>${translation}</label>
+    </customLabels>
 `;
         translatedCount++;
       }
     });
 
-    xml += `    </customLabels>
-</Translations>
+    xml += `</Translations>
 `;
 
     fs.writeFileSync(translationFile, xml);
@@ -206,7 +211,7 @@ function generateTranslations(allLabels) {
  */
 function generateMigrationGuide(allLabels) {
   console.log('\n📚 Generating migration guide...');
-  
+
   let guide = `# Custom Labels Migration Guide
 
 ## Overview
@@ -342,30 +347,30 @@ Generated on ${new Date().toISOString()}
 (async () => {
   console.log('🌍 Custom Labels & Translation Workbench Migration');
   console.log('='.repeat(60));
-  
+
   // Find all labels.js files
   const labelsFiles = findLabelsFiles();
   console.log(`\n📂 Found ${labelsFiles.length} components with labels.js:`);
   labelsFiles.forEach(f => console.log(`   - ${f.component}`));
-  
+
   // Extract all labels
   const allLabels = {};
   labelsFiles.forEach(({ path: filePath, component }) => {
     const labels = extractLabelsFromFile(filePath, component);
     Object.assign(allLabels, labels);
   });
-  
+
   console.log(`\n📊 Total unique labels: ${Object.keys(allLabels).length}`);
-  
+
   // Generate Custom Labels XML
   const labelCount = generateCustomLabelsXML(allLabels);
-  
+
   // Generate translations
   generateTranslations(allLabels);
-  
+
   // Generate migration guide
   generateMigrationGuide(allLabels);
-  
+
   console.log('\n✨ Migration files created successfully!');
   console.log('\n📋 Next Steps:');
   console.log('1. Review generated files in force-app/main/default/labels/ and translations/');

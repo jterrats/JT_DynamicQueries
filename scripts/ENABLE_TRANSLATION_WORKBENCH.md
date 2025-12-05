@@ -2,7 +2,7 @@
 
 ## 🌍 Why Translation Workbench?
 
-Your **142 Custom Labels** have been deployed successfully ✅  
+Your **142 Custom Labels** have been deployed successfully ✅
 But they're only in **English** 🇺🇸 right now.
 
 To unlock **7 additional languages** (Español, Français, Deutsch, Italiano, 日本語, Português, 中文), you need to **enable Translation Workbench** in your org.

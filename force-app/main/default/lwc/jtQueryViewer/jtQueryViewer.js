@@ -174,6 +174,7 @@ export default class JtQueryViewer extends LightningElement {
 
   // Computed property for labels (cannot call functions at class level)
 // Custom Labels (89 labels from Translation Workbench)
+// Custom Labels (89 labels from Translation Workbench)
   labels = {
     apexClass: apexClassLabel,
     autoDetectedFromQuery: autoDetectedFromQueryLabel,
@@ -219,6 +220,52 @@ export default class JtQueryViewer extends LightningElement {
     labelRequired: labelRequiredLabel,
     labelTooLong: labelTooLongLabel,
     line: lineLabel,
+    lineNumber: lineNumberLabel,
+    loadingUsers: loadingUsersLabel,
+    name: nameLabel,
+    next: nextLabel,
+    noParametersRequired: noParametersRequiredLabel,
+    noReferencesFound: noReferencesFoundLabel,
+    noResults: noResultsLabel,
+    noUsageFound: noUsageFoundLabel,
+    noUsageMessage: noUsageMessageLabel,
+    object: objectLabel,
+    objectName: objectNameLabel,
+    objectNameReadOnly: objectNameReadOnlyLabel,
+    of: ofLabel,
+    page: pageLabel,
+    predefinedBindings: predefinedBindingsLabel,
+    predefinedBindingsDesc: predefinedBindingsDescLabel,
+    previous: previousLabel,
+    queryParameters: queryParametersLabel,
+    queryPreview: queryPreviewLabel,
+    queryPreviewTitle: queryPreviewTitleLabel,
+    record: recordLabel,
+    records: recordsLabel,
+    results: resultsLabel,
+    runAsNote: runAsNoteLabel,
+    runAsUser: runAsUserLabel,
+    sandboxOnlyWarning: sandboxOnlyWarningLabel,
+    save: saveLabel,
+    searchConfigsPlaceholder: searchConfigsPlaceholderLabel,
+    searchUsersPlaceholder: searchUsersPlaceholderLabel,
+    searchingFlows: searchingFlowsLabel,
+    selectAll: selectAllLabel,
+    selectConfiguration: selectConfigurationLabel,
+    selectOption: selectOptionLabel,
+    selectUser: selectUserLabel,
+    showing: showingLabel,
+    toolingAPINote: toolingAPINoteLabel,
+    type: typeLabel,
+    typeToFilter: typeToFilterLabel,
+    updateConfiguration: updateConfigurationLabel,
+    usageModalSubtitle: usageModalSubtitleLabel,
+    usageModalTitle: usageModalTitleLabel,
+    validQuery: validQueryLabel,
+    validSOQLSyntax: validSOQLSyntaxLabel,
+    whereIsThisUsed: whereIsThisUsedLabel,
+    whereIsThisUsedTooltip: whereIsThisUsedTooltipLabel
+  };
 
   // Wire to get all configurations (cacheable for refreshApex)
   @wire(getConfigurations)

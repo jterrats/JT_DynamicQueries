@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>JT Dynamic Queries - Dynamic SOQL Query Framework for Salesforce</title>
+    <title>Dynamic Query Framework - Dynamic SOQL Query Framework for Salesforce</title>
     <style>
       * {
         margin: 0;
@@ -321,7 +321,7 @@
 
     <div class="container">
       <header>
-        <h1>⚡ JT Dynamic Queries</h1>
+        <h1>⚡ Dynamic Query Framework</h1>
         <p class="tagline">
           Lightning Web Component for Dynamic SOQL Queries in Salesforce
         </p>
@@ -333,6 +333,43 @@
           <span class="badge">Open Source</span>
         </div>
       </header>
+
+      <!-- Hero Section -->
+      <section id="hero" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); padding: 3rem; border-radius: 15px; margin: 2rem 0; border-left: 5px solid #667eea;">
+        <h2 style="color: #667eea; border: none; margin-bottom: 1rem; font-size: 1.8rem;">🚀 Beyond Simple SOQL Queries</h2>
+        <p style="font-size: 1.2rem; line-height: 1.8; color: #333; margin-bottom: 1rem;">
+          This isn't just another tool to run SOQL queries. <strong>JT Dynamic Queries</strong> is a comprehensive development framework that transforms how Salesforce developers interact with data.
+        </p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+          <div style="background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <h3 style="color: #667eea; margin: 0 0 0.5rem 0; font-size: 1.1rem;">🔍 Debug Like a Pro</h3>
+            <p style="margin: 0; font-size: 0.95rem; color: #666;">Pre-configured queries for common debugging scenarios. No more writing the same queries over and over.</p>
+          </div>
+          <div style="background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <h3 style="color: #667eea; margin: 0 0 0.5rem 0; font-size: 1.1rem;">👤 Test Permissions Instantly</h3>
+            <p style="margin: 0; font-size: 0.95rem; color: #666;">Run As User feature lets you validate data visibility and security models without switching users.</p>
+          </div>
+          <div style="background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <h3 style="color: #667eea; margin: 0 0 0.5rem 0; font-size: 1.1rem;">🌳 Understand Complex Data</h3>
+            <p style="margin: 0; font-size: 0.95rem; color: #666;">Tree view for parent-child relationships. See your data structure at a glance, not in flat tables.</p>
+          </div>
+          <div style="background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <h3 style="color: #667eea; margin: 0 0 0.5rem 0; font-size: 1.1rem;">⚡ Enterprise-Scale Performance</h3>
+            <p style="margin: 0; font-size: 0.95rem; color: #666;">Handle 50k+ records with cursor-based pagination. No more governor limit headaches.</p>
+          </div>
+          <div style="background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <h3 style="color: #667eea; margin: 0 0 0.5rem 0; font-size: 1.1rem;">📊 Export Anywhere</h3>
+            <p style="margin: 0; font-size: 0.95rem; color: #666;">Switch between Table, JSON, and CSV views. Copy data in the format you need for documentation or analysis.</p>
+          </div>
+          <div style="background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <h3 style="color: #667eea; margin: 0 0 0.5rem 0; font-size: 1.1rem;">🎯 Team Collaboration</h3>
+            <p style="margin: 0; font-size: 0.95rem; color: #666;">Share query configurations across your team. Everyone uses the same validated queries for consistency.</p>
+          </div>
+        </div>
+        <p style="font-size: 1.1rem; margin-top: 2rem; padding: 1rem; background: rgba(102, 126, 234, 0.1); border-radius: 8px; color: #333;">
+          <strong>💡 For Developers, By Developers:</strong> Built by someone who got tired of Developer Console limitations and wanted a modern, accessible, and powerful way to work with Salesforce data.
+        </p>
+      </section>
 
       <!-- Test Results Status -->
       <section id="test-status">
@@ -627,9 +664,24 @@ npm test</code></pre>
       const content = {
         en: {
           bannerText: "This is how the GitHub Pages site will look",
-          title: "⚡ JT Dynamic Queries",
+          title: "⚡ Dynamic Query Framework",
           tagline:
             "Lightning Web Component for Dynamic SOQL Queries in Salesforce",
+          heroTitle: "🚀 Beyond Simple SOQL Queries",
+          heroIntro: "This isn't just another tool to run SOQL queries. Dynamic Query Framework is a comprehensive development framework that transforms how Salesforce developers interact with data.",
+          heroCard1Title: "🔍 Debug Like a Pro",
+          heroCard1Desc: "Pre-configured queries for common debugging scenarios. No more writing the same queries over and over.",
+          heroCard2Title: "👤 Test Permissions Instantly",
+          heroCard2Desc: "Run As User feature lets you validate data visibility and security models without switching users.",
+          heroCard3Title: "🌳 Understand Complex Data",
+          heroCard3Desc: "Tree view for parent-child relationships. See your data structure at a glance, not in flat tables.",
+          heroCard4Title: "⚡ Enterprise-Scale Performance",
+          heroCard4Desc: "Handle 50k+ records with cursor-based pagination. No more governor limit headaches.",
+          heroCard5Title: "📊 Export Anywhere",
+          heroCard5Desc: "Switch between Table, JSON, and CSV views. Copy data in the format you need for documentation or analysis.",
+          heroCard6Title: "🎯 Team Collaboration",
+          heroCard6Desc: "Share query configurations across your team. Everyone uses the same validated queries for consistency.",
+          heroFooter: "For Developers, By Developers: Built by someone who got tired of Developer Console limitations and wanted a modern, accessible, and powerful way to work with Salesforce data.",
           testStatus: "✅ Test Results",
           testsPassing: "Passing",
           accessibility: "Accessibility",
@@ -686,9 +738,24 @@ npm test</code></pre>
         },
         es: {
           bannerText: "Así se verá el sitio de GitHub Pages",
-          title: "⚡ JT Dynamic Queries",
+          title: "⚡ Dynamic Query Framework",
           tagline:
             "Componente Lightning Web para Consultas SOQL Dinámicas en Salesforce",
+          heroTitle: "🚀 Más Allá de Simples Consultas SOQL",
+          heroIntro: "Esto no es solo otra herramienta para ejecutar consultas SOQL. Dynamic Query Framework es un marco de desarrollo integral que transforma cómo los desarrolladores de Salesforce interactúan con los datos.",
+          heroCard1Title: "🔍 Depura Como un Profesional",
+          heroCard1Desc: "Consultas preconfiguradas para escenarios comunes de depuración. No más escribir las mismas consultas una y otra vez.",
+          heroCard2Title: "👤 Prueba Permisos al Instante",
+          heroCard2Desc: "La función Ejecutar Como Usuario te permite validar visibilidad de datos y modelos de seguridad sin cambiar de usuario.",
+          heroCard3Title: "🌳 Comprende Datos Complejos",
+          heroCard3Desc: "Vista de árbol para relaciones padre-hijo. Ve la estructura de tus datos de un vistazo, no en tablas planas.",
+          heroCard4Title: "⚡ Rendimiento a Escala Empresarial",
+          heroCard4Desc: "Maneja más de 50k registros con paginación basada en cursores. Se acabaron los dolores de cabeza con límites del gobernador.",
+          heroCard5Title: "📊 Exporta a Cualquier Lugar",
+          heroCard5Desc: "Cambia entre vistas de Tabla, JSON y CSV. Copia datos en el formato que necesites para documentación o análisis.",
+          heroCard6Title: "🎯 Colaboración en Equipo",
+          heroCard6Desc: "Comparte configuraciones de consultas con tu equipo. Todos usan las mismas consultas validadas para consistencia.",
+          heroFooter: "Para Desarrolladores, Por Desarrolladores: Creado por alguien que se cansó de las limitaciones de Developer Console y quería una forma moderna, accesible y poderosa de trabajar con datos de Salesforce.",
           testStatus: "✅ Resultados de Pruebas",
           testsPassing: "Pasando",
           accessibility: "Accesibilidad",
@@ -746,9 +813,24 @@ npm test</code></pre>
         },
         fr: {
           bannerText: "Voici à quoi ressemblera le site GitHub Pages",
-          title: "⚡ JT Dynamic Queries",
+          title: "⚡ Dynamic Query Framework",
           tagline:
             "Composant Lightning Web pour les Requêtes SOQL Dynamiques dans Salesforce",
+          heroTitle: "🚀 Au-delà des Simples Requêtes SOQL",
+          heroIntro: "Ce n'est pas juste un autre outil pour exécuter des requêtes SOQL. Dynamic Query Framework est un cadre de développement complet qui transforme la façon dont les développeurs Salesforce interagissent avec les données.",
+          heroCard1Title: "🔍 Déboguez Comme un Pro",
+          heroCard1Desc: "Requêtes préconfigurées pour les scénarios de débogage courants. Plus besoin d'écrire les mêmes requêtes encore et encore.",
+          heroCard2Title: "👤 Testez les Permissions Instantanément",
+          heroCard2Desc: "La fonction Exécuter en tant qu'Utilisateur vous permet de valider la visibilité des données et les modèles de sécurité sans changer d'utilisateur.",
+          heroCard3Title: "🌳 Comprenez les Données Complexes",
+          heroCard3Desc: "Vue arborescente pour les relations parent-enfant. Visualisez la structure de vos données d'un coup d'œil, pas en tables plates.",
+          heroCard4Title: "⚡ Performance à Échelle Entreprise",
+          heroCard4Desc: "Gérez plus de 50k enregistrements avec pagination basée sur curseur. Fini les maux de tête avec les limites du gouverneur.",
+          heroCard5Title: "📊 Exportez N'importe Où",
+          heroCard5Desc: "Basculez entre les vues Tableau, JSON et CSV. Copiez les données dans le format dont vous avez besoin pour la documentation ou l'analyse.",
+          heroCard6Title: "🎯 Collaboration d'Équipe",
+          heroCard6Desc: "Partagez les configurations de requêtes avec votre équipe. Tout le monde utilise les mêmes requêtes validées pour la cohérence.",
+          heroFooter: "Pour les Développeurs, Par les Développeurs: Construit par quelqu'un qui en avait assez des limitations de Developer Console et voulait un moyen moderne, accessible et puissant de travailler avec les données Salesforce.",
           testStatus: "✅ Résultats des Tests",
           testsPassing: "Réussis",
           accessibility: "Accessibilité",
@@ -805,9 +887,24 @@ npm test</code></pre>
         },
         de: {
           bannerText: "So wird die GitHub Pages-Site aussehen",
-          title: "⚡ JT Dynamic Queries",
+          title: "⚡ Dynamic Query Framework",
           tagline:
             "Lightning Web Component für Dynamische SOQL-Abfragen in Salesforce",
+          heroTitle: "🚀 Über Einfache SOQL-Abfragen Hinaus",
+          heroIntro: "Dies ist nicht nur ein weiteres Tool zum Ausführen von SOQL-Abfragen. Dynamic Query Framework ist ein umfassendes Entwicklungs-Framework, das die Art und Weise transformiert, wie Salesforce-Entwickler mit Daten interagieren.",
+          heroCard1Title: "🔍 Debuggen Sie Wie ein Profi",
+          heroCard1Desc: "Vorkonfigurierte Abfragen für häufige Debug-Szenarien. Keine wiederholten Abfragen mehr schreiben.",
+          heroCard2Title: "👤 Berechtigungen Sofort Testen",
+          heroCard2Desc: "Die Funktion 'Als Benutzer Ausführen' ermöglicht es Ihnen, Datensichtbarkeit und Sicherheitsmodelle zu validieren, ohne Benutzer zu wechseln.",
+          heroCard3Title: "🌳 Komplexe Daten Verstehen",
+          heroCard3Desc: "Baumansicht für Eltern-Kind-Beziehungen. Sehen Sie Ihre Datenstruktur auf einen Blick, nicht in flachen Tabellen.",
+          heroCard4Title: "⚡ Enterprise-Scale-Performance",
+          heroCard4Desc: "Verarbeiten Sie über 50k Datensätze mit cursorbasierter Paginierung. Keine Governor-Limit-Kopfschmerzen mehr.",
+          heroCard5Title: "📊 Überall Exportieren",
+          heroCard5Desc: "Wechseln Sie zwischen Tabellen-, JSON- und CSV-Ansichten. Kopieren Sie Daten im benötigten Format für Dokumentation oder Analyse.",
+          heroCard6Title: "🎯 Team-Zusammenarbeit",
+          heroCard6Desc: "Teilen Sie Abfragekonfigurationen mit Ihrem Team. Alle verwenden dieselben validierten Abfragen für Konsistenz.",
+          heroFooter: "Für Entwickler, Von Entwicklern: Erstellt von jemandem, der die Einschränkungen der Developer Console satt hatte und einen modernen, zugänglichen und leistungsstarken Weg zum Arbeiten mit Salesforce-Daten wollte.",
           testStatus: "✅ Testergebnisse",
           testsPassing: "Bestanden",
           accessibility: "Barrierefreiheit",
@@ -864,9 +961,24 @@ npm test</code></pre>
         },
         it: {
           bannerText: "Ecco come apparirà il sito GitHub Pages",
-          title: "⚡ JT Dynamic Queries",
+          title: "⚡ Dynamic Query Framework",
           tagline:
             "Componente Lightning Web per Query SOQL Dinamiche in Salesforce",
+          heroTitle: "🚀 Oltre le Semplici Query SOQL",
+          heroIntro: "Questo non è solo un altro strumento per eseguire query SOQL. Dynamic Query Framework è un framework di sviluppo completo che trasforma il modo in cui gli sviluppatori Salesforce interagiscono con i dati.",
+          heroCard1Title: "🔍 Debug Come un Professionista",
+          heroCard1Desc: "Query preconfigurate per scenari di debug comuni. Non più scrivere le stesse query più e più volte.",
+          heroCard2Title: "👤 Testa i Permessi Istantaneamente",
+          heroCard2Desc: "La funzione Esegui Come Utente ti permette di validare visibilità dei dati e modelli di sicurezza senza cambiare utente.",
+          heroCard3Title: "🌳 Comprendi Dati Complessi",
+          heroCard3Desc: "Vista ad albero per relazioni padre-figlio. Visualizza la struttura dei tuoi dati a colpo d'occhio, non in tabelle piatte.",
+          heroCard4Title: "⚡ Prestazioni su Scala Aziendale",
+          heroCard4Desc: "Gestisci oltre 50k record con paginazione basata su cursore. Niente più mal di testa con i limiti del governatore.",
+          heroCard5Title: "📊 Esporta Ovunque",
+          heroCard5Desc: "Passa tra viste Tabella, JSON e CSV. Copia i dati nel formato necessario per documentazione o analisi.",
+          heroCard6Title: "🎯 Collaborazione di Team",
+          heroCard6Desc: "Condividi configurazioni di query con il tuo team. Tutti usano le stesse query validate per coerenza.",
+          heroFooter: "Per Sviluppatori, Da Sviluppatori: Creato da qualcuno stanco delle limitazioni della Developer Console e che voleva un modo moderno, accessibile e potente per lavorare con i dati Salesforce.",
           testStatus: "✅ Risultati Test",
           testsPassing: "Superati",
           accessibility: "Accessibilità",
@@ -923,9 +1035,24 @@ npm test</code></pre>
         },
         ja: {
           bannerText: "GitHub Pagesサイトの外観",
-          title: "⚡ JT Dynamic Queries",
+          title: "⚡ Dynamic Query Framework",
           tagline:
             "Salesforce用の動的SOQLクエリのためのLightning Webコンポーネント",
+          heroTitle: "🚀 単純なSOQLクエリを超えて",
+          heroIntro: "これは単なるSOQLクエリを実行するツールではありません。Dynamic Query Frameworkは、Salesforce開発者がデータとやり取りする方法を変革する包括的な開発フレームワークです。",
+          heroCard1Title: "🔍 プロのようにデバッグ",
+          heroCard1Desc: "一般的なデバッグシナリオ用の事前設定されたクエリ。同じクエリを何度も書く必要はありません。",
+          heroCard2Title: "👤 権限を即座にテスト",
+          heroCard2Desc: "ユーザーとして実行機能により、ユーザーを切り替えることなくデータの可視性とセキュリティモデルを検証できます。",
+          heroCard3Title: "🌳 複雑なデータを理解",
+          heroCard3Desc: "親子関係のツリービュー。フラットなテーブルではなく、一目でデータ構造を確認できます。",
+          heroCard4Title: "⚡ エンタープライズスケールのパフォーマンス",
+          heroCard4Desc: "カーソルベースのページネーションで50k以上のレコードを処理。ガバナ制限の頭痛の種はもうありません。",
+          heroCard5Title: "📊 どこへでもエクスポート",
+          heroCard5Desc: "テーブル、JSON、CSVビューを切り替え。ドキュメントや分析に必要な形式でデータをコピーします。",
+          heroCard6Title: "🎯 チームコラボレーション",
+          heroCard6Desc: "チーム全体でクエリ設定を共有。全員が一貫性のために同じ検証済みクエリを使用します。",
+          heroFooter: "開発者による、開発者のための: Developer Consoleの制限にうんざりし、Salesforceデータを扱うモダンでアクセシブルで強力な方法を求めていた人によって構築されました。",
           testStatus: "✅ テスト結果",
           testsPassing: "合格",
           accessibility: "アクセシビリティ",
@@ -982,9 +1109,24 @@ npm test</code></pre>
         },
         pt: {
           bannerText: "É assim que o site do GitHub Pages ficará",
-          title: "⚡ JT Dynamic Queries",
+          title: "⚡ Dynamic Query Framework",
           tagline:
             "Componente Lightning Web para Consultas SOQL Dinâmicas no Salesforce",
+          heroTitle: "🚀 Além de Simples Consultas SOQL",
+          heroIntro: "Esta não é apenas mais uma ferramenta para executar consultas SOQL. Dynamic Query Framework é uma estrutura de desenvolvimento abrangente que transforma como os desenvolvedores Salesforce interagem com dados.",
+          heroCard1Title: "🔍 Depure Como um Profissional",
+          heroCard1Desc: "Consultas pré-configuradas para cenários comuns de depuração. Chega de escrever as mesmas consultas repetidamente.",
+          heroCard2Title: "👤 Teste Permissões Instantaneamente",
+          heroCard2Desc: "O recurso Executar Como Usuário permite validar visibilidade de dados e modelos de segurança sem trocar de usuário.",
+          heroCard3Title: "🌳 Compreenda Dados Complexos",
+          heroCard3Desc: "Visualização em árvore para relacionamentos pai-filho. Veja a estrutura dos seus dados de relance, não em tabelas planas.",
+          heroCard4Title: "⚡ Desempenho em Escala Empresarial",
+          heroCard4Desc: "Manipule mais de 50k registros com paginação baseada em cursor. Acabaram-se as dores de cabeça com limites do governador.",
+          heroCard5Title: "📊 Exporte para Qualquer Lugar",
+          heroCard5Desc: "Alterne entre visualizações de Tabela, JSON e CSV. Copie dados no formato necessário para documentação ou análise.",
+          heroCard6Title: "🎯 Colaboração em Equipe",
+          heroCard6Desc: "Compartilhe configurações de consultas com sua equipe. Todos usam as mesmas consultas validadas para consistência.",
+          heroFooter: "Para Desenvolvedores, Por Desenvolvedores: Criado por alguém que se cansou das limitações do Developer Console e queria uma maneira moderna, acessível e poderosa de trabalhar com dados Salesforce.",
           testStatus: "✅ Resultados dos Testes",
           testsPassing: "Aprovados",
           accessibility: "Acessibilidade",
@@ -1041,8 +1183,23 @@ npm test</code></pre>
         },
         zh: {
           bannerText: "GitHub Pages 网站将如此展示",
-          title: "⚡ JT Dynamic Queries",
+          title: "⚡ Dynamic Query Framework",
           tagline: "Salesforce 动态 SOQL 查询的 Lightning Web 组件",
+          heroTitle: "🚀 超越简单的SOQL查询",
+          heroIntro: "这不仅仅是另一个运行SOQL查询的工具。Dynamic Query Framework是一个全面的开发框架，改变了Salesforce开发人员与数据交互的方式。",
+          heroCard1Title: "🔍 像专业人士一样调试",
+          heroCard1Desc: "针对常见调试场景的预配置查询。不再重复编写相同的查询。",
+          heroCard2Title: "👤 即时测试权限",
+          heroCard2Desc: "以用户身份运行功能让您无需切换用户即可验证数据可见性和安全模型。",
+          heroCard3Title: "🌳 理解复杂数据",
+          heroCard3Desc: "父子关系的树视图。一目了然地查看数据结构，而不是平面表格。",
+          heroCard4Title: "⚡ 企业规模性能",
+          heroCard4Desc: "使用基于游标的分页处理超过50k条记录。不再为管理器限制头疼。",
+          heroCard5Title: "📊 导出到任何地方",
+          heroCard5Desc: "在表格、JSON和CSV视图之间切换。以所需格式复制数据用于文档或分析。",
+          heroCard6Title: "🎯 团队协作",
+          heroCard6Desc: "与团队共享查询配置。每个人使用相同的经过验证的查询以保持一致性。",
+          heroFooter: "为开发者，由开发者创建：由厌倦了Developer Console限制并希望以现代、易访问和强大的方式处理Salesforce数据的人创建。",
           testStatus: "✅ 测试结果",
           testsPassing: "通过",
           accessibility: "可访问性",
@@ -1107,6 +1264,36 @@ npm test</code></pre>
         if (c.title) document.querySelector("h1").textContent = c.title;
         if (c.tagline)
           document.querySelector(".tagline").textContent = c.tagline;
+
+        // Update hero section
+        const heroSection = document.querySelector("#hero");
+        if (heroSection) {
+          if (c.heroTitle) heroSection.querySelector("h2").textContent = c.heroTitle;
+          if (c.heroIntro) heroSection.querySelector("p").textContent = c.heroIntro;
+          
+          const heroCards = heroSection.querySelectorAll("div[style*='background: white']");
+          if (heroCards.length >= 6) {
+            if (c.heroCard1Title) heroCards[0].querySelector("h3").textContent = c.heroCard1Title;
+            if (c.heroCard1Desc) heroCards[0].querySelector("p").textContent = c.heroCard1Desc;
+            if (c.heroCard2Title) heroCards[1].querySelector("h3").textContent = c.heroCard2Title;
+            if (c.heroCard2Desc) heroCards[1].querySelector("p").textContent = c.heroCard2Desc;
+            if (c.heroCard3Title) heroCards[2].querySelector("h3").textContent = c.heroCard3Title;
+            if (c.heroCard3Desc) heroCards[2].querySelector("p").textContent = c.heroCard3Desc;
+            if (c.heroCard4Title) heroCards[3].querySelector("h3").textContent = c.heroCard4Title;
+            if (c.heroCard4Desc) heroCards[3].querySelector("p").textContent = c.heroCard4Desc;
+            if (c.heroCard5Title) heroCards[4].querySelector("h3").textContent = c.heroCard5Title;
+            if (c.heroCard5Desc) heroCards[4].querySelector("p").textContent = c.heroCard5Desc;
+            if (c.heroCard6Title) heroCards[5].querySelector("h3").textContent = c.heroCard6Title;
+            if (c.heroCard6Desc) heroCards[5].querySelector("p").textContent = c.heroCard6Desc;
+          }
+          
+          if (c.heroFooter) {
+            const footerP = heroSection.querySelector("p[style*='margin-top: 2rem']");
+            if (footerP) {
+              footerP.innerHTML = `<strong>💡 ${c.heroFooter.split(': ')[0]}:</strong> ${c.heroFooter.split(': ')[1]}`;
+            }
+          }
+        }
 
         // Update section titles
         if (c.testStatus)

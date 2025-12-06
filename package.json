@@ -1,8 +1,21 @@
 {
-  "name": "salesforce-app",
-  "private": true,
+  "name": "jt-dynamic-queries",
   "version": "1.0.0",
-  "description": "Salesforce App",
+  "description": "Dynamic Query Framework - Lightning Web Component for dynamic SOQL queries in Salesforce",
+  "author": "Jaime Terrats",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jterrats/JT_DynamicQueries.git"
+  },
+  "keywords": [
+    "salesforce",
+    "soql",
+    "lwc",
+    "lightning-web-component",
+    "dynamic-queries",
+    "developer-tools"
+  ],
   "engines": {
     "node": ">=24.0.0",
     "npm": ">=10.0.0"

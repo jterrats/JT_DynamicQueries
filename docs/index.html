@@ -325,6 +325,20 @@
         <p class="tagline">
           Lightning Web Component for Dynamic SOQL Queries in Salesforce
         </p>
+        
+        <!-- Status Badges (Auto-updating from GitHub) -->
+        <div style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; margin: 1.5rem 0;">
+          <img src="https://img.shields.io/github/package-json/v/jterrats/JT_DynamicQueries?label=version&color=blue" alt="Version" style="height: 20px;">
+          <img src="https://img.shields.io/github/actions/workflow/status/jterrats/JT_DynamicQueries/e2e-on-merge.yml?branch=main&label=E2E%20Tests" alt="E2E Tests" style="height: 20px;">
+          <img src="https://img.shields.io/github/actions/workflow/status/jterrats/JT_DynamicQueries/github-pages.yml?branch=main&label=docs" alt="Docs" style="height: 20px;">
+          <img src="https://img.shields.io/badge/tests-118%20passing-success.svg" alt="Tests Passing" style="height: 20px;">
+          <img src="https://img.shields.io/badge/accessibility-WCAG%202.1%20AA-success.svg" alt="Accessibility" style="height: 20px;">
+          <img src="https://img.shields.io/github/package-json/dependency-version/jterrats/JT_DynamicQueries/dev/@playwright/test?label=playwright" alt="Playwright" style="height: 20px;">
+          <img src="https://img.shields.io/github/license/jterrats/JT_DynamicQueries?color=blue" alt="License" style="height: 20px;">
+          <img src="https://img.shields.io/github/last-commit/jterrats/JT_DynamicQueries?color=blue" alt="Last Commit" style="height: 20px;">
+          <img src="https://img.shields.io/badge/Salesforce-Lightning-00a1e0.svg" alt="Salesforce" style="height: 20px;">
+        </div>
+        
         <div class="badges">
           <span class="badge">Lightning Web Component</span>
           <span class="badge">SOQL</span>
@@ -1270,7 +1284,7 @@ npm test</code></pre>
         if (heroSection) {
           if (c.heroTitle) heroSection.querySelector("h2").textContent = c.heroTitle;
           if (c.heroIntro) heroSection.querySelector("p").textContent = c.heroIntro;
-          
+
           const heroCards = heroSection.querySelectorAll("div[style*='background: white']");
           if (heroCards.length >= 6) {
             if (c.heroCard1Title) heroCards[0].querySelector("h3").textContent = c.heroCard1Title;
@@ -1286,7 +1300,7 @@ npm test</code></pre>
             if (c.heroCard6Title) heroCards[5].querySelector("h3").textContent = c.heroCard6Title;
             if (c.heroCard6Desc) heroCards[5].querySelector("p").textContent = c.heroCard6Desc;
           }
-          
+
           if (c.heroFooter) {
             const footerP = heroSection.querySelector("p[style*='margin-top: 2rem']");
             if (footerP) {

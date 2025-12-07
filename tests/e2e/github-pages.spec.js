@@ -73,7 +73,7 @@ test.describe("GitHub Pages - Documentation Site", () => {
     // Verify main heading (flexible - any h1 or h2 with project name)
     const heading = page
       .locator("h1, h2")
-      .filter({ hasText: /dynamic.*queries/i });
+      .filter({ hasText: /dynamic.*query.*framework/i });
     await expect(heading.first()).toBeVisible({ timeout: 10000 });
 
     // Verify page has substantial content (at least 100 characters visible)

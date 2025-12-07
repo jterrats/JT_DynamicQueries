@@ -294,7 +294,7 @@
               Switch between Table, JSON, and CSV views. Copy data in the format
               you need for documentation or analysis.
             </p>
-          </div>
+        </div>
           <div
             style="
               background: white;
@@ -462,121 +462,149 @@
         </div>
       </section>
 
-      <!-- Test Results Status (Compact) -->
+      <!-- Testing Methodology CTA -->
       <section
-        id="test-status"
+        id="testing-methodology"
         style="
-          margin: 2rem 0;
-          padding: 1.5rem;
-          background: #f8f9fa;
-          border-radius: 10px;
+          margin: 3rem 0;
+          padding: 3rem;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          border-radius: 15px;
+          color: white;
+          text-align: center;
+          position: relative;
+          box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
         "
       >
-        <h2 style="font-size: 1.3rem; margin-bottom: 1rem; text-align: center">
-          ✅ Test Results
+        <div
+          style="
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ffd700;
+            color: #333;
+            padding: 0.4rem 1.5rem;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+          "
+        >
+          ⭐ PIONEERING METHODOLOGY
+        </div>
+
+        <h2
+          style="
+            font-size: 2.5rem;
+            margin: 1rem 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+          "
+        >
+          🔧 Error-Driven Development (EDD)
         </h2>
+        <p
+          style="
+            font-size: 1.3rem;
+            margin: 1.5rem auto;
+            max-width: 700px;
+            opacity: 0.95;
+            line-height: 1.7;
+          "
+        >
+          Discover how I use <strong>EDD</strong> as the core methodology,
+          complemented by E2E, TDD, and BDD to build better software faster
+        </p>
+
         <div
           style="
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-            max-width: 800px;
-            margin: 0 auto;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
           "
         >
           <div
-            class="status-item status-pass"
             style="
-              background: white;
-              padding: 1rem;
-              border-radius: 8px;
-              text-align: center;
-              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+              background: rgba(255, 255, 255, 0.15);
+              padding: 1.5rem;
+              border-radius: 10px;
+              backdrop-filter: blur(10px);
             "
           >
-            <h4 style="font-size: 0.9rem; margin: 0 0 0.3rem 0; color: #666">
-              E2E Tests
-            </h4>
-            <div
-              class="number"
-              style="font-size: 1.5rem; font-weight: bold; color: #28a745"
-            >
-              118
-            </div>
-            <p style="font-size: 0.85rem; margin: 0.3rem 0 0 0; color: #999">
-              Passing
-            </p>
+            <div style="font-size: 2rem; font-weight: bold">118</div>
+            <div style="font-size: 0.9rem; opacity: 0.9">E2E Tests Passing</div>
           </div>
           <div
-            class="status-item status-pass"
             style="
-              background: white;
-              padding: 1rem;
-              border-radius: 8px;
-              text-align: center;
-              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+              background: rgba(255, 255, 255, 0.15);
+              padding: 1.5rem;
+              border-radius: 10px;
+              backdrop-filter: blur(10px);
             "
           >
-            <h4 style="font-size: 0.9rem; margin: 0 0 0.3rem 0; color: #666">
-              Accessibility
-            </h4>
-            <div
-              class="number"
-              style="font-size: 1.5rem; font-weight: bold; color: #28a745"
-            >
-              20/20
-            </div>
-            <p style="font-size: 0.85rem; margin: 0.3rem 0 0 0; color: #999">
-              WCAG 2.1 AA
-            </p>
+            <div style="font-size: 2rem; font-weight: bold">95%</div>
+            <div style="font-size: 0.9rem; opacity: 0.9">Code Coverage</div>
           </div>
           <div
-            class="status-item status-pass"
             style="
-              background: white;
-              padding: 1rem;
-              border-radius: 8px;
-              text-align: center;
-              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+              background: rgba(255, 255, 255, 0.15);
+              padding: 1.5rem;
+              border-radius: 10px;
+              backdrop-filter: blur(10px);
             "
           >
-            <h4 style="font-size: 0.9rem; margin: 0 0 0.3rem 0; color: #666">
-              GitHub Pages
-            </h4>
-            <div
-              class="number"
-              style="font-size: 1.5rem; font-weight: bold; color: #28a745"
-            >
-              27/27
-            </div>
-            <p style="font-size: 0.85rem; margin: 0.3rem 0 0 0; color: #999">
-              All Docs Valid
-            </p>
+            <div style="font-size: 2rem; font-weight: bold">100%</div>
+            <div style="font-size: 0.9rem; opacity: 0.9">WCAG 2.1 AA</div>
           </div>
           <div
-            class="status-item status-pass"
             style="
-              background: white;
-              padding: 1rem;
-              border-radius: 8px;
-              text-align: center;
-              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+              background: rgba(255, 255, 255, 0.15);
+              padding: 1.5rem;
+              border-radius: 10px;
+              backdrop-filter: blur(10px);
             "
           >
-            <h4 style="font-size: 0.9rem; margin: 0 0 0.3rem 0; color: #666">
-              Coverage
-            </h4>
-            <div
-              class="number"
-              style="font-size: 1.5rem; font-weight: bold; color: #28a745"
-            >
-              95%
-            </div>
-            <p style="font-size: 0.85rem; margin: 0.3rem 0 0 0; color: #999">
-              Code Coverage
-            </p>
+            <div style="font-size: 2rem; font-weight: bold">40%</div>
+            <div style="font-size: 0.9rem; opacity: 0.9">Faster Dev Time</div>
           </div>
         </div>
+
+        <a
+          href="testing.html"
+          style="
+            display: inline-block;
+            margin-top: 1.5rem;
+            padding: 1rem 3rem;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+          "
+          onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 6px 20px rgba(0,0,0,0.3)'"
+          onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.2)'"
+        >
+          🧪 Explore My Testing Methodology
+        </a>
+
+        <p
+          style="
+            margin-top: 1.5rem;
+            font-size: 0.95rem;
+            opacity: 0.8;
+            font-style: italic;
+          "
+        >
+          💡 "The error message is your friend. It tells you exactly what to
+          build next."
+        </p>
       </section>
 
       <!-- Features -->
@@ -771,10 +799,34 @@ npm test</code></pre>
               <a href="V3_ROADMAP.html" style="color: white">Learn more →</a>
             </p>
           </div>
-          <div class="feature-card">
-            <h4>🧪 E2E Testing</h4>
+          <div
+            class="feature-card"
+            style="
+              border: 3px solid #ffd700;
+              position: relative;
+              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            "
+          >
+            <div
+              style="
+                position: absolute;
+                top: -12px;
+                right: 10px;
+                background: #ffd700;
+                color: #333;
+                padding: 0.2rem 0.8rem;
+                border-radius: 15px;
+                font-size: 0.75rem;
+                font-weight: bold;
+              "
+            >
+              ⭐ NEW
+            </div>
+            <h4>🔧 Testing with EDD</h4>
             <p>
-              <a href="E2E_TESTING.html" style="color: white">Learn more →</a>
+              <a href="testing.html" style="color: white; font-weight: bold"
+                >Explore Methodology →</a
+              >
             </p>
           </div>
         </div>

@@ -328,33 +328,6 @@
         </p>
       </section>
 
-      <!-- Test Results Status -->
-      <section id="test-status">
-        <h2>✅ Test Results</h2>
-        <div class="status-grid">
-          <div class="status-item status-pass">
-            <h4>E2E Tests</h4>
-            <div class="number">118</div>
-            <p>Passing</p>
-          </div>
-          <div class="status-item status-pass">
-            <h4>Accessibility</h4>
-            <div class="number">20/20</div>
-            <p>WCAG 2.1 AA</p>
-          </div>
-          <div class="status-item status-pass">
-            <h4>GitHub Pages</h4>
-            <div class="number">27/27</div>
-            <p>All Docs Valid</p>
-          </div>
-          <div class="status-item status-pass">
-            <h4>Coverage</h4>
-            <div class="number">95%</div>
-            <p>Code Coverage</p>
-          </div>
-        </div>
-      </section>
-
       <!-- GIF Showcase -->
       <section id="demos">
         <h2>🎬 See It In Action</h2>
@@ -489,6 +462,123 @@
         </div>
       </section>
 
+      <!-- Test Results Status (Compact) -->
+      <section
+        id="test-status"
+        style="
+          margin: 2rem 0;
+          padding: 1.5rem;
+          background: #f8f9fa;
+          border-radius: 10px;
+        "
+      >
+        <h2 style="font-size: 1.3rem; margin-bottom: 1rem; text-align: center">
+          ✅ Test Results
+        </h2>
+        <div
+          style="
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            max-width: 800px;
+            margin: 0 auto;
+          "
+        >
+          <div
+            class="status-item status-pass"
+            style="
+              background: white;
+              padding: 1rem;
+              border-radius: 8px;
+              text-align: center;
+              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            "
+          >
+            <h4 style="font-size: 0.9rem; margin: 0 0 0.3rem 0; color: #666">
+              E2E Tests
+            </h4>
+            <div
+              class="number"
+              style="font-size: 1.5rem; font-weight: bold; color: #28a745"
+            >
+              118
+            </div>
+            <p style="font-size: 0.85rem; margin: 0.3rem 0 0 0; color: #999">
+              Passing
+            </p>
+          </div>
+          <div
+            class="status-item status-pass"
+            style="
+              background: white;
+              padding: 1rem;
+              border-radius: 8px;
+              text-align: center;
+              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            "
+          >
+            <h4 style="font-size: 0.9rem; margin: 0 0 0.3rem 0; color: #666">
+              Accessibility
+            </h4>
+            <div
+              class="number"
+              style="font-size: 1.5rem; font-weight: bold; color: #28a745"
+            >
+              20/20
+            </div>
+            <p style="font-size: 0.85rem; margin: 0.3rem 0 0 0; color: #999">
+              WCAG 2.1 AA
+            </p>
+          </div>
+          <div
+            class="status-item status-pass"
+            style="
+              background: white;
+              padding: 1rem;
+              border-radius: 8px;
+              text-align: center;
+              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            "
+          >
+            <h4 style="font-size: 0.9rem; margin: 0 0 0.3rem 0; color: #666">
+              GitHub Pages
+            </h4>
+            <div
+              class="number"
+              style="font-size: 1.5rem; font-weight: bold; color: #28a745"
+            >
+              27/27
+            </div>
+            <p style="font-size: 0.85rem; margin: 0.3rem 0 0 0; color: #999">
+              All Docs Valid
+            </p>
+          </div>
+          <div
+            class="status-item status-pass"
+            style="
+              background: white;
+              padding: 1rem;
+              border-radius: 8px;
+              text-align: center;
+              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            "
+          >
+            <h4 style="font-size: 0.9rem; margin: 0 0 0.3rem 0; color: #666">
+              Coverage
+            </h4>
+            <div
+              class="number"
+              style="font-size: 1.5rem; font-weight: bold; color: #28a745"
+            >
+              95%
+            </div>
+            <p style="font-size: 0.85rem; margin: 0.3rem 0 0 0; color: #999">
+              Code Coverage
+            </p>
+          </div>
+        </div>
+      </section>
+
       <!-- Features -->
       <section id="features">
         <h2>✨ Key Features</h2>
@@ -602,10 +692,10 @@
             Prerequisites
           </h4>
           <ul style="margin-left: 2rem; line-height: 1.8; color: #666">
-            <li>Salesforce CLI (latest)</li>
-            <li>Node.js 24+</li>
-            <li>Git</li>
-          </ul>
+          <li>Salesforce CLI (latest)</li>
+          <li>Node.js 24+</li>
+          <li>Git</li>
+        </ul>
 
           <h4
             style="
@@ -617,16 +707,16 @@
           >
             Installation Steps
           </h4>
-          <pre
-            style="
+        <pre
+          style="
               background: #2d2d2d;
               color: #f8f8f2;
-              padding: 1rem;
-              border-radius: 8px;
-              overflow-x: auto;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
               font-size: 0.9rem;
-            "
-          ><code># Clone repository
+          "
+        ><code># Clone repository
 git clone https://github.com/jterrats/JT_DynamicQueries.git
 cd JT_DynamicQueries
 

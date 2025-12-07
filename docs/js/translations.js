@@ -7,23 +7,30 @@ export const content = {
   en: {
     bannerText: "This is how the GitHub Pages site will look",
     title: "⚡ Dynamic Query Framework",
-    tagline:
-      "Lightning Web Component for Dynamic SOQL Queries in Salesforce",
+    tagline: "Lightning Web Component for Dynamic SOQL Queries in Salesforce",
     heroTitle: "🚀 Beyond Simple SOQL Queries",
-    heroIntro: "This isn't just another tool to run SOQL queries. Dynamic Query Framework is a comprehensive development framework that transforms how Salesforce developers interact with data.",
+    heroIntro:
+      "This isn't just another tool to run SOQL queries. Dynamic Query Framework is a comprehensive development framework that transforms how Salesforce developers interact with data.",
     heroCard1Title: "🔍 Debug Like a Pro",
-    heroCard1Desc: "Pre-configured queries for common debugging scenarios. No more writing the same queries over and over.",
+    heroCard1Desc:
+      "Pre-configured queries for common debugging scenarios. No more writing the same queries over and over.",
     heroCard2Title: "👤 Test Permissions Instantly",
-    heroCard2Desc: "Run As User feature lets you validate data visibility and security models without switching users.",
+    heroCard2Desc:
+      "Run As User feature lets you validate data visibility and security models without switching users.",
     heroCard3Title: "🌳 Understand Complex Data",
-    heroCard3Desc: "Tree view for parent-child relationships. See your data structure at a glance, not in flat tables.",
+    heroCard3Desc:
+      "Tree view for parent-child relationships. See your data structure at a glance, not in flat tables.",
     heroCard4Title: "⚡ Enterprise-Scale Performance",
-    heroCard4Desc: "Handle 50k+ records with cursor-based pagination. No more governor limit headaches.",
+    heroCard4Desc:
+      "Handle 50k+ records with cursor-based pagination. No more governor limit headaches.",
     heroCard5Title: "📊 Export Anywhere",
-    heroCard5Desc: "Switch between Table, JSON, and CSV views. Copy data in the format you need for documentation or analysis.",
+    heroCard5Desc:
+      "Switch between Table, JSON, and CSV views. Copy data in the format you need for documentation or analysis.",
     heroCard6Title: "🎯 Team Collaboration",
-    heroCard6Desc: "Share query configurations across your team. Everyone uses the same validated queries for consistency.",
-    heroFooter: "For Developers, By Developers: Built by someone who got tired of Developer Console limitations and wanted a modern, accessible, and powerful way to work with Salesforce data.",
+    heroCard6Desc:
+      "Share query configurations across your team. Everyone uses the same validated queries for consistency.",
+    heroFooter:
+      "For Developers, By Developers: Built by someone who got tired of Developer Console limitations and wanted a modern, accessible, and powerful way to work with Salesforce data.",
     testStatus: "✅ Test Results",
     testsPassing: "Passing",
     accessibility: "Accessibility",
@@ -54,8 +61,7 @@ export const content = {
     feature1Title: "🚀 Dynamic Queries",
     feature1Desc: "Execute SOQL queries dynamically without hardcoding",
     feature2Title: "🔐 Named Credentials",
-    feature2Desc:
-      "Secure Tooling API callouts with modern Named Credentials",
+    feature2Desc: "Secure Tooling API callouts with modern Named Credentials",
     feature3Title: "📊 Multiple Views",
     feature3Desc: "Switch between Table, JSON, and mobile card views",
     feature4Title: "♿ Accessible",
@@ -65,13 +71,21 @@ export const content = {
     feature6Title: "🧪 Tested",
     feature6Desc: "118+ E2E tests with Playwright for reliability",
     quickStart: "🚀 Quick Start",
-    prerequisites: "Prerequisites",
+    deployIntro:
+      "Deploy the framework to your Salesforce org with just one click. No need to clone the repository or install any tools.",
+    deployNow: "⚡ Deploy Now",
+    deployButton: "🚀 Deploy to Salesforce",
+    deploySubtext: "One-click deployment to any Salesforce org",
+    forContributors: "👨‍💻 For Contributors & Developers",
+    forContributorsDesc:
+      "If you want to contribute to the project or customize it locally, follow these steps:",
+    contributorPrerequisites: "Prerequisites",
     prereq1: "Salesforce CLI (latest)",
     prereq2: "Node.js 24+",
     prereq3: "Git",
-    installation: "Installation Steps",
+    contributorInstallation: "Installation Steps",
     ready: "Ready to Get Started?",
-    readyDesc: "Deploy to your Salesforce org in minutes",
+    readyDesc: "Join the community and start building better SOQL queries today",
     viewGitHub: "View on GitHub",
     readDocs: "Read Documentation",
     documentation: "📚 Documentation",
@@ -84,20 +98,28 @@ export const content = {
     tagline:
       "Componente Lightning Web para Consultas SOQL Dinámicas en Salesforce",
     heroTitle: "🚀 Más Allá de Simples Consultas SOQL",
-    heroIntro: "Esto no es solo otra herramienta para ejecutar consultas SOQL. Dynamic Query Framework es un marco de desarrollo integral que transforma cómo los desarrolladores de Salesforce interactúan con los datos.",
+    heroIntro:
+      "Esto no es solo otra herramienta para ejecutar consultas SOQL. Dynamic Query Framework es un marco de desarrollo integral que transforma cómo los desarrolladores de Salesforce interactúan con los datos.",
     heroCard1Title: "🔍 Depura Como un Profesional",
-    heroCard1Desc: "Consultas preconfiguradas para escenarios comunes de depuración. No más escribir las mismas consultas una y otra vez.",
+    heroCard1Desc:
+      "Consultas preconfiguradas para escenarios comunes de depuración. No más escribir las mismas consultas una y otra vez.",
     heroCard2Title: "👤 Prueba Permisos al Instante",
-    heroCard2Desc: "La función Ejecutar Como Usuario te permite validar visibilidad de datos y modelos de seguridad sin cambiar de usuario.",
+    heroCard2Desc:
+      "La función Ejecutar Como Usuario te permite validar visibilidad de datos y modelos de seguridad sin cambiar de usuario.",
     heroCard3Title: "🌳 Comprende Datos Complejos",
-    heroCard3Desc: "Vista de árbol para relaciones padre-hijo. Ve la estructura de tus datos de un vistazo, no en tablas planas.",
+    heroCard3Desc:
+      "Vista de árbol para relaciones padre-hijo. Ve la estructura de tus datos de un vistazo, no en tablas planas.",
     heroCard4Title: "⚡ Rendimiento a Escala Empresarial",
-    heroCard4Desc: "Maneja más de 50k registros con paginación basada en cursores. Se acabaron los dolores de cabeza con límites del gobernador.",
+    heroCard4Desc:
+      "Maneja más de 50k registros con paginación basada en cursores. Se acabaron los dolores de cabeza con límites del gobernador.",
     heroCard5Title: "📊 Exporta a Cualquier Lugar",
-    heroCard5Desc: "Cambia entre vistas de Tabla, JSON y CSV. Copia datos en el formato que necesites para documentación o análisis.",
+    heroCard5Desc:
+      "Cambia entre vistas de Tabla, JSON y CSV. Copia datos en el formato que necesites para documentación o análisis.",
     heroCard6Title: "🎯 Colaboración en Equipo",
-    heroCard6Desc: "Comparte configuraciones de consultas con tu equipo. Todos usan las mismas consultas validadas para consistencia.",
-    heroFooter: "Para Desarrolladores, Por Desarrolladores: Creado por alguien que se cansó de las limitaciones de Developer Console y quería una forma moderna, accesible y poderosa de trabajar con datos de Salesforce.",
+    heroCard6Desc:
+      "Comparte configuraciones de consultas con tu equipo. Todos usan las mismas consultas validadas para consistencia.",
+    heroFooter:
+      "Para Desarrolladores, Por Desarrolladores: Creado por alguien que se cansó de las limitaciones de Developer Console y quería una forma moderna, accesible y poderosa de trabajar con datos de Salesforce.",
     testStatus: "✅ Resultados de Pruebas",
     testsPassing: "Pasando",
     accessibility: "Accesibilidad",
@@ -133,20 +155,28 @@ export const content = {
     feature3Title: "📊 Múltiples Vistas",
     feature3Desc: "Cambia entre vistas de Tabla, JSON y tarjetas móviles",
     feature4Title: "♿ Accesible",
-    feature4Desc:
-      "Cumple con WCAG 2.1 AA con navegación completa por teclado",
+    feature4Desc: "Cumple con WCAG 2.1 AA con navegación completa por teclado",
     feature5Title: "🎨 Diseño Lightning",
     feature5Desc: "Construido con Salesforce Lightning Design System",
     feature6Title: "🧪 Probado",
     feature6Desc: "118+ pruebas E2E con Playwright para confiabilidad",
     quickStart: "🚀 Inicio Rápido",
-    prerequisites: "Prerequisitos",
+    deployIntro:
+      "Despliega el framework a tu org de Salesforce con solo un clic. No necesitas clonar el repositorio ni instalar herramientas.",
+    deployNow: "⚡ Desplegar Ahora",
+    deployButton: "🚀 Desplegar en Salesforce",
+    deploySubtext: "Despliegue de un clic a cualquier org de Salesforce",
+    forContributors: "👨‍💻 Para Contribuidores y Desarrolladores",
+    forContributorsDesc:
+      "Si quieres contribuir al proyecto o personalizarlo localmente, sigue estos pasos:",
+    contributorPrerequisites: "Prerequisitos",
     prereq1: "Salesforce CLI (última versión)",
     prereq2: "Node.js 24+",
     prereq3: "Git",
-    installation: "Pasos de Instalación",
+    contributorInstallation: "Pasos de Instalación",
     ready: "¿Listo para Comenzar?",
-    readyDesc: "Despliega en tu org de Salesforce en minutos",
+    readyDesc:
+      "Únete a la comunidad y comienza a crear mejores consultas SOQL hoy",
     viewGitHub: "Ver en GitHub",
     readDocs: "Leer Documentación",
     documentation: "📚 Documentación",
@@ -159,20 +189,28 @@ export const content = {
     tagline:
       "Composant Lightning Web pour les Requêtes SOQL Dynamiques dans Salesforce",
     heroTitle: "🚀 Au-delà des Simples Requêtes SOQL",
-    heroIntro: "Ce n'est pas juste un autre outil pour exécuter des requêtes SOQL. Dynamic Query Framework est un cadre de développement complet qui transforme la façon dont les développeurs Salesforce interagissent avec les données.",
+    heroIntro:
+      "Ce n'est pas juste un autre outil pour exécuter des requêtes SOQL. Dynamic Query Framework est un cadre de développement complet qui transforme la façon dont les développeurs Salesforce interagissent avec les données.",
     heroCard1Title: "🔍 Déboguez Comme un Pro",
-    heroCard1Desc: "Requêtes préconfigurées pour les scénarios de débogage courants. Plus besoin d'écrire les mêmes requêtes encore et encore.",
+    heroCard1Desc:
+      "Requêtes préconfigurées pour les scénarios de débogage courants. Plus besoin d'écrire les mêmes requêtes encore et encore.",
     heroCard2Title: "👤 Testez les Permissions Instantanément",
-    heroCard2Desc: "La fonction Exécuter en tant qu'Utilisateur vous permet de valider la visibilité des données et les modèles de sécurité sans changer d'utilisateur.",
+    heroCard2Desc:
+      "La fonction Exécuter en tant qu'Utilisateur vous permet de valider la visibilité des données et les modèles de sécurité sans changer d'utilisateur.",
     heroCard3Title: "🌳 Comprenez les Données Complexes",
-    heroCard3Desc: "Vue arborescente pour les relations parent-enfant. Visualisez la structure de vos données d'un coup d'œil, pas en tables plates.",
+    heroCard3Desc:
+      "Vue arborescente pour les relations parent-enfant. Visualisez la structure de vos données d'un coup d'œil, pas en tables plates.",
     heroCard4Title: "⚡ Performance à Échelle Entreprise",
-    heroCard4Desc: "Gérez plus de 50k enregistrements avec pagination basée sur curseur. Fini les maux de tête avec les limites du gouverneur.",
+    heroCard4Desc:
+      "Gérez plus de 50k enregistrements avec pagination basée sur curseur. Fini les maux de tête avec les limites du gouverneur.",
     heroCard5Title: "📊 Exportez N'importe Où",
-    heroCard5Desc: "Basculez entre les vues Tableau, JSON et CSV. Copiez les données dans le format dont vous avez besoin pour la documentation ou l'analyse.",
+    heroCard5Desc:
+      "Basculez entre les vues Tableau, JSON et CSV. Copiez les données dans le format dont vous avez besoin pour la documentation ou l'analyse.",
     heroCard6Title: "🎯 Collaboration d'Équipe",
-    heroCard6Desc: "Partagez les configurations de requêtes avec votre équipe. Tout le monde utilise les mêmes requêtes validées pour la cohérence.",
-    heroFooter: "Pour les Développeurs, Par les Développeurs: Construit par quelqu'un qui en avait assez des limitations de Developer Console et voulait un moyen moderne, accessible et puissant de travailler avec les données Salesforce.",
+    heroCard6Desc:
+      "Partagez les configurations de requêtes avec votre équipe. Tout le monde utilise les mêmes requêtes validées pour la cohérence.",
+    heroFooter:
+      "Pour les Développeurs, Par les Développeurs: Construit par quelqu'un qui en avait assez des limitations de Developer Console et voulait un moyen moderne, accessible et puissant de travailler avec les données Salesforce.",
     testStatus: "✅ Résultats des Tests",
     testsPassing: "Réussis",
     accessibility: "Accessibilité",
@@ -214,13 +252,22 @@ export const content = {
     feature6Title: "🧪 Testé",
     feature6Desc: "118+ tests E2E avec Playwright pour la fiabilité",
     quickStart: "🚀 Démarrage Rapide",
-    prerequisites: "Prérequis",
+    deployIntro:
+      "Déployez le framework sur votre org Salesforce en un seul clic. Pas besoin de cloner le dépôt ou d'installer des outils.",
+    deployNow: "⚡ Déployer Maintenant",
+    deployButton: "🚀 Déployer sur Salesforce",
+    deploySubtext: "Déploiement en un clic vers n'importe quelle org Salesforce",
+    forContributors: "👨‍💻 Pour les Contributeurs et Développeurs",
+    forContributorsDesc:
+      "Si vous souhaitez contribuer au projet ou le personnaliser localement, suivez ces étapes:",
+    contributorPrerequisites: "Prérequis",
     prereq1: "Salesforce CLI (dernière version)",
     prereq2: "Node.js 24+",
     prereq3: "Git",
-    installation: "Étapes d'Installation",
+    contributorInstallation: "Étapes d'Installation",
     ready: "Prêt à Commencer?",
-    readyDesc: "Déployez dans votre org Salesforce en quelques minutes",
+    readyDesc:
+      "Rejoignez la communauté et commencez à créer de meilleures requêtes SOQL aujourd'hui",
     viewGitHub: "Voir sur GitHub",
     readDocs: "Lire la Documentation",
     documentation: "📚 Documentation",
@@ -233,20 +280,28 @@ export const content = {
     tagline:
       "Lightning Web Component für Dynamische SOQL-Abfragen in Salesforce",
     heroTitle: "🚀 Über Einfache SOQL-Abfragen Hinaus",
-    heroIntro: "Dies ist nicht nur ein weiteres Tool zum Ausführen von SOQL-Abfragen. Dynamic Query Framework ist ein umfassendes Entwicklungs-Framework, das die Art und Weise transformiert, wie Salesforce-Entwickler mit Daten interagieren.",
+    heroIntro:
+      "Dies ist nicht nur ein weiteres Tool zum Ausführen von SOQL-Abfragen. Dynamic Query Framework ist ein umfassendes Entwicklungs-Framework, das die Art und Weise transformiert, wie Salesforce-Entwickler mit Daten interagieren.",
     heroCard1Title: "🔍 Debuggen Sie Wie ein Profi",
-    heroCard1Desc: "Vorkonfigurierte Abfragen für häufige Debug-Szenarien. Keine wiederholten Abfragen mehr schreiben.",
+    heroCard1Desc:
+      "Vorkonfigurierte Abfragen für häufige Debug-Szenarien. Keine wiederholten Abfragen mehr schreiben.",
     heroCard2Title: "👤 Berechtigungen Sofort Testen",
-    heroCard2Desc: "Die Funktion 'Als Benutzer Ausführen' ermöglicht es Ihnen, Datensichtbarkeit und Sicherheitsmodelle zu validieren, ohne Benutzer zu wechseln.",
+    heroCard2Desc:
+      "Die Funktion 'Als Benutzer Ausführen' ermöglicht es Ihnen, Datensichtbarkeit und Sicherheitsmodelle zu validieren, ohne Benutzer zu wechseln.",
     heroCard3Title: "🌳 Komplexe Daten Verstehen",
-    heroCard3Desc: "Baumansicht für Eltern-Kind-Beziehungen. Sehen Sie Ihre Datenstruktur auf einen Blick, nicht in flachen Tabellen.",
+    heroCard3Desc:
+      "Baumansicht für Eltern-Kind-Beziehungen. Sehen Sie Ihre Datenstruktur auf einen Blick, nicht in flachen Tabellen.",
     heroCard4Title: "⚡ Enterprise-Scale-Performance",
-    heroCard4Desc: "Verarbeiten Sie über 50k Datensätze mit cursorbasierter Paginierung. Keine Governor-Limit-Kopfschmerzen mehr.",
+    heroCard4Desc:
+      "Verarbeiten Sie über 50k Datensätze mit cursorbasierter Paginierung. Keine Governor-Limit-Kopfschmerzen mehr.",
     heroCard5Title: "📊 Überall Exportieren",
-    heroCard5Desc: "Wechseln Sie zwischen Tabellen-, JSON- und CSV-Ansichten. Kopieren Sie Daten im benötigten Format für Dokumentation oder Analyse.",
+    heroCard5Desc:
+      "Wechseln Sie zwischen Tabellen-, JSON- und CSV-Ansichten. Kopieren Sie Daten im benötigten Format für Dokumentation oder Analyse.",
     heroCard6Title: "🎯 Team-Zusammenarbeit",
-    heroCard6Desc: "Teilen Sie Abfragekonfigurationen mit Ihrem Team. Alle verwenden dieselben validierten Abfragen für Konsistenz.",
-    heroFooter: "Für Entwickler, Von Entwicklern: Erstellt von jemandem, der die Einschränkungen der Developer Console satt hatte und einen modernen, zugänglichen und leistungsstarken Weg zum Arbeiten mit Salesforce-Daten wollte.",
+    heroCard6Desc:
+      "Teilen Sie Abfragekonfigurationen mit Ihrem Team. Alle verwenden dieselben validierten Abfragen für Konsistenz.",
+    heroFooter:
+      "Für Entwickler, Von Entwicklern: Erstellt von jemandem, der die Einschränkungen der Developer Console satt hatte und einen modernen, zugänglichen und leistungsstarken Weg zum Arbeiten mit Salesforce-Daten wollte.",
     testStatus: "✅ Testergebnisse",
     testsPassing: "Bestanden",
     accessibility: "Barrierefreiheit",
@@ -277,10 +332,10 @@ export const content = {
     feature1Title: "🚀 Dynamische Abfragen",
     feature1Desc: "Führen Sie SOQL-Abfragen dynamisch ohne Hardcodierung aus",
     feature2Title: "🔐 Named Credentials",
-    feature2Desc:
-      "Sichere Tooling API-Aufrufe mit modernen Named Credentials",
+    feature2Desc: "Sichere Tooling API-Aufrufe mit modernen Named Credentials",
     feature3Title: "📊 Mehrere Ansichten",
-    feature3Desc: "Wechseln Sie zwischen Tabellen-, JSON- und mobilen Kartenansichten",
+    feature3Desc:
+      "Wechseln Sie zwischen Tabellen-, JSON- und mobilen Kartenansichten",
     feature4Title: "♿ Barrierefrei",
     feature4Desc: "WCAG 2.1 AA-konform mit vollständiger Tastaturnavigation",
     feature5Title: "🎨 Lightning-Design",
@@ -288,13 +343,22 @@ export const content = {
     feature6Title: "🧪 Getestet",
     feature6Desc: "118+ E2E-Tests mit Playwright für Zuverlässigkeit",
     quickStart: "🚀 Schnellstart",
-    prerequisites: "Voraussetzungen",
+    deployIntro:
+      "Stellen Sie das Framework mit nur einem Klick in Ihrer Salesforce-Org bereit. Sie müssen das Repository nicht klonen oder Tools installieren.",
+    deployNow: "⚡ Jetzt Bereitstellen",
+    deployButton: "🚀 Auf Salesforce Bereitstellen",
+    deploySubtext: "Ein-Klick-Bereitstellung in jede Salesforce-Org",
+    forContributors: "👨‍💻 Für Mitwirkende und Entwickler",
+    forContributorsDesc:
+      "Wenn Sie zum Projekt beitragen oder es lokal anpassen möchten, folgen Sie diesen Schritten:",
+    contributorPrerequisites: "Voraussetzungen",
     prereq1: "Salesforce CLI (neueste Version)",
     prereq2: "Node.js 24+",
     prereq3: "Git",
-    installation: "Installationsschritte",
+    contributorInstallation: "Installationsschritte",
     ready: "Bereit zum Starten?",
-    readyDesc: "In Minuten in Ihrer Salesforce-Org bereitstellen",
+    readyDesc:
+      "Treten Sie der Community bei und beginnen Sie noch heute, bessere SOQL-Abfragen zu erstellen",
     viewGitHub: "Auf GitHub ansehen",
     readDocs: "Dokumentation lesen",
     documentation: "📚 Dokumentation",
@@ -304,23 +368,30 @@ export const content = {
   it: {
     bannerText: "Ecco come apparirà il sito GitHub Pages",
     title: "⚡ Dynamic Query Framework",
-    tagline:
-      "Componente Lightning Web per Query SOQL Dinamiche in Salesforce",
+    tagline: "Componente Lightning Web per Query SOQL Dinamiche in Salesforce",
     heroTitle: "🚀 Oltre le Semplici Query SOQL",
-    heroIntro: "Questo non è solo un altro strumento per eseguire query SOQL. Dynamic Query Framework è un framework di sviluppo completo che trasforma il modo in cui gli sviluppatori Salesforce interagiscono con i dati.",
+    heroIntro:
+      "Questo non è solo un altro strumento per eseguire query SOQL. Dynamic Query Framework è un framework di sviluppo completo che trasforma il modo in cui gli sviluppatori Salesforce interagiscono con i dati.",
     heroCard1Title: "🔍 Debug Come un Professionista",
-    heroCard1Desc: "Query preconfigurate per scenari di debug comuni. Non più scrivere le stesse query più e più volte.",
+    heroCard1Desc:
+      "Query preconfigurate per scenari di debug comuni. Non più scrivere le stesse query più e più volte.",
     heroCard2Title: "👤 Testa i Permessi Istantaneamente",
-    heroCard2Desc: "La funzione Esegui Come Utente ti permette di validare visibilità dei dati e modelli di sicurezza senza cambiare utente.",
+    heroCard2Desc:
+      "La funzione Esegui Come Utente ti permette di validare visibilità dei dati e modelli di sicurezza senza cambiare utente.",
     heroCard3Title: "🌳 Comprendi Dati Complessi",
-    heroCard3Desc: "Vista ad albero per relazioni padre-figlio. Visualizza la struttura dei tuoi dati a colpo d'occhio, non in tabelle piatte.",
+    heroCard3Desc:
+      "Vista ad albero per relazioni padre-figlio. Visualizza la struttura dei tuoi dati a colpo d'occhio, non in tabelle piatte.",
     heroCard4Title: "⚡ Prestazioni su Scala Aziendale",
-    heroCard4Desc: "Gestisci oltre 50k record con paginazione basata su cursore. Niente più mal di testa con i limiti del governatore.",
+    heroCard4Desc:
+      "Gestisci oltre 50k record con paginazione basata su cursore. Niente più mal di testa con i limiti del governatore.",
     heroCard5Title: "📊 Esporta Ovunque",
-    heroCard5Desc: "Passa tra viste Tabella, JSON e CSV. Copia i dati nel formato necessario per documentazione o analisi.",
+    heroCard5Desc:
+      "Passa tra viste Tabella, JSON e CSV. Copia i dati nel formato necessario per documentazione o analisi.",
     heroCard6Title: "🎯 Collaborazione di Team",
-    heroCard6Desc: "Condividi configurazioni di query con il tuo team. Tutti usano le stesse query validate per coerenza.",
-    heroFooter: "Per Sviluppatori, Da Sviluppatori: Creato da qualcuno stanco delle limitazioni della Developer Console e che voleva un modo moderno, accessibile e potente per lavorare con i dati Salesforce.",
+    heroCard6Desc:
+      "Condividi configurazioni di query con il tuo team. Tutti usano le stesse query validate per coerenza.",
+    heroFooter:
+      "Per Sviluppatori, Da Sviluppatori: Creato da qualcuno stanco delle limitazioni della Developer Console e che voleva un modo moderno, accessibile e potente per lavorare con i dati Salesforce.",
     testStatus: "✅ Risultati Test",
     testsPassing: "Superati",
     accessibility: "Accessibilità",
@@ -351,8 +422,7 @@ export const content = {
     feature1Title: "🚀 Query Dinamiche",
     feature1Desc: "Esegui query SOQL dinamicamente senza hardcoding",
     feature2Title: "🔐 Named Credentials",
-    feature2Desc:
-      "Chiamate sicure a Tooling API con Named Credentials moderne",
+    feature2Desc: "Chiamate sicure a Tooling API con Named Credentials moderne",
     feature3Title: "📊 Viste Multiple",
     feature3Desc: "Passa tra viste Tabella, JSON e schede mobili",
     feature4Title: "♿ Accessibile",
@@ -362,13 +432,22 @@ export const content = {
     feature6Title: "🧪 Testato",
     feature6Desc: "118+ test E2E con Playwright per affidabilità",
     quickStart: "🚀 Avvio Rapido",
-    prerequisites: "Prerequisiti",
+    deployIntro:
+      "Distribuisci il framework alla tua org Salesforce con un solo clic. Non è necessario clonare il repository o installare strumenti.",
+    deployNow: "⚡ Distribuisci Ora",
+    deployButton: "🚀 Distribuisci su Salesforce",
+    deploySubtext: "Distribuzione con un clic a qualsiasi org Salesforce",
+    forContributors: "👨‍💻 Per Contributori e Sviluppatori",
+    forContributorsDesc:
+      "Se vuoi contribuire al progetto o personalizzarlo localmente, segui questi passaggi:",
+    contributorPrerequisites: "Prerequisiti",
     prereq1: "Salesforce CLI (ultima versione)",
     prereq2: "Node.js 24+",
     prereq3: "Git",
-    installation: "Passaggi di Installazione",
+    contributorInstallation: "Passaggi di Installazione",
     ready: "Pronto per Iniziare?",
-    readyDesc: "Distribuisci nella tua org Salesforce in pochi minuti",
+    readyDesc:
+      "Unisciti alla community e inizia a creare query SOQL migliori oggi stesso",
     viewGitHub: "Visualizza su GitHub",
     readDocs: "Leggi la Documentazione",
     documentation: "📚 Documentazione",
@@ -378,23 +457,30 @@ export const content = {
   ja: {
     bannerText: "GitHub Pagesサイトの外観",
     title: "⚡ Dynamic Query Framework",
-    tagline:
-      "Salesforce用の動的SOQLクエリのためのLightning Webコンポーネント",
+    tagline: "Salesforce用の動的SOQLクエリのためのLightning Webコンポーネント",
     heroTitle: "🚀 単純なSOQLクエリを超えて",
-    heroIntro: "これは単なるSOQLクエリを実行するツールではありません。Dynamic Query Frameworkは、Salesforce開発者がデータとやり取りする方法を変革する包括的な開発フレームワークです。",
+    heroIntro:
+      "これは単なるSOQLクエリを実行するツールではありません。Dynamic Query Frameworkは、Salesforce開発者がデータとやり取りする方法を変革する包括的な開発フレームワークです。",
     heroCard1Title: "🔍 プロのようにデバッグ",
-    heroCard1Desc: "一般的なデバッグシナリオ用の事前設定されたクエリ。同じクエリを何度も書く必要はありません。",
+    heroCard1Desc:
+      "一般的なデバッグシナリオ用の事前設定されたクエリ。同じクエリを何度も書く必要はありません。",
     heroCard2Title: "👤 権限を即座にテスト",
-    heroCard2Desc: "ユーザーとして実行機能により、ユーザーを切り替えることなくデータの可視性とセキュリティモデルを検証できます。",
+    heroCard2Desc:
+      "ユーザーとして実行機能により、ユーザーを切り替えることなくデータの可視性とセキュリティモデルを検証できます。",
     heroCard3Title: "🌳 複雑なデータを理解",
-    heroCard3Desc: "親子関係のツリービュー。フラットなテーブルではなく、一目でデータ構造を確認できます。",
+    heroCard3Desc:
+      "親子関係のツリービュー。フラットなテーブルではなく、一目でデータ構造を確認できます。",
     heroCard4Title: "⚡ エンタープライズスケールのパフォーマンス",
-    heroCard4Desc: "カーソルベースのページネーションで50k以上のレコードを処理。ガバナ制限の頭痛の種はもうありません。",
+    heroCard4Desc:
+      "カーソルベースのページネーションで50k以上のレコードを処理。ガバナ制限の頭痛の種はもうありません。",
     heroCard5Title: "📊 どこへでもエクスポート",
-    heroCard5Desc: "テーブル、JSON、CSVビューを切り替え。ドキュメントや分析に必要な形式でデータをコピーします。",
+    heroCard5Desc:
+      "テーブル、JSON、CSVビューを切り替え。ドキュメントや分析に必要な形式でデータをコピーします。",
     heroCard6Title: "🎯 チームコラボレーション",
-    heroCard6Desc: "チーム全体でクエリ設定を共有。全員が一貫性のために同じ検証済みクエリを使用します。",
-    heroFooter: "開発者による、開発者のための: Developer Consoleの制限にうんざりし、Salesforceデータを扱うモダンでアクセシブルで強力な方法を求めていた人によって構築されました。",
+    heroCard6Desc:
+      "チーム全体でクエリ設定を共有。全員が一貫性のために同じ検証済みクエリを使用します。",
+    heroFooter:
+      "開発者による、開発者のための: Developer Consoleの制限にうんざりし、Salesforceデータを扱うモダンでアクセシブルで強力な方法を求めていた人によって構築されました。",
     testStatus: "✅ テスト結果",
     testsPassing: "合格",
     accessibility: "アクセシビリティ",
@@ -425,8 +511,7 @@ export const content = {
     feature1Title: "🚀 動的クエリ",
     feature1Desc: "ハードコードなしでSOQLクエリを動的に実行",
     feature2Title: "🔐 Named Credentials",
-    feature2Desc:
-      "最新のNamed Credentialsによる安全なTooling API呼び出し",
+    feature2Desc: "最新のNamed Credentialsによる安全なTooling API呼び出し",
     feature3Title: "📊 複数のビュー",
     feature3Desc: "テーブル、JSON、モバイルカードビューを切り替え",
     feature4Title: "♿ アクセシブル",
@@ -436,13 +521,21 @@ export const content = {
     feature6Title: "🧪 テスト済み",
     feature6Desc: "Playwrightによる118以上のE2Eテストで信頼性を確保",
     quickStart: "🚀 クイックスタート",
-    prerequisites: "前提条件",
+    deployIntro:
+      "ワンクリックでフレームワークをSalesforce orgにデプロイします。リポジトリをクローンしたりツールをインストールする必要はありません。",
+    deployNow: "⚡ 今すぐデプロイ",
+    deployButton: "🚀 Salesforceにデプロイ",
+    deploySubtext: "任意のSalesforce orgへワンクリックでデプロイ",
+    forContributors: "👨‍💻 貢献者と開発者向け",
+    forContributorsDesc:
+      "プロジェクトに貢献したり、ローカルでカスタマイズしたい場合は、次の手順に従ってください：",
+    contributorPrerequisites: "前提条件",
     prereq1: "Salesforce CLI（最新版）",
     prereq2: "Node.js 24+",
     prereq3: "Git",
-    installation: "インストール手順",
+    contributorInstallation: "インストール手順",
     ready: "始める準備はできましたか？",
-    readyDesc: "数分でSalesforce orgにデプロイ",
+    readyDesc: "コミュニティに参加して、今日からより良いSOQLクエリの作成を始めましょう",
     viewGitHub: "GitHubで見る",
     readDocs: "ドキュメントを読む",
     documentation: "📚 ドキュメント",
@@ -455,20 +548,28 @@ export const content = {
     tagline:
       "Componente Lightning Web para Consultas SOQL Dinâmicas no Salesforce",
     heroTitle: "🚀 Além de Simples Consultas SOQL",
-    heroIntro: "Esta não é apenas mais uma ferramenta para executar consultas SOQL. Dynamic Query Framework é uma estrutura de desenvolvimento abrangente que transforma como os desenvolvedores Salesforce interagem com dados.",
+    heroIntro:
+      "Esta não é apenas mais uma ferramenta para executar consultas SOQL. Dynamic Query Framework é uma estrutura de desenvolvimento abrangente que transforma como os desenvolvedores Salesforce interagem com dados.",
     heroCard1Title: "🔍 Depure Como um Profissional",
-    heroCard1Desc: "Consultas pré-configuradas para cenários comuns de depuração. Chega de escrever as mesmas consultas repetidamente.",
+    heroCard1Desc:
+      "Consultas pré-configuradas para cenários comuns de depuração. Chega de escrever as mesmas consultas repetidamente.",
     heroCard2Title: "👤 Teste Permissões Instantaneamente",
-    heroCard2Desc: "O recurso Executar Como Usuário permite validar visibilidade de dados e modelos de segurança sem trocar de usuário.",
+    heroCard2Desc:
+      "O recurso Executar Como Usuário permite validar visibilidade de dados e modelos de segurança sem trocar de usuário.",
     heroCard3Title: "🌳 Compreenda Dados Complexos",
-    heroCard3Desc: "Visualização em árvore para relacionamentos pai-filho. Veja a estrutura dos seus dados de relance, não em tabelas planas.",
+    heroCard3Desc:
+      "Visualização em árvore para relacionamentos pai-filho. Veja a estrutura dos seus dados de relance, não em tabelas planas.",
     heroCard4Title: "⚡ Desempenho em Escala Empresarial",
-    heroCard4Desc: "Manipule mais de 50k registros com paginação baseada em cursor. Acabaram-se as dores de cabeça com limites do governador.",
+    heroCard4Desc:
+      "Manipule mais de 50k registros com paginação baseada em cursor. Acabaram-se as dores de cabeça com limites do governador.",
     heroCard5Title: "📊 Exporte para Qualquer Lugar",
-    heroCard5Desc: "Alterne entre visualizações de Tabela, JSON e CSV. Copie dados no formato necessário para documentação ou análise.",
+    heroCard5Desc:
+      "Alterne entre visualizações de Tabela, JSON e CSV. Copie dados no formato necessário para documentação ou análise.",
     heroCard6Title: "🎯 Colaboração em Equipe",
-    heroCard6Desc: "Compartilhe configurações de consultas com sua equipe. Todos usam as mesmas consultas validadas para consistência.",
-    heroFooter: "Para Desenvolvedores, Por Desenvolvedores: Criado por alguém que se cansou das limitações do Developer Console e queria uma maneira moderna, acessível e poderosa de trabalhar com dados Salesforce.",
+    heroCard6Desc:
+      "Compartilhe configurações de consultas com sua equipe. Todos usam as mesmas consultas validadas para consistência.",
+    heroFooter:
+      "Para Desenvolvedores, Por Desenvolvedores: Criado por alguém que se cansou das limitações do Developer Console e queria uma maneira moderna, acessível e poderosa de trabalhar com dados Salesforce.",
     testStatus: "✅ Resultados dos Testes",
     testsPassing: "Aprovados",
     accessibility: "Acessibilidade",
@@ -502,21 +603,32 @@ export const content = {
     feature2Desc:
       "Chamadas seguras à API Tooling com Named Credentials modernas",
     feature3Title: "📊 Múltiplas Visualizações",
-    feature3Desc: "Alterne entre visualizações de Tabela, JSON e cartões móveis",
+    feature3Desc:
+      "Alterne entre visualizações de Tabela, JSON e cartões móveis",
     feature4Title: "♿ Acessível",
-    feature4Desc: "Compatível com WCAG 2.1 AA com navegação por teclado completa",
+    feature4Desc:
+      "Compatível com WCAG 2.1 AA com navegação por teclado completa",
     feature5Title: "🎨 Design Lightning",
     feature5Desc: "Construído com Salesforce Lightning Design System",
     feature6Title: "🧪 Testado",
     feature6Desc: "118+ testes E2E com Playwright para confiabilidade",
     quickStart: "🚀 Início Rápido",
-    prerequisites: "Pré-requisitos",
+    deployIntro:
+      "Implante o framework em sua org Salesforce com apenas um clique. Não é necessário clonar o repositório ou instalar ferramentas.",
+    deployNow: "⚡ Implantar Agora",
+    deployButton: "🚀 Implantar no Salesforce",
+    deploySubtext: "Implantação com um clique em qualquer org Salesforce",
+    forContributors: "👨‍💻 Para Contribuidores e Desenvolvedores",
+    forContributorsDesc:
+      "Se você deseja contribuir para o projeto ou personalizá-lo localmente, siga estas etapas:",
+    contributorPrerequisites: "Pré-requisitos",
     prereq1: "Salesforce CLI (última versão)",
     prereq2: "Node.js 24+",
     prereq3: "Git",
-    installation: "Etapas de Instalação",
+    contributorInstallation: "Etapas de Instalação",
     ready: "Pronto para Começar?",
-    readyDesc: "Implante em sua org Salesforce em minutos",
+    readyDesc:
+      "Junte-se à comunidade e comece a criar melhores consultas SOQL hoje mesmo",
     viewGitHub: "Ver no GitHub",
     readDocs: "Ler Documentação",
     documentation: "📚 Documentação",
@@ -528,20 +640,26 @@ export const content = {
     title: "⚡ Dynamic Query Framework",
     tagline: "Salesforce 动态 SOQL 查询的 Lightning Web 组件",
     heroTitle: "🚀 超越简单的SOQL查询",
-    heroIntro: "这不仅仅是另一个运行SOQL查询的工具。Dynamic Query Framework是一个全面的开发框架，改变了Salesforce开发人员与数据交互的方式。",
+    heroIntro:
+      "这不仅仅是另一个运行SOQL查询的工具。Dynamic Query Framework是一个全面的开发框架，改变了Salesforce开发人员与数据交互的方式。",
     heroCard1Title: "🔍 像专业人士一样调试",
     heroCard1Desc: "针对常见调试场景的预配置查询。不再重复编写相同的查询。",
     heroCard2Title: "👤 即时测试权限",
-    heroCard2Desc: "以用户身份运行功能让您无需切换用户即可验证数据可见性和安全模型。",
+    heroCard2Desc:
+      "以用户身份运行功能让您无需切换用户即可验证数据可见性和安全模型。",
     heroCard3Title: "🌳 理解复杂数据",
     heroCard3Desc: "父子关系的树视图。一目了然地查看数据结构，而不是平面表格。",
     heroCard4Title: "⚡ 企业规模性能",
-    heroCard4Desc: "使用基于游标的分页处理超过50k条记录。不再为管理器限制头疼。",
+    heroCard4Desc:
+      "使用基于游标的分页处理超过50k条记录。不再为管理器限制头疼。",
     heroCard5Title: "📊 导出到任何地方",
-    heroCard5Desc: "在表格、JSON和CSV视图之间切换。以所需格式复制数据用于文档或分析。",
+    heroCard5Desc:
+      "在表格、JSON和CSV视图之间切换。以所需格式复制数据用于文档或分析。",
     heroCard6Title: "🎯 团队协作",
-    heroCard6Desc: "与团队共享查询配置。每个人使用相同的经过验证的查询以保持一致性。",
-    heroFooter: "为开发者，由开发者创建：由厌倦了Developer Console限制并希望以现代、易访问和强大的方式处理Salesforce数据的人创建。",
+    heroCard6Desc:
+      "与团队共享查询配置。每个人使用相同的经过验证的查询以保持一致性。",
+    heroFooter:
+      "为开发者，由开发者创建：由厌倦了Developer Console限制并希望以现代、易访问和强大的方式处理Salesforce数据的人创建。",
     testStatus: "✅ 测试结果",
     testsPassing: "通过",
     accessibility: "可访问性",
@@ -572,8 +690,7 @@ export const content = {
     feature1Title: "🚀 动态查询",
     feature1Desc: "无需硬编码即可动态执行SOQL查询",
     feature2Title: "🔐 命名凭据",
-    feature2Desc:
-      "使用现代命名凭据进行安全的Tooling API调用",
+    feature2Desc: "使用现代命名凭据进行安全的Tooling API调用",
     feature3Title: "📊 多视图",
     feature3Desc: "在表格、JSON和移动卡片视图之间切换",
     feature4Title: "♿ 可访问",
@@ -583,13 +700,20 @@ export const content = {
     feature6Title: "🧪 已测试",
     feature6Desc: "通过Playwright进行118+项E2E测试以确保可靠性",
     quickStart: "🚀 快速开始",
-    prerequisites: "前提条件",
+    deployIntro:
+      "只需一键即可将框架部署到您的Salesforce组织。无需克隆存储库或安装任何工具。",
+    deployNow: "⚡ 立即部署",
+    deployButton: "🚀 部署到Salesforce",
+    deploySubtext: "一键部署到任何Salesforce组织",
+    forContributors: "👨‍💻 面向贡献者和开发者",
+    forContributorsDesc: "如果您想为项目做出贡献或在本地进行自定义，请按照以下步骤操作：",
+    contributorPrerequisites: "前提条件",
     prereq1: "Salesforce CLI（最新版本）",
     prereq2: "Node.js 24+",
     prereq3: "Git",
-    installation: "安装步骤",
+    contributorInstallation: "安装步骤",
     ready: "准备开始了吗？",
-    readyDesc: "几分钟内部署到您的Salesforce组织",
+    readyDesc: "加入社区，立即开始构建更好的SOQL查询",
     viewGitHub: "在GitHub上查看",
     readDocs: "阅读文档",
     documentation: "📚 文档",

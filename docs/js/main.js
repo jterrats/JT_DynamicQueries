@@ -3,7 +3,7 @@
  * Handles language switching and dynamic content updates
  */
 
-import { content } from './translations.js';
+import { content } from "./translations.js";
 
 /**
  * Changes the page language by updating all translatable elements
@@ -14,8 +14,7 @@ function changeLanguage(lang) {
 
   // Update title and tagline
   if (c.title) document.querySelector("h1").textContent = c.title;
-  if (c.tagline)
-    document.querySelector(".tagline").textContent = c.tagline;
+  if (c.tagline) document.querySelector(".tagline").textContent = c.tagline;
 
   // Update hero section
   const heroSection = document.querySelector("#hero");
@@ -23,26 +22,40 @@ function changeLanguage(lang) {
     if (c.heroTitle) heroSection.querySelector("h2").textContent = c.heroTitle;
     if (c.heroIntro) heroSection.querySelector("p").textContent = c.heroIntro;
 
-    const heroCards = heroSection.querySelectorAll("div[style*='background: white']");
+    const heroCards = heroSection.querySelectorAll(
+      "div[style*='background: white']"
+    );
     if (heroCards.length >= 6) {
-      if (c.heroCard1Title) heroCards[0].querySelector("h3").textContent = c.heroCard1Title;
-      if (c.heroCard1Desc) heroCards[0].querySelector("p").textContent = c.heroCard1Desc;
-      if (c.heroCard2Title) heroCards[1].querySelector("h3").textContent = c.heroCard2Title;
-      if (c.heroCard2Desc) heroCards[1].querySelector("p").textContent = c.heroCard2Desc;
-      if (c.heroCard3Title) heroCards[2].querySelector("h3").textContent = c.heroCard3Title;
-      if (c.heroCard3Desc) heroCards[2].querySelector("p").textContent = c.heroCard3Desc;
-      if (c.heroCard4Title) heroCards[3].querySelector("h3").textContent = c.heroCard4Title;
-      if (c.heroCard4Desc) heroCards[3].querySelector("p").textContent = c.heroCard4Desc;
-      if (c.heroCard5Title) heroCards[4].querySelector("h3").textContent = c.heroCard5Title;
-      if (c.heroCard5Desc) heroCards[4].querySelector("p").textContent = c.heroCard5Desc;
-      if (c.heroCard6Title) heroCards[5].querySelector("h3").textContent = c.heroCard6Title;
-      if (c.heroCard6Desc) heroCards[5].querySelector("p").textContent = c.heroCard6Desc;
+      if (c.heroCard1Title)
+        heroCards[0].querySelector("h3").textContent = c.heroCard1Title;
+      if (c.heroCard1Desc)
+        heroCards[0].querySelector("p").textContent = c.heroCard1Desc;
+      if (c.heroCard2Title)
+        heroCards[1].querySelector("h3").textContent = c.heroCard2Title;
+      if (c.heroCard2Desc)
+        heroCards[1].querySelector("p").textContent = c.heroCard2Desc;
+      if (c.heroCard3Title)
+        heroCards[2].querySelector("h3").textContent = c.heroCard3Title;
+      if (c.heroCard3Desc)
+        heroCards[2].querySelector("p").textContent = c.heroCard3Desc;
+      if (c.heroCard4Title)
+        heroCards[3].querySelector("h3").textContent = c.heroCard4Title;
+      if (c.heroCard4Desc)
+        heroCards[3].querySelector("p").textContent = c.heroCard4Desc;
+      if (c.heroCard5Title)
+        heroCards[4].querySelector("h3").textContent = c.heroCard5Title;
+      if (c.heroCard5Desc)
+        heroCards[4].querySelector("p").textContent = c.heroCard5Desc;
+      if (c.heroCard6Title)
+        heroCards[5].querySelector("h3").textContent = c.heroCard6Title;
+      if (c.heroCard6Desc)
+        heroCards[5].querySelector("p").textContent = c.heroCard6Desc;
     }
 
     if (c.heroFooter) {
       const footerP = heroSection.querySelector("p[style*='margin-top: 2rem']");
       if (footerP) {
-        footerP.innerHTML = `<strong>💡 ${c.heroFooter.split(': ')[0]}:</strong> ${c.heroFooter.split(': ')[1]}`;
+        footerP.innerHTML = `<strong>💡 ${c.heroFooter.split(": ")[0]}:</strong> ${c.heroFooter.split(": ")[1]}`;
       }
     }
   }
@@ -79,64 +92,113 @@ function changeLanguage(lang) {
   if (c.queryExecutionDesc && gifDescs[0])
     gifDescs[0].textContent = c.queryExecutionDesc;
 
-  if (c.multipleViews && gifCards[1])
-    gifCards[1].textContent = c.multipleViews;
+  if (c.multipleViews && gifCards[1]) gifCards[1].textContent = c.multipleViews;
   if (c.multipleViewsDesc && gifDescs[1])
     gifDescs[1].textContent = c.multipleViewsDesc;
 
   if (c.treeView && gifCards[2]) gifCards[2].textContent = c.treeView;
-  if (c.treeViewDesc && gifDescs[2])
-    gifDescs[2].textContent = c.treeViewDesc;
+  if (c.treeViewDesc && gifDescs[2]) gifDescs[2].textContent = c.treeViewDesc;
 
-  if (c.largeDatasets && gifCards[3])
-    gifCards[3].textContent = c.largeDatasets;
+  if (c.largeDatasets && gifCards[3]) gifCards[3].textContent = c.largeDatasets;
   if (c.largeDatasetsDesc && gifDescs[3])
     gifDescs[3].textContent = c.largeDatasetsDesc;
 
-  if (c.createConfig && gifCards[4])
-    gifCards[4].textContent = c.createConfig;
+  if (c.createConfig && gifCards[4]) gifCards[4].textContent = c.createConfig;
   if (c.createConfigDesc && gifDescs[4])
     gifDescs[4].textContent = c.createConfigDesc;
 
   if (c.runAsUser && gifCards[5]) gifCards[5].textContent = c.runAsUser;
-  if (c.runAsUserDesc && gifDescs[5])
-    gifDescs[5].textContent = c.runAsUserDesc;
+  if (c.runAsUserDesc && gifDescs[5]) gifDescs[5].textContent = c.runAsUserDesc;
 
   // Update feature cards
   const featureCards = document.querySelectorAll(".feature-card");
   if (featureCards.length >= 6) {
-    if (c.feature1Title) featureCards[0].querySelector("h4").textContent = c.feature1Title;
-    if (c.feature1Desc) featureCards[0].querySelector("p").textContent = c.feature1Desc;
-    if (c.feature2Title) featureCards[1].querySelector("h4").textContent = c.feature2Title;
-    if (c.feature2Desc) featureCards[1].querySelector("p").textContent = c.feature2Desc;
-    if (c.feature3Title) featureCards[2].querySelector("h4").textContent = c.feature3Title;
-    if (c.feature3Desc) featureCards[2].querySelector("p").textContent = c.feature3Desc;
-    if (c.feature4Title) featureCards[3].querySelector("h4").textContent = c.feature4Title;
-    if (c.feature4Desc) featureCards[3].querySelector("p").textContent = c.feature4Desc;
-    if (c.feature5Title) featureCards[4].querySelector("h4").textContent = c.feature5Title;
-    if (c.feature5Desc) featureCards[4].querySelector("p").textContent = c.feature5Desc;
-    if (c.feature6Title) featureCards[5].querySelector("h4").textContent = c.feature6Title;
-    if (c.feature6Desc) featureCards[5].querySelector("p").textContent = c.feature6Desc;
+    if (c.feature1Title)
+      featureCards[0].querySelector("h4").textContent = c.feature1Title;
+    if (c.feature1Desc)
+      featureCards[0].querySelector("p").textContent = c.feature1Desc;
+    if (c.feature2Title)
+      featureCards[1].querySelector("h4").textContent = c.feature2Title;
+    if (c.feature2Desc)
+      featureCards[1].querySelector("p").textContent = c.feature2Desc;
+    if (c.feature3Title)
+      featureCards[2].querySelector("h4").textContent = c.feature3Title;
+    if (c.feature3Desc)
+      featureCards[2].querySelector("p").textContent = c.feature3Desc;
+    if (c.feature4Title)
+      featureCards[3].querySelector("h4").textContent = c.feature4Title;
+    if (c.feature4Desc)
+      featureCards[3].querySelector("p").textContent = c.feature4Desc;
+    if (c.feature5Title)
+      featureCards[4].querySelector("h4").textContent = c.feature5Title;
+    if (c.feature5Desc)
+      featureCards[4].querySelector("p").textContent = c.feature5Desc;
+    if (c.feature6Title)
+      featureCards[5].querySelector("h4").textContent = c.feature6Title;
+    if (c.feature6Desc)
+      featureCards[5].querySelector("p").textContent = c.feature6Desc;
   }
 
   // Update installation section
-  const installationH3s = document.querySelectorAll("#installation h3");
-  if (installationH3s.length >= 2) {
-    if (c.prerequisites) installationH3s[0].textContent = c.prerequisites;
-    if (c.installation) installationH3s[1].textContent = c.installation;
-  }
+  const installationSection = document.querySelector("#installation");
+  if (installationSection) {
+    // Update intro paragraph
+    const installationIntro = installationSection.querySelector(
+      "p[style*='font-size: 1.1rem']"
+    );
+    if (installationIntro && c.deployIntro)
+      installationIntro.textContent = c.deployIntro;
 
-  // Update prerequisites list
-  const prereqList = document.querySelectorAll("#installation ul li");
-  if (prereqList.length >= 3) {
-    if (c.prereq1) prereqList[0].textContent = c.prereq1;
-    if (c.prereq2) prereqList[1].textContent = c.prereq2;
-    if (c.prereq3) prereqList[2].textContent = c.prereq3;
+    // Update deploy section
+    const deployTitle = installationSection.querySelector("h3");
+    if (deployTitle && c.deployNow) deployTitle.textContent = c.deployNow;
+
+    const deployButton = installationSection.querySelector(
+      "a[href*='githubsfdeploy']"
+    );
+    if (deployButton && c.deployButton) deployButton.textContent = c.deployButton;
+
+    const deploySubtext = installationSection.querySelector(
+      "p[style*='color: rgba(255, 255, 255, 0.9)']"
+    );
+    if (deploySubtext && c.deploySubtext)
+      deploySubtext.textContent = c.deploySubtext;
+
+    // Update contributors section
+    const contributorsTitle = installationSection.querySelector(
+      "div[style*='background: #f8f9fa'] h3"
+    );
+    if (contributorsTitle && c.forContributors)
+      contributorsTitle.textContent = c.forContributors;
+
+    const contributorsDesc = installationSection.querySelector(
+      "div[style*='background: #f8f9fa'] > p"
+    );
+    if (contributorsDesc && c.forContributorsDesc)
+      contributorsDesc.textContent = c.forContributorsDesc;
+
+    // Update prerequisites and installation in contributors section
+    const contributorH4s = installationSection.querySelectorAll(
+      "div[style*='background: #f8f9fa'] h4"
+    );
+    if (contributorH4s.length >= 2) {
+      if (c.contributorPrerequisites)
+        contributorH4s[0].textContent = c.contributorPrerequisites;
+      if (c.contributorInstallation)
+        contributorH4s[1].textContent = c.contributorInstallation;
+    }
+
+    // Update prerequisites list
+    const prereqList = installationSection.querySelectorAll("ul li");
+    if (prereqList.length >= 3) {
+      if (c.prereq1) prereqList[0].textContent = c.prereq1;
+      if (c.prereq2) prereqList[1].textContent = c.prereq2;
+      if (c.prereq3) prereqList[2].textContent = c.prereq3;
+    }
   }
 
   // Update CTA
-  if (c.ready)
-    document.querySelector(".cta-section h2").textContent = c.ready;
+  if (c.ready) document.querySelector(".cta-section h2").textContent = c.ready;
   if (c.readyDesc)
     document.querySelector(".cta-section p").textContent = c.readyDesc;
 
@@ -170,4 +232,3 @@ window.addEventListener("DOMContentLoaded", () => {
     changeLanguage(savedLang);
   }
 });
-

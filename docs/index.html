@@ -3,14 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dynamic Query Framework - Dynamic SOQL Query Framework for Salesforce</title>
+    <title>
+      Dynamic Query Framework - Dynamic SOQL Query Framework for Salesforce
+    </title>
 
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Transform how you work with Salesforce data. Dynamic Query Framework is a comprehensive LWC development tool with pre-configured queries, Run As User testing, tree view relationships, and enterprise-scale performance (50k+ records). Open source and WCAG 2.1 AA accessible." />
-    <meta name="keywords" content="Salesforce, SOQL, Lightning Web Component, LWC, Dynamic Queries, Salesforce Development, Developer Tools, Apex, Tooling API, Query Builder, Salesforce DX, Open Source, WCAG, Accessibility, Enterprise Development" />
+    <meta
+      name="description"
+      content="Transform how you work with Salesforce data. Dynamic Query Framework is a comprehensive LWC development tool with pre-configured queries, Run As User testing, tree view relationships, and enterprise-scale performance (50k+ records). Open source and WCAG 2.1 AA accessible."
+    />
+    <meta
+      name="keywords"
+      content="Salesforce, SOQL, Lightning Web Component, LWC, Dynamic Queries, Salesforce Development, Developer Tools, Apex, Tooling API, Query Builder, Salesforce DX, Open Source, WCAG, Accessibility, Enterprise Development"
+    />
     <meta name="author" content="Jaime Terrats" />
     <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://jterrats.github.io/JT_DynamicQueries/" />
+    <link
+      rel="canonical"
+      href="https://jterrats.github.io/JT_DynamicQueries/"
+    />
 
     <!-- Theme Color -->
     <meta name="theme-color" content="#667eea" />
@@ -21,38 +32,50 @@
 
     <!-- Open Graph (LinkedIn, WhatsApp, etc.) -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://jterrats.github.io/JT_DynamicQueries/" />
-    <meta property="og:title" content="Dynamic Query Framework - Beyond Simple SOQL Queries" />
-    <meta property="og:description" content="A comprehensive Salesforce development framework that transforms how developers interact with data. Pre-configured queries, Run As User testing, tree view relationships, and enterprise-scale performance." />
-    <meta property="og:image" content="https://jterrats.github.io/JT_DynamicQueries/assets/gifs/01-query-execution.gif" />
+    <meta
+      property="og:url"
+      content="https://jterrats.github.io/JT_DynamicQueries/"
+    />
+    <meta
+      property="og:title"
+      content="Dynamic Query Framework - Beyond Simple SOQL Queries"
+    />
+    <meta
+      property="og:description"
+      content="A comprehensive Salesforce development framework that transforms how developers interact with data. Pre-configured queries, Run As User testing, tree view relationships, and enterprise-scale performance."
+    />
+    <meta
+      property="og:image"
+      content="https://jterrats.github.io/JT_DynamicQueries/assets/gifs/01-query-execution.gif"
+    />
     <meta property="og:site_name" content="Dynamic Query Framework" />
     <meta property="og:locale" content="en_US" />
 
     <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      "name": "Dynamic Query Framework",
-      "applicationCategory": "DeveloperApplication",
-      "description": "Lightning Web Component framework for dynamic SOQL queries in Salesforce. Features include pre-configured queries, Run As User testing, tree view relationships, and enterprise-scale performance.",
-      "operatingSystem": "Salesforce",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      },
-      "author": {
-        "@type": "Person",
-        "name": "Jaime Terrats",
-        "url": "https://github.com/jterrats"
-      },
-      "codeRepository": "https://github.com/jterrats/JT_DynamicQueries",
-      "programmingLanguage": ["JavaScript", "Apex", "SOQL"],
-      "license": "https://opensource.org/licenses/MIT",
-      "keywords": "Salesforce, SOQL, Lightning Web Component, Developer Tools, Dynamic Queries",
-      "screenshot": "https://jterrats.github.io/JT_DynamicQueries/assets/gifs/01-query-execution.gif"
-    }
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Dynamic Query Framework",
+        "applicationCategory": "DeveloperApplication",
+        "description": "Lightning Web Component framework for dynamic SOQL queries in Salesforce. Features include pre-configured queries, Run As User testing, tree view relationships, and enterprise-scale performance.",
+        "operatingSystem": "Salesforce",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "author": {
+          "@type": "Person",
+          "name": "Jaime Terrats",
+          "url": "https://github.com/jterrats"
+        },
+        "codeRepository": "https://github.com/jterrats/JT_DynamicQueries",
+        "programmingLanguage": ["JavaScript", "Apex", "SOQL"],
+        "license": "https://opensource.org/licenses/MIT",
+        "keywords": "Salesforce, SOQL, Lightning Web Component, Developer Tools, Dynamic Queries",
+        "screenshot": "https://jterrats.github.io/JT_DynamicQueries/assets/gifs/01-query-execution.gif"
+      }
     </script>
 
     <!-- External Styles -->
@@ -85,16 +108,60 @@
         </p>
 
         <!-- Status Badges (Auto-updating from GitHub) -->
-        <div style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; margin: 1.5rem 0;">
-          <img src="https://img.shields.io/github/package-json/v/jterrats/JT_DynamicQueries?label=version&color=blue" alt="Version" style="height: 20px;">
-          <img src="https://img.shields.io/github/actions/workflow/status/jterrats/JT_DynamicQueries/e2e-on-merge.yml?branch=main&label=E2E%20Tests" alt="E2E Tests" style="height: 20px;">
-          <img src="https://img.shields.io/github/actions/workflow/status/jterrats/JT_DynamicQueries/gh-pages.yml?branch=main&label=docs" alt="Docs" style="height: 20px;">
-          <img src="https://img.shields.io/badge/tests-118%20passing-success.svg" alt="Tests Passing" style="height: 20px;">
-          <img src="https://img.shields.io/badge/accessibility-WCAG%202.1%20AA-success.svg" alt="Accessibility" style="height: 20px;">
-          <img src="https://img.shields.io/github/package-json/dependency-version/jterrats/JT_DynamicQueries/dev/@playwright/test?label=playwright" alt="Playwright" style="height: 20px;">
-          <img src="https://img.shields.io/github/license/jterrats/JT_DynamicQueries?color=blue" alt="License" style="height: 20px;">
-          <img src="https://img.shields.io/github/last-commit/jterrats/JT_DynamicQueries?color=blue" alt="Last Commit" style="height: 20px;">
-          <img src="https://img.shields.io/badge/Salesforce-Lightning-00a1e0.svg" alt="Salesforce" style="height: 20px;">
+        <div
+          style="
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 1.5rem 0;
+          "
+        >
+          <img
+            src="https://img.shields.io/github/package-json/v/jterrats/JT_DynamicQueries?label=version&color=blue"
+            alt="Version"
+            style="height: 20px"
+          />
+          <img
+            src="https://img.shields.io/github/actions/workflow/status/jterrats/JT_DynamicQueries/e2e-on-merge.yml?branch=main&label=E2E%20Tests"
+            alt="E2E Tests"
+            style="height: 20px"
+          />
+          <img
+            src="https://img.shields.io/github/actions/workflow/status/jterrats/JT_DynamicQueries/gh-pages.yml?branch=main&label=docs"
+            alt="Docs"
+            style="height: 20px"
+          />
+          <img
+            src="https://img.shields.io/badge/tests-118%20passing-success.svg"
+            alt="Tests Passing"
+            style="height: 20px"
+          />
+          <img
+            src="https://img.shields.io/badge/accessibility-WCAG%202.1%20AA-success.svg"
+            alt="Accessibility"
+            style="height: 20px"
+          />
+          <img
+            src="https://img.shields.io/github/package-json/dependency-version/jterrats/JT_DynamicQueries/dev/@playwright/test?label=playwright"
+            alt="Playwright"
+            style="height: 20px"
+          />
+          <img
+            src="https://img.shields.io/github/license/jterrats/JT_DynamicQueries?color=blue"
+            alt="License"
+            style="height: 20px"
+          />
+          <img
+            src="https://img.shields.io/github/last-commit/jterrats/JT_DynamicQueries?color=blue"
+            alt="Last Commit"
+            style="height: 20px"
+          />
+          <img
+            src="https://img.shields.io/badge/Salesforce-Lightning-00a1e0.svg"
+            alt="Salesforce"
+            style="height: 20px"
+          />
         </div>
 
         <div class="badges">
@@ -107,39 +174,157 @@
       </header>
 
       <!-- Hero Section -->
-      <section id="hero" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); padding: 3rem; border-radius: 15px; margin: 2rem 0; border-left: 5px solid #667eea;">
-        <h2 style="color: #667eea; border: none; margin-bottom: 1rem; font-size: 1.8rem;">🚀 Beyond Simple SOQL Queries</h2>
-        <p style="font-size: 1.2rem; line-height: 1.8; color: #333; margin-bottom: 1rem;">
-          This isn't just another tool to run SOQL queries. <strong>JT Dynamic Queries</strong> is a comprehensive development framework that transforms how Salesforce developers interact with data.
+      <section
+        id="hero"
+        style="
+          background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+          padding: 3rem;
+          border-radius: 15px;
+          margin: 2rem 0;
+          border-left: 5px solid #667eea;
+        "
+      >
+        <h2
+          style="
+            color: #667eea;
+            border: none;
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+          "
+        >
+          🚀 Beyond Simple SOQL Queries
+        </h2>
+        <p
+          style="
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #333;
+            margin-bottom: 1rem;
+          "
+        >
+          This isn't just another tool to run SOQL queries.
+          <strong>JT Dynamic Queries</strong> is a comprehensive development
+          framework that transforms how Salesforce developers interact with
+          data.
         </p>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
-          <div style="background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-            <h3 style="color: #667eea; margin: 0 0 0.5rem 0; font-size: 1.1rem;">🔍 Debug Like a Pro</h3>
-            <p style="margin: 0; font-size: 0.95rem; color: #666;">Pre-configured queries for common debugging scenarios. No more writing the same queries over and over.</p>
+        <div
+          style="
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+          "
+        >
+          <div
+            style="
+              background: white;
+              padding: 1.5rem;
+              border-radius: 10px;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            "
+          >
+            <h3 style="color: #667eea; margin: 0 0 0.5rem 0; font-size: 1.1rem">
+              🔍 Debug Like a Pro
+            </h3>
+            <p style="margin: 0; font-size: 0.95rem; color: #666">
+              Pre-configured queries for common debugging scenarios. No more
+              writing the same queries over and over.
+            </p>
           </div>
-          <div style="background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-            <h3 style="color: #667eea; margin: 0 0 0.5rem 0; font-size: 1.1rem;">👤 Test Permissions Instantly</h3>
-            <p style="margin: 0; font-size: 0.95rem; color: #666;">Run As User feature lets you validate data visibility and security models without switching users.</p>
+          <div
+            style="
+              background: white;
+              padding: 1.5rem;
+              border-radius: 10px;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            "
+          >
+            <h3 style="color: #667eea; margin: 0 0 0.5rem 0; font-size: 1.1rem">
+              👤 Test Permissions Instantly
+            </h3>
+            <p style="margin: 0; font-size: 0.95rem; color: #666">
+              Run As User feature lets you validate data visibility and security
+              models without switching users.
+            </p>
           </div>
-          <div style="background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-            <h3 style="color: #667eea; margin: 0 0 0.5rem 0; font-size: 1.1rem;">🌳 Understand Complex Data</h3>
-            <p style="margin: 0; font-size: 0.95rem; color: #666;">Tree view for parent-child relationships. See your data structure at a glance, not in flat tables.</p>
+          <div
+            style="
+              background: white;
+              padding: 1.5rem;
+              border-radius: 10px;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            "
+          >
+            <h3 style="color: #667eea; margin: 0 0 0.5rem 0; font-size: 1.1rem">
+              🌳 Understand Complex Data
+            </h3>
+            <p style="margin: 0; font-size: 0.95rem; color: #666">
+              Tree view for parent-child relationships. See your data structure
+              at a glance, not in flat tables.
+            </p>
           </div>
-          <div style="background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-            <h3 style="color: #667eea; margin: 0 0 0.5rem 0; font-size: 1.1rem;">⚡ Enterprise-Scale Performance</h3>
-            <p style="margin: 0; font-size: 0.95rem; color: #666;">Handle 50k+ records with cursor-based pagination. No more governor limit headaches.</p>
+          <div
+            style="
+              background: white;
+              padding: 1.5rem;
+              border-radius: 10px;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            "
+          >
+            <h3 style="color: #667eea; margin: 0 0 0.5rem 0; font-size: 1.1rem">
+              ⚡ Enterprise-Scale Performance
+            </h3>
+            <p style="margin: 0; font-size: 0.95rem; color: #666">
+              Handle 50k+ records with cursor-based pagination. No more governor
+              limit headaches.
+            </p>
           </div>
-          <div style="background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-            <h3 style="color: #667eea; margin: 0 0 0.5rem 0; font-size: 1.1rem;">📊 Export Anywhere</h3>
-            <p style="margin: 0; font-size: 0.95rem; color: #666;">Switch between Table, JSON, and CSV views. Copy data in the format you need for documentation or analysis.</p>
+          <div
+            style="
+              background: white;
+              padding: 1.5rem;
+              border-radius: 10px;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            "
+          >
+            <h3 style="color: #667eea; margin: 0 0 0.5rem 0; font-size: 1.1rem">
+              📊 Export Anywhere
+            </h3>
+            <p style="margin: 0; font-size: 0.95rem; color: #666">
+              Switch between Table, JSON, and CSV views. Copy data in the format
+              you need for documentation or analysis.
+            </p>
           </div>
-          <div style="background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-            <h3 style="color: #667eea; margin: 0 0 0.5rem 0; font-size: 1.1rem;">🎯 Team Collaboration</h3>
-            <p style="margin: 0; font-size: 0.95rem; color: #666;">Share query configurations across your team. Everyone uses the same validated queries for consistency.</p>
+          <div
+            style="
+              background: white;
+              padding: 1.5rem;
+              border-radius: 10px;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            "
+          >
+            <h3 style="color: #667eea; margin: 0 0 0.5rem 0; font-size: 1.1rem">
+              🎯 Team Collaboration
+            </h3>
+            <p style="margin: 0; font-size: 0.95rem; color: #666">
+              Share query configurations across your team. Everyone uses the
+              same validated queries for consistency.
+            </p>
           </div>
         </div>
-        <p style="font-size: 1.1rem; margin-top: 2rem; padding: 1rem; background: rgba(102, 126, 234, 0.1); border-radius: 8px; color: #333;">
-          <strong>💡 For Developers, By Developers:</strong> Built by someone who got tired of Developer Console limitations and wanted a modern, accessible, and powerful way to work with Salesforce data.
+        <p
+          style="
+            font-size: 1.1rem;
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 8px;
+            color: #333;
+          "
+        >
+          <strong>💡 For Developers, By Developers:</strong> Built by someone
+          who got tired of Developer Console limitations and wanted a modern,
+          accessible, and powerful way to work with Salesforce data.
         </p>
       </section>
 
@@ -338,22 +523,110 @@
       <!-- Installation -->
       <section id="installation">
         <h2>🚀 Quick Start</h2>
-        <h3>Prerequisites</h3>
-        <ul style="margin-left: 2rem; line-height: 2">
-          <li>Salesforce CLI (latest)</li>
-          <li>Node.js 24+</li>
-          <li>Git</li>
-        </ul>
+        <p style="font-size: 1.1rem; margin-bottom: 2rem; color: #666">
+          Deploy the framework to your Salesforce org with just one click. No
+          need to clone the repository or install any tools.
+        </p>
 
-        <h3>Installation Steps</h3>
-        <pre
+        <!-- Deploy to Salesforce Button -->
+        <div
           style="
-            background: #f5f5f5;
-            padding: 1rem;
-            border-radius: 8px;
-            overflow-x: auto;
+            text-align: center;
+            margin: 2rem 0;
+            padding: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
           "
-        ><code># Clone repository
+        >
+          <h3
+            style="
+              color: white;
+              margin: 0 0 1.5rem 0;
+              font-size: 1.5rem;
+              text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            "
+          >
+            ⚡ Deploy Now
+          </h3>
+          <a
+            href="https://githubsfdeploy.herokuapp.com/?owner=jterrats&repo=JT_DynamicQueries"
+            target="_blank"
+            rel="noopener noreferrer"
+            style="
+              display: inline-block;
+              padding: 1rem 2.5rem;
+              background: white;
+              color: #667eea;
+              text-decoration: none;
+              font-size: 1.2rem;
+              font-weight: bold;
+              border-radius: 50px;
+              box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+              transition: transform 0.2s, box-shadow 0.2s;
+            "
+            onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 6px 20px rgba(0,0,0,0.3)'"
+            onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.2)'"
+          >
+            🚀 Deploy to Salesforce
+          </a>
+          <p
+            style="
+              color: rgba(255, 255, 255, 0.9);
+              margin: 1rem 0 0 0;
+              font-size: 0.95rem;
+            "
+          >
+            One-click deployment to any Salesforce org
+          </p>
+        </div>
+
+        <div
+          style="
+            margin-top: 3rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+          "
+        >
+          <h3 style="margin-top: 0; color: #333">
+            👨‍💻 For Contributors & Developers
+          </h3>
+          <p style="color: #666; margin-bottom: 1rem">
+            If you want to contribute to the project or customize it locally,
+            follow these steps:
+          </p>
+
+          <h4 style="color: #667eea; font-size: 1rem; margin-top: 1.5rem">
+            Prerequisites
+          </h4>
+          <ul style="margin-left: 2rem; line-height: 1.8; color: #666">
+            <li>Salesforce CLI (latest)</li>
+            <li>Node.js 24+</li>
+            <li>Git</li>
+          </ul>
+
+          <h4
+            style="
+              color: #667eea;
+              font-size: 1rem;
+              margin-top: 1.5rem;
+              margin-bottom: 0.5rem;
+            "
+          >
+            Installation Steps
+          </h4>
+          <pre
+            style="
+              background: #2d2d2d;
+              color: #f8f8f2;
+              padding: 1rem;
+              border-radius: 8px;
+              overflow-x: auto;
+              font-size: 0.9rem;
+            "
+          ><code># Clone repository
 git clone https://github.com/jterrats/JT_DynamicQueries.git
 cd JT_DynamicQueries
 
@@ -365,13 +638,14 @@ npm run deploy:named-credential
 
 # Run tests (optional)
 npm test</code></pre>
+        </div>
       </section>
 
       <!-- CTA -->
       <section class="cta-section">
         <h2>Ready to Get Started?</h2>
         <p style="font-size: 1.2rem; margin: 1rem 0">
-          Deploy to your Salesforce org in minutes
+          Join the community and start building better SOQL queries today
         </p>
         <a
           href="https://github.com/jterrats/JT_DynamicQueries"
@@ -430,7 +704,6 @@ npm test</code></pre>
         </p>
       </footer>
     </div>
-
 
     <!-- External Scripts (Module) -->
     <script type="module" src="js/main.js"></script>

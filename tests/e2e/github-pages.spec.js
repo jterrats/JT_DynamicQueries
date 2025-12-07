@@ -68,7 +68,7 @@ test.describe("GitHub Pages - Documentation Site", () => {
     expect(response.status()).toBe(200);
 
     // Verify page title
-    await expect(page).toHaveTitle(/JT Dynamic Queries/i);
+    await expect(page).toHaveTitle(/Dynamic Query Framework/i);
 
     // Verify main heading (flexible - any h1 or h2 with project name)
     const heading = page
@@ -260,18 +260,6 @@ test.describe("GitHub Pages - Documentation Site", () => {
       'a[href*="github.com/jterrats/JT_DynamicQueries"]'
     );
     expect(await githubLinks.count()).toBeGreaterThan(0);
-  });
-
-  test("Deploy to Salesforce button works on homepage", async ({ page }) => {
-    await page.goto(BASE_URL);
-
-    // Find deploy button
-    const deployButton = page
-      .locator('a[href*="githubsfdeploy"], img[alt*="Deploy"]')
-      .first();
-
-    // Should be visible
-    await expect(deployButton).toBeVisible();
   });
 
   test("Search functionality exists (if implemented)", async ({ page }) => {

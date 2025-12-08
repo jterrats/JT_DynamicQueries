@@ -445,10 +445,11 @@ public with sharing class JT_QueryViewerController {
       addWildcardsForLikeBindings(config.JT_BaseQuery__c, countBindings);
 
       // Build COUNT query (replace SELECT ... FROM with SELECT COUNT() FROM)
+      // Use [\s\S]*? to match across multiple lines (including newlines)
       String countQuery = config.JT_BaseQuery__c
-        .replaceAll('(?i)^\\s*SELECT\\s+.*?\\s+FROM', 'SELECT COUNT() FROM')
-        .replaceAll('(?i)\\s+ORDER\\s+BY.*$', '') // Remove ORDER BY
-        .replaceAll('(?i)\\s+LIMIT\\s+\\d+.*$', ''); // Remove LIMIT
+        .replaceAll('(?i)SELECT[\\s\\S]+?FROM', 'SELECT COUNT() FROM')
+        .replaceAll('(?i)ORDER\\s+BY[\\s\\S]*$', '') // Remove ORDER BY
+        .replaceAll('(?i)LIMIT\\s+\\d+[\\s\\S]*$', ''); // Remove LIMIT
 
       // Execute count query with timeout protection
       Integer estimatedCount = 0;

@@ -1358,11 +1358,12 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     const resultsCheckbox = page.locator(
       '[data-testid="cache-option-results"]'
     );
-    await resultsCheckbox.locator("input").check();
+    // Click on the lightning-input component itself (Shadow DOM)
+    await resultsCheckbox.click();
+    await page.waitForTimeout(1000); // Wait for state change
 
     // Wait for Clear button to become enabled
     await clearButton.waitFor({ state: "visible", timeout: 3000 });
-    await page.waitForTimeout(500); // Additional buffer for state change
 
     // Clear button should be enabled now
     const isEnabled = await clearButton.isEnabled();
@@ -1433,19 +1434,16 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     // Click Select All using semantic selector (click on lightning-input)
     const selectAllCheckbox = page.locator('[data-testid="cache-select-all"]');
     await selectAllCheckbox.click();
+    await page.waitForTimeout(1000); // Wait for all checkboxes to be checked
 
-    // Wait for checkboxes to be checked
+    // Verify that a checkbox was selected (check the lightning-input has 'checked' attribute)
     const configCheckbox = page.locator(
       '[data-testid="cache-option-configurations"]'
     );
-    const configInput = configCheckbox.locator("input");
 
-    // Wait for the checkbox to be checked (with retry)
-    await page.waitForTimeout(500);
-    await expect(configInput).toBeChecked({ timeout: 5000 });
-
-    const configChecked = await configInput.isChecked().catch(() => false);
-    expect(configChecked).toBe(true);
+    // Lightning-input adds aria-checked attribute when checked
+    const isChecked = await configCheckbox.getAttribute("checked");
+    expect(isChecked).not.toBeNull();
     console.log("✅ Select All works correctly");
 
     // Close modal

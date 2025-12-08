@@ -60,6 +60,28 @@ public with sharing class JT_QueryViewerController {
         ? (Map<String, Object>) JSON.deserializeUntyped(bindingsJson)
         : new Map<String, Object>();
 
+      // Get config to check for LIKE clauses
+      JT_DynamicQueryConfiguration__mdt config = [
+        SELECT JT_BaseQuery__c
+        FROM JT_DynamicQueryConfiguration__mdt
+        WHERE DeveloperName = :devName
+        WITH USER_MODE
+        LIMIT 1
+      ];
+
+      System.debug(
+        LoggingLevel.FINE,
+        '🔍 Execution bindings BEFORE wildcards: ' + JSON.serialize(bindings)
+      );
+
+      // Auto-add wildcards for LIKE queries
+      addWildcardsForLikeBindings(config.JT_BaseQuery__c, bindings);
+
+      System.debug(
+        LoggingLevel.FINE,
+        '✅ Execution bindings AFTER wildcards: ' + JSON.serialize(bindings)
+      );
+
       List<SObject> sobjectRecords = JT_DataSelector.getRecords(
         devName,
         true,
@@ -145,6 +167,9 @@ public with sharing class JT_QueryViewerController {
         WITH USER_MODE
         LIMIT 1
       ];
+
+      // Auto-add wildcards for LIKE queries in preview
+      addWildcardsForLikeBindings(config.JT_BaseQuery__c, bindings);
 
       String previewQuery = config.JT_BaseQuery__c;
 
@@ -465,7 +490,7 @@ public with sharing class JT_QueryViewerController {
 
         // Replace bind variables in COUNT query (countQuery() doesn't support bindings)
         String finalCountQuery = replaceBindVariables(countQuery, countBindings);
-        
+
         System.debug(
           LoggingLevel.FINE,
           '📊 Final COUNT Query: ' + finalCountQuery
@@ -473,7 +498,7 @@ public with sharing class JT_QueryViewerController {
 
         // Use countQuery() instead of queryWithBinds for COUNT queries
         estimatedCount = Database.countQuery(finalCountQuery);
-        
+
         System.debug(
           LoggingLevel.FINE,
           '✅ COUNT Result: ' + estimatedCount
@@ -659,6 +684,18 @@ public with sharing class JT_QueryViewerController {
       Map<String, Object> bindings = String.isNotBlank(bindingsJson)
         ? (Map<String, Object>) JSON.deserializeUntyped(bindingsJson)
         : new Map<String, Object>();
+
+      // Get config to check for LIKE clauses
+      JT_DynamicQueryConfiguration__mdt config = [
+        SELECT JT_BaseQuery__c
+        FROM JT_DynamicQueryConfiguration__mdt
+        WHERE DeveloperName = :devName
+        WITH USER_MODE
+        LIMIT 1
+      ];
+
+      // Auto-add wildcards for LIKE queries in batch processing
+      addWildcardsForLikeBindings(config.JT_BaseQuery__c, bindings);
 
       Integer effectiveBatchSize = batchSize != null &&
         batchSize > 0

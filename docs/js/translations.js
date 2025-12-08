@@ -85,7 +85,8 @@ export const content = {
     prereq3: "Git",
     contributorInstallation: "Installation Steps",
     ready: "Ready to Get Started?",
-    readyDesc: "Join the community and start building better SOQL queries today",
+    readyDesc:
+      "Join the community and start building better SOQL queries today",
     viewGitHub: "View on GitHub",
     readDocs: "Read Documentation",
     documentation: "📚 Documentation",
@@ -256,7 +257,8 @@ export const content = {
       "Déployez le framework sur votre org Salesforce en un seul clic. Pas besoin de cloner le dépôt ou d'installer des outils.",
     deployNow: "⚡ Déployer Maintenant",
     deployButton: "🚀 Déployer sur Salesforce",
-    deploySubtext: "Déploiement en un clic vers n'importe quelle org Salesforce",
+    deploySubtext:
+      "Déploiement en un clic vers n'importe quelle org Salesforce",
     forContributors: "👨‍💻 Pour les Contributeurs et Développeurs",
     forContributorsDesc:
       "Si vous souhaitez contribuer au projet ou le personnaliser localement, suivez ces étapes:",
@@ -535,7 +537,8 @@ export const content = {
     prereq3: "Git",
     contributorInstallation: "インストール手順",
     ready: "始める準備はできましたか？",
-    readyDesc: "コミュニティに参加して、今日からより良いSOQLクエリの作成を始めましょう",
+    readyDesc:
+      "コミュニティに参加して、今日からより良いSOQLクエリの作成を始めましょう",
     viewGitHub: "GitHubで見る",
     readDocs: "ドキュメントを読む",
     documentation: "📚 ドキュメント",
@@ -706,7 +709,8 @@ export const content = {
     deployButton: "🚀 部署到Salesforce",
     deploySubtext: "一键部署到任何Salesforce组织",
     forContributors: "👨‍💻 面向贡献者和开发者",
-    forContributorsDesc: "如果您想为项目做出贡献或在本地进行自定义，请按照以下步骤操作：",
+    forContributorsDesc:
+      "如果您想为项目做出贡献或在本地进行自定义，请按照以下步骤操作：",
     contributorPrerequisites: "前提条件",
     prereq1: "Salesforce CLI（最新版本）",
     prereq2: "Node.js 24+",

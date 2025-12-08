@@ -5,26 +5,31 @@ Para que la autenticación JWT funcione en GitHub Actions, la Connected App debe
 ## ✅ Checklist de Connected App
 
 ### 1. OAuth Settings
+
 - [x] Enable OAuth Settings: **Activado**
 - [x] Enable for Device Flow: **NO requerido**
 - [x] Callback URL: `http://localhost:1717/OauthRedirect` (puede ser cualquier URL)
 
 ### 2. OAuth Scopes Requeridos
+
 - [x] Access the identity URL service (id, profile, email, address, phone)
 - [x] Access unique user identifiers (openid)
 - [x] Full access (full)
 - [x] Perform requests at any time (refresh_token, offline_access)
 
 ### 3. Digital Certificate
+
 - [x] Use digital signatures: **Activado**
 - [x] Certificate uploaded: El certificado público (`.crt`) correspondiente a la llave privada (`SF_JWT_KEY`)
 
 ### 4. Policies
+
 - [x] Permitted Users: **Admin approved users are pre-authorized**
 - [x] IP Relaxation: **Relax IP restrictions** (importante para CI/CD)
 - [x] Refresh Token Policy: **Refresh token is valid until revoked**
 
 ### 5. Manage Profiles/Permission Sets
+
 - Agregar el perfil/permission set del usuario `SF_USERNAME` a la Connected App
 
 ## 🔧 Comando para generar el certificado (si no existe)
@@ -75,4 +80,3 @@ Si la autenticación falla, verificar:
 
 - [Salesforce JWT Bearer Flow](https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_jwt_flow.htm)
 - [SF CLI JWT Auth](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_org_commands_unified.htm#cli_reference_org_login_jwt_unified)
-

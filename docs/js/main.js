@@ -156,7 +156,8 @@ function changeLanguage(lang) {
     const deployButton = installationSection.querySelector(
       "a[href*='githubsfdeploy']"
     );
-    if (deployButton && c.deployButton) deployButton.textContent = c.deployButton;
+    if (deployButton && c.deployButton)
+      deployButton.textContent = c.deployButton;
 
     const deploySubtext = installationSection.querySelector(
       "p[style*='color: rgba(255, 255, 255, 0.9)']"

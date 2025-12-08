@@ -1,0 +1,80 @@
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>
+  {% if page.title %}{{ page.title }} - {{ site.title }}{% else %}{{ site.title }} - Dynamic SOQL Query Framework for Salesforce{% endif %}
+</title>
+
+<!-- SEO Meta Tags -->
+<meta
+  name="description"
+  content="{% if page.description %}{{ page.description }}{% else %}{{ site.description }}{% endif %}"
+/>
+<meta
+  name="keywords"
+  content="Salesforce, SOQL, Lightning Web Component, LWC, Dynamic Queries, Salesforce Development, Developer Tools, Apex, Tooling API, Query Builder, Salesforce DX, Open Source, WCAG, Accessibility, Enterprise Development"
+/>
+<meta name="author" content="{{ site.author }}" />
+<meta name="robots" content="index, follow" />
+<link
+  rel="canonical"
+  href="{{ site.url }}{{ site.baseurl }}{{ page.url | replace: 'index.html', '' }}"
+/>
+
+<!-- Theme Color -->
+<meta name="theme-color" content="#667eea" />
+
+<!-- Favicon (TODO: Add when ready) -->
+<!-- <link rel="icon" type="image/svg+xml" href="{{ site.baseurl }}/favicon.svg" /> -->
+<!-- <link rel="apple-touch-icon" sizes="180x180" href="{{ site.baseurl }}/apple-touch-icon.png" /> -->
+
+<!-- Open Graph (LinkedIn, WhatsApp, etc.) -->
+<meta property="og:type" content="website" />
+<meta
+  property="og:url"
+  content="{{ site.url }}{{ site.baseurl }}{{ page.url | replace: 'index.html', '' }}"
+/>
+<meta
+  property="og:title"
+  content="{% if page.og_title %}{{ page.og_title }}{% else %}{{ site.title }} - Beyond Simple SOQL Queries{% endif %}"
+/>
+<meta
+  property="og:description"
+  content="{% if page.og_description %}{{ page.og_description }}{% else %}A comprehensive Salesforce development framework that transforms how developers interact with data. Pre-configured queries, Run As User testing, tree view relationships, and enterprise-scale performance.{% endif %}"
+/>
+<meta
+  property="og:image"
+  content="{{ site.url }}{{ site.baseurl }}/assets/gifs/{% if page.og_image %}{{ page.og_image }}{% else %}01-query-execution.gif{% endif %}"
+/>
+<meta property="og:site_name" content="{{ site.title }}" />
+<meta property="og:locale" content="en_US" />
+
+<!-- Structured Data (JSON-LD) -->
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "{{ site.title }}",
+    "applicationCategory": "DeveloperApplication",
+    "description": "{{ site.description }}",
+    "operatingSystem": "Salesforce",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "author": {
+      "@type": "Person",
+      "name": "{{ site.author }}",
+      "url": "https://github.com/{{ site.github_username }}"
+    },
+    "codeRepository": "https://github.com/{{ site.repository }}",
+    "programmingLanguage": ["JavaScript", "Apex", "SOQL"],
+    "license": "https://opensource.org/licenses/MIT",
+    "keywords": "Salesforce, SOQL, Lightning Web Component, Developer Tools, Dynamic Queries",
+    "screenshot": "{{ site.url }}{{ site.baseurl }}/assets/gifs/01-query-execution.gif"
+  }
+</script>
+
+<!-- External Styles -->
+<link rel="stylesheet" href="{{ site.baseurl }}/css/main.css" />
+

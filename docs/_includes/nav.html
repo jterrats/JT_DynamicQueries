@@ -1,0 +1,96 @@
+<div class="language-banner">
+  <div style="flex: 1"></div>
+  <div class="language-selector">
+    <label for="language">🌍</label>
+    <select id="language" onchange="changeLanguage(this.value)">
+      {% for lang in site.languages %}
+      <option value="{{ lang.code }}">{{ lang.flag }} {{ lang.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div style="flex: 1"></div>
+</div>
+
+<header>
+  <h1>⚡ {{ site.title }}</h1>
+  <p class="tagline">
+    Lightning Web Component for Dynamic SOQL Queries in Salesforce
+  </p>
+
+  <!-- Status Badges (Auto-updating from GitHub) -->
+  <div
+    style="
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 1.5rem 0;
+    "
+  >
+    <img
+      src="https://img.shields.io/github/package-json/v/{{ site.repository }}?label=version&color=blue"
+      alt="Version"
+      style="height: 20px"
+    />
+    <img
+      src="https://img.shields.io/github/actions/workflow/status/{{ site.repository }}/e2e-on-merge.yml?branch=main&label=E2E%20Tests"
+      alt="E2E Tests"
+      style="height: 20px"
+    />
+    <img
+      src="https://img.shields.io/github/actions/workflow/status/{{ site.repository }}/gh-pages.yml?branch=main&label=docs"
+      alt="Docs"
+      style="height: 20px"
+    />
+    <img
+      src="https://img.shields.io/badge/tests-118%20passing-success.svg"
+      alt="Tests Passing"
+      style="height: 20px"
+    />
+    <img
+      src="https://img.shields.io/github/license/{{ site.repository }}?color=green"
+      alt="License"
+      style="height: 20px"
+    />
+    <img
+      src="https://img.shields.io/github/last-commit/{{ site.repository }}"
+      alt="Last Commit"
+      style="height: 20px"
+    />
+    <img
+      src="https://img.shields.io/badge/playwright-v1.49.1-45ba4b?logo=playwright"
+      alt="Playwright"
+      style="height: 20px"
+    />
+  </div>
+
+  <!-- Deploy to Salesforce Button -->
+  <div style="margin: 1.5rem 0; text-align: center">
+    <a
+      href="https://githubsfdeploy.herokuapp.com?owner={{ site.github_username }}&repo=JT_DynamicQueries"
+      target="_blank"
+      rel="noopener"
+      class="deploy-button"
+      data-i18n="deployToSalesforce"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        style="margin-right: 0.5rem"
+      >
+        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+        <line x1="12" y1="22.08" x2="12" y2="12"></line>
+      </svg>
+      Deploy to Salesforce
+    </a>
+  </div>
+</header>
+

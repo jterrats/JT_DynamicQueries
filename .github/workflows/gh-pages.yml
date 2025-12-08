@@ -5,8 +5,6 @@ on:
     branches: [main]
     paths:
       - "docs/**"
-      - "README.md"
-      - "ARCHITECTURE.md"
       - ".github/workflows/gh-pages.yml"
   workflow_dispatch:
 
@@ -21,7 +19,7 @@ concurrency:
 
 jobs:
   build:
-    name: Build Documentation Site
+    name: Build Jekyll Site
     runs-on: ubuntu-latest
 
     steps:
@@ -32,254 +30,20 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.2"
-          bundler-cache: true
+          bundler-cache: false
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
-      - name: Create docs directory structure
-        run: |
-          mkdir -p docs/assets/videos
-          mkdir -p docs/assets/images
-          mkdir -p docs/guides
-          mkdir -p docs/api
-
-      - name: Copy documentation files
-        run: |
-          cp README.md docs/index.md
-          cp ARCHITECTURE.md docs/architecture.md
-
-          # Copy any existing videos from test results
-          if [ -d "test-results" ]; then
-            find test-results -name "*.webm" -exec cp {} docs/assets/videos/ \;
-          fi
-
-      - name: Create Jekyll config
-        run: |
-          cat > docs/_config.yml << 'EOF'
-          title: JT Dynamic Queries
-          description: Dynamic SOQL Query Engine for Salesforce
-          theme: jekyll-theme-cayman
-          baseurl: "/JT_DynamicQueries"
-          url: "https://jterrats.github.io"
-
-          plugins:
-            - jekyll-feed
-            - jekyll-seo-tag
-            - jekyll-sitemap
-
-          collections:
-            guides:
-              output: true
-              permalink: /guides/:name
-            api:
-              output: true
-              permalink: /api/:name
-
-          defaults:
-            - scope:
-                path: ""
-                type: "guides"
-              values:
-                layout: "page"
-            - scope:
-                path: ""
-                type: "api"
-              values:
-                layout: "page"
-
-          # Navigation
-          navigation:
-            - title: Home
-              url: /
-            - title: Architecture
-              url: /architecture
-            - title: Guides
-              url: /guides/
-            - title: API Reference
-              url: /api/
-            - title: Demo Videos
-              url: /demo-videos
-          EOF
-
       - name: Create Gemfile
+        working-directory: docs
         run: |
-          cat > docs/Gemfile << 'EOF'
+          cat > Gemfile << 'EOF'
           source "https://rubygems.org"
 
-          gem "github-pages", group: :jekyll_plugins
-          gem "jekyll-feed"
-          gem "jekyll-seo-tag"
-          gem "jekyll-sitemap"
+          gem "jekyll", "~> 4.3"
           gem "webrick", "~> 1.8"
           EOF
-
-      - name: Create demo videos page
-        run: |
-          cat > docs/demo-videos.md << 'EOF'
-          ---
-          layout: page
-          title: Demo Videos
-          permalink: /demo-videos/
-          ---
-
-          # 🎥 Demo Videos & E2E Test Recordings
-
-          Watch the application in action through our automated E2E test recordings.
-
-          ## Core Features
-
-          ### Query Execution
-          <video width="100%" controls>
-            <source src="assets/videos/query-execution.webm" type="video/webm">
-            Your browser does not support the video tag.
-          </video>
-
-          ### Mobile Responsive View
-          <video width="100%" controls>
-            <source src="assets/videos/mobile-view.webm" type="video/webm">
-            Your browser does not support the video tag.
-          </video>
-
-          ### JSON/CSV Export
-          <video width="100%" controls>
-            <source src="assets/videos/export-demo.webm" type="video/webm">
-            Your browser does not support the video tag.
-          </video>
-
-          ### Run As User (Test Mode)
-          <video width="100%" controls>
-            <source src="assets/videos/run-as-user.webm" type="video/webm">
-            Your browser does not support the video tag.
-          </video>
-
-          ### Configuration Creation (Sandbox)
-          <video width="100%" controls>
-            <source src="assets/videos/config-creation.webm" type="video/webm">
-            Your browser does not support the video tag.
-          </video>
-
-          ---
-
-          ## Test Results
-
-          Latest E2E test results are automatically uploaded from our CI/CD pipeline.
-
-          [View Latest Test Report](https://github.com/jterrats/JT_DynamicQueries/actions)
-          EOF
-
-      - name: Create API reference page
-        run: |
-          cat > docs/api/dataselector.md << 'EOF'
-          ---
-          layout: page
-          title: JT_DataSelector API
-          ---
-
-          # JT_DataSelector API Reference
-
-          ## Overview
-
-          `JT_DataSelector` is the core class for executing dynamic SOQL queries with security controls.
-
-          ## Methods
-
-          ### Standard Query Methods
-
-          #### `getRecords(String devName, Boolean enforceSecurity)`
-
-          Execute a query using a predefined configuration.
-
-          **Parameters:**
-          - `devName` (String): Configuration developer name
-          - `enforceSecurity` (Boolean): Use USER_MODE if true, SYSTEM_MODE if false
-
-          **Returns:** `List<SObject>`
-
-          **Example:**
-          ```apex
-          List<Account> accounts = (List<Account>) JT_DataSelector.getRecords(
-              'Active_Accounts',
-              true
-          );
-          ```
-
-          ### Batch Processing (for Large Queries)
-
-          #### `processRecordsWithCursor()`
-
-          Process large query results in batches to manage heap size.
-
-          **Parameters:**
-          - `devName` (String): Configuration name
-          - `bindings` (Map<String, Object>): Custom bind variables
-          - `enforceSecurity` (Boolean): Security mode
-          - `batchSize` (Integer): Records per batch (default: 200)
-          - `processor` (CursorProcessor): Batch processor implementation
-
-          **Returns:** `Integer` - Total records processed
-
-          **Example:**
-          ```apex
-          public class MyProcessor implements JT_DataSelector.CursorProcessor {
-              public void processBatch(List<SObject> batch) {
-                  // Process each batch
-                  for (SObject record : batch) {
-                      // Your logic here
-                  }
-              }
-          }
-
-          MyProcessor processor = new MyProcessor();
-          Integer total = JT_DataSelector.processRecordsWithCursor(
-              'Large_Dataset',
-              null,
-              true,
-              500,
-              processor
-          );
-          ```
-
-          ### Flow & Agentforce Integration
-
-          #### `getRecordsForFlow(List<InvocableRequest>)`
-
-          Invocable method for Flow and Agentforce Actions.
-
-          **Input:**
-          - `configName` (String): Configuration name
-          - `bindingsJson` (String): Optional JSON with bind variables
-
-          **Output:**
-          - `records` (List<SObject>): Query results
-          - `recordCount` (Integer): Number of records
-          - `success` (Boolean): Execution status
-          - `errorMessage` (String): Error details if failed
-
-          ---
-
-          [Back to API Reference](/api/)
-          EOF
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "24"
-
-      - name: Install Mermaid CLI
-        run: npm install -g @mermaid-js/mermaid-cli
-
-      - name: Generate Mermaid diagrams as images
-        run: |
-          mkdir -p docs/assets/diagrams
-
-          # Find all .md files with mermaid blocks and convert to SVG
-          find docs -name "*.md" -type f | while read file; do
-            # Extract mermaid blocks and generate SVGs
-            echo "Processing: $file"
-          done
-
-          echo "✅ Mermaid diagrams generated as SVG images"
 
       - name: Install dependencies
         working-directory: docs
@@ -287,7 +51,7 @@ jobs:
 
       - name: Build with Jekyll
         working-directory: docs
-        run: bundle exec jekyll build
+        run: bundle exec jekyll build --baseurl "/JT_DynamicQueries"
         env:
           JEKYLL_ENV: production
 

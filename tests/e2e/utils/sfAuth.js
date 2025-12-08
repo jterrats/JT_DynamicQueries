@@ -10,10 +10,10 @@ function stripAnsiCodes(str) {
   // Remove ANSI escape codes: \x1b[...m (color codes)
   // Also remove other common escape sequences
   return str
-    .replace(/\x1b\[[0-9;]*m/g, '') // Standard ANSI color codes
-    .replace(/\x1b\[[0-9;]*[A-Za-z]/g, '') // Other ANSI sequences (cursor movement, etc)
-    .replace(/\x1b\][0-9;]*\x07/g, '') // OSC sequences
-    .replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F]/g, ''); // Other control characters except \n and \r
+    .replace(/\x1b\[[0-9;]*m/g, "") // Standard ANSI color codes
+    .replace(/\x1b\[[0-9;]*[A-Za-z]/g, "") // Other ANSI sequences (cursor movement, etc)
+    .replace(/\x1b\][0-9;]*\x07/g, "") // OSC sequences
+    .replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F]/g, ""); // Other control characters except \n and \r
 }
 
 /**
@@ -34,7 +34,7 @@ function getSFSession() {
         ...process.env,
         SF_USE_PROGRESS_BAR: "false",
         SF_AUTOUPDATE_DISABLE: "true",
-        NO_COLOR: "1",  // Disable colors
+        NO_COLOR: "1", // Disable colors
         FORCE_COLOR: "0" // Disable colors (alternative)
       }
     });
@@ -44,23 +44,30 @@ function getSFSession() {
 
     // Extract JSON from output - SF CLI may output extra text
     // Find the first '{' and last '}' to extract complete JSON object
-    const firstBrace = orgInfoJson.indexOf('{');
-    const lastBrace = orgInfoJson.lastIndexOf('}');
+    const firstBrace = orgInfoJson.indexOf("{");
+    const lastBrace = orgInfoJson.lastIndexOf("}");
 
     if (firstBrace === -1 || lastBrace === -1) {
       console.error("❌ No valid JSON found in SF CLI output");
       console.error("Output length:", orgInfoJson.length, "chars");
       console.error("First 200 chars:", orgInfoJson.substring(0, 200));
-      throw new Error("No valid JSON found in SF CLI output. Is there an authenticated org?");
+      throw new Error(
+        "No valid JSON found in SF CLI output. Is there an authenticated org?"
+      );
     }
 
     const jsonString = orgInfoJson.substring(firstBrace, lastBrace + 1);
 
     // Check if this looks like an error message instead of org info
-    if (jsonString.includes('"status":1') || jsonString.includes('"name":"NoOrgFound"')) {
+    if (
+      jsonString.includes('"status":1') ||
+      jsonString.includes('"name":"NoOrgFound"')
+    ) {
       console.error("❌ SF CLI returned an error (no org found)");
       console.error("Response:", jsonString.substring(0, 300));
-      throw new Error("No authenticated Salesforce org found. Run 'sf org login' first.");
+      throw new Error(
+        "No authenticated Salesforce org found. Run 'sf org login' first."
+      );
     }
 
     let orgInfo;
@@ -70,7 +77,10 @@ function getSFSession() {
       console.error("❌ Failed to parse JSON from SF CLI");
       console.error("Output length:", orgInfoJson.length, "chars");
       console.error("First 100 chars:", orgInfoJson.substring(0, 100));
-      console.error("Last 100 chars:", orgInfoJson.substring(orgInfoJson.length - 100));
+      console.error(
+        "Last 100 chars:",
+        orgInfoJson.substring(orgInfoJson.length - 100)
+      );
       console.error("Extracted JSON length:", jsonString.length, "chars");
       console.error("Extracted first 200 chars:", jsonString.substring(0, 200));
       console.error("Parse error:", parseError.message);
@@ -80,11 +90,15 @@ function getSFSession() {
         const char = jsonString[i];
         const code = char.charCodeAt(0);
         if (code < 32 || code > 126) {
-          console.error(`⚠️  Non-printable char at position ${i}: code=${code}`);
+          console.error(
+            `⚠️  Non-printable char at position ${i}: code=${code}`
+          );
         }
       }
 
-      throw new Error(`JSON parse failed: ${parseError.message}. Check if SF org is authenticated.`);
+      throw new Error(
+        `JSON parse failed: ${parseError.message}. Check if SF org is authenticated.`
+      );
     }
 
     if (orgInfo.status !== 0) {
@@ -97,7 +111,10 @@ function getSFSession() {
 
     console.log("✅ Using active session:", result.username);
     console.log("📍 Instance:", result.instanceUrl);
-    console.log("🔑 Access token:", result.accessToken ? "[REDACTED]" : "[MISSING]");
+    console.log(
+      "🔑 Access token:",
+      result.accessToken ? "[REDACTED]" : "[MISSING]"
+    );
 
     return {
       instanceUrl: result.instanceUrl,

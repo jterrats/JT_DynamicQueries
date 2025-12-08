@@ -1808,7 +1808,7 @@ Create standard Reports and Dashboard for usage analytics:
 
 **8 points** (1 sprint)
 
-```
+````
 
 ---
 
@@ -1873,18 +1873,18 @@ Implement smart field autocomplete that appears as a dropdown below the input wh
 ````
 
 ┌────────────────────────────────────────────┐
-│ SELECT Name, Acc▊                          │
-│ ┌──────────────────────────────────────┐   │
-│ │ 📝 Account (Lookup to Account)      │   │
-│ │    API: Account                     │   │
-│ │ 💰 Amount (Currency)                │   │
-│ │    API: Amount                      │   │
-│ │ 📅 AccountCreatedDate (Date)        │   │
-│ │    API: Account.CreatedDate         │   │
-│ │ 👤 AccountOwner (Lookup to User)    │   │
-│ │    API: Account.Owner.Name          │   │
-│ └──────────────────────────────────────┘   │
-│ FROM Opportunity                           │
+│ SELECT Name, Acc▊ │
+│ ┌──────────────────────────────────────┐ │
+│ │ 📝 Account (Lookup to Account) │ │
+│ │ API: Account │ │
+│ │ 💰 Amount (Currency) │ │
+│ │ API: Amount │ │
+│ │ 📅 AccountCreatedDate (Date) │ │
+│ │ API: Account.CreatedDate │ │
+│ │ 👤 AccountOwner (Lookup to User) │ │
+│ │ API: Account.Owner.Name │ │
+│ └──────────────────────────────────────┘ │
+│ FROM Opportunity │
 └────────────────────────────────────────────┘
 
           User types "Acc" ↑
@@ -1912,17 +1912,17 @@ Implement smart field autocomplete that appears as a dropdown below the input wh
 // Detect if cursor is in a field-entry position
 detectFieldContext(query, cursorPosition) {
   const beforeCursor = query.substring(0, cursorPosition);
-  
+
   // Check if in SELECT clause
   if (/SELECT\s+[^FROM]*/i.test(beforeCursor)) {
     return { clause: 'SELECT', objectName: this.extractObjectName(query) };
   }
-  
+
   // Check if in WHERE clause
   if (/WHERE\s+[^ORDER BY]*/i.test(beforeCursor)) {
     return { clause: 'WHERE', objectName: this.extractObjectName(query) };
   }
-  
+
   return null;
 }
 ```
@@ -1934,7 +1934,7 @@ async getObjectFields(objectName) {
   // Check cache first
   const cacheKey = `fields_${objectName}`;
   let fields = sessionStorage.getItem(cacheKey);
-  
+
   if (!fields) {
     // Apex call to describe object
     fields = await getObjectMetadata({ objectName });
@@ -1942,7 +1942,7 @@ async getObjectFields(objectName) {
   } else {
     fields = JSON.parse(fields);
   }
-  
+
   return fields;
 }
 ```
@@ -1951,20 +1951,20 @@ async getObjectFields(objectName) {
 ```javascript
 filterFields(fields, searchTerm) {
   if (!searchTerm) return fields.slice(0, 10);
-  
+
   const term = searchTerm.toLowerCase();
-  
+
   return fields
     .filter(field => {
       const apiName = field.apiName.toLowerCase();
       const label = field.label.toLowerCase();
-      
+
       // Exact match or contains
       if (apiName.includes(term) || label.includes(term)) return true;
-      
+
       // Fuzzy match (initials)
       if (this.fuzzyMatch(apiName, term)) return true;
-      
+
       return false;
     })
     .sort((a, b) => {
@@ -1995,32 +1995,32 @@ fuzzyMatch(str, pattern) {
 // LWC Template
 <template>
   <div class="autocomplete-container">
-    <textarea 
+    <textarea
       value={query}
       oninput={handleInput}
       onkeydown={handleKeyDown}>
     </textarea>
-    
+
     <template if:true={showDropdown}>
       <div class="autocomplete-dropdown" style={dropdownStyle}>
         <template for:each={filteredFields} for:item="field">
-          <div 
+          <div
             key={field.apiName}
             class={field.cssClass}
             onmouseenter={handleHover}
             onclick={handleSelect}
             data-field={field.apiName}>
-            
-            <lightning-icon 
-              icon-name={field.typeIcon} 
+
+            <lightning-icon
+              icon-name={field.typeIcon}
               size="x-small">
             </lightning-icon>
-            
+
             <div class="field-info">
               <div class="field-label">{field.label}</div>
               <div class="field-api">{field.apiName}</div>
             </div>
-            
+
             <template if:true={field.required}>
               <span class="required">*</span>
             </template>
@@ -2028,7 +2028,7 @@ fuzzyMatch(str, pattern) {
         </template>
       </div>
     </template>
-    
+
     <!-- Hover Tooltip -->
     <template if:true={hoveredField}>
       <div class="field-tooltip" style={tooltipStyle}>
@@ -2050,14 +2050,14 @@ fuzzyMatch(str, pattern) {
 @AuraEnabled(cacheable=true)
 public static List<FieldMetadata> getObjectMetadata(String objectName) {
     List<FieldMetadata> fields = new List<FieldMetadata>();
-    
+
     Schema.DescribeSObjectResult describe = Schema.getGlobalDescribe()
         .get(objectName)
         .getDescribe();
-    
+
     for (Schema.SObjectField field : describe.fields.getMap().values()) {
         Schema.DescribeFieldResult fieldDescribe = field.getDescribe();
-        
+
         fields.add(new FieldMetadata(
             fieldDescribe.getName(),
             fieldDescribe.getLabel(),
@@ -2066,7 +2066,7 @@ public static List<FieldMetadata> getObjectMetadata(String objectName) {
             fieldDescribe.getInlineHelpText()
         ));
     }
-    
+
     return fields;
 }
 
@@ -2076,8 +2076,8 @@ public class FieldMetadata {
     @AuraEnabled public String fieldType;
     @AuraEnabled public Boolean required;
     @AuraEnabled public String helpText;
-    
-    public FieldMetadata(String apiName, String label, String fieldType, 
+
+    public FieldMetadata(String apiName, String label, String fieldType,
                         Boolean required, String helpText) {
         this.apiName = apiName;
         this.label = label;
@@ -2159,3 +2159,4 @@ public class FieldMetadata {
 **Total:** 19 issues, ~206 story points
 
 ```
+````

@@ -245,6 +245,17 @@ test.describe("GitHub Pages - Documentation Site", () => {
     }
   });
 
+  test("Testing methodology page is accessible", async ({ page }) => {
+    const response = await page.goto(`${BASE_URL}/testing/`);
+    expect([200, 304]).toContain(response.status());
+
+    // Verify EDD content
+    await expect(page.locator("body")).toContainText(/Error-Driven Development|EDD/i);
+    await expect(page.locator("body")).toContainText(/End-to-End|E2E/i);
+    await expect(page.locator("body")).toContainText(/Test-Driven|TDD/i);
+    await expect(page.locator("body")).toContainText(/Behavior-Driven|BDD/i);
+  });
+
   test("Footer is present with correct links", async ({ page }) => {
     await page.goto(BASE_URL);
 

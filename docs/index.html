@@ -1,177 +1,12 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>
-      Dynamic Query Framework - Dynamic SOQL Query Framework for Salesforce
-    </title>
-
-    <!-- SEO Meta Tags -->
-    <meta
-      name="description"
-      content="Transform how you work with Salesforce data. Dynamic Query Framework is a comprehensive LWC development tool with pre-configured queries, Run As User testing, tree view relationships, and enterprise-scale performance (50k+ records). Open source and WCAG 2.1 AA accessible."
-    />
-    <meta
-      name="keywords"
-      content="Salesforce, SOQL, Lightning Web Component, LWC, Dynamic Queries, Salesforce Development, Developer Tools, Apex, Tooling API, Query Builder, Salesforce DX, Open Source, WCAG, Accessibility, Enterprise Development"
-    />
-    <meta name="author" content="Jaime Terrats" />
-    <meta name="robots" content="index, follow" />
-    <link
-      rel="canonical"
-      href="https://jterrats.github.io/JT_DynamicQueries/"
-    />
-
-    <!-- Theme Color -->
-    <meta name="theme-color" content="#667eea" />
-
-    <!-- Favicon (TODO: Add when ready) -->
-    <!-- <link rel="icon" type="image/svg+xml" href="/favicon.svg" /> -->
-    <!-- <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" /> -->
-
-    <!-- Open Graph (LinkedIn, WhatsApp, etc.) -->
-    <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://jterrats.github.io/JT_DynamicQueries/"
-    />
-    <meta
-      property="og:title"
-      content="Dynamic Query Framework - Beyond Simple SOQL Queries"
-    />
-    <meta
-      property="og:description"
-      content="A comprehensive Salesforce development framework that transforms how developers interact with data. Pre-configured queries, Run As User testing, tree view relationships, and enterprise-scale performance."
-    />
-    <meta
-      property="og:image"
-      content="https://jterrats.github.io/JT_DynamicQueries/assets/gifs/01-query-execution.gif"
-    />
-    <meta property="og:site_name" content="Dynamic Query Framework" />
-    <meta property="og:locale" content="en_US" />
-
-    <!-- Structured Data (JSON-LD) -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "SoftwareApplication",
-        "name": "Dynamic Query Framework",
-        "applicationCategory": "DeveloperApplication",
-        "description": "Lightning Web Component framework for dynamic SOQL queries in Salesforce. Features include pre-configured queries, Run As User testing, tree view relationships, and enterprise-scale performance.",
-        "operatingSystem": "Salesforce",
-        "offers": {
-          "@type": "Offer",
-          "price": "0",
-          "priceCurrency": "USD"
-        },
-        "author": {
-          "@type": "Person",
-          "name": "Jaime Terrats",
-          "url": "https://github.com/jterrats"
-        },
-        "codeRepository": "https://github.com/jterrats/JT_DynamicQueries",
-        "programmingLanguage": ["JavaScript", "Apex", "SOQL"],
-        "license": "https://opensource.org/licenses/MIT",
-        "keywords": "Salesforce, SOQL, Lightning Web Component, Developer Tools, Dynamic Queries",
-        "screenshot": "https://jterrats.github.io/JT_DynamicQueries/assets/gifs/01-query-execution.gif"
-      }
-    </script>
-
-    <!-- External Styles -->
-    <link rel="stylesheet" href="css/main.css" />
-  </head>
-  <body>
-    <div class="language-banner">
-      <div style="flex: 1"></div>
-      <div class="language-selector">
-        <label for="language">🌍</label>
-        <select id="language" onchange="changeLanguage(this.value)">
-          <option value="en">🇺🇸 English</option>
-          <option value="es">🇲🇽 Español</option>
-          <option value="fr">🇫🇷 Français</option>
-          <option value="de">🇩🇪 Deutsch</option>
-          <option value="it">🇮🇹 Italiano</option>
-          <option value="ja">🇯🇵 日本語</option>
-          <option value="pt">🇧🇷 Português</option>
-          <option value="zh">🇨🇳 中文</option>
-        </select>
-      </div>
-      <div style="flex: 1"></div>
-    </div>
-
-    <div class="container">
-      <header>
-        <h1>⚡ Dynamic Query Framework</h1>
-        <p class="tagline">
-          Lightning Web Component for Dynamic SOQL Queries in Salesforce
-        </p>
-
-        <!-- Status Badges (Auto-updating from GitHub) -->
-        <div
-          style="
-            display: flex;
-            gap: 0.5rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin: 1.5rem 0;
-          "
-        >
-          <img
-            src="https://img.shields.io/github/package-json/v/jterrats/JT_DynamicQueries?label=version&color=blue"
-            alt="Version"
-            style="height: 20px"
-          />
-          <img
-            src="https://img.shields.io/github/actions/workflow/status/jterrats/JT_DynamicQueries/e2e-on-merge.yml?branch=main&label=E2E%20Tests"
-            alt="E2E Tests"
-            style="height: 20px"
-          />
-          <img
-            src="https://img.shields.io/github/actions/workflow/status/jterrats/JT_DynamicQueries/gh-pages.yml?branch=main&label=docs"
-            alt="Docs"
-            style="height: 20px"
-          />
-          <img
-            src="https://img.shields.io/badge/tests-118%20passing-success.svg"
-            alt="Tests Passing"
-            style="height: 20px"
-          />
-          <img
-            src="https://img.shields.io/badge/accessibility-WCAG%202.1%20AA-success.svg"
-            alt="Accessibility"
-            style="height: 20px"
-          />
-          <img
-            src="https://img.shields.io/github/package-json/dependency-version/jterrats/JT_DynamicQueries/dev/@playwright/test?label=playwright"
-            alt="Playwright"
-            style="height: 20px"
-          />
-          <img
-            src="https://img.shields.io/github/license/jterrats/JT_DynamicQueries?color=blue"
-            alt="License"
-            style="height: 20px"
-          />
-          <img
-            src="https://img.shields.io/github/last-commit/jterrats/JT_DynamicQueries?color=blue"
-            alt="Last Commit"
-            style="height: 20px"
-          />
-          <img
-            src="https://img.shields.io/badge/Salesforce-Lightning-00a1e0.svg"
-            alt="Salesforce"
-            style="height: 20px"
-          />
-        </div>
-
-        <div class="badges">
-          <span class="badge">Lightning Web Component</span>
-          <span class="badge">SOQL</span>
-          <span class="badge">Dynamic Queries</span>
-          <span class="badge">Salesforce DX</span>
-          <span class="badge">Open Source</span>
-        </div>
-      </header>
+---
+layout: default
+title: Home
+permalink: /
+description: Transform how you work with Salesforce data. Dynamic Query Framework is a comprehensive LWC development tool with pre-configured queries, Run As User testing, tree view relationships, and enterprise-scale performance (50k+ records).
+og_title: Dynamic Query Framework - Beyond Simple SOQL Queries
+og_description: A comprehensive Salesforce development framework that transforms how developers interact with data. Pre-configured queries, Run As User testing, tree view relationships, and enterprise-scale performance.
+og_image: 01-query-execution.gif
+---
 
       <!-- Hero Section -->
       <section
@@ -294,7 +129,7 @@
               Switch between Table, JSON, and CSV views. Copy data in the format
               you need for documentation or analysis.
             </p>
-        </div>
+          </div>
           <div
             style="
               background: white;
@@ -574,7 +409,7 @@
         </div>
 
         <a
-          href="testing.html"
+          href="{{ site.baseurl }}/testing/"
           style="
             display: inline-block;
             margin-top: 1.5rem;
@@ -586,10 +421,18 @@
             font-weight: bold;
             border-radius: 50px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition:
+              transform 0.2s,
+              box-shadow 0.2s;
           "
-          onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 6px 20px rgba(0,0,0,0.3)'"
-          onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.2)'"
+          onmouseover="
+            this.style.transform = 'scale(1.05)';
+            this.style.boxShadow = '0 6px 20px rgba(0,0,0,0.3)';
+          "
+          onmouseout="
+            this.style.transform = 'scale(1)';
+            this.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
+          "
         >
           🧪 Explore My Testing Methodology
         </a>
@@ -681,10 +524,18 @@
               font-weight: bold;
               border-radius: 50px;
               box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-              transition: transform 0.2s, box-shadow 0.2s;
+              transition:
+                transform 0.2s,
+                box-shadow 0.2s;
             "
-            onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 6px 20px rgba(0,0,0,0.3)'"
-            onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.2)'"
+            onmouseover="
+              this.style.transform = 'scale(1.05)';
+              this.style.boxShadow = '0 6px 20px rgba(0,0,0,0.3)';
+            "
+            onmouseout="
+              this.style.transform = 'scale(1)';
+              this.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
+            "
           >
             🚀 Deploy to Salesforce
           </a>
@@ -720,10 +571,10 @@
             Prerequisites
           </h4>
           <ul style="margin-left: 2rem; line-height: 1.8; color: #666">
-          <li>Salesforce CLI (latest)</li>
-          <li>Node.js 24+</li>
-          <li>Git</li>
-        </ul>
+            <li>Salesforce CLI (latest)</li>
+            <li>Node.js 24+</li>
+            <li>Git</li>
+          </ul>
 
           <h4
             style="
@@ -735,16 +586,16 @@
           >
             Installation Steps
           </h4>
-        <pre
-          style="
+          <pre
+            style="
               background: #2d2d2d;
               color: #f8f8f2;
-            padding: 1rem;
-            border-radius: 8px;
-            overflow-x: auto;
+              padding: 1rem;
+              border-radius: 8px;
+              overflow-x: auto;
               font-size: 0.9rem;
-          "
-        ><code># Clone repository
+            "
+          ><code># Clone repository
 git clone https://github.com/jterrats/JT_DynamicQueries.git
 cd JT_DynamicQueries
 
@@ -824,7 +675,7 @@ npm test</code></pre>
             </div>
             <h4>🔧 Testing with EDD</h4>
             <p>
-              <a href="testing.html" style="color: white; font-weight: bold"
+              <a href="{{ site.baseurl }}/testing/" style="color: white; font-weight: bold"
                 >Explore Methodology →</a
               >
             </p>
@@ -832,22 +683,3 @@ npm test</code></pre>
         </div>
       </section>
 
-      <footer>
-        <p>
-          Built with ❤️ by
-          <a
-            href="https://github.com/jterrats"
-            style="color: #667eea; text-decoration: none"
-            >Jaime Terrats</a
-          >
-        </p>
-        <p style="margin-top: 0.5rem; font-size: 0.9rem">
-          Licensed under MIT | © 2025
-        </p>
-      </footer>
-    </div>
-
-    <!-- External Scripts (Module) -->
-    <script type="module" src="js/main.js"></script>
-  </body>
-</html>

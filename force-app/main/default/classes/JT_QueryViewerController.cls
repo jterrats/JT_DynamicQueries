@@ -463,18 +463,21 @@ public with sharing class JT_QueryViewerController {
           '📊 COUNT Bindings: ' + JSON.serialize(countBindings)
         );
 
-        List<AggregateResult> results = Database.queryWithBinds(
-          countQuery,
-          countBindings, // Use copy with wildcards
-          AccessLevel.USER_MODE
+        // Replace bind variables in COUNT query (countQuery() doesn't support bindings)
+        String finalCountQuery = replaceBindVariables(countQuery, countBindings);
+        
+        System.debug(
+          LoggingLevel.FINE,
+          '📊 Final COUNT Query: ' + finalCountQuery
         );
-        if (!results.isEmpty()) {
-          estimatedCount = (Integer) results[0].get('expr0');
-          System.debug(
-            LoggingLevel.FINE,
-            '✅ COUNT Result: ' + estimatedCount
-          );
-        }
+
+        // Use countQuery() instead of queryWithBinds for COUNT queries
+        estimatedCount = Database.countQuery(finalCountQuery);
+        
+        System.debug(
+          LoggingLevel.FINE,
+          '✅ COUNT Result: ' + estimatedCount
+        );
       } catch (Exception e) {
         // If count fails, assume it's risky
         System.debug(
@@ -541,6 +544,44 @@ public with sharing class JT_QueryViewerController {
       assessment.message = 'Unable to assess risk: ' + e.getMessage();
       return assessment;
     }
+  }
+
+  /**
+   * @description Replaces bind variables in query with actual values for countQuery()
+   * @param query The SOQL query string with bind variables
+   * @param bindings The map of bind variables
+   * @return String query with bind variables replaced
+   **/
+  private static String replaceBindVariables(
+    String query,
+    Map<String, Object> bindings
+  ) {
+    if (String.isBlank(query) || bindings == null || bindings.isEmpty()) {
+      return query;
+    }
+
+    String result = query;
+    for (String key : bindings.keySet()) {
+      Object value = bindings.get(key);
+      String escapedValue = '';
+
+      if (value == null) {
+        escapedValue = 'null';
+      } else if (value instanceof String) {
+        // Escape single quotes and wrap in quotes
+        escapedValue = '\'' + String.valueOf(value).replace('\'', '\\\'') + '\'';
+      } else if (value instanceof Boolean || value instanceof Integer || value instanceof Decimal) {
+        escapedValue = String.valueOf(value);
+      } else {
+        // For other types, use string representation
+        escapedValue = '\'' + String.valueOf(value).replace('\'', '\\\'') + '\'';
+      }
+
+      // Replace :bindVar with actual value
+      result = result.replaceAll(':' + key + '\\b', escapedValue);
+    }
+
+    return result;
   }
 
   /**

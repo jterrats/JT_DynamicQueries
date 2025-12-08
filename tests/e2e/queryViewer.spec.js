@@ -1359,7 +1359,10 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
       '[data-testid="cache-option-results"]'
     );
     await resultsCheckbox.locator("input").check();
-    await page.waitForTimeout(500);
+
+    // Wait for Clear button to become enabled
+    await clearButton.waitFor({ state: "visible", timeout: 3000 });
+    await page.waitForTimeout(500); // Additional buffer for state change
 
     // Clear button should be enabled now
     const isEnabled = await clearButton.isEnabled();
@@ -1430,17 +1433,18 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     // Click Select All using semantic selector (click on lightning-input)
     const selectAllCheckbox = page.locator('[data-testid="cache-select-all"]');
     await selectAllCheckbox.click();
-    await page.waitForTimeout(500);
 
-    // All checkboxes should be checked - verify with semantic selector
+    // Wait for checkboxes to be checked
     const configCheckbox = page.locator(
       '[data-testid="cache-option-configurations"]'
     );
-    const configChecked = await configCheckbox
-      .locator("input")
-      .isChecked()
-      .catch(() => false);
+    const configInput = configCheckbox.locator("input");
 
+    // Wait for the checkbox to be checked (with retry)
+    await page.waitForTimeout(500);
+    await expect(configInput).toBeChecked({ timeout: 5000 });
+
+    const configChecked = await configInput.isChecked().catch(() => false);
     expect(configChecked).toBe(true);
     console.log("✅ Select All works correctly");
 
@@ -1463,10 +1467,12 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
 
     // Press Escape
     await page.keyboard.press("Escape");
-    await page.waitForTimeout(500);
 
-    // Modal should be closed (check backdrop)
+    // Wait for modal to close completely
     const backdrop = page.locator(".slds-backdrop.slds-backdrop_open");
+    await backdrop.waitFor({ state: "hidden", timeout: 5000 });
+
+    // Verify backdrop is no longer visible
     const backdropVisible = await backdrop.isVisible().catch(() => false);
     expect(backdropVisible).toBe(false);
 

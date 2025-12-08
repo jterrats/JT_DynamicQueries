@@ -1812,6 +1812,326 @@ Create standard Reports and Dashboard for usage analytics:
 
 ---
 
+### Issue 19: Field Autocomplete & IntelliSense
+
+**Title:** `[Feature] Smart Field Autocomplete with Real-time Filtering`
+
+**Labels:** `enhancement`, `v3.0`, `developer-experience`, `high-priority`
+
+**Story:**
+```markdown
+## 🎯 User Story
+
+**As a** developer building SOQL queries
+**I want** intelligent field autocomplete while typing
+**So that** I can quickly discover available fields without switching to Schema Builder
+
+## 📝 Description
+
+Implement smart field autocomplete that appears as a dropdown below the input when users start typing in SELECT, WHERE, or ORDER BY clauses. The dropdown should:
+- Show all available fields from the selected object
+- Filter in real-time as the user types
+- Display field metadata (type, label, API name)
+- Support keyboard navigation (↑↓ arrows, Enter, Esc)
+- Highlight matching characters
+- Show field descriptions on hover
+
+## ✅ Acceptance Criteria
+
+**Autocomplete Behavior:**
+- [ ] Dropdown appears when typing in SELECT/WHERE/ORDER BY areas
+- [ ] Filters fields in real-time (debounced 200ms)
+- [ ] Shows field API name, label, and type icon
+- [ ] Highlights matching characters in bold
+- [ ] Maximum 10 visible items, scrollable
+- [ ] Case-insensitive filtering
+- [ ] Fuzzy matching support (e.g., "crdate" matches "CreatedDate")
+
+**Keyboard Navigation:**
+- [ ] ↑/↓ arrows navigate the list
+- [ ] Enter inserts selected field
+- [ ] Tab inserts first match
+- [ ] Esc closes dropdown
+- [ ] Mouse click inserts field
+- [ ] Hover shows field description tooltip
+
+**Field Metadata Display:**
+- [ ] Icon for field type (Text, Number, Date, Lookup, etc.)
+- [ ] Field Label (primary)
+- [ ] API Name (secondary, gray)
+- [ ] Required indicator (red asterisk)
+- [ ] Relationship indicator (→) for lookups
+
+**Performance:**
+- [ ] Caches field metadata per object (session storage)
+- [ ] Lazy loading for objects with 200+ fields
+- [ ] Debounced filtering (200ms)
+- [ ] No flickering during typing
+
+## 🎨 UI Example
+
+````
+
+┌────────────────────────────────────────────┐
+│ SELECT Name, Acc▊                          │
+│ ┌──────────────────────────────────────┐   │
+│ │ 📝 Account (Lookup to Account)      │   │
+│ │    API: Account                     │   │
+│ │ 💰 Amount (Currency)                │   │
+│ │    API: Amount                      │   │
+│ │ 📅 AccountCreatedDate (Date)        │   │
+│ │    API: Account.CreatedDate         │   │
+│ │ 👤 AccountOwner (Lookup to User)    │   │
+│ │    API: Account.Owner.Name          │   │
+│ └──────────────────────────────────────┘   │
+│ FROM Opportunity                           │
+└────────────────────────────────────────────┘
+
+          User types "Acc" ↑
+          Filters to 4 matching fields
+
+````
+
+**Hover Tooltip:**
+```
+┌─────────────────────────────────────┐
+│ Amount (Currency)                   │
+├─────────────────────────────────────┤
+│ API Name: Amount                    │
+│ Type: Currency(16, 2)               │
+│ Required: No                        │
+│ Description: The estimated total   │
+│ sale amount.                        │
+└─────────────────────────────────────┘
+```
+
+## 🔧 Technical Implementation
+
+**Step 1: Detect Field Input Context**
+```javascript
+// Detect if cursor is in a field-entry position
+detectFieldContext(query, cursorPosition) {
+  const beforeCursor = query.substring(0, cursorPosition);
+  
+  // Check if in SELECT clause
+  if (/SELECT\s+[^FROM]*/i.test(beforeCursor)) {
+    return { clause: 'SELECT', objectName: this.extractObjectName(query) };
+  }
+  
+  // Check if in WHERE clause
+  if (/WHERE\s+[^ORDER BY]*/i.test(beforeCursor)) {
+    return { clause: 'WHERE', objectName: this.extractObjectName(query) };
+  }
+  
+  return null;
+}
+```
+
+**Step 2: Fetch and Cache Object Fields**
+```javascript
+// Use Tooling API to describe object
+async getObjectFields(objectName) {
+  // Check cache first
+  const cacheKey = `fields_${objectName}`;
+  let fields = sessionStorage.getItem(cacheKey);
+  
+  if (!fields) {
+    // Apex call to describe object
+    fields = await getObjectMetadata({ objectName });
+    sessionStorage.setItem(cacheKey, JSON.stringify(fields));
+  } else {
+    fields = JSON.parse(fields);
+  }
+  
+  return fields;
+}
+```
+
+**Step 3: Filter Fields with Fuzzy Match**
+```javascript
+filterFields(fields, searchTerm) {
+  if (!searchTerm) return fields.slice(0, 10);
+  
+  const term = searchTerm.toLowerCase();
+  
+  return fields
+    .filter(field => {
+      const apiName = field.apiName.toLowerCase();
+      const label = field.label.toLowerCase();
+      
+      // Exact match or contains
+      if (apiName.includes(term) || label.includes(term)) return true;
+      
+      // Fuzzy match (initials)
+      if (this.fuzzyMatch(apiName, term)) return true;
+      
+      return false;
+    })
+    .sort((a, b) => {
+      // Sort by best match
+      const aStarts = a.apiName.toLowerCase().startsWith(term);
+      const bStarts = b.apiName.toLowerCase().startsWith(term);
+      if (aStarts && !bStarts) return -1;
+      if (!aStarts && bStarts) return 1;
+      return a.apiName.localeCompare(b.apiName);
+    })
+    .slice(0, 10); // Limit to 10 results
+}
+
+fuzzyMatch(str, pattern) {
+  // Match initials: "crdate" matches "CreatedDate"
+  let patternIdx = 0;
+  for (let i = 0; i < str.length && patternIdx < pattern.length; i++) {
+    if (str[i].toLowerCase() === pattern[patternIdx]) {
+      patternIdx++;
+    }
+  }
+  return patternIdx === pattern.length;
+}
+```
+
+**Step 4: Render Dropdown Component**
+```javascript
+// LWC Template
+<template>
+  <div class="autocomplete-container">
+    <textarea 
+      value={query}
+      oninput={handleInput}
+      onkeydown={handleKeyDown}>
+    </textarea>
+    
+    <template if:true={showDropdown}>
+      <div class="autocomplete-dropdown" style={dropdownStyle}>
+        <template for:each={filteredFields} for:item="field">
+          <div 
+            key={field.apiName}
+            class={field.cssClass}
+            onmouseenter={handleHover}
+            onclick={handleSelect}
+            data-field={field.apiName}>
+            
+            <lightning-icon 
+              icon-name={field.typeIcon} 
+              size="x-small">
+            </lightning-icon>
+            
+            <div class="field-info">
+              <div class="field-label">{field.label}</div>
+              <div class="field-api">{field.apiName}</div>
+            </div>
+            
+            <template if:true={field.required}>
+              <span class="required">*</span>
+            </template>
+          </div>
+        </template>
+      </div>
+    </template>
+    
+    <!-- Hover Tooltip -->
+    <template if:true={hoveredField}>
+      <div class="field-tooltip" style={tooltipStyle}>
+        <div class="tooltip-header">{hoveredField.label}</div>
+        <div class="tooltip-body">
+          <p><strong>API:</strong> {hoveredField.apiName}</p>
+          <p><strong>Type:</strong> {hoveredField.type}</p>
+          <p><strong>Required:</strong> {hoveredField.required}</p>
+          <p>{hoveredField.helpText}</p>
+        </div>
+      </div>
+    </template>
+  </div>
+</template>
+```
+
+**Apex Controller:**
+```apex
+@AuraEnabled(cacheable=true)
+public static List<FieldMetadata> getObjectMetadata(String objectName) {
+    List<FieldMetadata> fields = new List<FieldMetadata>();
+    
+    Schema.DescribeSObjectResult describe = Schema.getGlobalDescribe()
+        .get(objectName)
+        .getDescribe();
+    
+    for (Schema.SObjectField field : describe.fields.getMap().values()) {
+        Schema.DescribeFieldResult fieldDescribe = field.getDescribe();
+        
+        fields.add(new FieldMetadata(
+            fieldDescribe.getName(),
+            fieldDescribe.getLabel(),
+            fieldDescribe.getType().name(),
+            !fieldDescribe.isNillable(),
+            fieldDescribe.getInlineHelpText()
+        ));
+    }
+    
+    return fields;
+}
+
+public class FieldMetadata {
+    @AuraEnabled public String apiName;
+    @AuraEnabled public String label;
+    @AuraEnabled public String fieldType;
+    @AuraEnabled public Boolean required;
+    @AuraEnabled public String helpText;
+    
+    public FieldMetadata(String apiName, String label, String fieldType, 
+                        Boolean required, String helpText) {
+        this.apiName = apiName;
+        this.label = label;
+        this.fieldType = fieldType;
+        this.required = required;
+        this.helpText = helpText;
+    }
+}
+```
+
+## 🎨 Field Type Icons
+
+| Type | Icon | SLDS Name |
+|------|------|-----------|
+| Text | 📝 | `utility:text` |
+| Number | 🔢 | `utility:number_input` |
+| Currency | 💰 | `utility:currency` |
+| Date | 📅 | `utility:date_input` |
+| DateTime | ⏰ | `utility:datetime` |
+| Checkbox | ☑️ | `utility:check` |
+| Picklist | 📋 | `utility:picklist` |
+| Lookup | 🔗 | `utility:link` |
+| Email | 📧 | `utility:email` |
+| Phone | 📞 | `utility:phone_portrait` |
+
+## 📦 Related Components
+
+- Enhanced: `jtConfigModal.cmp` (SOQL editor)
+- Enhanced: Visual SOQL Builder (Issue #1)
+- New: `jtFieldAutocomplete.cmp`
+- New: `JT_SchemaDescribeController.cls`
+- Synergy: Real-time Validation (Issue #6)
+
+## 🎯 Priority
+
+**High** - Major productivity boost for developers
+
+## 📅 Estimated Effort
+
+**8 points** (1-2 sprints)
+
+## 🚀 Future Enhancements
+
+- [ ] Autocomplete for relationship fields (Account.Owner.Name)
+- [ ] Autocomplete for aggregate functions (COUNT, SUM, AVG)
+- [ ] Autocomplete for SOQL keywords (WHERE, ORDER BY, LIMIT)
+- [ ] Field usage statistics (most commonly used fields first)
+- [ ] Recently used fields section
+- [ ] Favorite fields (pin to top)
+
+```
+
+---
+
 ## 📊 Summary of Issues
 
 | # | Title | Priority | Effort | Labels |
@@ -1834,7 +2154,8 @@ Create standard Reports and Dashboard for usage analytics:
 | 16 | Advanced Agentforce Actions | Medium | 8 pts | agentforce, ai |
 | 17 | Security Enhancements Suite | High | 21 pts | security |
 | 18 | Reports & Dashboard | Medium | 8 pts | analytics |
+| 19 | Field Autocomplete & IntelliSense | High | 8 pts | v3.0, developer-experience |
 
-**Total:** 18 issues, ~198 story points
+**Total:** 19 issues, ~206 story points
 
 ```

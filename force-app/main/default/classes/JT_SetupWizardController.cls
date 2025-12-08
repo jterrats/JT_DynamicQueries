@@ -91,6 +91,9 @@ public with sharing class JT_SetupWizardController {
    * @return SetupResult Status of current configuration
    */
   @AuraEnabled
+  @SuppressWarnings('PMD.ApexSuggestUsingNamedCred')
+  // Named Credential uses NoAuthentication protocol, requiring manual Authorization header
+  // This is the correct pattern for same-org Tooling API calls using session ID
   public static SetupResult checkConfiguration() {
     SetupResult result = new SetupResult();
     result.orgUrl = URL.getOrgDomainUrl().toExternalForm();

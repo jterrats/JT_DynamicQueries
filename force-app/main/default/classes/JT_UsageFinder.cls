@@ -224,6 +224,9 @@ public with sharing class JT_UsageFinder {
    * @description Checks if Tooling API Named Credential is configured
    * @return Boolean True if Named Credential is accessible
    */
+  @SuppressWarnings('PMD.ApexSuggestUsingNamedCred')
+  // Named Credential uses NoAuthentication protocol, requiring manual Authorization header
+  // This is the correct pattern for same-org Tooling API calls using session ID
   private static Boolean isToolingAPIAvailable() {
     try {
       // Try a simple HEAD request using Named Credential to verify configuration
@@ -319,6 +322,9 @@ public with sharing class JT_UsageFinder {
    * @param configName The configuration name to search for
    * @return List<UsageResult> List of Flow usages
    */
+  @SuppressWarnings('PMD.ApexSuggestUsingNamedCred')
+  // Named Credential uses NoAuthentication protocol, requiring manual Authorization header
+  // This is the correct pattern for same-org Tooling API calls using session ID
   private static List<UsageResult> findInFlows(String configName) {
     List<UsageResult> results = new List<UsageResult>();
 
@@ -494,6 +500,9 @@ public with sharing class JT_UsageFinder {
    * @description Finds all usages of JT_DataSelector in Flows
    * @return List<UsageResult> List of Flow usages
    */
+  @SuppressWarnings('PMD.ApexSuggestUsingNamedCred')
+  // Named Credential uses NoAuthentication protocol, requiring manual Authorization header
+  // This is the correct pattern for same-org Tooling API calls using session ID
   private static List<UsageResult> findAllFlowUsages() {
     List<UsageResult> results = new List<UsageResult>();
 

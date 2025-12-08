@@ -437,6 +437,10 @@ public with sharing class JT_QueryViewerController {
         mergedBindings.putAll(bindings);
       }
 
+      // Auto-add wildcards for LIKE clauses in risk assessment
+      // This makes COUNT more accurate for LIKE queries
+      addWildcardsForLikeBindings(config.JT_BaseQuery__c, mergedBindings);
+
       // Build COUNT query (replace SELECT ... FROM with SELECT COUNT() FROM)
       String countQuery = config.JT_BaseQuery__c
         .replaceAll('(?i)^\\s*SELECT\\s+.*?\\s+FROM', 'SELECT COUNT() FROM')
@@ -515,6 +519,41 @@ public with sharing class JT_QueryViewerController {
       assessment.riskLevel = 'UNKNOWN';
       assessment.message = 'Unable to assess risk: ' + e.getMessage();
       return assessment;
+    }
+  }
+
+  /**
+   * @description Adds wildcards to bind parameters used in LIKE clauses for risk assessment
+   * @param query The SOQL query string
+   * @param bindings The map of bind variables
+   **/
+  private static void addWildcardsForLikeBindings(
+    String query,
+    Map<String, Object> bindings
+  ) {
+    if (String.isBlank(query) || bindings == null || bindings.isEmpty()) {
+      return;
+    }
+
+    // Find all LIKE clauses with bind variables: LIKE :bindVar
+    Pattern likePattern = Pattern.compile(
+      '(?i)\\bLIKE\\s+:(\\w+)',
+      Pattern.CASE_INSENSITIVE
+    );
+    Matcher matcher = likePattern.matcher(query);
+
+    while (matcher.find()) {
+      String bindVar = matcher.group(1);
+      if (bindings.containsKey(bindVar)) {
+        Object value = bindings.get(bindVar);
+        if (value instanceof String) {
+          String strValue = (String) value;
+          // Only add wildcards if they're not already present
+          if (!strValue.contains('%') && !strValue.contains('_')) {
+            bindings.put(bindVar, '%' + strValue + '%');
+          }
+        }
+      }
     }
   }
 

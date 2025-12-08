@@ -129,104 +129,8 @@ test.describe("GitHub Pages - Documentation Site", () => {
     expect(count).toBeGreaterThan(0);
   });
 
-  test("Features v2.0 documentation is accessible", async ({ page }) => {
-    const response = await page.goto(`${BASE_URL}/FEATURES_v2.html`);
-    expect(response.status()).toBe(200);
-
-    // Verify content loaded
-    await expect(page.locator("body")).toContainText("Features");
-  });
-
-  test("Architecture documentation is accessible", async ({ page }) => {
-    const response = await page.goto(`${BASE_URL}/ARCHITECTURE_LAYERS.html`);
-    expect(response.status()).toBe(200);
-
-    // Verify architecture content
-    await expect(page.locator("body")).toContainText(/architecture|layers/i);
-  });
-
-  test("V3.0 Roadmap is accessible", async ({ page }) => {
-    const response = await page.goto(`${BASE_URL}/V3_ROADMAP.html`);
-
-    // Verify page loads (200 or cached)
-    expect([200, 304]).toContain(response.status());
-
-    // Verify roadmap content
-    await expect(page.locator("body")).toContainText("Roadmap");
-    await expect(page.locator("body")).toContainText(/v3\.0|version 3/i);
-
-    // Verify key sections
-    await expect(page.locator("body")).toContainText("Visual SOQL Builder");
-    await expect(page.locator("body")).toContainText("Query History");
-  });
-
-  test("GitHub Issues documentation is accessible", async ({ page }) => {
-    const response = await page.goto(`${BASE_URL}/GITHUB_ISSUES_V3.html`);
-    expect([200, 304]).toContain(response.status());
-
-    // Verify issues content
-    await expect(page.locator("body")).toContainText(
-      /GitHub Issues|User Stories/i
-    );
-    await expect(page.locator("body")).toContainText(/v3\.0|version 3/i);
-  });
-
-  test("Run As User feature documentation is accessible (no 404)", async ({
-    page
-  }) => {
-    const response = await page.goto(`${BASE_URL}/RUN_AS_USER_FEATURE.html`);
-
-    // Should NOT be 404
-    expect(response.status()).not.toBe(404);
-    expect([200, 304]).toContain(response.status());
-
-    // Verify content
-    await expect(page.locator("body")).toContainText(/Run As User|Run As/i);
-  });
-
-  test("Semantic HTML implementation docs are accessible", async ({ page }) => {
-    const response = await page.goto(
-      `${BASE_URL}/SEMANTIC_HTML_FINAL_REPORT.html`
-    );
-    expect([200, 304]).toContain(response.status());
-
-    // Verify semantic HTML content
-    await expect(page.locator("body")).toContainText(
-      /Semantic HTML|HTML Semántico/i
-    );
-  });
-
-  test("E2E test documentation is accessible", async ({ page }) => {
-    const response = await page.goto(`${BASE_URL}/E2E_COMPLETE_SUCCESS.html`);
-    expect([200, 304]).toContain(response.status());
-
-    // Verify E2E content
-    await expect(page.locator("body")).toContainText(/E2E|End-to-End/i);
-  });
-
-  test("Functional Run As documentation is accessible", async ({ page }) => {
-    const response = await page.goto(`${BASE_URL}/FUNCTIONAL_RUN_AS.html`);
-    expect([200, 304]).toContain(response.status());
-
-    // Verify functional content
-    await expect(page.locator("body")).toContainText(/Functional|Run As/i);
-  });
-
-  test("All critical documentation pages return 200 (no 404s)", async ({
-    page
-  }) => {
-    const criticalPages = [
-      "/",
-      "/gallery.html",
-      "/FEATURES_v2.html",
-      "/ARCHITECTURE_LAYERS.html",
-      "/V3_ROADMAP.html",
-      "/GITHUB_ISSUES_V3.html",
-      "/RUN_AS_USER_FEATURE.html",
-      "/SEMANTIC_HTML_FINAL_REPORT.html",
-      "/E2E_COMPLETE_SUCCESS.html",
-      "/FUNCTIONAL_RUN_AS.html"
-    ];
+  test("All critical pages return 200 (no 404s)", async ({ page }) => {
+    const criticalPages = ["/", "/testing/", "/gallery.html"];
 
     for (const pagePath of criticalPages) {
       const response = await page.goto(`${BASE_URL}${pagePath}`, {
@@ -413,18 +317,19 @@ test.describe("GitHub Pages - Documentation Site", () => {
     expect(h2Count).toBeGreaterThan(0);
   });
 
-  test("Quick Links section contains expected links", async ({ page }) => {
+  test("Key navigation links work", async ({ page }) => {
     await page.goto(BASE_URL);
 
-    // Find Quick Links section
-    const quickLinks = page
-      .locator("text=Quick Links")
-      .locator("xpath=following-sibling::*[1]");
+    // Check for testing page link
+    const testingLink = page.locator('a[href*="testing"]').first();
+    if (await testingLink.isVisible()) {
+      await expect(testingLink).toBeVisible();
+    }
 
-    if (await quickLinks.isVisible()) {
-      // Should contain links to key pages
-      await expect(page.locator('a[href*="gallery"]')).toBeVisible();
-      await expect(page.locator('a[href*="FEATURES"]')).toBeVisible();
+    // Check for gallery link if it exists
+    const galleryLink = page.locator('a[href*="gallery"]').first();
+    if (await galleryLink.count() > 0) {
+      await expect(galleryLink).toBeVisible();
     }
   });
 

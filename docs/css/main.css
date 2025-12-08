@@ -10,7 +10,7 @@ body {
     Arial, sans-serif;
   line-height: 1.6;
   color: #333;
-  background: #f5f5f5;
+  background: #ffffff;
 }
 
 .language-banner {
@@ -79,7 +79,6 @@ body {
 header {
   text-align: center;
   padding: 3rem 0;
-  border-bottom: 3px solid #667eea;
 }
 
 h1 {

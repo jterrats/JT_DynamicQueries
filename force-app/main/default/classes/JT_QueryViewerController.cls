@@ -539,10 +539,8 @@ public with sharing class JT_QueryViewerController {
     }
 
     // Find all LIKE clauses with bind variables: LIKE :bindVar
-    Pattern likePattern = Pattern.compile(
-      '(?i)\\bLIKE\\s+:(\\w+)',
-      Pattern.CASE_INSENSITIVE
-    );
+    // (?i) makes the pattern case-insensitive
+    Pattern likePattern = Pattern.compile('(?i)\\bLIKE\\s+:(\\w+)');
     Matcher matcher = likePattern.matcher(query);
 
     while (matcher.find()) {

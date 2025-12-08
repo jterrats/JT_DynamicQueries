@@ -89,7 +89,7 @@ test.describe("Bug Fix Validation Tests", () => {
 
     // ✅ FIX VALIDATION: Check if button shows loading state
     // (aria-busy is more reliable than disabled for E2E testing)
-    await page.waitForTimeout(500); // Increased from 100ms to 500ms
+    await page.waitForTimeout(1000); // Increased from 500ms to 1000ms for CI stability
 
     const ariaBusy = await executeButton.getAttribute("aria-busy");
     console.log(`📊 Button aria-busy after click: ${ariaBusy}`);

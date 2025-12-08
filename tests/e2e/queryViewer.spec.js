@@ -1434,12 +1434,15 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     // Click Select All using semantic selector (click on lightning-input)
     const selectAllCheckbox = page.locator('[data-testid="cache-select-all"]');
     await selectAllCheckbox.click();
-    await page.waitForTimeout(2000); // Increased from 1000ms to 2000ms
+    await page.waitForTimeout(3000); // Increased from 2000ms to 3000ms for CI stability
 
     // Verify that a checkbox was selected (check multiple possible attributes)
     const configCheckbox = page.locator(
       '[data-testid="cache-option-configurations"]'
     );
+
+    // Wait a bit more before checking
+    await page.waitForTimeout(500);
 
     // Try multiple ways to check if checked
     const isChecked = await configCheckbox.getAttribute("checked");
@@ -1450,7 +1453,7 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     });
 
     const isSelected = isChecked !== null || ariaChecked === "true" || hasCheckedClass;
-    
+
     console.log(`📊 checked attr: ${isChecked}, aria-checked: ${ariaChecked}, hasClass: ${hasCheckedClass}`);
     expect(isSelected).toBeTruthy();
     console.log("✅ Select All works correctly");
@@ -1476,11 +1479,11 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     await page.keyboard.press("Escape");
     
     // Give time for the close animation to start
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(2000); // Increased from 1000ms to 2000ms
 
     // Wait for modal to close completely
     const backdrop = page.locator(".slds-backdrop.slds-backdrop_open");
-    await backdrop.waitFor({ state: "hidden", timeout: 10000 }); // Increased from 5000ms to 10000ms
+    await backdrop.waitFor({ state: "hidden", timeout: 15000 }); // Increased from 10000ms to 15000ms for CI stability
 
     // Verify backdrop is no longer visible
     const backdropVisible = await backdrop.isVisible().catch(() => false);

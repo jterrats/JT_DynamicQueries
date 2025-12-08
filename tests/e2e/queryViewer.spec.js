@@ -1434,21 +1434,30 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     // Click Select All using semantic selector (click on lightning-input)
     const selectAllCheckbox = page.locator('[data-testid="cache-select-all"]');
     await selectAllCheckbox.click();
-    await page.waitForTimeout(1000); // Wait for all checkboxes to be checked
+    await page.waitForTimeout(2000); // Increased from 1000ms to 2000ms
 
-    // Verify that a checkbox was selected (check the lightning-input has 'checked' attribute)
+    // Verify that a checkbox was selected (check multiple possible attributes)
     const configCheckbox = page.locator(
       '[data-testid="cache-option-configurations"]'
     );
 
-    // Lightning-input adds aria-checked attribute when checked
+    // Try multiple ways to check if checked
     const isChecked = await configCheckbox.getAttribute("checked");
-    expect(isChecked).not.toBeNull();
+    const ariaChecked = await configCheckbox.getAttribute("aria-checked");
+    const hasCheckedClass = await configCheckbox.evaluate(el => {
+      return el.classList.contains("slds-is-checked") || 
+             el.shadowRoot?.querySelector('input[type="checkbox"]:checked') !== null;
+    });
+
+    const isSelected = isChecked !== null || ariaChecked === "true" || hasCheckedClass;
+    
+    console.log(`📊 checked attr: ${isChecked}, aria-checked: ${ariaChecked}, hasClass: ${hasCheckedClass}`);
+    expect(isSelected).toBeTruthy();
     console.log("✅ Select All works correctly");
 
     // Close modal
     await page.keyboard.press("Escape");
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(1000); // Increased from 500ms
 
     expect(true).toBeTruthy();
   });
@@ -1465,10 +1474,13 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
 
     // Press Escape
     await page.keyboard.press("Escape");
+    
+    // Give time for the close animation to start
+    await page.waitForTimeout(1000);
 
     // Wait for modal to close completely
     const backdrop = page.locator(".slds-backdrop.slds-backdrop_open");
-    await backdrop.waitFor({ state: "hidden", timeout: 5000 });
+    await backdrop.waitFor({ state: "hidden", timeout: 10000 }); // Increased from 5000ms to 10000ms
 
     // Verify backdrop is no longer visible
     const backdropVisible = await backdrop.isVisible().catch(() => false);

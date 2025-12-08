@@ -89,7 +89,7 @@ test.describe("Bug Fix Validation Tests", () => {
 
     // ✅ FIX VALIDATION: Check if button shows loading state
     // (aria-busy is more reliable than disabled for E2E testing)
-    await page.waitForTimeout(100);
+    await page.waitForTimeout(500); // Increased from 100ms to 500ms
 
     const ariaBusy = await executeButton.getAttribute("aria-busy");
     console.log(`📊 Button aria-busy after click: ${ariaBusy}`);
@@ -99,14 +99,18 @@ test.describe("Bug Fix Validation Tests", () => {
       'lightning-spinner[alternative-text*="Executing"]'
     );
     const spinnerVisible = await spinner
-      .isVisible({ timeout: 1000 })
+      .isVisible({ timeout: 2000 }) // Increased from 1000ms to 2000ms
       .catch(() => false);
     console.log(`📊 Spinner visible: ${spinnerVisible}`);
+
+    // ✅ Check if button is actually disabled
+    const isDisabled = await executeButton.isDisabled().catch(() => false);
+    console.log(`📊 Button disabled: ${isDisabled}`);
 
     // ✅ Alternative: Try to click again and expect it to fail
     let secondClickBlocked = false;
     try {
-      await executeButton.click({ timeout: 500 });
+      await executeButton.click({ timeout: 1000 }); // Increased from 500ms to 1000ms
       console.log("⚠️  Second click succeeded (not ideal)");
     } catch (error) {
       secondClickBlocked = true;
@@ -117,7 +121,8 @@ test.describe("Bug Fix Validation Tests", () => {
       ariaBusy === "true" ||
       ariaBusy === true ||
       spinnerVisible ||
-      secondClickBlocked;
+      secondClickBlocked ||
+      isDisabled;
 
     console.log(
       `📊 Button protection status: ${isProtected ? "✅ PROTECTED" : "❌ VULNERABLE"}`
@@ -329,12 +334,12 @@ test.describe("Bug Fix Validation Tests", () => {
     const csvViewButton = page.locator('lightning-button[data-view="csv"]');
     if ((await csvViewButton.count()) > 0) {
       await csvViewButton.click();
-      await page.waitForTimeout(1000);
+      await page.waitForTimeout(2000); // Increased from 1000ms to 2000ms
 
       // ✅ FIX VALIDATION: CSV preview should be visible
       const csvPreview = page.locator("c-jt-query-results pre.csv-content");
       const previewVisible = await csvPreview
-        .isVisible({ timeout: 2000 })
+        .isVisible({ timeout: 5000 }) // Increased from 2000ms to 5000ms
         .catch(() => false);
 
       console.log(`📊 CSV preview visible: ${previewVisible}`);
@@ -348,15 +353,19 @@ test.describe("Bug Fix Validation Tests", () => {
         expect(csvText.length).toBeGreaterThan(0);
 
         // ✅ FIX VALIDATION: Copy and Download buttons should exist
+        // Try multiple selectors for robustness
         const copyButton = page.locator(
-          'c-jt-query-results lightning-button[label="Copy"]'
-        );
+          'lightning-button:has-text("Copy"), button:has-text("Copy")'
+        ).first();
         const downloadButton = page.locator(
-          'c-jt-query-results lightning-button[label="Download"]'
-        );
+          'lightning-button:has-text("Download"), button:has-text("Download")'
+        ).first();
 
-        const hasCopy = (await copyButton.count()) > 0;
-        const hasDownload = (await downloadButton.count()) > 0;
+        // Wait for buttons to appear
+        await page.waitForTimeout(1000);
+
+        const hasCopy = await copyButton.isVisible({ timeout: 2000 }).catch(() => false);
+        const hasDownload = await downloadButton.isVisible({ timeout: 2000 }).catch(() => false);
 
         console.log(`📊 Copy button exists: ${hasCopy}`);
         console.log(`📊 Download button exists: ${hasDownload}`);

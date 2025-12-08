@@ -453,6 +453,15 @@ public with sharing class JT_QueryViewerController {
       // Execute count query with timeout protection
       Integer estimatedCount = 0;
       try {
+        System.debug(
+          LoggingLevel.FINE,
+          '📊 COUNT Query: ' + countQuery
+        );
+        System.debug(
+          LoggingLevel.FINE,
+          '📊 COUNT Bindings: ' + JSON.serialize(countBindings)
+        );
+
         List<AggregateResult> results = Database.queryWithBinds(
           countQuery,
           countBindings, // Use copy with wildcards
@@ -460,9 +469,17 @@ public with sharing class JT_QueryViewerController {
         );
         if (!results.isEmpty()) {
           estimatedCount = (Integer) results[0].get('expr0');
+          System.debug(
+            LoggingLevel.FINE,
+            '✅ COUNT Result: ' + estimatedCount
+          );
         }
       } catch (Exception e) {
         // If count fails, assume it's risky
+        System.debug(
+          LoggingLevel.ERROR,
+          '❌ COUNT Failed: ' + e.getMessage() + ' | ' + e.getStackTraceString()
+        );
         estimatedCount = 99999;
       }
 
@@ -538,6 +555,11 @@ public with sharing class JT_QueryViewerController {
       return;
     }
 
+    System.debug(
+      LoggingLevel.FINE,
+      '🔍 Adding wildcards for LIKE bindings...'
+    );
+
     // Find all LIKE clauses with bind variables: LIKE :bindVar
     // (?i) makes the pattern case-insensitive
     Pattern likePattern = Pattern.compile('(?i)\\bLIKE\\s+:(\\w+)');
@@ -545,13 +567,32 @@ public with sharing class JT_QueryViewerController {
 
     while (matcher.find()) {
       String bindVar = matcher.group(1);
+      System.debug(
+        LoggingLevel.FINE,
+        '📌 Found LIKE bind variable: ' + bindVar
+      );
+
       if (bindings.containsKey(bindVar)) {
         Object value = bindings.get(bindVar);
         if (value instanceof String) {
           String strValue = (String) value;
           // Only add wildcards if they're not already present
           if (!strValue.contains('%') && !strValue.contains('_')) {
-            bindings.put(bindVar, '%' + strValue + '%');
+            String newValue = '%' + strValue + '%';
+            bindings.put(bindVar, newValue);
+            System.debug(
+              LoggingLevel.FINE,
+              '✅ Added wildcards: "' +
+              strValue +
+              '" → "' +
+              newValue +
+              '"'
+            );
+          } else {
+            System.debug(
+              LoggingLevel.FINE,
+              'ℹ️  Wildcards already present: "' + strValue + '"'
+            );
           }
         }
       }

@@ -82,6 +82,9 @@ import selectOptionLabel from "@salesforce/label/c.JT_jtQueryViewer_selectOption
 import selectUserLabel from "@salesforce/label/c.JT_jtQueryViewer_selectUser";
 import showingLabel from "@salesforce/label/c.JT_jtQueryViewer_showing";
 import toolingAPINoteLabel from "@salesforce/label/c.JT_jtQueryViewer_toolingAPINote";
+import setupRequiredLabel from "@salesforce/label/c.JT_jtQueryViewer_setupRequired";
+import namedCredentialSetupLabel from "@salesforce/label/c.JT_jtQueryViewer_namedCredentialSetup";
+import toolingApiSetupLinkLabel from "@salesforce/label/c.JT_jtQueryViewer_toolingApiSetupLink";
 import typeLabel from "@salesforce/label/c.JT_jtQueryViewer_type";
 import typeToFilterLabel from "@salesforce/label/c.JT_jtQueryViewer_typeToFilter";
 import updateConfigurationLabel from "@salesforce/label/c.JT_jtQueryViewer_updateConfiguration";
@@ -282,6 +285,9 @@ export default class JtQueryViewer extends LightningElement {
     selectConfiguration: selectConfigurationLabel,
     selectOption: selectOptionLabel,
     selectUser: selectUserLabel,
+    setupRequired: setupRequiredLabel,
+    namedCredentialSetup: namedCredentialSetupLabel,
+    toolingApiSetupLink: toolingApiSetupLinkLabel,
     showing: showingLabel,
     toolingAPINote: toolingAPINoteLabel,
     type: typeLabel,

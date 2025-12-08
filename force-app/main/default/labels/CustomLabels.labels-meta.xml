@@ -921,6 +921,27 @@
     >This creates a Custom Metadata record via Tooling API. The configuration will be immediately available for use.</value>
     </labels>
     <labels>
+        <fullName>JT_jtQueryViewer_setupRequired</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - setupRequired</shortDescription>
+        <value>Setup Required:</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_namedCredentialSetup</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - namedCredentialSetup</shortDescription>
+        <value>Named Credential must be configured. See {0} for details.</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_toolingApiSetupLink</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - toolingApiSetupLink</shortDescription>
+        <value>Documentation → Tooling API Setup</value>
+    </labels>
+    <labels>
         <fullName>JT_jtSupport_tutorials</fullName>
         <language>en_US</language>
         <protected>false</protected>

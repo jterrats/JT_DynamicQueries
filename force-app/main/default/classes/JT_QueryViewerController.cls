@@ -437,10 +437,10 @@ public with sharing class JT_QueryViewerController {
         mergedBindings.putAll(bindings);
       }
 
-      // Create a COPY of bindings for COUNT with auto-added wildcards
-      // This doesn't affect the original execution query
-      Map<String, Object> countBindings = new Map<String, Object>(
-        mergedBindings
+      // Create a DEEP COPY of bindings for COUNT with auto-added wildcards
+      // Using JSON serialize/deserialize to ensure complete independence
+      Map<String, Object> countBindings = (Map<String, Object>) JSON.deserializeUntyped(
+        JSON.serialize(mergedBindings)
       );
       addWildcardsForLikeBindings(config.JT_BaseQuery__c, countBindings);
 

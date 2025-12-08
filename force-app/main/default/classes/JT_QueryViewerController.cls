@@ -437,9 +437,12 @@ public with sharing class JT_QueryViewerController {
         mergedBindings.putAll(bindings);
       }
 
-      // Auto-add wildcards for LIKE clauses in risk assessment
-      // This makes COUNT more accurate for LIKE queries
-      addWildcardsForLikeBindings(config.JT_BaseQuery__c, mergedBindings);
+      // Create a COPY of bindings for COUNT with auto-added wildcards
+      // This doesn't affect the original execution query
+      Map<String, Object> countBindings = new Map<String, Object>(
+        mergedBindings
+      );
+      addWildcardsForLikeBindings(config.JT_BaseQuery__c, countBindings);
 
       // Build COUNT query (replace SELECT ... FROM with SELECT COUNT() FROM)
       String countQuery = config.JT_BaseQuery__c
@@ -452,7 +455,7 @@ public with sharing class JT_QueryViewerController {
       try {
         List<AggregateResult> results = Database.queryWithBinds(
           countQuery,
-          mergedBindings,
+          countBindings, // Use copy with wildcards
           AccessLevel.USER_MODE
         );
         if (!results.isEmpty()) {

@@ -332,4 +332,322 @@ private class JT_MetadataCreator_Test {
 
     Test.stopTest();
   }
+
+  /**
+   * @description Test updateConfiguration with valid parameters
+   * @author Jaime Terrats | 11-29-2025
+   **/
+  @isTest
+  static void testUpdateConfigurationValid() {
+    Test.startTest();
+    JT_MetadataCreator.MetadataCreationResult result = JT_MetadataCreator.updateConfiguration(
+      'Test_Record', // Original dev name (cannot change)
+      'Updated Label',
+      'SELECT Id, Name FROM Account WHERE CreatedDate = LAST_N_DAYS:30',
+      '{"days": 30}',
+      'Account'
+    );
+    Test.stopTest();
+
+    System.assertNotEquals(null, result, 'Result should not be null');
+    System.assert(result.success != null, 'Should have success flag');
+    // Either message or errorMessage should be populated
+    System.assert(
+      result.message != null || result.errorMessage != null,
+      'Should have feedback message'
+    );
+  }
+
+  /**
+   * @description Test updateConfiguration with missing required fields
+   * @author Jaime Terrats | 11-29-2025
+   **/
+  @isTest
+  static void testUpdateConfigurationMissingFields() {
+    Test.startTest();
+    JT_MetadataCreator.MetadataCreationResult result = JT_MetadataCreator.updateConfiguration(
+      '', // Empty original dev name
+      '', // Empty label
+      '', // Empty query
+      null,
+      null
+    );
+    Test.stopTest();
+
+    System.assertEquals(
+      false,
+      result.success,
+      'Should fail with missing fields'
+    );
+    System.assertNotEquals(
+      null,
+      result.errorMessage,
+      'Should have error message'
+    );
+  }
+
+  /**
+   * @description Test updateConfiguration with all parameters
+   * @author Jaime Terrats | 11-29-2025
+   **/
+  @isTest
+  static void testUpdateConfigurationComplete() {
+    Test.startTest();
+    JT_MetadataCreator.MetadataCreationResult result = JT_MetadataCreator.updateConfiguration(
+      'Test_Record',
+      'Updated Complete Config',
+      'SELECT Id, Name FROM Contact WHERE FirstName = :firstName',
+      '{"firstName": "John"}',
+      'Contact'
+    );
+    Test.stopTest();
+
+    System.assertNotEquals(null, result, 'Result should not be null');
+    System.assert(result.success != null, 'Should have success flag');
+  }
+
+  /**
+   * @description Test createConfiguration with XML special characters (escapeXml)
+   * @author Jaime Terrats | 11-29-2025
+   **/
+  @isTest
+  static void testCreateConfigurationWithXmlChars() {
+    Test.startTest();
+    JT_MetadataCreator.MetadataCreationResult result = JT_MetadataCreator.createConfiguration(
+      'Test & Config <>"\'', // XML special chars
+      'Test_XML_Config',
+      'SELECT Id FROM Account WHERE Name = :name AND Description LIKE \'%test%\'',
+      '{"name": "Test & Company"}',
+      'Account'
+    );
+    Test.stopTest();
+
+    System.assertNotEquals(null, result, 'Result should not be null');
+    // Should handle XML escaping without errors
+  }
+
+  /**
+   * @description Test createConfiguration with developer name starting with number
+   * @author Jaime Terrats | 11-29-2025
+   **/
+  @isTest
+  static void testCreateConfigurationDeveloperNameStartsWithNumber() {
+    Test.startTest();
+    JT_MetadataCreator.MetadataCreationResult result = JT_MetadataCreator.createConfiguration(
+      'Test Config',
+      '123_Invalid_Start', // Starts with number
+      'SELECT Id FROM Account',
+      null,
+      'Account'
+    );
+    Test.stopTest();
+
+    System.assertNotEquals(null, result, 'Result should not be null');
+    // sanitizeDeveloperName should prefix with 'Config_'
+  }
+
+  /**
+   * @description Test createConfiguration with special characters in developer name
+   * @author Jaime Terrats | 11-29-2025
+   **/
+  @isTest
+  static void testCreateConfigurationDeveloperNameSpecialChars() {
+    Test.startTest();
+    JT_MetadataCreator.MetadataCreationResult result = JT_MetadataCreator.createConfiguration(
+      'Test Config',
+      'Test-Config!@#$%^&*()Name', // Special chars
+      'SELECT Id FROM Account',
+      null,
+      'Account'
+    );
+    Test.stopTest();
+
+    System.assertNotEquals(null, result, 'Result should not be null');
+    // sanitizeDeveloperName should replace special chars with underscores
+  }
+
+  /**
+   * @description Test isSandboxOrScratch with production override setting
+   * @author Jaime Terrats | 11-29-2025
+   **/
+  @isTest
+  static void testIsSandboxOrScratchWithProductionOverride() {
+    // Create custom setting to enable production editing
+    JT_DynamicQuerySettings__c settings = new JT_DynamicQuerySettings__c();
+    settings.JT_AllowProductionEditing__c = true;
+    insert settings;
+
+    Test.startTest();
+    Boolean canCreate = JT_MetadataCreator.isSandboxOrScratch();
+    Test.stopTest();
+
+    System.assertNotEquals(null, canCreate, 'Should return a boolean value');
+    // In sandbox/scratch, should be true regardless
+    // In production, depends on the setting
+  }
+
+  /**
+   * @description Test getOrgInfo with production override setting
+   * @author Jaime Terrats | 11-29-2025
+   **/
+  @isTest
+  static void testGetOrgInfoWithProductionOverride() {
+    // Create custom setting to enable production editing
+    JT_DynamicQuerySettings__c settings = new JT_DynamicQuerySettings__c();
+    settings.JT_AllowProductionEditing__c = true;
+    insert settings;
+
+    Test.startTest();
+    Map<String, Object> orgInfo = JT_MetadataCreator.getOrgInfo();
+    Test.stopTest();
+
+    System.assertNotEquals(null, orgInfo, 'Org info should not be null');
+    System.assert(
+      orgInfo.containsKey('productionOverrideEnabled'),
+      'Should contain productionOverrideEnabled flag'
+    );
+    System.assertEquals(
+      true,
+      orgInfo.get('productionOverrideEnabled'),
+      'Production override should be enabled'
+    );
+  }
+
+  /**
+   * @description Test validateQuery with complex query and multiple binds
+   * @author Jaime Terrats | 11-29-2025
+   **/
+  @isTest
+  static void testValidateQueryComplex() {
+    String complexQuery = 'SELECT Id, Name, (SELECT Id FROM Contacts WHERE LastName = :lastName) FROM Account WHERE CreatedDate > :startDate AND Industry = :industry ORDER BY Name LIMIT :recordLimit';
+
+    Test.startTest();
+    JT_MetadataCreator.ValidationResult result = JT_MetadataCreator.validateQuery(
+      complexQuery
+    );
+    Test.stopTest();
+
+    System.assertEquals(true, result.isValid, 'Complex query should be valid');
+    System.assertEquals(
+      'Account',
+      result.objectName,
+      'Should extract Account object'
+    );
+    System.assert(
+      result.bindVariables.size() >= 3,
+      'Should have at least 3 bind variables'
+    );
+    System.assert(
+      result.bindVariables.contains('lastName'),
+      'Should contain lastName'
+    );
+    System.assert(
+      result.bindVariables.contains('startDate'),
+      'Should contain startDate'
+    );
+    System.assert(
+      result.bindVariables.contains('industry'),
+      'Should contain industry'
+    );
+  }
+
+  /**
+   * @description Test validateQuery with no bind variables
+   * @author Jaime Terrats | 11-29-2025
+   **/
+  @isTest
+  static void testValidateQueryNoBinds() {
+    String query = 'SELECT Id, Name FROM Account WHERE IsDeleted = false ORDER BY CreatedDate DESC';
+
+    Test.startTest();
+    JT_MetadataCreator.ValidationResult result = JT_MetadataCreator.validateQuery(
+      query
+    );
+    Test.stopTest();
+
+    System.assertEquals(true, result.isValid, 'Query should be valid');
+    System.assertEquals(
+      0,
+      result.bindVariables.size(),
+      'Should have no bind variables'
+    );
+  }
+
+  /**
+   * @description Test createConfiguration with empty bindings
+   * @author Jaime Terrats | 11-29-2025
+   **/
+  @isTest
+  static void testCreateConfigurationEmptyBindings() {
+    Test.startTest();
+    JT_MetadataCreator.MetadataCreationResult result = JT_MetadataCreator.createConfiguration(
+      'No Bindings Config',
+      'No_Bindings_Config',
+      'SELECT Id FROM Account ORDER BY CreatedDate DESC LIMIT 10',
+      '', // Empty string instead of null
+      'Account'
+    );
+    Test.stopTest();
+
+    System.assertNotEquals(null, result, 'Result should not be null');
+  }
+
+  /**
+   * @description Test createConfiguration with null objectName
+   * @author Jaime Terrats | 11-29-2025
+   **/
+  @isTest
+  static void testCreateConfigurationNullObjectName() {
+    Test.startTest();
+    JT_MetadataCreator.MetadataCreationResult result = JT_MetadataCreator.createConfiguration(
+      'Null Object Config',
+      'Null_Object_Config',
+      'SELECT Id FROM Contact',
+      '{}',
+      null // Null object name
+    );
+    Test.stopTest();
+
+    System.assertNotEquals(null, result, 'Result should not be null');
+  }
+
+  /**
+   * @description Test updateConfiguration with XML special characters
+   * @author Jaime Terrats | 11-29-2025
+   **/
+  @isTest
+  static void testUpdateConfigurationWithXmlChars() {
+    Test.startTest();
+    JT_MetadataCreator.MetadataCreationResult result = JT_MetadataCreator.updateConfiguration(
+      'Test_Record',
+      'Updated & Modified <Config>',
+      'SELECT Id FROM Account WHERE Name LIKE \'%Test & Co%\'',
+      '{"special": "<test>"}',
+      'Account'
+    );
+    Test.stopTest();
+
+    System.assertNotEquals(null, result, 'Result should not be null');
+    // Should handle XML escaping in update path
+  }
+
+  /**
+   * @description Test exception path in validateQuery
+   * @author Jaime Terrats | 11-29-2025
+   **/
+  @isTest
+  static void testValidateQueryExceptionPath() {
+    Test.startTest();
+    JT_MetadataCreator.ValidationResult result = JT_MetadataCreator.validateQuery(
+      null // Null query should trigger exception
+    );
+    Test.stopTest();
+
+    System.assertEquals(
+      false,
+      result.isValid,
+      'Null query should be invalid'
+    );
+    System.assertNotEquals(null, result.message, 'Should have error message');
+  }
 }

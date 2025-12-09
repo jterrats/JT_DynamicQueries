@@ -160,6 +160,18 @@ test.describe("GitHub Pages - Documentation Site", () => {
     await expect(page.locator("body")).toContainText(/Behavior-Driven|BDD/i);
   });
 
+  test("Architecture page with interactive diagrams is accessible", async ({ page }) => {
+    const response = await page.goto(`${BASE_URL}/architecture/`);
+    expect([200, 304]).toContain(response.status());
+
+    // Verify page content
+    await expect(page.locator("h1")).toContainText(/Architecture/i);
+    await expect(page.locator("body")).toContainText(/Component Architecture|Visual Architecture/i);
+    
+    // Verify Mermaid diagrams are present
+    await expect(page.locator(".mermaid")).toHaveCount(4); // 4 diagrams expected
+  });
+
   test("Footer is present with correct links", async ({ page }) => {
     await page.goto(BASE_URL);
 

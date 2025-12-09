@@ -1,0 +1,205 @@
+---
+layout: default
+title: Architecture
+permalink: /architecture/
+description: Visual architecture diagrams showing the component structure, data flow, and design patterns of the Dynamic Query Framework.
+og_title: Architecture - Dynamic Query Framework
+og_description: Interactive Mermaid diagrams showing UI layer, controller layer, core engine, and data flow architecture.
+---
+
+<style>
+  .architecture-section {
+    margin: 2rem 0;
+    padding: 2rem;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-radius: 15px;
+    border-left: 5px solid #667eea;
+  }
+
+  .diagram-container {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    margin: 1.5rem 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .mermaid {
+    text-align: center;
+  }
+</style>
+
+<header>
+  <h1>🏗️ Architecture</h1>
+  <p class="tagline">Visual Architecture Diagrams & Design Patterns</p>
+</header>
+
+<section class="architecture-section">
+  <h2 style="color: #667eea; border: none; margin-bottom: 1rem;">
+    📊 Component Architecture
+  </h2>
+  <p style="font-size: 1.1rem; margin-bottom: 1.5rem; color: #333;">
+    Dynamic Query Framework follows a layered architecture with clear separation of concerns.
+    This diagram shows how components interact across the UI, Controller, Engine, and Data layers.
+  </p>
+
+  <div class="diagram-container">
+    <div class="mermaid">
+graph TB
+    subgraph "🎨 UI Layer - Lightning Web Components"
+        QV[jtQueryViewer<br/>Main Orchestrator]
+        CB[jtSearchableCombobox<br/>Config Selector]
+        EB[jtExecuteButton<br/>Smart Button]
+        QR[jtQueryResults<br/>Multi-View Display]
+        CM[jtCacheModal<br/>Cache Manager]
+    end
+
+    subgraph "⚙️ Controller Layer - Apex"
+        QVC[JT_QueryViewerController<br/>Query Execution]
+        MC[JT_MetadataCreator<br/>Config Management]
+        UF[JT_UsageFinder<br/>Usage Search]
+    end
+
+    subgraph "💎 Core Engine"
+        DS[JT_DataSelector<br/>Singleton + Caching]
+    end
+
+    subgraph "💾 Data Layer"
+        MD[(Custom Metadata)]
+        DB[(Salesforce DB)]
+    end
+
+    QV --> CB
+    QV --> EB
+    QV --> QR
+    QV --> CM
+
+    CB --> QVC
+    EB --> QVC
+    CM --> QVC
+
+    QVC --> DS
+    MC --> MD
+    UF --> DB
+
+    DS --> DB
+    DS --> MD
+
+    style QV fill:#667eea,stroke:#333,stroke-width:3px,color:#fff
+    style DS fill:#764ba2,stroke:#333,stroke-width:3px,color:#fff
+    style QVC fill:#48bb78,stroke:#333,stroke-width:2px
+    </div>
+  </div>
+</section>
+
+<section style="margin: 2rem 0;">
+  <h2>🔄 Query Execution Flow</h2>
+  <div class="diagram-container">
+    <div class="mermaid">
+sequenceDiagram
+    participant User
+    participant LWC as jtQueryViewer
+    participant Ctrl as Controller
+    participant Engine as DataSelector
+    participant DB as Salesforce DB
+
+    User->>LWC: Select Configuration
+    LWC->>Ctrl: Load Config Metadata
+    Ctrl->>Engine: getRecords(configName)
+    Engine->>DB: Execute SOQL
+    DB-->>Engine: Records
+    Engine-->>Ctrl: List<SObject>
+    Ctrl-->>LWC: JSON Response
+    LWC-->>User: Display Results
+    </div>
+  </div>
+</section>
+
+<section style="margin: 2rem 0;">
+  <h2>🛡️ Security Architecture</h2>
+  <div class="diagram-container">
+    <div class="mermaid">
+graph LR
+    User[👤 User Request]
+    Check{Enforce Security?}
+    User_Mode[USER_MODE<br/>FLS + CRUD]
+    System_Mode[SYSTEM_MODE<br/>Bypass Security]
+    Query[(Database Query)]
+
+    User --> Check
+    Check -->|true| User_Mode
+    Check -->|false| System_Mode
+    User_Mode --> Query
+    System_Mode --> Query
+
+    style User_Mode fill:#48bb78,stroke:#333,stroke-width:2px,color:#fff
+    style System_Mode fill:#f56565,stroke:#333,stroke-width:2px,color:#fff
+    </div>
+  </div>
+</section>
+
+<section style="margin: 2rem 0;">
+  <h2>💾 Cache Strategy</h2>
+  <div class="diagram-container">
+    <div class="mermaid">
+graph TD
+    Request[Query Request]
+    L1{Instance Cache}
+    L2{Static Cache}
+    L3{Custom Metadata}
+    DB[(Database Query)]
+
+    Request --> L1
+    L1 -->|Hit| Return1[✅ Return Cached]
+    L1 -->|Miss| L2
+    L2 -->|Hit| Return2[✅ Return Cached]
+    L2 -->|Miss| L3
+    L3 -->|Hit| Return3[✅ Return Metadata]
+    L3 -->|Miss| DB
+    DB --> Return4[📊 Query Results]
+
+    style L1 fill:#667eea,stroke:#333,stroke-width:2px,color:#fff
+    style L2 fill:#764ba2,stroke:#333,stroke-width:2px,color:#fff
+    style L3 fill:#48bb78,stroke:#333,stroke-width:2px,color:#fff
+    </div>
+  </div>
+</section>
+
+<section style="margin: 2rem 0; padding: 2rem; background: #f8f9fa; border-radius: 10px;">
+  <h2>📚 Learn More</h2>
+  <ul style="list-style: none; padding: 0;">
+    <li style="margin: 1rem 0;">
+      <a href="{{ site.baseurl }}/" style="color: #667eea; font-weight: bold;">
+        🏠 Back to Documentation
+      </a>
+    </li>
+    <li style="margin: 1rem 0;">
+      <a href="{{ site.baseurl }}/testing/" style="color: #667eea; font-weight: bold;">
+        🧪 Testing Methodology
+      </a>
+    </li>
+    <li style="margin: 1rem 0;">
+      <a href="https://github.com/jterrats/JT_DynamicQueries" target="_blank" rel="noopener" style="color: #667eea; font-weight: bold;">
+        📦 View Source Code on GitHub
+      </a>
+    </li>
+  </ul>
+</section>
+
+<!-- Mermaid JS for rendering diagrams -->
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ 
+    startOnLoad: true,
+    theme: 'default',
+    themeVariables: {
+      primaryColor: '#667eea',
+      primaryTextColor: '#fff',
+      primaryBorderColor: '#333',
+      lineColor: '#667eea',
+      secondaryColor: '#764ba2',
+      tertiaryColor: '#48bb78'
+    }
+  });
+</script>
+

@@ -1421,8 +1421,7 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     expect(true).toBeTruthy();
   });
 
-  // FLAKY: Lightning-input checkbox state detection unreliable in CI - skipping
-  test.skip("should use Select All to select all options", async ({ page }) => {
+  test("should use Select All to select all options", async ({ page }) => {
     console.log("🧹 Testing Select All functionality...");
 
     // Open modal using semantic selector
@@ -1435,15 +1434,14 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     // Click Select All using semantic selector (click on lightning-input)
     const selectAllCheckbox = page.locator('[data-testid="cache-select-all"]');
     await selectAllCheckbox.click();
-    await page.waitForTimeout(3000); // Increased from 2000ms to 3000ms for CI stability
+    
+    // Check IMMEDIATELY after click (before re-render)
+    await page.waitForTimeout(100); // Minimal wait for DOM update
 
     // Verify that a checkbox was selected (check multiple possible attributes)
     const configCheckbox = page.locator(
       '[data-testid="cache-option-configurations"]'
     );
-
-    // Wait a bit more before checking
-    await page.waitForTimeout(500);
 
     // Try multiple ways to check if checked
     const isChecked = await configCheckbox.getAttribute("checked");
@@ -1466,8 +1464,7 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     expect(true).toBeTruthy();
   });
 
-  // FLAKY: Modal close animation timing unpredictable in CI - skipping
-  test.skip("should close modal with Escape key", async ({ page }) => {
+  test("should close modal with Escape key", async ({ page }) => {
     console.log("🧹 Testing keyboard accessibility...");
 
     // Open modal using semantic selector
@@ -1477,15 +1474,19 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     await openCacheButton.click();
     await page.waitForTimeout(2000);
 
-    // Press Escape
-    await page.keyboard.press("Escape");
+    // Ensure modal is visible before pressing Escape
+    const modal = page.locator('section[role="dialog"]');
+    await modal.waitFor({ state: "visible", timeout: 5000 });
 
-    // Give time for the close animation to start
-    await page.waitForTimeout(2000); // Increased from 1000ms to 2000ms
+    // Press Escape (on the page, which should bubble to modal)
+    await page.keyboard.press("Escape");
+    
+    // Wait reasonable time for animation (not too long)
+    await page.waitForTimeout(500);
 
     // Wait for modal to close completely
     const backdrop = page.locator(".slds-backdrop.slds-backdrop_open");
-    await backdrop.waitFor({ state: "hidden", timeout: 15000 }); // Increased from 10000ms to 15000ms for CI stability
+    await backdrop.waitFor({ state: "hidden", timeout: 3000 }); // Reduced from 15000ms - if it doesn't close in 3s, it's broken
 
     // Verify backdrop is no longer visible
     const backdropVisible = await backdrop.isVisible().catch(() => false);

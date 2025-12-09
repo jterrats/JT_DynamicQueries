@@ -51,8 +51,7 @@ test.describe("Bug Fix Validation Tests", () => {
   // ============================================
   // BUG FIX #1: Stacked Toasts
   // ============================================
-  // FLAKY: Shadow DOM timing issues in CI - skipping until we can make it more reliable
-  test.skip("BUG FIX: Button should be disabled during execution to prevent multiple queries", async ({
+  test("BUG FIX: Button should be disabled during execution to prevent multiple queries", async ({
     page
   }) => {
     console.log("🐛 Testing: Button disabled during execution...");
@@ -88,9 +87,9 @@ test.describe("Bug Fix Validation Tests", () => {
     // Click once
     await executeButton.click();
 
-    // ✅ FIX VALIDATION: Check if button shows loading state
-    // (aria-busy is more reliable than disabled for E2E testing)
-    await page.waitForTimeout(1000); // Increased from 500ms to 1000ms for CI stability
+    // ✅ FIX VALIDATION: Check IMMEDIATELY (before query finishes)
+    // DO NOT WAIT - query is too fast, need to check instantly
+    await page.waitForTimeout(50); // Just enough for DOM to update, not for query to finish
 
     const ariaBusy = await executeButton.getAttribute("aria-busy");
     console.log(`📊 Button aria-busy after click: ${ariaBusy}`);

@@ -154,20 +154,26 @@ test.describe("GitHub Pages - Documentation Site", () => {
     expect([200, 304]).toContain(response.status());
 
     // Verify EDD content
-    await expect(page.locator("body")).toContainText(/Error-Driven Development|EDD/i);
+    await expect(page.locator("body")).toContainText(
+      /Error-Driven Development|EDD/i
+    );
     await expect(page.locator("body")).toContainText(/End-to-End|E2E/i);
     await expect(page.locator("body")).toContainText(/Test-Driven|TDD/i);
     await expect(page.locator("body")).toContainText(/Behavior-Driven|BDD/i);
   });
 
-  test("Architecture page with interactive diagrams is accessible", async ({ page }) => {
+  test("Architecture page with interactive diagrams is accessible", async ({
+    page
+  }) => {
     const response = await page.goto(`${BASE_URL}/architecture/`);
     expect([200, 304]).toContain(response.status());
 
-    // Verify page content
-    await expect(page.locator("h1")).toContainText(/Architecture/i);
-    await expect(page.locator("body")).toContainText(/Component Architecture|Visual Architecture/i);
-    
+    // Verify page content (use body text instead of h1 to avoid strict mode violation)
+    await expect(page.locator("body")).toContainText(/Architecture/i);
+    await expect(page.locator("body")).toContainText(
+      /Component Architecture|Visual Architecture/i
+    );
+
     // Verify Mermaid diagrams are present
     await expect(page.locator(".mermaid")).toHaveCount(4); // 4 diagrams expected
   });
@@ -340,7 +346,7 @@ test.describe("GitHub Pages - Documentation Site", () => {
 
     // Check for gallery link if it exists
     const galleryLink = page.locator('a[href*="gallery"]').first();
-    if (await galleryLink.count() > 0) {
+    if ((await galleryLink.count()) > 0) {
       await expect(galleryLink).toBeVisible();
     }
   });

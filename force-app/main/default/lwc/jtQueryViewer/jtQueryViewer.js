@@ -108,7 +108,7 @@ import canUseRunAsTest from "@salesforce/apex/JT_RunAsTestExecutor.canUseRunAsTe
 import isSandboxOrScratch from "@salesforce/apex/JT_MetadataCreator.isSandboxOrScratch";
 import getOrgInfo from "@salesforce/apex/JT_MetadataCreator.getOrgInfo";
 import createConfiguration from "@salesforce/apex/JT_MetadataCreator.createConfiguration";
-// import updateConfiguration from "@salesforce/apex/JT_MetadataCreator.updateConfiguration"; // Unused, reserved for future
+import updateConfiguration from "@salesforce/apex/JT_MetadataCreator.updateConfiguration";
 import validateQuery from "@salesforce/apex/JT_MetadataCreator.validateQuery";
 // import getProductionEditingSetting from "@salesforce/apex/JT_ProductionSettingsController.getProductionEditingSetting"; // Unused
 import updateProductionEditingSetting from "@salesforce/apex/JT_ProductionSettingsController.updateProductionEditingSetting";
@@ -161,6 +161,7 @@ export default class JtQueryViewer extends LightningElement {
   @track showCreateModal = false;
   @track isEditMode = false;
   @track canCreateMetadata = false;
+  @track configModalMode = "create"; // 'create' | 'edit'
   @track showUsageModal = false;
   @track usageResults = [];
   @track isLoadingUsage = false;
@@ -935,14 +936,50 @@ export default class JtQueryViewer extends LightningElement {
 
   // Show create configuration modal
   handleShowCreateModal() {
+    this.configModalMode = "create";
     this.showCreateModal = true;
     this.resetNewConfig();
   }
 
-  // Hide create configuration modal
+  // Show edit configuration modal
+  handleShowEditModal() {
+    if (!this.selectedConfig) {
+      this.showErrorToast(
+        "No Configuration Selected",
+        "Please select a configuration to edit."
+      );
+      return;
+    }
+
+    this.configModalMode = "edit";
+    this.showCreateModal = true;
+
+    // Load current configuration data
+    const currentConfig = this.configurationOptions.find(
+      (cfg) => cfg.value === this.selectedConfig
+    );
+
+    if (currentConfig) {
+      this.newConfig = {
+        label: currentConfig.label,
+        developerName: currentConfig.value,
+        baseQuery: currentConfig.data.baseQuery,
+        bindings: currentConfig.data.bindings,
+        objectName: currentConfig.data.objectName
+      };
+      this.originalDevName = currentConfig.value; // Save original dev name for update
+      this.queryValidation = { isValid: true, message: "Valid SOQL syntax" };
+      
+      // Load preview for existing config
+      this.validateQuerySyntax();
+    }
+  }
+
+  // Hide create/edit configuration modal
   handleCloseCreateModal() {
     this.showCreateModal = false;
     this.resetNewConfig();
+    this.configModalMode = "create";
   }
 
   // Reset new configuration form
@@ -959,6 +996,7 @@ export default class JtQueryViewer extends LightningElement {
     this.queryPreviewResults = [];
     this.queryPreviewColumns = [];
     this.isLoadingQueryPreview = false;
+    this.originalDevName = ""; // Reset for edit mode
   }
 
   // Show usage modal
@@ -1291,7 +1329,7 @@ export default class JtQueryViewer extends LightningElement {
       });
   }
 
-  // Save new configuration
+  // Save configuration (create or update)
   handleSaveConfiguration() {
     // Validate required fields
     if (
@@ -1316,22 +1354,39 @@ export default class JtQueryViewer extends LightningElement {
 
     this.isSaving = true;
 
-    createConfiguration({
+    const configData = {
       label: this.newConfig.label,
       developerName: this.newConfig.developerName,
       baseQuery: this.newConfig.baseQuery,
       bindings: this.newConfig.bindings,
       objectName: this.newConfig.objectName
-    })
+    };
+
+    // Choose create or update based on mode
+    const saveMethod =
+      this.configModalMode === "edit"
+        ? updateConfiguration({
+            originalDevName: this.originalDevName,
+            ...configData
+          })
+        : createConfiguration(configData);
+
+    const actionLabel =
+      this.configModalMode === "edit" ? "Updated" : "Created";
+
+    saveMethod
       .then((result) => {
         if (result.success) {
-          this.showSuccessToast("Configuration Created", result.message);
+          this.showSuccessToast(
+            `Configuration ${actionLabel}`,
+            result.message
+          );
           this.handleCloseCreateModal();
 
           // Refresh the configurations list using refreshApex
           return refreshApex(this.wiredConfigurationsResult);
         }
-        this.showErrorToast("Creation Failed", result.errorMessage);
+        this.showErrorToast(`${actionLabel} Failed`, result.errorMessage);
         return Promise.resolve();
       })
       .then(() => {
@@ -1344,7 +1399,8 @@ export default class JtQueryViewer extends LightningElement {
       .catch((error) => {
         this.showErrorToast(
           "Error",
-          error.body?.message || "Failed to create configuration"
+          error.body?.message ||
+            `Failed to ${this.configModalMode} configuration`
         );
       })
       .finally(() => {
@@ -1413,6 +1469,11 @@ export default class JtQueryViewer extends LightningElement {
   // Computed property for showing usage link
   get showUsageLink() {
     return this.selectedConfig && this.usageTrackingEnabled;
+  }
+
+  // Computed property for showing edit button
+  get showEditConfigButton() {
+    return this.canCreateMetadata && this.selectedConfig;
   }
 
   // Navigate to Documentation tab

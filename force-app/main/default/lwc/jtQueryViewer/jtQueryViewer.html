@@ -55,6 +55,21 @@
           </lightning-helptext>
         </template>
 
+        <!-- Edit Configuration Button (Sandbox/Scratch only + config selected) -->
+        <template if:true={showEditConfigButton}>
+          <lightning-button
+            label="Edit Configuration"
+            title="Edit selected configuration"
+            onclick={handleShowEditModal}
+            variant="neutral"
+            icon-name="utility:edit"
+            data-testid="header-edit-config-button"
+            name="edit-configuration"
+            aria-label="Edit selected query configuration"
+          >
+          </lightning-button>
+        </template>
+
         <!-- Org Badge -->
         <template if:true={canCreateMetadata}>
           <lightning-badge
@@ -569,11 +584,10 @@
     </div>
   </lightning-card>
 
-  <!-- Create Configuration Modal -->
-  <!-- Config Creation/Edit Modal -->
+  <!-- Create/Edit Configuration Modal -->
   <template if:true={showCreateModal}>
     <c-jt-config-modal
-      mode="create"
+      mode={configModalMode}
       is-saving={isSaving}
       can-create-metadata={canCreateMetadata}
       config={newConfig}

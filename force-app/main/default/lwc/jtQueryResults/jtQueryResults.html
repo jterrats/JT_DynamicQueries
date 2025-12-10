@@ -268,27 +268,35 @@
         class="slds-p-top_medium slds-grid slds-grid_align-spread slds-grid_vertical-align-center"
       >
         <div
-          class="slds-text-body_small slds-text-color_weak"
+          class="slds-text-body_small"
           role="status"
           aria-live="polite"
           aria-atomic="true"
         >
-          Showing {firstRecordIndex} - {lastRecordIndex} of {recordCount}
+          <span class="slds-text-color_weak"
+            >Page {currentPage} of {totalPages}</span
+          >
+          <span class="slds-m-horizontal_xx-small slds-text-color_weak">•</span>
+          <span class="slds-text-color_weak"
+            >Showing {firstRecordIndex}-{lastRecordIndex} of {recordCount}
+            {recordCountLabel}</span
+          >
         </div>
-        <div role="group" aria-label="Pagination controls">
+        <div class="slds-button-group" role="group" aria-label="Pagination controls">
           <lightning-button
-            label="Previous"
+            icon-name="utility:chevronleft"
             onclick={handlePreviousPage}
             disabled={disablePrevious}
             variant="neutral"
+            title="Previous page"
             aria-label="Go to previous page"
           ></lightning-button>
           <lightning-button
-            label="Next"
+            icon-name="utility:chevronright"
             onclick={handleNextPage}
             disabled={disableNext}
             variant="neutral"
-            class="slds-m-left_x-small"
+            title="Next page"
             aria-label="Go to next page"
           ></lightning-button>
         </div>

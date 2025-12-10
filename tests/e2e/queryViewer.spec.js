@@ -751,6 +751,175 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     }
   });
 
+  test("should validate all Documentation tabs have content", async ({
+    page
+  }) => {
+    console.log("📑 Testing Documentation tabs content...");
+
+    const docTab = page
+      .locator("one-app-nav-bar-item-root a")
+      .filter({ hasText: /Documentation/i })
+      .first();
+    const isVisible = await docTab
+      .isVisible({ timeout: 3000 })
+      .catch(() => false);
+
+    if (!isVisible) {
+      console.log("⚠️  Skipping - Documentation tab not available");
+      return;
+    }
+
+    await docTab.click();
+    await page.waitForTimeout(2000);
+
+    // Wait for component to load
+    const docComponent = page.locator("c-jt-documentation");
+    await expect(docComponent).toBeVisible({ timeout: 5000 });
+
+    // Define all tabs to test
+    const tabs = [
+      { name: "Overview", selector: "overview", minLength: 100 },
+      { name: "Getting Started", selector: "getting-started", minLength: 100 },
+      { name: "API Reference", selector: "api", minLength: 100 },
+      {
+        name: "Batch Processing",
+        selector: "batch-processing",
+        minLength: 100
+      },
+      { name: "Support", selector: "support", minLength: 50 }
+    ];
+
+    for (const tab of tabs) {
+      console.log(`   Testing ${tab.name} tab...`);
+
+      // Click tab
+      const tabButton = page
+        .locator("a.slds-tabs_default__link")
+        .filter({ hasText: new RegExp(tab.name, "i") });
+
+      await tabButton.click();
+      await page.waitForTimeout(500);
+
+      // Verify content is visible
+      const contentArea = page.locator('[role="tabpanel"]');
+      const isContentVisible = await contentArea
+        .isVisible({ timeout: 3000 })
+        .catch(() => false);
+
+      expect(isContentVisible).toBe(true);
+
+      // Verify content has meaningful text (not empty)
+      const contentText = await contentArea.textContent();
+      const contentLength = contentText?.trim().length || 0;
+
+      expect(contentLength).toBeGreaterThan(tab.minLength);
+      console.log(
+        `   ✅ ${tab.name}: ${contentLength} characters (min: ${tab.minLength})`
+      );
+    }
+
+    console.log("✅ All Documentation tabs have content");
+  });
+
+  test("should validate API Reference shows JT_DataSelector methods", async ({
+    page
+  }) => {
+    console.log("🔍 Testing API Reference content...");
+
+    const docTab = page
+      .locator("one-app-nav-bar-item-root a")
+      .filter({ hasText: /Documentation/i })
+      .first();
+    const isVisible = await docTab
+      .isVisible({ timeout: 3000 })
+      .catch(() => false);
+
+    if (!isVisible) {
+      console.log("⚠️  Skipping - Documentation tab not available");
+      return;
+    }
+
+    await docTab.click();
+    await page.waitForTimeout(2000);
+
+    // Click API Reference tab
+    const apiTab = page
+      .locator("a.slds-tabs_default__link")
+      .filter({ hasText: /API Reference/i });
+    await apiTab.click();
+    await page.waitForTimeout(500);
+
+    // Verify key API methods are documented
+    const apiMethods = [
+      "getRecords",
+      "countRecordsForConfig",
+      "getRecordsWithAutoStrategy",
+      "processRecordsWithCursor"
+    ];
+
+    for (const method of apiMethods) {
+      const methodElement = page.getByText(method, { exact: false });
+      const isPresent = await methodElement
+        .isVisible({ timeout: 2000 })
+        .catch(() => false);
+
+      expect(isPresent).toBe(true);
+      console.log(`   ✅ ${method} documented`);
+    }
+
+    // Verify JT_QueryViewerController is NOT present (removed as internal)
+    const internalClass = page.getByText("JT_QueryViewerController", {
+      exact: false
+    });
+    const shouldNotBePresent = await internalClass
+      .isVisible({ timeout: 1000 })
+      .catch(() => false);
+
+    expect(shouldNotBePresent).toBe(false);
+    console.log("   ✅ Internal classes correctly hidden");
+  });
+
+  test("should validate Support tab has GitHub links", async ({ page }) => {
+    console.log("🔗 Testing Support tab links...");
+
+    const docTab = page
+      .locator("one-app-nav-bar-item-root a")
+      .filter({ hasText: /Documentation/i })
+      .first();
+    const isVisible = await docTab
+      .isVisible({ timeout: 3000 })
+      .catch(() => false);
+
+    if (!isVisible) {
+      console.log("⚠️  Skipping - Documentation tab not available");
+      return;
+    }
+
+    await docTab.click();
+    await page.waitForTimeout(2000);
+
+    // Click Support tab
+    const supportTab = page
+      .locator("a.slds-tabs_default__link")
+      .filter({ hasText: /Support/i });
+    await supportTab.click();
+    await page.waitForTimeout(500);
+
+    // Verify GitHub repository link is present
+    const githubLink = page.locator(
+      'a[href*="github.com/jterrats/JT_DynamicQueries"]'
+    );
+    await expect(githubLink).toBeVisible();
+
+    // Verify cards are present (Documentation, Issues, Contributing)
+    const cards = page.locator("article.slds-card");
+    const cardCount = await cards.count();
+    expect(cardCount).toBeGreaterThanOrEqual(3);
+
+    console.log(`   ✅ Found ${cardCount} support cards`);
+    console.log("   ✅ GitHub link present");
+  });
+
   // ═══════════════════════════════════════════════════════════════
   // AUDIT HISTORY TAB TESTS (READ-ONLY)
   // ═══════════════════════════════════════════════════════════════

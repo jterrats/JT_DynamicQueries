@@ -959,20 +959,27 @@ export default class JtQueryViewer extends LightningElement {
       (cfg) => cfg.value === this.selectedConfig
     );
 
-    if (currentConfig) {
-      this.newConfig = {
-        label: currentConfig.label,
-        developerName: currentConfig.value,
-        baseQuery: currentConfig.data.baseQuery,
-        bindings: currentConfig.data.bindings,
-        objectName: currentConfig.data.objectName
-      };
-      this.originalDevName = currentConfig.value; // Save original dev name for update
-      this.queryValidation = { isValid: true, message: "Valid SOQL syntax" };
-
-      // Load preview for existing config
-      this.validateQuerySyntax();
+    if (!currentConfig) {
+      this.showErrorToast(
+        "Configuration Not Found",
+        "Could not find the selected configuration. Please refresh and try again."
+      );
+      return;
     }
+
+    this.newConfig = {
+      label: currentConfig.label,
+      developerName: currentConfig.value,
+      baseQuery: currentConfig.baseQuery, // FIX: Direct property, not .data.baseQuery
+      bindings: currentConfig.bindings, // FIX: Direct property
+      objectName: currentConfig.objectName // FIX: Direct property
+    };
+    this.originalDevName = currentConfig.value; // Save original dev name for update
+    this.developerNameManuallyEdited = true; // Prevent auto-generation in edit mode
+    this.queryValidation = { isValid: true, message: "Valid SOQL syntax" };
+
+    // Load preview for existing config
+    this.validateQuerySyntax();
   }
 
   // Hide create/edit configuration modal

@@ -951,9 +951,6 @@ export default class JtQueryViewer extends LightningElement {
       return;
     }
 
-    this.configModalMode = "edit";
-    this.showCreateModal = true;
-
     // Load current configuration data
     const currentConfig = this.configurationOptions.find(
       (cfg) => cfg.value === this.selectedConfig
@@ -967,19 +964,29 @@ export default class JtQueryViewer extends LightningElement {
       return;
     }
 
+    // Prepare config data
     this.newConfig = {
       label: currentConfig.label,
       developerName: currentConfig.value,
-      baseQuery: currentConfig.baseQuery, // FIX: Direct property, not .data.baseQuery
-      bindings: currentConfig.bindings, // FIX: Direct property
-      objectName: currentConfig.objectName // FIX: Direct property
+      baseQuery: currentConfig.baseQuery,
+      bindings: currentConfig.bindings,
+      objectName: currentConfig.objectName
     };
+
     this.originalDevName = currentConfig.value; // Save original dev name for update
     this.developerNameManuallyEdited = true; // Prevent auto-generation in edit mode
-    this.queryValidation = { isValid: true, message: "Valid SOQL syntax" };
 
-    // Load preview for existing config
-    this.validateQuerySyntax();
+    // Set modal mode and show it
+    this.configModalMode = "edit";
+    this.showCreateModal = true;
+
+    // Wait for modal to render, then set config
+    setTimeout(() => {
+      const modal = this.refs.configModal;
+      if (modal) {
+        modal.setConfig(this.newConfig);
+      }
+    }, 100);
   }
 
   // Hide create/edit configuration modal

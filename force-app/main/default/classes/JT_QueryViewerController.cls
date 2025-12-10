@@ -211,9 +211,33 @@ public with sharing class JT_QueryViewerController {
     } catch (Exception e) {
       QueryResult result = new QueryResult();
       result.success = false;
-      result.errorMessage = e.getMessage();
       result.records = new List<Object>(); // Changed from List<SObject>
       result.recordCount = 0;
+      
+      // Parse error message for specific cases
+      String errorMessage = e.getMessage().toLowerCase();
+      
+      // Check for object doesn't exist
+      if (errorMessage.contains('sobject type') && errorMessage.contains('does not exist')) {
+        result.errorMessage = 'Object does not exist or you do not have access to it. Please verify the object name in your query.';
+      }
+      // Check for field doesn't exist
+      else if (errorMessage.contains('no such column') || errorMessage.contains('invalid field')) {
+        result.errorMessage = 'One or more fields in the query do not exist or you do not have access to them. Please verify field names.';
+      }
+      // Check for insufficient privileges
+      else if (errorMessage.contains('insufficient privileges') || errorMessage.contains('permission')) {
+        result.errorMessage = 'Insufficient permissions to query this object or fields. Please check your user permissions.';
+      }
+      // Check for invalid SOQL syntax
+      else if (errorMessage.contains('unexpected token') || errorMessage.contains('expecting')) {
+        result.errorMessage = 'Invalid SOQL syntax: ' + e.getMessage();
+      }
+      // Generic error
+      else {
+        result.errorMessage = 'Query preview failed: ' + e.getMessage();
+      }
+      
       return result;
     }
   }

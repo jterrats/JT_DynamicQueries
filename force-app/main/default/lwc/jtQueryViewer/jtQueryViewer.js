@@ -1313,10 +1313,27 @@ export default class JtQueryViewer extends LightningElement {
       });
   }
 
+  // Handle query preview event from modal
+  handleQueryPreview(event) {
+    const { records, fields, recordCount } = event.detail;
+    
+    this.queryPreviewResults = records || [];
+    this.queryPreviewColumns = fields.map((field) => ({
+      label: this.formatLabel(field),
+      fieldName: field,
+      type: this.getFieldType(field)
+    }));
+    
+    console.log("✅ Query preview updated from modal:", recordCount, "records");
+  }
+
   // Load preview data for create modal
   loadCreateModalPreview() {
     // Build bindings if present
     const bindingsToSend = this.newConfig.bindings || null;
+
+    console.log("🔍 DEBUG - Preview Query:", this.newConfig.baseQuery);
+    console.log("🔍 DEBUG - Preview Bindings:", bindingsToSend);
 
     return executeQueryPreview({
       devName: null,
@@ -1324,22 +1341,44 @@ export default class JtQueryViewer extends LightningElement {
       queryOverride: this.newConfig.baseQuery // Use queryOverride parameter
     })
       .then((result) => {
-        if (result.success && result.recordCount > 0) {
-          this.queryPreviewResults = result.records;
-          this.queryPreviewColumns = result.fields.map((field) => ({
-            label: this.formatLabel(field),
-            fieldName: field,
-            type: this.getFieldType(field)
-          }));
+        console.log("🔍 DEBUG - Preview Result:", result);
+
+        if (result.success) {
+          if (result.recordCount > 0) {
+            this.queryPreviewResults = result.records;
+            this.queryPreviewColumns = result.fields.map((field) => ({
+              label: this.formatLabel(field),
+              fieldName: field,
+              type: this.getFieldType(field)
+            }));
+            console.log("✅ Preview loaded:", result.recordCount, "records");
+          } else {
+            // Query succeeded but returned 0 records (this is valid)
+            this.queryPreviewResults = [];
+            this.queryPreviewColumns = [];
+            console.log("⚠️ Query valid but no data returned");
+          }
         } else {
+          // Query failed - show error to user
           this.queryPreviewResults = [];
           this.queryPreviewColumns = [];
+          this.queryValidation = {
+            isValid: false,
+            message: result.errorMessage || "Query preview failed",
+            objectName: ""
+          };
+          console.log("❌ Preview failed:", result.errorMessage);
         }
       })
-      .catch(() => {
-        // Silent fail - validation is more important
+      .catch((error) => {
+        console.error("❌ Preview error:", error);
         this.queryPreviewResults = [];
         this.queryPreviewColumns = [];
+        this.queryValidation = {
+          isValid: false,
+          message: error.body?.message || "Error executing query preview",
+          objectName: ""
+        };
       });
   }
 

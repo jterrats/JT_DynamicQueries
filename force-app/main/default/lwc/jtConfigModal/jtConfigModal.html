@@ -49,6 +49,7 @@
               data-field="label"
               onchange={handleFieldChange}
               required
+              maxlength="40"
               placeholder="e.g., Get Active Accounts"
             ></lightning-input>
           </lightning-layout-item>
@@ -63,8 +64,9 @@
               onchange={handleFieldChange}
               required
               disabled={isEditMode}
+              maxlength="40"
               placeholder="e.g., Get_Active_Accounts"
-              field-level-help="API name (auto-generated from label, read-only in edit mode)"
+              field-level-help="API name (auto-generated from label, read-only in edit mode, max 40 characters)"
             ></lightning-input>
           </lightning-layout-item>
 

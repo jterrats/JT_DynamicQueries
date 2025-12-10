@@ -7,6 +7,7 @@
  * @fires cancel - When Cancel/Close is clicked
  */
 import { LightningElement, api, track } from "lwc";
+import executeQueryPreview from "@salesforce/apex/JT_QueryViewerController.executeQueryPreview";
 
 // Import Custom Labels from Salesforce Translation Workbench
 import labelRequired from "@salesforce/label/c.JT_jtConfigModal_labelRequired";
@@ -306,17 +307,54 @@ export default class JtConfigModal extends LightningElement {
       return;
     }
 
-    // Extract object name
+    // Extract object name for display
     const fromMatch = query.match(/FROM\s+(\w+)/i);
     const objectName = fromMatch ? fromMatch[1] : "";
 
-    this.queryValidation = {
-      isValid: true,
-      message: "Valid SOQL syntax",
-      objectName
-    };
+    // Call Apex to validate against real Salesforce metadata
+    try {
+      const result = await executeQueryPreview({
+        devName: null,
+        bindingsJson: this._config.bindings || null,
+        queryOverride: query
+      });
 
-    this._config.objectName = objectName;
+      if (result.success) {
+        this.queryValidation = {
+          isValid: true,
+          message: "Valid SOQL syntax",
+          objectName: objectName
+        };
+        this._config.objectName = objectName;
+
+        // Dispatch preview results to parent
+        this.dispatchEvent(
+          new CustomEvent("querypreview", {
+            detail: {
+              records: result.records || [],
+              fields: result.fields || [],
+              recordCount: result.recordCount || 0
+            }
+          })
+        );
+      } else {
+        // Apex validation failed - show specific error
+        this.queryValidation = {
+          isValid: false,
+          message: result.errorMessage || "Query validation failed",
+          objectName: ""
+        };
+        this._config.objectName = "";
+      }
+    } catch (error) {
+      // Network or other error
+      this.queryValidation = {
+        isValid: false,
+        message: error.body?.message || "Error validating query. Please check syntax.",
+        objectName: ""
+      };
+      this._config.objectName = "";
+    }
   }
 
   // Public API to reset

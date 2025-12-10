@@ -99,7 +99,6 @@ import whereIsThisUsedTooltipLabel from "@salesforce/label/c.JT_jtQueryViewer_wh
 import getConfigurations from "@salesforce/apex/JT_QueryViewerController.getConfigurations";
 import extractParameters from "@salesforce/apex/JT_QueryViewerController.extractParameters";
 import executeQuery from "@salesforce/apex/JT_QueryViewerController.executeQuery";
-import executeQueryPreview from "@salesforce/apex/JT_QueryViewerController.executeQueryPreview";
 import canUseRunAs from "@salesforce/apex/JT_QueryViewerController.canUseRunAs";
 import getAllActiveUsers from "@salesforce/apex/JT_QueryViewerController.getAllActiveUsers";
 import executeAsUser from "@salesforce/apex/JT_RunAsTestExecutor.executeAsUser";
@@ -109,7 +108,7 @@ import isSandboxOrScratch from "@salesforce/apex/JT_MetadataCreator.isSandboxOrS
 import getOrgInfo from "@salesforce/apex/JT_MetadataCreator.getOrgInfo";
 import createConfiguration from "@salesforce/apex/JT_MetadataCreator.createConfiguration";
 import updateConfiguration from "@salesforce/apex/JT_MetadataCreator.updateConfiguration";
-import validateQuery from "@salesforce/apex/JT_MetadataCreator.validateQuery";
+// validateQuery now handled by jtConfigModal component directly
 // import getProductionEditingSetting from "@salesforce/apex/JT_ProductionSettingsController.getProductionEditingSetting"; // Unused
 import updateProductionEditingSetting from "@salesforce/apex/JT_ProductionSettingsController.updateProductionEditingSetting";
 import getUsageTrackingSetting from "@salesforce/apex/JT_ProductionSettingsController.getUsageTrackingSetting";
@@ -1272,114 +1271,26 @@ export default class JtQueryViewer extends LightningElement {
         .substring(0, 40); // Salesforce API name limit
     }
 
-    // Validate query when it changes
-    if (field === "baseQuery") {
-      this.validateQuerySyntax();
-    }
+    // Note: Query validation now handled directly by jtConfigModal component
   }
 
-  // Validate query syntax and load preview
-  validateQuerySyntax() {
-    if (!this.newConfig.baseQuery) {
-      this.queryValidation = { isValid: false, message: "" };
-      this.queryPreviewResults = [];
-      this.queryPreviewColumns = [];
-      return;
-    }
-
-    this.isLoadingQueryPreview = true;
-
-    validateQuery({ query: this.newConfig.baseQuery })
-      .then((result) => {
-        this.queryValidation = result;
-        if (result.isValid && result.objectName) {
-          this.newConfig.objectName = result.objectName;
-          // Load query preview (3 records)
-          return this.loadCreateModalPreview();
-        }
-      })
-      .catch((error) => {
-        this.queryValidation = {
-          isValid: false,
-          message:
-            error.body?.message ||
-            "Invalid SOQL query. Please check syntax and try again."
-        };
-        this.queryPreviewResults = [];
-        this.queryPreviewColumns = [];
-      })
-      .finally(() => {
-        this.isLoadingQueryPreview = false;
-      });
-  }
-
-  // Handle query preview event from modal
+  // Handle query preview event from modal (Modal now handles validation & preview)
   handleQueryPreview(event) {
     const { records, fields, recordCount } = event.detail;
 
     this.queryPreviewResults = records || [];
-    this.queryPreviewColumns = fields.map((field) => ({
-      label: this.formatLabel(field),
-      fieldName: field,
-      type: this.getFieldType(field)
-    }));
+    
+    if (fields && fields.length > 0) {
+      this.queryPreviewColumns = fields.map((field) => ({
+        label: this.formatLabel(field),
+        fieldName: field,
+        type: this.getFieldType(field)
+      }));
+    } else {
+      this.queryPreviewColumns = [];
+    }
 
     console.log("✅ Query preview updated from modal:", recordCount, "records");
-  }
-
-  // Load preview data for create modal
-  loadCreateModalPreview() {
-    // Build bindings if present
-    const bindingsToSend = this.newConfig.bindings || null;
-
-    console.log("🔍 DEBUG - Preview Query:", this.newConfig.baseQuery);
-    console.log("🔍 DEBUG - Preview Bindings:", bindingsToSend);
-
-    return executeQueryPreview({
-      devName: null,
-      bindingsJson: bindingsToSend,
-      queryOverride: this.newConfig.baseQuery // Use queryOverride parameter
-    })
-      .then((result) => {
-        console.log("🔍 DEBUG - Preview Result:", result);
-
-        if (result.success) {
-          if (result.recordCount > 0) {
-            this.queryPreviewResults = result.records;
-            this.queryPreviewColumns = result.fields.map((field) => ({
-              label: this.formatLabel(field),
-              fieldName: field,
-              type: this.getFieldType(field)
-            }));
-            console.log("✅ Preview loaded:", result.recordCount, "records");
-          } else {
-            // Query succeeded but returned 0 records (this is valid)
-            this.queryPreviewResults = [];
-            this.queryPreviewColumns = [];
-            console.log("⚠️ Query valid but no data returned");
-          }
-        } else {
-          // Query failed - show error to user
-          this.queryPreviewResults = [];
-          this.queryPreviewColumns = [];
-          this.queryValidation = {
-            isValid: false,
-            message: result.errorMessage || "Query preview failed",
-            objectName: ""
-          };
-          console.log("❌ Preview failed:", result.errorMessage);
-        }
-      })
-      .catch((error) => {
-        console.error("❌ Preview error:", error);
-        this.queryPreviewResults = [];
-        this.queryPreviewColumns = [];
-        this.queryValidation = {
-          isValid: false,
-          message: error.body?.message || "Error executing query preview",
-          objectName: ""
-        };
-      });
   }
 
   // Save configuration (create or update)

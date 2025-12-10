@@ -56,7 +56,6 @@ const createJSONMetadata = (recordCount, columns) => ({
 
 export default class JtQueryResults extends LightningElement {
   @api columns = [];
-  @api records = [];
   @api recordCount = 0;
   @api pageSize = 10;
 
@@ -65,6 +64,24 @@ export default class JtQueryResults extends LightningElement {
   @track jsonOutput = "";
   @track csvOutput = "";
   expandedCards = new Set();
+
+  _records = [];
+  _previousRecordCount = 0;
+
+  // 🐛 FIX: Reset pagination when records change
+  @api
+  get records() {
+    return this._records;
+  }
+
+  set records(value) {
+    this._records = value;
+    // Reset to page 1 when new data arrives
+    if (value && value.length > 0 && this.recordCount !== this._previousRecordCount) {
+      this.currentPage = 1;
+      this._previousRecordCount = this.recordCount;
+    }
+  }
 
   // Computed - View mode
   get isTableView() {
@@ -77,22 +94,6 @@ export default class JtQueryResults extends LightningElement {
 
   get isCsvView() {
     return this.viewMode.csv ? "brand" : "neutral";
-  }
-
-  // Computed - Pagination using functional composition
-  get paginatedResults() {
-    if (!this.records?.length) return [];
-
-    const start = (this.currentPage - 1) * this.pageSize;
-    const end = start + this.pageSize;
-
-    const transformRecord = pipe(
-      addRowMetadata(start),
-      addExpandState(this.expandedCards),
-      createCells(this.columns)
-    );
-
-    return this.records.slice(start, end).map(transformRecord);
   }
 
   get totalPages() {
@@ -144,7 +145,7 @@ export default class JtQueryResults extends LightningElement {
   handleCardToggle(event) {
     const recordId = event.currentTarget.dataset.id;
     this.expandedCards = toggleSetMembership(this.expandedCards, recordId);
-    this.records = [...this.records]; // Immutable update trigger
+    this._records = [...this._records]; // Immutable update trigger
   }
 
   /**
@@ -166,9 +167,9 @@ export default class JtQueryResults extends LightningElement {
     }
 
     const filtered = this.columns.filter((col) => {
-      if (this.records.length === 0) return true;
+      if (this._records.length === 0) return true;
 
-      const firstRecord = this.records[0];
+      const firstRecord = this._records[0];
       const value = firstRecord[col.fieldName];
 
       const isChildRelationship =
@@ -185,13 +186,13 @@ export default class JtQueryResults extends LightningElement {
 
   // Override paginatedResults to include child relationship metadata
   get paginatedResults() {
-    if (!this.records || this.records.length === 0) {
+    if (!this._records || this._records.length === 0) {
       return [];
     }
 
     const start = (this.currentPage - 1) * this.pageSize;
     const end = start + this.pageSize;
-    const pageRecords = this.records.slice(start, end);
+    const pageRecords = this._records.slice(start, end);
 
     const enriched = pageRecords.map((row, index) => {
       const enrichedRow = { ...row };
@@ -279,7 +280,7 @@ export default class JtQueryResults extends LightningElement {
   handleRowToggle(event) {
     const recordId = event.currentTarget.dataset.id;
 
-    this.records = this.records.map((row) => {
+    this._records = this._records.map((row) => {
       if (row.Id === recordId) {
         return {
           ...row,
@@ -327,7 +328,7 @@ export default class JtQueryResults extends LightningElement {
   }
 
   handleDownloadCsv() {
-    if (!this.records?.length) {
+    if (!this._records?.length) {
       return this.showToast("error", "No Data", "No records to export");
     }
 
@@ -350,7 +351,7 @@ export default class JtQueryResults extends LightningElement {
       return JSON.stringify(
         {
           metadata: createJSONMetadata(this.recordCount, this.columns),
-          records: this.records
+          records: this._records
         },
         null,
         2
@@ -363,7 +364,7 @@ export default class JtQueryResults extends LightningElement {
 
   generateCSV() {
     // Check if records have child relationships
-    const hasChildren = this.records.some((record) => {
+    const hasChildren = this._records.some((record) => {
       return Object.keys(record).some((key) => {
         const value = record[key];
         return (
@@ -381,7 +382,7 @@ export default class JtQueryResults extends LightningElement {
     } else {
       // Simple CSV without children
       const headers = this.parentColumns.map((col) => col.label).join(",");
-      const rows = this.records.map(createCSVRow(this.parentColumns));
+      const rows = this._records.map(createCSVRow(this.parentColumns));
       return [headers, ...rows].join("\n");
     }
   }
@@ -392,7 +393,7 @@ export default class JtQueryResults extends LightningElement {
     const childFieldsSet = new Set();
 
     // Collect all unique child fields
-    this.records.forEach((record) => {
+    this._records.forEach((record) => {
       Object.keys(record).forEach((key) => {
         const value = record[key];
         if (
@@ -424,7 +425,7 @@ export default class JtQueryResults extends LightningElement {
 
     // Build CSV rows
     const rows = [];
-    this.records.forEach((record) => {
+    this._records.forEach((record) => {
       // Extract parent data
       const parentData = {};
       parentFields.forEach((field) => {

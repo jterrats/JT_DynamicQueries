@@ -214,10 +214,13 @@
                 </template>
               </ul>
               <p class="slds-text-body_small slds-m-top_xx-small">
-                <strong>{labels.setupRequired}</strong> {labels.namedCredentialSetup}
+                <strong>{labels.setupRequired}</strong>
+                {labels.namedCredentialSetup}
               </p>
               <p class="slds-text-body_small slds-m-top_xx-small">
-                <a href="#" onclick={handleGoToDocumentation}>{labels.toolingApiSetupLink}</a>
+                <a href="#" onclick={handleGoToDocumentation}
+                  >{labels.toolingApiSetupLink}</a
+                >
               </p>
             </div>
           </div>
@@ -539,55 +542,6 @@
                     variant="brand"
                     class="slds-m-top_medium"
                   ></lightning-button>
-                </div>
-              </template>
-
-              <!-- Pagination Controls -->
-              <template if:true={showPagination}>
-                <div
-                  class="slds-p-top_medium slds-grid slds-grid_align-spread slds-grid_vertical-align-center"
-                >
-                  <div class="slds-text-body_small slds-text-color_weak">
-                    {labels.showing} {firstRecordIndex} - {lastRecordIndex}
-                    {labels.of} {recordCount}
-                  </div>
-                  <div
-                    class="slds-button-group"
-                    role="group"
-                    aria-label="Pagination controls"
-                  >
-                    <lightning-button
-                      icon-name="utility:chevronleft"
-                      variant="neutral"
-                      onclick={handlePreviousPage}
-                      disabled={isFirstPage}
-                      title={labels.previous}
-                      data-testid="pagination-previous"
-                      name="pagination-previous"
-                      aria-label="Go to previous page"
-                    >
-                    </lightning-button>
-                    <lightning-button
-                      label={currentPageDisplay}
-                      variant="neutral"
-                      disabled
-                      data-testid="pagination-current"
-                      name="pagination-current"
-                      aria-label={currentPageDisplay}
-                    >
-                    </lightning-button>
-                    <lightning-button
-                      icon-name="utility:chevronright"
-                      variant="neutral"
-                      onclick={handleNextPage}
-                      disabled={isLastPage}
-                      title={labels.next}
-                      data-testid="pagination-next"
-                      name="pagination-next"
-                      aria-label="Go to next page"
-                    >
-                    </lightning-button>
-                  </div>
                 </div>
               </template>
             </div>

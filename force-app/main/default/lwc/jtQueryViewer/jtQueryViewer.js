@@ -494,8 +494,7 @@ export default class JtQueryViewer extends LightningElement {
           this.queryPreviewData = [];
         }
       })
-      .catch((error) => {
-        console.error("Preview error:", error);
+      .catch(() => {
         this.showPreviewData = false;
         this.queryPreviewData = [];
       })
@@ -652,12 +651,6 @@ export default class JtQueryViewer extends LightningElement {
 
   // Phase 1 Refactor: Updated to use generic combobox event
   handleConfigSelect(event) {
-    console.log("📋 handleConfigSelect CALLED");
-    console.log(
-      "📋 Current runAsUserId BEFORE config change:",
-      this.runAsUserId
-    );
-
     const { value, data } = event.detail; // label unused
 
     this.selectedConfig = value;
@@ -678,11 +671,6 @@ export default class JtQueryViewer extends LightningElement {
 
     // 🐛 FIX: Don't auto-execute preview - wait for user to enter parameters or click Execute
     // this.loadQueryPreview(); // REMOVED - only execute on parameter change or Execute click
-
-    console.log(
-      "📋 Current runAsUserId AFTER config change:",
-      this.runAsUserId
-    );
   }
 
   // Phase 1 Refactor: Clear configuration
@@ -701,17 +689,14 @@ export default class JtQueryViewer extends LightningElement {
     if (this.baseQuery) {
       extractParameters({ query: this.baseQuery })
         .then((result) => {
-          console.log("Extracted parameters:", result);
           this.parameters = result.map((param) => ({
             name: param,
             label: param, // Use exact parameter name from SOQL
             value: ""
           }));
           this.parameterValues = {};
-          console.log("Parameters array:", this.parameters);
         })
         .catch((error) => {
-          console.error("Error extracting parameters:", error);
           this.showErrorToast(
             "Error extracting parameters",
             error.body?.message
@@ -748,16 +733,9 @@ export default class JtQueryViewer extends LightningElement {
   // Phase 1 Refactor: Updated to use generic combobox event
   handleUserSelect(event) {
     const { value, label } = event.detail;
-    console.log("👤 handleUserSelect CALLED");
-    console.log("👤 value (userId):", value);
-    console.log("👤 label (userName):", label);
 
     this.runAsUserId = value;
     this.runAsUserName = label;
-
-    console.log("👤 AFTER assignment:");
-    console.log("👤 this.runAsUserId:", this.runAsUserId);
-    console.log("👤 this.runAsUserName:", this.runAsUserName);
   }
 
   // Phase 1 Refactor: Clear user selection (from combobox)
@@ -767,8 +745,6 @@ export default class JtQueryViewer extends LightningElement {
 
   // Clear Run As user
   handleClearRunAs() {
-    console.log("🗑️ handleClearRunAs CALLED - Clearing runAsUserId");
-    console.trace("🗑️ Stack trace:");
     this.runAsUserId = "";
     this.runAsUserName = "";
   }
@@ -1047,9 +1023,8 @@ export default class JtQueryViewer extends LightningElement {
         logUsageSearch({
           configName: this.selectedConfig,
           resultCount: this.usageResults.length
-        }).catch((logError) => {
-          // Don't fail if logging fails
-          console.error("Failed to log usage search:", logError);
+        }).catch(() => {
+          // Don't fail if logging fails - silent error
         });
       })
       .catch((error) => {
@@ -1343,47 +1318,21 @@ export default class JtQueryViewer extends LightningElement {
   /**
    * @description Error boundary - Handles errors from child components
    * @param {Error} error - The error object
-   * @param {String} stack - The error stack trace
+   * @param {String} stack - The error stack trace (unused in production)
    */
-  errorCallback(error, stack) {
-    console.error("Component error caught:", error);
-    console.error("Stack trace:", stack);
-
+  errorCallback(error) {
     // Show user-friendly error without breaking the entire UI
     this.showWarningToast(
       "Component Error",
       `A component encountered an error: ${error.message}. Other features remain functional.`
     );
-
-    // Log error for debugging (could send to analytics service)
-    this.logComponentError(error, stack);
-  }
-
-  /**
-   * @description Logs component errors for monitoring
-   * @param {Error} error - The error object
-   * @param {String} stack - The error stack trace
-   */
-  logComponentError(error, stack) {
-    // TODO: Implement error logging to Analytics/Monitoring service
-    const errorLog = {
-      timestamp: new Date().toISOString(),
-      message: error.message,
-      stack: stack,
-      component: "jtQueryViewer",
-      userAgent: navigator.userAgent
-    };
-
-    // For now, just log to console (extend for production)
-    console.warn("Error log:", JSON.stringify(errorLog, null, 2));
   }
 
   // Load usage tracking setting
   async loadUsageTrackingSetting() {
     try {
       this.usageTrackingEnabled = await getUsageTrackingSetting();
-    } catch (error) {
-      console.error("Error loading usage tracking setting:", error);
+    } catch {
       this.usageTrackingEnabled = false;
     }
   }
@@ -1444,23 +1393,14 @@ export default class JtQueryViewer extends LightningElement {
       return;
     }
 
-    // 🐛 DEBUG: Log current state
-    console.log("=== handleExecuteQuery CALLED ===");
-    console.log("this.runAsUserId:", this.runAsUserId);
-    console.log("this.runAsUserName:", this.runAsUserName);
-    console.log("typeof runAsUserId:", typeof this.runAsUserId);
-    console.log("Boolean check:", !!this.runAsUserId);
-
     // 🎯 SMART ROUTING: If runAsUserId is selected, use System.runAs() flow
     if (this.runAsUserId) {
-      console.log("🔀 User selected for Run As → Using System.runAs() flow");
-      console.log("🔀 Calling handleExecuteAsUserTest()...");
+      this.isLoading = false; // 🐛 FIX: Reset spinner - handleExecuteAsUserTest uses its own spinner (isRunningTest)
       this.handleExecuteAsUserTest(); // Use test class with System.runAs()
       return;
     }
 
     // 🚨 RISK ASSESSMENT: Check if query is dangerous before executing
-    console.log("🔀 No Run As user → Assessing query risk...");
     this.assessQueryRiskAndExecute();
   }
 
@@ -1472,13 +1412,11 @@ export default class JtQueryViewer extends LightningElement {
     // Build bindings JSON (same logic as before)
     const bindingsToSend = this.buildBindingsJson();
 
-    console.log("📊 Calling assessQueryRisk...");
     assessQueryRisk({
       devName: this.selectedConfig,
       bindingsJson: bindingsToSend
     })
       .then((assessment) => {
-        console.log("📊 Risk Assessment:", assessment);
         this.queryRiskAssessment = assessment;
 
         // If critical risk (>50K) → MUST use batch processing
@@ -1493,12 +1431,10 @@ export default class JtQueryViewer extends LightningElement {
         }
         // Low risk → Execute normally
         else {
-          console.log("✅ Low risk detected, executing normally...");
           this.executeQueryNormal();
         }
       })
-      .catch((error) => {
-        console.error("⚠️ Risk assessment failed:", error);
+      .catch(() => {
         // If assessment fails, proceed with caution (execute normally)
         this.executeQueryNormal();
       })
@@ -1543,7 +1479,6 @@ export default class JtQueryViewer extends LightningElement {
 
   // Execute query normally (without batch processing)
   executeQueryNormal() {
-    console.log("🔀 Executing query normally...");
     // Note: isLoading already set to true in handleExecuteQuery
     this.showError = false;
     this.resetResults();
@@ -1581,7 +1516,6 @@ export default class JtQueryViewer extends LightningElement {
 
   // Execute query with batch processing (for large result sets)
   executeQueryWithBatches() {
-    console.log("🔀 Executing query with batch processing...");
     // Note: isLoading already set to true in handleExecuteQuery
     this.showError = false;
     this.resetResults();
@@ -1618,19 +1552,16 @@ export default class JtQueryViewer extends LightningElement {
 
   // Handle risk warning modal actions
   handleProceedWithBatch() {
-    console.log("✅ User confirmed: Proceeding with batch processing");
     this.showRiskWarningModal = false;
     this.executeQueryWithBatches();
   }
 
   handleProceedNormal() {
-    console.log("✅ User confirmed: Proceeding with normal execution");
     this.showRiskWarningModal = false;
     this.executeQueryNormal();
   }
 
   handleCancelExecution() {
-    console.log("❌ User cancelled execution");
     this.showRiskWarningModal = false;
     this.isLoading = false;
     this.showInfoToast("Execution Cancelled", "Query execution was cancelled.");
@@ -1638,21 +1569,6 @@ export default class JtQueryViewer extends LightningElement {
 
   // Process query results for datatable
   processQueryResults(result) {
-    console.log("🎯 processQueryResults CALLED");
-    console.log("🎯 result:", result);
-    console.log("🎯 result.recordCount:", result.recordCount);
-    console.log("🎯 result.records:", result.records);
-    if (result.records && result.records.length > 0) {
-      console.log(
-        "🎯 result.records[0] structure:",
-        Object.keys(result.records[0])
-      );
-      console.log(
-        "🎯 First record full data:",
-        JSON.stringify(result.records[0], null, 2)
-      );
-    }
-
     this.recordCount = result.recordCount;
 
     // Always build columns (even with 0 records)
@@ -1662,15 +1578,11 @@ export default class JtQueryViewer extends LightningElement {
         fieldName: field,
         type: this.getFieldType(field)
       }));
-      console.log("✅ this.columns SET:", this.columns);
     }
 
     if (result.recordCount > 0) {
       // ✅ Pass records as-is to preserve child relationships
       this.queryResults = result.records;
-
-      console.log("✅ this.queryResults SET:", this.queryResults);
-      console.log("✅ this.recordCount SET:", this.recordCount);
 
       this.hasResults = true;
       this.resetPagination(); // Initialize pagination

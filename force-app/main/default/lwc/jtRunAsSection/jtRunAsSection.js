@@ -41,21 +41,11 @@ export default class JtRunAsSection extends LightningElement {
 
   // Event Handlers
   handleUserSelect(event) {
-    console.log("🔵 jtRunAsSection.handleUserSelect CALLED");
-    console.log("🔵 event.detail:", event.detail);
-
     const { value, label } = event.detail;
-
-    console.log("🔵 Extracted value:", value);
-    console.log("🔵 Extracted label:", label);
-    console.log("🔵 Dispatching userselect with:", {
-      userId: value,
-      userName: label
-    });
 
     this.dispatchEvent(
       new CustomEvent("userselect", {
-        detail: { value, label } // ✅ Fix: Use value/label directly
+        detail: { value, label }
       })
     );
   }

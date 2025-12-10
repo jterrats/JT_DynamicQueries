@@ -161,12 +161,7 @@ export default class JtQueryResults extends LightningElement {
 
   // 🆕 Computed: Parent columns only (exclude child relationships)
   get parentColumns() {
-    console.log("🔥 parentColumns CALLED");
-    console.log("🔥 this.columns:", this.columns);
-    console.log("🔥 this.columns.length:", this.columns?.length);
-
     if (!this.columns || this.columns.length === 0) {
-      console.log("🔥 No columns, returning []");
       return [];
     }
 
@@ -182,33 +177,21 @@ export default class JtQueryResults extends LightningElement {
         value.records &&
         Array.isArray(value.records);
 
-      console.log(
-        `🔥 Column ${col.fieldName}: isChildRelationship=${isChildRelationship}`
-      );
-
       return !isChildRelationship;
     });
 
-    console.log("🔥 parentColumns filtered:", filtered);
     return filtered;
   }
 
   // Override paginatedResults to include child relationship metadata
   get paginatedResults() {
-    console.log("🔥 paginatedResults CALLED");
-    console.log("🔥 this.records:", this.records);
-    console.log("🔥 this.records.length:", this.records?.length);
-
     if (!this.records || this.records.length === 0) {
-      console.log("🔥 No records, returning []");
       return [];
     }
 
     const start = (this.currentPage - 1) * this.pageSize;
     const end = start + this.pageSize;
     const pageRecords = this.records.slice(start, end);
-
-    console.log("🔥 pageRecords.length:", pageRecords.length);
 
     const enriched = pageRecords.map((row, index) => {
       const enrichedRow = { ...row };
@@ -263,7 +246,6 @@ export default class JtQueryResults extends LightningElement {
       return enrichedRow;
     });
 
-    console.log("🔥 enriched paginatedResults:", enriched);
     return enriched;
   }
 
@@ -318,8 +300,7 @@ export default class JtQueryResults extends LightningElement {
 
     this.copyToClipboard(this.jsonOutput)
       .then(() => this.showToast("success", "Success", "JSON copied"))
-      .catch((err) => {
-        console.error("Copy failed:", err);
+      .catch(() => {
         this.showToast(
           "error",
           "Error",
@@ -336,8 +317,7 @@ export default class JtQueryResults extends LightningElement {
 
     this.copyToClipboard(this.csvOutput)
       .then(() => this.showToast("success", "Success", "CSV copied"))
-      .catch((err) => {
-        console.error("Copy failed:", err);
+      .catch(() => {
         this.showToast(
           "error",
           "Error",

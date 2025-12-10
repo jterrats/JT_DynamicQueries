@@ -589,6 +589,112 @@ sf org assign permset --name JT_Dynamic_Queries_User
             </div>
           </div>
         </template>
+
+        <!-- SUPPORT -->
+        <template if:true={showSupport}>
+          <div class="slds-p-around_medium">
+            <h2 class="slds-text-heading_large slds-m-bottom_medium">
+              {labels.supportTitle}
+            </h2>
+
+            <div class="slds-box slds-theme_info slds-m-bottom_large">
+              <p class="slds-text-body_regular">
+                Need help or want to report an issue? Find documentation, report bugs, or request features through our GitHub repository.
+              </p>
+            </div>
+
+            <div class="slds-grid slds-wrap slds-gutters">
+              <!-- Documentation -->
+              <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-m-bottom_medium">
+                <article class="slds-card">
+                  <div class="slds-card__header">
+                    <h3 class="slds-card__header-title slds-text-heading_small">
+                      <lightning-icon
+                        icon-name="utility:knowledge_base"
+                        size="x-small"
+                        class="slds-m-right_xx-small"
+                      ></lightning-icon>
+                      {labels.documentationTitle}
+                    </h3>
+                  </div>
+                  <div class="slds-card__body slds-card__body_inner">
+                    <p class="slds-text-body_small">
+                      Visit our GitHub Pages site for complete documentation, examples, and guides.
+                    </p>
+                  </div>
+                </article>
+              </div>
+
+              <!-- Issues -->
+              <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-m-bottom_medium">
+                <article class="slds-card">
+                  <div class="slds-card__header">
+                    <h3 class="slds-card__header-title slds-text-heading_small">
+                      <lightning-icon
+                        icon-name="utility:bug"
+                        size="x-small"
+                        class="slds-m-right_xx-small"
+                      ></lightning-icon>
+                      {labels.issuesTitle}
+                    </h3>
+                  </div>
+                  <div class="slds-card__body slds-card__body_inner">
+                    <p class="slds-text-body_small">
+                      Found a bug or have a feature request? Open an issue on our GitHub repository.
+                    </p>
+                  </div>
+                </article>
+              </div>
+
+              <!-- Contributing -->
+              <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-m-bottom_medium">
+                <article class="slds-card">
+                  <div class="slds-card__header">
+                    <h3 class="slds-card__header-title slds-text-heading_small">
+                      <lightning-icon
+                        icon-name="utility:heart"
+                        size="x-small"
+                        class="slds-m-right_xx-small"
+                      ></lightning-icon>
+                      {labels.contributingTitle}
+                    </h3>
+                  </div>
+                  <div class="slds-card__body slds-card__body_inner">
+                    <p class="slds-text-body_small">
+                      Want to contribute? Check out our contributing guidelines and open source license.
+                    </p>
+                  </div>
+                </article>
+              </div>
+            </div>
+
+            <div class="slds-box slds-theme_shade slds-m-top_large">
+              <div class="slds-grid slds-grid_vertical-align-center">
+                <lightning-icon
+                  icon-name="custom:custom19"
+                  size="small"
+                  class="slds-m-right_small"
+                ></lightning-icon>
+                <div>
+                  <p class="slds-text-body_small">
+                    <strong>GitHub Repository:</strong>
+                    <a
+                      href="https://github.com/jterrats/JT_DynamicQueries"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="slds-m-left_xx-small"
+                    >
+                      jterrats/JT_DynamicQueries
+                    </a>
+                  </p>
+                  <p class="slds-text-body_small slds-m-top_xx-small slds-text-color_weak">
+                    Open source project licensed under MIT License
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </template>
       </div>
     </div>
   </lightning-card>

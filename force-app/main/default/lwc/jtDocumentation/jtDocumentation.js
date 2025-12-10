@@ -144,4 +144,8 @@ export default class JtDocumentation extends LightningElement {
   get showApi() {
     return this.activeSection === "api";
   }
+
+  get showSupport() {
+    return this.activeSection === "support";
+  }
 }

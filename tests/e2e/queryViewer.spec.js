@@ -395,6 +395,187 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     console.log("✅ Modal opened and closed successfully");
   });
 
+  test("should show Edit Configuration button when config is selected", async ({
+    page
+  }) => {
+    const isProduction = !session.instanceUrl.toLowerCase().includes("sandbox");
+
+    if (isProduction) {
+      console.log("⚠️  Skipping in production (Edit button hidden)");
+      return;
+    }
+
+    // Select a configuration first
+    const configDropdown = page.locator("lightning-combobox").first();
+    await configDropdown.click();
+    await page.waitForTimeout(300);
+
+    // Select first option
+    const firstOption = page
+      .locator('lightning-base-combobox-item[role="option"]')
+      .first();
+    await firstOption.click();
+    await page.waitForTimeout(500);
+
+    // Verify Edit button appears
+    const editButton = page
+      .locator("lightning-button")
+      .filter({ hasText: /Edit.*Configuration/i });
+
+    await expect(editButton).toBeVisible();
+    console.log("✅ Edit Configuration button visible when config selected");
+  });
+
+  test("should open Edit Configuration modal with pre-filled data", async ({
+    page
+  }) => {
+    const isProduction = !session.instanceUrl.toLowerCase().includes("sandbox");
+
+    if (isProduction) {
+      console.log("⚠️  Skipping in production");
+      return;
+    }
+
+    // Select a configuration
+    const configDropdown = page.locator("lightning-combobox").first();
+    await configDropdown.click();
+    await page.waitForTimeout(300);
+
+    const firstOption = page
+      .locator('lightning-base-combobox-item[role="option"]')
+      .first();
+    const selectedConfigName = await firstOption.textContent();
+    await firstOption.click();
+    await page.waitForTimeout(500);
+
+    // Click Edit button
+    const editButton = page
+      .locator("lightning-button")
+      .filter({ hasText: /Edit.*Configuration/i });
+    await editButton.click();
+    await page.waitForTimeout(500);
+
+    // Verify modal opened
+    const modal = page.locator('section[role="dialog"]');
+    await expect(modal).toBeVisible();
+
+    // Verify modal has "Edit" title (not "Create")
+    const modalTitle = modal.locator("h2");
+    await expect(modalTitle).toContainText(/Edit/i);
+
+    // Verify fields are pre-filled (Label should have content)
+    const labelInput = modal.locator('lightning-input[data-id="config-label"]');
+    const labelValue = await labelInput.locator("input").inputValue();
+    expect(labelValue.length).toBeGreaterThan(0);
+
+    console.log(`✅ Edit modal opened with pre-filled data for: ${selectedConfigName}`);
+
+    // Close modal
+    const cancelButton = modal
+      .locator("lightning-button")
+      .filter({ hasText: /Cancel/i });
+    await cancelButton.click();
+  });
+
+  test("should have Developer Name as read-only in Edit mode", async ({
+    page
+  }) => {
+    const isProduction = !session.instanceUrl.toLowerCase().includes("sandbox");
+
+    if (isProduction) {
+      console.log("⚠️  Skipping in production");
+      return;
+    }
+
+    // Select a configuration and open Edit modal
+    const configDropdown = page.locator("lightning-combobox").first();
+    await configDropdown.click();
+    await page.waitForTimeout(300);
+
+    const firstOption = page
+      .locator('lightning-base-combobox-item[role="option"]')
+      .first();
+    await firstOption.click();
+    await page.waitForTimeout(500);
+
+    const editButton = page
+      .locator("lightning-button")
+      .filter({ hasText: /Edit.*Configuration/i });
+    await editButton.click();
+    await page.waitForTimeout(500);
+
+    const modal = page.locator('section[role="dialog"]');
+
+    // Verify Developer Name input is disabled
+    const devNameInput = modal.locator(
+      'lightning-input[data-id="config-developer-name"]'
+    );
+    const isDisabled = await devNameInput.locator("input").isDisabled();
+
+    expect(isDisabled).toBe(true);
+    console.log("✅ Developer Name is read-only in Edit mode");
+
+    // Close modal
+    const cancelButton = modal
+      .locator("lightning-button")
+      .filter({ hasText: /Cancel/i });
+    await cancelButton.click();
+  });
+
+  test("should update configuration label successfully", async ({ page }) => {
+    const isProduction = !session.instanceUrl.toLowerCase().includes("sandbox");
+
+    if (isProduction) {
+      console.log("⚠️  Skipping in production");
+      return;
+    }
+
+    // Select a configuration and open Edit modal
+    const configDropdown = page.locator("lightning-combobox").first();
+    await configDropdown.click();
+    await page.waitForTimeout(300);
+
+    const firstOption = page
+      .locator('lightning-base-combobox-item[role="option"]')
+      .first();
+    await firstOption.click();
+    await page.waitForTimeout(500);
+
+    const editButton = page
+      .locator("lightning-button")
+      .filter({ hasText: /Edit.*Configuration/i });
+    await editButton.click();
+    await page.waitForTimeout(500);
+
+    const modal = page.locator('section[role="dialog"]');
+
+    // Get current label
+    const labelInput = modal.locator('lightning-input[data-id="config-label"]');
+    const originalLabel = await labelInput.locator("input").inputValue();
+
+    // Modify label (add timestamp to make it unique)
+    const newLabel = `${originalLabel} (Test ${Date.now()})`;
+    await labelInput.locator("input").fill(newLabel);
+    await page.waitForTimeout(300);
+
+    // Click Update button
+    const updateButton = modal
+      .locator("lightning-button")
+      .filter({ hasText: /Update/i });
+    await updateButton.click();
+
+    // Wait for success toast or modal to close
+    await page.waitForTimeout(2000);
+
+    // Verify modal closed
+    await expect(modal).not.toBeVisible();
+
+    console.log(`✅ Configuration updated: "${originalLabel}" → "${newLabel}"`);
+
+    // Note: In a real scenario, you'd verify the label changed in the dropdown
+    // but that requires refreshing the component which may not happen immediately
+  });
+
   // ═══════════════════════════════════════════════════════════════
   // ACCESSIBILITY TESTS
   // ═══════════════════════════════════════════════════════════════

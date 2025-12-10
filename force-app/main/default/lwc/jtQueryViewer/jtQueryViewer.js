@@ -969,7 +969,7 @@ export default class JtQueryViewer extends LightningElement {
       };
       this.originalDevName = currentConfig.value; // Save original dev name for update
       this.queryValidation = { isValid: true, message: "Valid SOQL syntax" };
-      
+
       // Load preview for existing config
       this.validateQuerySyntax();
     }
@@ -1371,16 +1371,12 @@ export default class JtQueryViewer extends LightningElement {
           })
         : createConfiguration(configData);
 
-    const actionLabel =
-      this.configModalMode === "edit" ? "Updated" : "Created";
+    const actionLabel = this.configModalMode === "edit" ? "Updated" : "Created";
 
     saveMethod
       .then((result) => {
         if (result.success) {
-          this.showSuccessToast(
-            `Configuration ${actionLabel}`,
-            result.message
-          );
+          this.showSuccessToast(`Configuration ${actionLabel}`, result.message);
           this.handleCloseCreateModal();
 
           // Refresh the configurations list using refreshApex

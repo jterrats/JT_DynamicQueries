@@ -140,14 +140,18 @@
                           alternative-text="Loading preview..."
                           size="small"
                         ></lightning-spinner>
-                        <p class="slds-text-body_small slds-text-color_weak slds-m-top_small">
+                        <p
+                          class="slds-text-body_small slds-text-color_weak slds-m-top_small"
+                        >
                           Loading preview data...
                         </p>
                       </div>
                     </template>
 
                     <template if:true={hasPreviewData}>
-                      <div class="slds-text-heading_small slds-m-bottom_x-small">
+                      <div
+                        class="slds-text-heading_small slds-m-bottom_x-small"
+                      >
                         <lightning-icon
                           icon-name="utility:preview"
                           size="xx-small"
@@ -162,14 +166,18 @@
                         hide-checkbox-column
                         class="slds-box"
                       ></lightning-datatable>
-                      <p class="slds-text-body_small slds-text-color_weak slds-m-top_x-small">
+                      <p
+                        class="slds-text-body_small slds-text-color_weak slds-m-top_x-small"
+                      >
                         Showing up to 5 sample records
                       </p>
                     </template>
 
                     <template if:false={hasPreviewData}>
                       <template if:false={isLoadingQueryPreview}>
-                        <div class="slds-text-body_small slds-text-color_weak slds-m-top_small">
+                        <div
+                          class="slds-text-body_small slds-text-color_weak slds-m-top_small"
+                        >
                           <lightning-icon
                             icon-name="utility:info"
                             size="xx-small"

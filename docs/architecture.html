@@ -96,21 +96,21 @@ graph TB
   <h2>🔄 Query Execution Flow</h2>
   <div class="diagram-container">
     <div class="mermaid">
-sequenceDiagram
-    participant User
-    participant LWC as jtQueryViewer
-    participant Ctrl as Controller
-    participant Engine as DataSelector
-    participant DB as Salesforce DB
+      sequenceDiagram
+          participant User
+          participant LWC as jtQueryViewer
+          participant Ctrl as Controller
+          participant Engine as DataSelector
+          participant DB as Salesforce DB
 
-    User->>LWC: Select Configuration
-    LWC->>Ctrl: Load Config Metadata
-    Ctrl->>Engine: getRecords(configName)
-    Engine->>DB: Execute SOQL
-    DB-->>Engine: Records
-    Engine-->>Ctrl: List<SObject>
-    Ctrl-->>LWC: JSON Response
-    LWC-->>User: Display Results
+          User->>LWC: Select Configuration
+          LWC->>Ctrl: Load Config Metadata
+          Ctrl->>Engine: getRecords(configName)
+          Engine->>DB: Execute SOQL
+          DB-->>Engine: Records
+          Engine-->>Ctrl: List<SObject>
+          Ctrl-->>LWC: JSON Response
+          LWC-->>User: Display Results
     </div>
   </div>
 </section>

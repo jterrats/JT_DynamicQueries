@@ -316,4 +316,178 @@ public inherited sharing class JT_DataSelector {
       accessMode
     );
   }
+
+  /**
+   * @description Helper method to count records for a given query
+   * @param baseQuery The SOQL query to count
+   * @param bindings Bind variables for the query
+   * @param enforceSecurity Whether to use USER_MODE
+   * @return Integer Number of records that would be returned
+   */
+  @TestVisible
+  private static Integer countRecords(
+    String baseQuery,
+    Map<String, Object> bindings,
+    Boolean enforceSecurity
+  ) {
+    // Convert SELECT query to COUNT query
+    String countQuery = baseQuery.replaceAll(
+      '(?i)SELECT[\\s\\S]+?FROM',
+      'SELECT COUNT() FROM'
+    );
+
+    // Remove ORDER BY, LIMIT, OFFSET clauses for COUNT
+    countQuery = countQuery.replaceAll('(?i)\\s+ORDER\\s+BY[^\\n]+', '');
+    countQuery = countQuery.replaceAll('(?i)\\s+LIMIT\\s+\\d+', '');
+    countQuery = countQuery.replaceAll('(?i)\\s+OFFSET\\s+\\d+', '');
+
+    // Use appropriate access level
+    AccessLevel accessMode = enforceSecurity
+      ? AccessLevel.USER_MODE
+      : AccessLevel.SYSTEM_MODE;
+
+    // Replace bind variables in the query string for Database.countQuery()
+    String finalQuery = countQuery;
+    if (bindings != null && !bindings.isEmpty()) {
+      for (String key : bindings.keySet()) {
+        Object value = bindings.get(key);
+        String replacement = '';
+
+        if (value instanceof String) {
+          replacement = '\'' + String.escapeSingleQuotes((String) value) + '\'';
+        } else if (value instanceof Date) {
+          replacement = String.valueOf((Date) value);
+        } else if (value instanceof Datetime) {
+          replacement = ((Datetime) value)
+            .format('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'');
+        } else if (
+          value instanceof Boolean ||
+          value instanceof Integer ||
+          value instanceof Decimal
+        ) {
+          replacement = String.valueOf(value);
+        } else if (value instanceof List<Object>) {
+          List<Object> listValue = (List<Object>) value;
+          List<String> escapedValues = new List<String>();
+          for (Object item : listValue) {
+            if (item instanceof String) {
+              escapedValues.add(
+                '\'' + String.escapeSingleQuotes((String) item) + '\''
+              );
+            } else {
+              escapedValues.add(String.valueOf(item));
+            }
+          }
+          replacement = '(' + String.join(escapedValues, ',') + ')';
+        } else {
+          replacement = String.valueOf(value);
+        }
+
+        finalQuery = finalQuery.replaceAll(':' + key + '\\b', replacement);
+      }
+    }
+
+    return Database.countQuery(finalQuery, accessMode);
+  }
+
+  /**
+   * @description Smart method that automatically decides whether to use standard query
+   * or cursor-based processing based on record count
+   * @param devName Configuration name
+   * @param enforceSecurity Whether to use USER_MODE
+   * @param bindings Custom bindings (merged with config bindings)
+   * @param threshold Record count threshold for using cursor processing (default: 50000)
+   * @param processor Optional CursorProcessor for large result sets. If null and count > threshold, throws exception
+   * @return List<SObject> Records if count <= threshold, empty list if cursor processing was used
+   */
+  public static List<SObject> getRecordsWithAutoStrategy(
+    String devName,
+    Boolean enforceSecurity,
+    Map<String, Object> bindings,
+    Integer threshold,
+    CursorProcessor processor
+  ) {
+    final JT_DataSelector selectorInstance = JT_DataSelector.getInstance();
+    final JT_DynamicQueryConfiguration__mdt config = selectorInstance.getConfig(
+      devName
+    );
+
+    // Merge config bindings with custom bindings
+    Map<String, Object> configBindings = String.isNotBlank(config.JT_Binding__c)
+      ? (Map<String, Object>) JSON.deserializeUntyped(config.JT_Binding__c)
+      : new Map<String, Object>();
+    Map<String, Object> mergedBindings = new Map<String, Object>(
+      configBindings
+    );
+    if (bindings != null) {
+      mergedBindings.putAll(bindings);
+    }
+
+    // Set threshold (default 50,000)
+    Integer effectiveThreshold = threshold != null &&
+      threshold > 0
+      ? threshold
+      : 50000;
+
+    // Step 1: Count records
+    Integer recordCount;
+    try {
+      recordCount = countRecords(
+        config.JT_BaseQuery__c,
+        mergedBindings,
+        enforceSecurity
+      );
+    } catch (Exception e) {
+      // If COUNT fails, fall back to standard query
+      return getRecords(devName, enforceSecurity, mergedBindings);
+    }
+
+    // Step 2: Decide strategy based on count
+    if (recordCount > effectiveThreshold) {
+      // Large result set - use cursor processing
+      if (processor == null) {
+        throw new AuraHandledException(
+          'Query would return ' +
+            recordCount +
+            ' records (>' +
+            effectiveThreshold +
+            '). Please provide a CursorProcessor to handle large result sets.'
+        );
+      }
+
+      // Process with cursor and return empty list (data is handled by processor)
+      processRecordsWithCursor(
+        devName,
+        mergedBindings,
+        enforceSecurity,
+        200,
+        processor
+      );
+      return new List<SObject>();
+    } else {
+      // Small/medium result set - use standard query
+      return getRecords(devName, enforceSecurity, mergedBindings);
+    }
+  }
+
+  /**
+   * @description Overload with default threshold (50,000) and no processor
+   * @param devName Configuration name
+   * @param enforceSecurity Whether to use USER_MODE
+   * @param bindings Custom bindings
+   * @return List<SObject> Records if count <= 50000, throws exception if more
+   */
+  public static List<SObject> getRecordsWithAutoStrategy(
+    String devName,
+    Boolean enforceSecurity,
+    Map<String, Object> bindings
+  ) {
+    return getRecordsWithAutoStrategy(
+      devName,
+      enforceSecurity,
+      bindings,
+      50000,
+      null
+    );
+  }
 }

@@ -1083,14 +1083,16 @@
         <fullName>JT_jtConfigModal_developerNameRequired</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtConfigModal - developerNameRequired</shortDescription>
+        <shortDescription
+    >jtConfigModal - developerNameRequired</shortDescription>
         <value>Developer Name is required</value>
     </labels>
     <labels>
         <fullName>JT_jtConfigModal_developerNameTooLong</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtConfigModal - developerNameTooLong</shortDescription>
+        <shortDescription
+    >jtConfigModal - developerNameTooLong</shortDescription>
         <value>Developer Name is too long (max 40 characters)</value>
     </labels>
     <labels>
@@ -1103,8 +1105,7 @@
     >Developer Name can only contain letters, numbers, and underscores</value>
     </labels>
     <labels>
-        <fullName
-    >JT_jtConfigModal_developerNameMustStartWithLetter</fullName>
+        <fullName>JT_jtConfigModal_developerNameMustStartWithLetter</fullName>
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription

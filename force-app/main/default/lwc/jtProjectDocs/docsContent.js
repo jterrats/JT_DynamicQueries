@@ -380,13 +380,46 @@ Map&lt;String, Object&gt; additionalBindings = new Map&lt;String, Object&gt;{
 List&lt;SObject&gt; records = JT_DataSelector.getRecords('MixedConfig', true, additionalBindings);
 // Query example: SELECT Id, Name FROM Account WHERE Type = :accountType AND Region__c = :region
 
-// Example 4: Invocable method (for Flows/Agentforce)
+// Example 4: Smart auto-strategy (automatically uses cursors if > 50K records)
+// Automatically does COUNT first and decides the best approach
+List&lt;SObject&gt; records = JT_DataSelector.getRecordsWithAutoStrategy(
+    'LargeDatasetConfig', 
+    true, 
+    bindings
+);
+// If > 50K records: throws exception (you must provide a processor)
+// If &lt;= 50K records: returns records normally
+
+// Example 5: Large dataset with cursor processing
+public class MyProcessor implements JT_DataSelector.CursorProcessor {
+    public void processBatch(List&lt;SObject&gt; batch) {
+        // Process each batch (200 records by default)
+        // Your custom logic here: DML, callouts, etc.
+    }
+}
+
+JT_DataSelector.getRecordsWithAutoStrategy(
+    'LargeDatasetConfig',
+    true,
+    bindings,
+    50000, // Threshold
+    new MyProcessor() // Your custom processor
+);
+
+// Example 6: Invocable method (for Flows/Agentforce)
 // Access via Flow Builder or Agentforce Agent Builder as an Apex Action
                 </pre>
 
                 <div class="alert-info">
                     <p><strong>Tip:</strong> When you pass bindings from Apex, they are merged with the predefined bindings from metadata.
                     If the same key exists in both, the Apex-provided value takes precedence.</p>
+                </div>
+
+                <div class="alert-warning">
+                    <p><strong>Important:</strong> The <code>getRecordsWithAutoStrategy()</code> method performs a COUNT query first 
+                    to determine the best execution strategy. If the count exceeds the threshold (default 50,000), it will use 
+                    cursor-based processing which requires a <code>CursorProcessor</code> implementation. Note that cursor processing 
+                    <strong>cannot be used in triggers</strong> - only in synchronous Apex code, Invocable methods, and REST/SOAP APIs.</p>
                 </div>
 
                 <h3>LWC Components</h3>
@@ -792,20 +825,74 @@ public static JT_DataSelector getInstance() {
 // Obtener instancia singleton
 JT_DataSelector selector = JT_DataSelector.getInstance();
 
-// Obtener registros con configuración predefinida
-List&lt;SObject&gt; records = JT_DataSelector.getRecords('ConfigName');
+// Ejemplo 1: Usar bindings predefinidos desde metadata
+List&lt;SObject&gt; records = JT_DataSelector.getRecords('ConfigName', true);
 
-// Obtener registros con enlaces personalizados
+// Ejemplo 2: Sobrescribir con bindings personalizados desde Apex
 Map&lt;String, Object&gt; bindings = new Map&lt;String, Object&gt;{
-    'accountId' => '0015g00000XXXXXX'
+    'accountId' => '0015g00000XXXXXX',
+    'status' => 'Active'
 };
-List&lt;SObject&gt; records = JT_DataSelector.getRecords('ConfigName', bindings);
+List&lt;SObject&gt; records = JT_DataSelector.getRecords('ConfigName', true, bindings);
 
-// Obtener config (en caché)
-JT_DynamicQueryConfiguration__mdt config = selector.getConfig('ConfigName');
+// Ejemplo 3: Estrategia automática inteligente (usa cursores si > 50K registros)
+// Automáticamente hace COUNT primero y decide el mejor enfoque
+List&lt;SObject&gt; records = JT_DataSelector.getRecordsWithAutoStrategy(
+    'ConfigDatosGrandes', 
+    true, 
+    bindings
+);
+// Si > 50K registros: lanza excepción (debes proveer un procesador)
+// Si &lt;= 50K registros: retorna registros normalmente
+
+// Ejemplo 4: Conjunto de datos grande con procesamiento por cursor
+public class MiProcesador implements JT_DataSelector.CursorProcessor {
+    public void processBatch(List&lt;SObject&gt; batch) {
+        // Procesa cada lote (200 registros por defecto)
+        // Tu lógica personalizada aquí: DML, callouts, etc.
+    }
+}
+
+JT_DataSelector.getRecordsWithAutoStrategy(
+    'ConfigDatosGrandes',
+    true,
+    bindings,
+    50000, // Umbral
+    new MiProcesador() // Tu procesador personalizado
+);
+
+// Ejemplo 5: Método invocable (para Flows/Agentforce)
+// Accesible vía Flow Builder o Agentforce Agent Builder como Acción Apex
                 </pre>
 
-                <p><strong>Para más detalles, consulta la sección API en la versión en inglés.</strong></p>
+                <div class="alert-info">
+                    <p><strong>Consejo:</strong> Cuando pasas bindings desde Apex, se fusionan con los bindings predefinidos en metadata.
+                    Si la misma clave existe en ambos, el valor provisto desde Apex tiene precedencia.</p>
+                </div>
+
+                <div class="alert-warning">
+                    <p><strong>Importante:</strong> El método <code>getRecordsWithAutoStrategy()</code> realiza primero una consulta COUNT 
+                    para determinar la mejor estrategia de ejecución. Si el conteo excede el umbral (por defecto 50,000), usará 
+                    procesamiento basado en cursores que requiere una implementación de <code>CursorProcessor</code>. Nota que el procesamiento 
+                    por cursor <strong>no puede usarse en triggers</strong> - solo en código Apex síncrono, métodos Invocables, y APIs REST/SOAP.</p>
+                </div>
+
+                <h3>Componentes LWC</h3>
+
+                <h4>jtQueryViewer</h4>
+                <p>Componente principal de ejecución de consultas con características:</p>
+                <ul>
+                    <li>Selección de configuración</li>
+                    <li>Generación dinámica de parámetros</li>
+                    <li>Ejecución de consultas</li>
+                    <li>Selección de usuario Run As</li>
+                    <li>Creación de metadata (solo sandbox)</li>
+                    <li>Paginación (> 10 registros)</li>
+                    <li>Soporte i18n</li>
+                </ul>
+
+                <h4>jtProjectDocs</h4>
+                <p>Este componente de documentación con soporte i18n.</p>
             `
     },
     footer: {

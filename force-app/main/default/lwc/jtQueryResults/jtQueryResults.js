@@ -77,7 +77,11 @@ export default class JtQueryResults extends LightningElement {
   set records(value) {
     this._records = value;
     // Reset to page 1 when new data arrives
-    if (value && value.length > 0 && this.recordCount !== this._previousRecordCount) {
+    if (
+      value &&
+      value.length > 0 &&
+      this.recordCount !== this._previousRecordCount
+    ) {
       this.currentPage = 1;
       this._previousRecordCount = this.recordCount;
     }

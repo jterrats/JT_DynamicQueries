@@ -7,748 +7,762 @@ og_title: Testing with EDD - Dynamic Query Framework
 og_description: Error-Driven Development as the core methodology. Combining EDD, E2E, TDD, and BDD for comprehensive test coverage and quality assurance.
 ---
 
-    <div class="container">
-      <header>
-        <h1>🧪 Testing Methodology</h1>
-        <p class="tagline">How I Ensure Quality in Dynamic Query Framework</p>
-      </header>
+<div class="container">
+  <header>
+    <h1>🧪 Testing Methodology</h1>
+    <p class="tagline">How I Ensure Quality in Dynamic Query Framework</p>
+  </header>
 
-      <!-- Test Results Summary -->
-      <section
-        id="test-status"
+  <!-- Test Results Summary -->
+  <section
+    id="test-status"
+    style="
+      margin: 2rem 0;
+      padding: 2rem;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      border-radius: 15px;
+      border-left: 5px solid #28a745;
+    "
+  >
+    <h2 style="margin-top: 0; color: #333">✅ Current Test Results</h2>
+    <div
+      style="
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-top: 1.5rem;
+      "
+    >
+      <div
+        class="status-item status-pass"
         style="
-          margin: 2rem 0;
-          padding: 2rem;
-          background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-          border-radius: 15px;
-          border-left: 5px solid #28a745;
+          background: white;
+          padding: 1.5rem;
+          border-radius: 10px;
+          text-align: center;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         "
       >
-        <h2 style="margin-top: 0; color: #333">✅ Current Test Results</h2>
+        <h4 style="font-size: 0.9rem; margin: 0 0 0.5rem 0; color: #666">
+          E2E Tests
+        </h4>
         <div
-          style="
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-            margin-top: 1.5rem;
-          "
+          class="number"
+          style="font-size: 2rem; font-weight: bold; color: #28a745"
         >
-          <div
-            class="status-item status-pass"
-            style="
-              background: white;
-              padding: 1.5rem;
-              border-radius: 10px;
-              text-align: center;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            "
-          >
-            <h4 style="font-size: 0.9rem; margin: 0 0 0.5rem 0; color: #666">
-              E2E Tests
-            </h4>
-            <div
-              class="number"
-              style="font-size: 2rem; font-weight: bold; color: #28a745"
-            >
-              118
-            </div>
-            <p style="font-size: 0.85rem; margin: 0.5rem 0 0 0; color: #999">
-              Passing
-            </p>
-          </div>
-          <div
-            class="status-item status-pass"
-            style="
-              background: white;
-              padding: 1.5rem;
-              border-radius: 10px;
-              text-align: center;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            "
-          >
-            <h4 style="font-size: 0.9rem; margin: 0 0 0.5rem 0; color: #666">
-              Accessibility
-            </h4>
-            <div
-              class="number"
-              style="font-size: 2rem; font-weight: bold; color: #28a745"
-            >
-              20/20
-            </div>
-            <p style="font-size: 0.85rem; margin: 0.5rem 0 0 0; color: #999">
-              WCAG 2.1 AA
-            </p>
-          </div>
-          <div
-            class="status-item status-pass"
-            style="
-              background: white;
-              padding: 1.5rem;
-              border-radius: 10px;
-              text-align: center;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            "
-          >
-            <h4 style="font-size: 0.9rem; margin: 0 0 0.5rem 0; color: #666">
-              GitHub Pages
-            </h4>
-            <div
-              class="number"
-              style="font-size: 2rem; font-weight: bold; color: #28a745"
-            >
-              27/27
-            </div>
-            <p style="font-size: 0.85rem; margin: 0.5rem 0 0 0; color: #999">
-              All Docs Valid
-            </p>
-          </div>
-          <div
-            class="status-item status-pass"
-            style="
-              background: white;
-              padding: 1.5rem;
-              border-radius: 10px;
-              text-align: center;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            "
-          >
-            <h4 style="font-size: 0.9rem; margin: 0 0 0.5rem 0; color: #666">
-              Code Coverage
-            </h4>
-            <div
-              class="number"
-              style="font-size: 2rem; font-weight: bold; color: #28a745"
-            >
-              95%
-            </div>
-            <p style="font-size: 0.85rem; margin: 0.5rem 0 0 0; color: #999">
-              Apex + JavaScript
-            </p>
-          </div>
+          118
         </div>
-      </section>
-
-      <!-- Hybrid Methodology -->
-      <section>
-        <h2>🔄 My Hybrid Methodology</h2>
-        <p style="font-size: 1.1rem; color: #666; line-height: 1.8">
-          I pioneer a unique development approach led by
-          <strong style="color: #667eea">Error-Driven Development (EDD)</strong
-          >, complemented by three proven methodologies. Each serves a specific
-          purpose in my workflow, but EDD is my guiding principle.
+        <p style="font-size: 0.85rem; margin: 0.5rem 0 0 0; color: #999">
+          Passing
         </p>
-
-        <div class="methodology-grid">
-          <!-- EDD - FIRST AND PROMINENT -->
-          <div
-            class="methodology-card"
-            style="
-              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-              grid-column: span 2;
-              position: relative;
-              border: 3px solid #ffd700;
-            "
-          >
-            <div
-              style="
-                position: absolute;
-                top: -15px;
-                right: 20px;
-                background: #ffd700;
-                color: #333;
-                padding: 0.3rem 1rem;
-                border-radius: 20px;
-                font-weight: bold;
-                font-size: 0.9rem;
-              "
-            >
-              ⭐ OUR CORE METHODOLOGY
-            </div>
-            <div class="acronym" style="opacity: 0.3; color: rgba(255, 255, 255, 0.3)">EDD</div>
-            <h3 style="font-size: 2rem; color: #ffffff; text-shadow: 2px 2px 4px rgba(0,0,0,0.3)">🔧 Error-Driven Development</h3>
-            <p style="font-size: 1.2rem; margin-bottom: 1rem; line-height: 1.6">
-              Let errors guide implementation - build only what's needed, when
-              it's needed
-            </p>
-            <div
-              style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem"
-            >
-              <ul
-                class="benefits-list"
-                style="color: rgba(255, 255, 255, 0.95)"
-              >
-                <li>Minimal code - zero over-engineering</li>
-                <li>Fastest feedback loop possible</li>
-                <li>Errors reveal exact requirements</li>
-                <li>Learn platform constraints quickly</li>
-              </ul>
-              <ul
-                class="benefits-list"
-                style="color: rgba(255, 255, 255, 0.95)"
-              >
-                <li>No guessing what to build next</li>
-                <li>Natural progression of features</li>
-                <li>Prevents premature optimization</li>
-                <li>Reduces development time by 40%</li>
-              </ul>
-            </div>
-            <div
-              style="
-                margin-top: 1.5rem;
-                padding: 1rem;
-                background: rgba(0, 0, 0, 0.2);
-                border-radius: 8px;
-                font-style: italic;
-              "
-            >
-              💡 "The error message is your friend. It tells you exactly what to
-              build next."
-            </div>
-          </div>
-
-          <!-- E2E -->
-          <div
-            class="methodology-card"
-            style="
-              background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            "
-          >
-            <div class="acronym" style="color: rgba(0, 0, 0, 0.15)">E2E</div>
-            <h3 style="color: #1a1a1a; text-shadow: 1px 1px 2px rgba(255,255,255,0.5)">🌐 End-to-End Testing</h3>
-            <p style="font-size: 1.1rem; margin-bottom: 1rem; color: #2c2c2c">
-              Automated testing of complete user workflows from start to finish
-            </p>
-            <ul class="benefits-list" style="color: #2c2c2c">
-              <li>Tests real user scenarios in browser</li>
-              <li>Validates entire application flow</li>
-              <li>Catches integration issues early</li>
-              <li>Ensures UI/UX works as expected</li>
-            </ul>
-          </div>
-
-          <!-- BDD -->
-          <div
-            class="methodology-card"
-            style="
-              background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
-            "
-          >
-            <div class="acronym" style="color: rgba(255, 255, 255, 0.2)">BDD</div>
-            <h3 style="color: #ffffff; text-shadow: 2px 2px 4px rgba(0,0,0,0.4)">📝 Behavior-Driven Development</h3>
-            <p style="font-size: 1.1rem; margin-bottom: 1rem; color: rgba(255, 255, 255, 0.95)">
-              Define expected behavior in human-readable scenarios
-            </p>
-            <ul class="benefits-list" style="color: rgba(255, 255, 255, 0.95)">
-              <li>Business-readable documentation</li>
-              <li>Shared language for team</li>
-              <li>Requirements traceability</li>
-              <li>Living documentation</li>
-            </ul>
-          </div>
-
-          <!-- TDD -->
-          <div
-            class="methodology-card"
-            style="
-              background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-            "
-          >
-            <div class="acronym" style="color: rgba(0, 0, 0, 0.1)">TDD</div>
-            <h3 style="color: #1a1a1a; text-shadow: 1px 1px 2px rgba(255,255,255,0.5)">✅ Test-Driven Development</h3>
-            <p style="font-size: 1.1rem; margin-bottom: 1rem; color: #2c2c2c">
-              Write tests first, then implement code to make them pass
-            </p>
-            <ul class="benefits-list" style="color: #2c2c2c">
-              <li>Code coverage comes naturally</li>
-              <li>Refactor with confidence</li>
-              <li>Deployment safety</li>
-              <li>Faster debugging cycles</li>
-            </ul>
-          </div>
-        </div>
-
+      </div>
+      <div
+        class="status-item status-pass"
+        style="
+          background: white;
+          padding: 1.5rem;
+          border-radius: 10px;
+          text-align: center;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        "
+      >
+        <h4 style="font-size: 0.9rem; margin: 0 0 0.5rem 0; color: #666">
+          Accessibility
+        </h4>
         <div
-          style="
-            margin-top: 2rem;
-            padding: 1.5rem;
-            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
-            border-radius: 10px;
-            border-left: 5px solid #667eea;
-          "
+          class="number"
+          style="font-size: 2rem; font-weight: bold; color: #28a745"
         >
-          <h3 style="color: #667eea; margin-top: 0">
-            🎯 Why EDD Leads My Approach
-          </h3>
-          <p style="color: #666; line-height: 1.8; font-size: 1.05rem">
-            <strong>Error-Driven Development</strong> is my foundational
-            methodology because it eliminates guesswork and over-engineering.
-            Instead of planning every detail upfront, I write a failing test
-            (TDD), run it, and let the error messages tell me exactly what to
-            build next. This approach is particularly powerful in Salesforce
-            development where platform constraints and governor limits are
-            constantly revealed through errors. Combined with BDD scenarios for
-            requirements and E2E tests for validation, EDD creates a tight,
-            efficient feedback loop that delivers working features faster than
-            traditional approaches.
-          </p>
+          20/20
         </div>
-      </section>
-
-      <!-- Development Cycle -->
-      <section>
-        <h2>🔄 The EDD-Led Development Cycle</h2>
-        <p style="font-size: 1.1rem; color: #666; line-height: 1.8">
-          Here's how
-          <strong style="color: #667eea">Error-Driven Development</strong>
-          leads my workflow, supported by BDD, E2E, and TDD:
+        <p style="font-size: 0.85rem; margin: 0.5rem 0 0 0; color: #999">
+          WCAG 2.1 AA
         </p>
-
-        <div class="workflow-diagram">
-          <div class="step-card">
-            <span class="step-number">1</span>
-            <strong style="font-size: 1.2rem"
-              >BDD: Define What (Behavior)</strong
-            >
-            <p style="margin: 1rem 0 0.5rem 2.5rem; color: #666">
-              Write a Gherkin scenario describing the user's expected behavior
-            </p>
-            <div class="code-example" style="margin-left: 2.5rem">
-              Feature: Query Data Preview As a Salesforce admin I want to see a
-              preview of query results So that I can verify the query before
-              executing Scenario: Preview shows max 5 records Given I have
-              selected a configuration When the preview loads automatically Then
-              I should see at most 5 records total And pagination should be
-              visible if > 3 records
-            </div>
-          </div>
-
-          <div class="step-card">
-            <span class="step-number">2</span>
-            <strong style="font-size: 1.2rem"
-              >TDD: Write Failing Test First</strong
-            >
-            <p style="margin: 1rem 0 0.5rem 2.5rem; color: #666">
-              Create an E2E test using Playwright that implements the BDD
-              scenario
-            </p>
-            <div class="code-example" style="margin-left: 2.5rem">
-              test("should show data preview after config selection", async ({
-              page }) => { // Arrange await navigateToQueryViewer(page); const
-              combobox = page.locator('[data-testid="config-selector"]'); // Act
-              await combobox.click(); await
-              combobox.locator('li[role="option"]').first().click(); await
-              page.waitForTimeout(2000); // Assert - THIS WILL FAIL (Red) ❌
-              const previewTable =
-              page.locator('[data-testid="query-preview-table"]'); await
-              expect(previewTable).toBeVisible(); });
-            </div>
-          </div>
-
-          <div
-            class="step-card"
-            style="
-              border: 3px solid #667eea;
-              background: linear-gradient(135deg, #667eea05 0%, #764ba205 100%);
-            "
-          >
-            <div
-              style="
-                display: inline-block;
-                background: #667eea;
-                color: white;
-                padding: 0.2rem 0.8rem;
-                border-radius: 15px;
-                font-size: 0.85rem;
-                margin-bottom: 0.5rem;
-              "
-            >
-              ⭐ EDD IN ACTION
-            </div>
-            <br />
-            <span class="step-number" style="background: #667eea">3</span>
-            <strong style="font-size: 1.3rem; color: #667eea"
-              >EDD: Let Errors Guide You</strong
-            >
-            <p style="margin: 1rem 0 0.5rem 2.5rem; color: #666">
-              <strong>This is where the magic happens:</strong> Run the test and
-              follow each error message. Each error tells you exactly what to
-              build next - no guessing, no over-engineering.
-            </p>
-            <div class="code-example" style="margin-left: 2.5rem">
-              ❌ Error 1: "Locator '[data-testid="query-preview-table"]' not
-              found" 👉 Action: Add data-testid attribute to HTML template 🔧
-              Fix: &lt;table data-testid="query-preview-table"&gt; ❌ Error 2:
-              "Property 'previewData' is undefined" 👉 Action: Initialize @track
-              property in JS 🔧 Fix: @track previewData = []; ❌ Error 3:
-              "Method 'getPreviewData' does not exist" 👉 Action: Create Apex
-              method 🔧 Fix: @AuraEnabled public static List&lt;SObject&gt;
-              getPreviewData() ✅ All Errors Resolved: Test passes (Green)
-            </div>
-          </div>
-
-          <div class="step-card">
-            <span class="step-number">4</span>
-            <strong style="font-size: 1.2rem">Refactor & Verify</strong>
-            <p style="margin: 1rem 0 0.5rem 2.5rem; color: #666">
-              Clean up code while keeping tests green
-            </p>
-            <ul style="margin-left: 2.5rem; color: #666">
-              <li>Extract helper methods</li>
-              <li>Improve naming</li>
-              <li>Optimize performance</li>
-              <li>All tests still pass ✓</li>
-            </ul>
-          </div>
+      </div>
+      <div
+        class="status-item status-pass"
+        style="
+          background: white;
+          padding: 1.5rem;
+          border-radius: 10px;
+          text-align: center;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        "
+      >
+        <h4 style="font-size: 0.9rem; margin: 0 0 0.5rem 0; color: #666">
+          GitHub Pages
+        </h4>
+        <div
+          class="number"
+          style="font-size: 2rem; font-weight: bold; color: #28a745"
+        >
+          27/27
         </div>
-      </section>
-
-      <!-- E2E Testing in Detail -->
-      <section>
-        <h2>🌐 E2E Testing with Playwright</h2>
-        <p style="font-size: 1.1rem; color: #666; line-height: 1.8">
-          My E2E tests simulate real user interactions in a browser, validating
-          the complete application stack from UI to database.
+        <p style="font-size: 0.85rem; margin: 0.5rem 0 0 0; color: #999">
+          All Docs Valid
         </p>
-
+      </div>
+      <div
+        class="status-item status-pass"
+        style="
+          background: white;
+          padding: 1.5rem;
+          border-radius: 10px;
+          text-align: center;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        "
+      >
+        <h4 style="font-size: 0.9rem; margin: 0 0 0.5rem 0; color: #666">
+          Code Coverage
+        </h4>
         <div
-          style="
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin: 2rem 0;
-          "
+          class="number"
+          style="font-size: 2rem; font-weight: bold; color: #28a745"
         >
-          <div
-            style="
-              background: white;
-              padding: 1.5rem;
-              border-radius: 10px;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            "
-          >
-            <h4 style="color: #667eea; margin-top: 0">🎯 What I Test</h4>
-            <ul style="color: #666; line-height: 1.8">
-              <li>Component loading & rendering</li>
-              <li>User interactions (clicks, typing)</li>
-              <li>Query execution workflows</li>
-              <li>Error handling & validation</li>
-              <li>Data display & formatting</li>
-              <li>Accessibility compliance</li>
-            </ul>
-          </div>
-
-          <div
-            style="
-              background: white;
-              padding: 1.5rem;
-              border-radius: 10px;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            "
-          >
-            <h4 style="color: #667eea; margin-top: 0">🛠️ My Test Stack</h4>
-            <ul style="color: #666; line-height: 1.8">
-              <li><strong>Playwright</strong> - E2E framework</li>
-              <li><strong>Chromium</strong> - Test browser</li>
-              <li><strong>SF CLI</strong> - Authentication</li>
-              <li><strong>GitHub Actions</strong> - CI/CD</li>
-              <li><strong>Parallel Execution</strong> - 4 shards</li>
-              <li><strong>Video Recording</strong> - On failure</li>
-            </ul>
-          </div>
-
-          <div
-            style="
-              background: white;
-              padding: 1.5rem;
-              border-radius: 10px;
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            "
-          >
-            <h4 style="color: #667eea; margin-top: 0">📊 Test Categories</h4>
-            <ul style="color: #666; line-height: 1.8">
-              <li><strong>Component Tests</strong> - 15 tests</li>
-              <li><strong>Query Execution</strong> - 25 tests</li>
-              <li><strong>Run As User</strong> - 18 tests</li>
-              <li><strong>Data Preview</strong> - 12 tests</li>
-              <li><strong>Cache Management</strong> - 8 tests</li>
-              <li><strong>GitHub Pages</strong> - 40 tests</li>
-            </ul>
-          </div>
+          95%
         </div>
-      </section>
-
-      <!-- Real Example -->
-      <section>
-        <h2>💡 Real-World Example</h2>
-        <p style="font-size: 1.1rem; color: #666; line-height: 1.8">
-          Here's a complete example from my project showing all methodologies
-          working together:
+        <p style="font-size: 0.85rem; margin: 0.5rem 0 0 0; color: #999">
+          Apex + JavaScript
         </p>
+      </div>
+    </div>
+  </section>
 
+  <!-- Hybrid Methodology -->
+  <section>
+    <h2>🔄 My Hybrid Methodology</h2>
+    <p style="font-size: 1.1rem; color: #666; line-height: 1.8">
+      I pioneer a unique development approach led by
+      <strong style="color: #667eea">Error-Driven Development (EDD)</strong>,
+      complemented by three proven methodologies. Each serves a specific purpose
+      in my workflow, but EDD is my guiding principle.
+    </p>
+
+    <div class="methodology-grid">
+      <!-- EDD - FIRST AND PROMINENT -->
+      <div
+        class="methodology-card"
+        style="
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          grid-column: span 2;
+          position: relative;
+          border: 3px solid #ffd700;
+        "
+      >
         <div
           style="
-            background: #f8f9fa;
-            padding: 2rem;
-            border-radius: 10px;
-            margin: 1rem 0;
+            position: absolute;
+            top: -15px;
+            right: 20px;
+            background: #ffd700;
+            color: #333;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
           "
         >
-          <h3 style="color: #667eea; margin-top: 0">
-            Feature: Query Data Preview with Pagination
-          </h3>
-
-          <div style="margin: 1.5rem 0">
-            <h4>📝 BDD Scenario (Written First)</h4>
-            <div class="code-example">
-              Scenario: Preview shows max 5 records with pagination Given I have
-              selected a configuration with "Account" data When the preview
-              loads automatically Then I should see at most 5 records total And
-              the preview should display 3 records per page And pagination
-              controls should be visible if > 3 records
-            </div>
-          </div>
-
-          <div style="margin: 1.5rem 0">
-            <h4>✅ E2E + TDD Test (Written Second)</h4>
-            <div class="code-example">
-              test("should show preview with max 5 records", async ({ page }) =>
-              { await selectConfiguration(page, "Account Preview"); const
-              previewTable = page.locator('[data-testid="preview-table"]');
-              await expect(previewTable).toBeVisible(); const rows = await
-              previewTable.locator('tbody tr').count();
-              expect(rows).toBeLessThanOrEqual(5); const paginationNext =
-              page.locator('[data-testid="pagination-next"]'); if (rows > 3) {
-              await expect(paginationNext).toBeVisible(); } });
-            </div>
-          </div>
-
-          <div style="margin: 1.5rem 0">
-            <h4>🔧 EDD Implementation Journey</h4>
-            <div class="code-example">
-              Run 1: ❌ "data-testid 'preview-table' not found" → Added
-              data-testid to HTML template Run 2: ❌ "Property 'previewData'
-              undefined" → Initialized @track previewData = [] Run 3: ❌
-              "getPreviewData is not a function" → Created Apex method with
-              LIMIT 5 Run 4: ❌ "Pagination not visible when > 3 records" →
-              Added conditional rendering for pagination Run 5: ✅ All tests
-              pass!
-            </div>
-          </div>
-
-          <div style="margin: 1.5rem 0">
-            <h4>📊 Final Results</h4>
-            <ul style="color: #666; line-height: 1.8">
-              <li>✅ <strong>BDD Scenario</strong>: Fully implemented</li>
-              <li>✅ <strong>E2E Tests</strong>: 3 tests passing</li>
-              <li>✅ <strong>Apex Tests</strong>: 2 tests passing</li>
-              <li>✅ <strong>Code Coverage</strong>: 98%</li>
-              <li>🔧 <strong>Errors Fixed</strong>: 6 (guided by EDD)</li>
-              <li>⏱️ <strong>Time to Complete</strong>: 45 minutes</li>
-            </ul>
-          </div>
+          ⭐ OUR CORE METHODOLOGY
         </div>
-      </section>
-
-      <!-- Benefits -->
-      <section>
-        <h2>🎯 Why This Approach Works</h2>
         <div
+          class="acronym"
+          style="opacity: 0.3; color: rgba(255, 255, 255, 0.3)"
+        >
+          EDD
+        </div>
+        <h3
           style="
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin: 2rem 0;
+            font-size: 2rem;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
           "
         >
-          <div
-            style="
-              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-              color: white;
-              padding: 1.5rem;
-              border-radius: 10px;
-            "
-          >
-            <h4 style="margin-top: 0">🚀 Faster Development</h4>
-            <p style="opacity: 0.95">
-              Errors guide us directly to what needs to be built next, no
-              guessing or over-engineering
-            </p>
-          </div>
-
-          <div
-            style="
-              background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-              color: #1a1a1a;
-              padding: 1.5rem;
-              border-radius: 10px;
-            "
-          >
-            <h4 style="margin-top: 0; color: #1a1a1a; text-shadow: 1px 1px 2px rgba(255,255,255,0.5)">🛡️ Higher Quality</h4>
-            <p style="opacity: 0.9; color: #2c2c2c">
-              Every feature is tested before deployment, catching bugs in
-              development instead of production
-            </p>
-          </div>
-
-          <div
-            style="
-              background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-              color: #1a1a1a;
-              padding: 1.5rem;
-              border-radius: 10px;
-            "
-          >
-            <h4 style="margin-top: 0; color: #1a1a1a; text-shadow: 1px 1px 2px rgba(255,255,255,0.5)">📚 Better Documentation</h4>
-            <p style="opacity: 0.9; color: #2c2c2c">
-              BDD scenarios serve as living documentation that's always
-              up-to-date with the codebase
-            </p>
-          </div>
-
-          <div
-            style="
-              background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
-              color: white;
-              padding: 1.5rem;
-              border-radius: 10px;
-            "
-          >
-            <h4 style="margin-top: 0">🔄 Safe Refactoring</h4>
-            <p style="opacity: 0.95">
-              Comprehensive test coverage means I can refactor with confidence,
-              knowing tests will catch regressions
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <!-- Running Tests -->
-      <section>
-        <h2>🏃 Running the Tests</h2>
-        <p style="font-size: 1.1rem; color: #666; line-height: 1.8">
-          You can run my test suite locally or in CI/CD:
+          🔧 Error-Driven Development
+        </h3>
+        <p style="font-size: 1.2rem; margin-bottom: 1rem; line-height: 1.6">
+          Let errors guide implementation - build only what's needed, when it's
+          needed
         </p>
-
-        <div
-          style="
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            margin: 1.5rem 0;
-          "
-        >
-          <h4 style="color: #667eea; margin-top: 0">Local Development</h4>
-          <div class="code-example">
-            # Install dependencies npm install # Run all E2E tests npm run
-            test:e2e # Run specific test file npx playwright test
-            queryViewer.spec.js # Run tests in headed mode (see browser) npx
-            playwright test --headed # Debug specific test npx playwright test
-            --debug queryViewer.spec.js # Run tests with UI mode npx playwright
-            test --ui
-          </div>
-        </div>
-
-        <div
-          style="
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            margin: 1.5rem 0;
-          "
-        >
-          <h4 style="color: #667eea; margin-top: 0">CI/CD Pipeline</h4>
-          <ul style="color: #666; line-height: 1.8">
-            <li>Tests run automatically on every push to main</li>
-            <li>Parallel execution across 4 shards (~10 min total)</li>
-            <li>Failed tests generate video recordings for debugging</li>
-            <li>Test results posted to GitHub Actions</li>
-            <li>Deployment blocked if tests fail</li>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem">
+          <ul class="benefits-list" style="color: rgba(255, 255, 255, 0.95)">
+            <li>Minimal code - zero over-engineering</li>
+            <li>Fastest feedback loop possible</li>
+            <li>Errors reveal exact requirements</li>
+            <li>Learn platform constraints quickly</li>
+          </ul>
+          <ul class="benefits-list" style="color: rgba(255, 255, 255, 0.95)">
+            <li>No guessing what to build next</li>
+            <li>Natural progression of features</li>
+            <li>Prevents premature optimization</li>
+            <li>Reduces development time by 40%</li>
           </ul>
         </div>
-      </section>
-
-      <!-- Resources -->
-      <section>
-        <h2>📚 Learn More</h2>
         <div
           style="
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin: 2rem 0;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            font-style: italic;
           "
         >
-          <a
-            href="https://github.com/jterrats/JT_DynamicQueries/blob/main/DEVELOPMENT_APPROACH.md"
-            class="feature-card"
-            style="
-              text-decoration: none;
-              color: white;
-              text-align: center;
-              padding: 1.5rem;
-            "
-          >
-            <h4>📖 Development Approach</h4>
-            <p style="font-size: 0.9rem">Complete methodology guide</p>
-          </a>
-
-          <a
-            href="https://github.com/jterrats/JT_DynamicQueries/tree/main/tests/e2e"
-            class="feature-card"
-            style="
-              text-decoration: none;
-              color: white;
-              text-align: center;
-              padding: 1.5rem;
-            "
-          >
-            <h4>🧪 E2E Test Suite</h4>
-            <p style="font-size: 0.9rem">Browse all test files</p>
-          </a>
-
-          <a
-            href="https://playwright.dev/"
-            class="feature-card"
-            style="
-              text-decoration: none;
-              color: white;
-              text-align: center;
-              padding: 1.5rem;
-            "
-          >
-            <h4>🎭 Playwright Docs</h4>
-            <p style="font-size: 0.9rem">Official documentation</p>
-          </a>
-
-          <a
-            href="https://github.com/jterrats/JT_DynamicQueries/actions"
-            class="feature-card"
-            style="
-              text-decoration: none;
-              color: white;
-              text-align: center;
-              padding: 1.5rem;
-            "
-          >
-            <h4>🔄 CI/CD Pipeline</h4>
-            <p style="font-size: 0.9rem">View test results</p>
-          </a>
+          💡 "The error message is your friend. It tells you exactly what to
+          build next."
         </div>
-      </section>
+      </div>
 
-      <footer>
-        <p>
-          Built with ❤️ by
-          <a
-            href="https://github.com/jterrats"
-            style="color: #667eea; text-decoration: none"
-            >Jaime Terrats</a
-          >
+      <!-- E2E -->
+      <div
+        class="methodology-card"
+        style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)"
+      >
+        <div class="acronym" style="color: rgba(0, 0, 0, 0.15)">E2E</div>
+        <h3
+          style="
+            color: #1a1a1a;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+          "
+        >
+          🌐 End-to-End Testing
+        </h3>
+        <p style="font-size: 1.1rem; margin-bottom: 1rem; color: #2c2c2c">
+          Automated testing of complete user workflows from start to finish
         </p>
-        <p style="margin-top: 0.5rem; font-size: 0.9rem">
-          Licensed under MIT | © 2025
+        <ul class="benefits-list" style="color: #2c2c2c">
+          <li>Tests real user scenarios in browser</li>
+          <li>Validates entire application flow</li>
+          <li>Catches integration issues early</li>
+          <li>Ensures UI/UX works as expected</li>
+        </ul>
+      </div>
+
+      <!-- BDD -->
+      <div
+        class="methodology-card"
+        style="background: linear-gradient(135deg, #30cfd0 0%, #330867 100%)"
+      >
+        <div class="acronym" style="color: rgba(255, 255, 255, 0.2)">BDD</div>
+        <h3 style="color: #ffffff; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4)">
+          📝 Behavior-Driven Development
+        </h3>
+        <p
+          style="
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: rgba(255, 255, 255, 0.95);
+          "
+        >
+          Define expected behavior in human-readable scenarios
         </p>
-      </footer>
+        <ul class="benefits-list" style="color: rgba(255, 255, 255, 0.95)">
+          <li>Business-readable documentation</li>
+          <li>Shared language for team</li>
+          <li>Requirements traceability</li>
+          <li>Living documentation</li>
+        </ul>
+      </div>
+
+      <!-- TDD -->
+      <div
+        class="methodology-card"
+        style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%)"
+      >
+        <div class="acronym" style="color: rgba(0, 0, 0, 0.1)">TDD</div>
+        <h3
+          style="
+            color: #1a1a1a;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+          "
+        >
+          ✅ Test-Driven Development
+        </h3>
+        <p style="font-size: 1.1rem; margin-bottom: 1rem; color: #2c2c2c">
+          Write tests first, then implement code to make them pass
+        </p>
+        <ul class="benefits-list" style="color: #2c2c2c">
+          <li>Code coverage comes naturally</li>
+          <li>Refactor with confidence</li>
+          <li>Deployment safety</li>
+          <li>Faster debugging cycles</li>
+        </ul>
+      </div>
     </div>
+
+    <div
+      style="
+        margin-top: 2rem;
+        padding: 1.5rem;
+        background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+        border-radius: 10px;
+        border-left: 5px solid #667eea;
+      "
+    >
+      <h3 style="color: #667eea; margin-top: 0">
+        🎯 Why EDD Leads My Approach
+      </h3>
+      <p style="color: #666; line-height: 1.8; font-size: 1.05rem">
+        <strong>Error-Driven Development</strong> is my foundational methodology
+        because it eliminates guesswork and over-engineering. Instead of
+        planning every detail upfront, I write a failing test (TDD), run it, and
+        let the error messages tell me exactly what to build next. This approach
+        is particularly powerful in Salesforce development where platform
+        constraints and governor limits are constantly revealed through errors.
+        Combined with BDD scenarios for requirements and E2E tests for
+        validation, EDD creates a tight, efficient feedback loop that delivers
+        working features faster than traditional approaches.
+      </p>
+    </div>
+  </section>
+
+  <!-- Development Cycle -->
+  <section>
+    <h2>🔄 The EDD-Led Development Cycle</h2>
+    <p style="font-size: 1.1rem; color: #666; line-height: 1.8">
+      Here's how
+      <strong style="color: #667eea">Error-Driven Development</strong>
+      leads my workflow, supported by BDD, E2E, and TDD:
+    </p>
+
+    <div class="workflow-diagram">
+      <div class="step-card">
+        <span class="step-number">1</span>
+        <strong style="font-size: 1.2rem">BDD: Define What (Behavior)</strong>
+        <p style="margin: 1rem 0 0.5rem 2.5rem; color: #666">
+          Write a Gherkin scenario describing the user's expected behavior
+        </p>
+        <div class="code-example" style="margin-left: 2.5rem">
+          Feature: Query Data Preview As a Salesforce admin I want to see a
+          preview of query results So that I can verify the query before
+          executing Scenario: Preview shows max 5 records Given I have selected
+          a configuration When the preview loads automatically Then I should see
+          at most 5 records total And pagination should be visible if > 3
+          records
+        </div>
+      </div>
+
+      <div class="step-card">
+        <span class="step-number">2</span>
+        <strong style="font-size: 1.2rem">TDD: Write Failing Test First</strong>
+        <p style="margin: 1rem 0 0.5rem 2.5rem; color: #666">
+          Create an E2E test using Playwright that implements the BDD scenario
+        </p>
+        <div class="code-example" style="margin-left: 2.5rem">
+          test("should show data preview after config selection", async ({ page
+          }) => { // Arrange await navigateToQueryViewer(page); const combobox =
+          page.locator('[data-testid="config-selector"]'); // Act await
+          combobox.click(); await
+          combobox.locator('li[role="option"]').first().click(); await
+          page.waitForTimeout(2000); // Assert - THIS WILL FAIL (Red) ❌ const
+          previewTable = page.locator('[data-testid="query-preview-table"]');
+          await expect(previewTable).toBeVisible(); });
+        </div>
+      </div>
+
+      <div
+        class="step-card"
+        style="
+          border: 3px solid #667eea;
+          background: linear-gradient(135deg, #667eea05 0%, #764ba205 100%);
+        "
+      >
+        <div
+          style="
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 0.2rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+          "
+        >
+          ⭐ EDD IN ACTION
+        </div>
+        <br />
+        <span class="step-number" style="background: #667eea">3</span>
+        <strong style="font-size: 1.3rem; color: #667eea"
+          >EDD: Let Errors Guide You</strong
+        >
+        <p style="margin: 1rem 0 0.5rem 2.5rem; color: #666">
+          <strong>This is where the magic happens:</strong> Run the test and
+          follow each error message. Each error tells you exactly what to build
+          next - no guessing, no over-engineering.
+        </p>
+        <div class="code-example" style="margin-left: 2.5rem">
+          ❌ Error 1: "Locator '[data-testid="query-preview-table"]' not found"
+          👉 Action: Add data-testid attribute to HTML template 🔧 Fix:
+          &lt;table data-testid="query-preview-table"&gt; ❌ Error 2: "Property
+          'previewData' is undefined" 👉 Action: Initialize @track property in
+          JS 🔧 Fix: @track previewData = []; ❌ Error 3: "Method
+          'getPreviewData' does not exist" 👉 Action: Create Apex method 🔧 Fix:
+          @AuraEnabled public static List&lt;SObject&gt; getPreviewData() ✅ All
+          Errors Resolved: Test passes (Green)
+        </div>
+      </div>
+
+      <div class="step-card">
+        <span class="step-number">4</span>
+        <strong style="font-size: 1.2rem">Refactor & Verify</strong>
+        <p style="margin: 1rem 0 0.5rem 2.5rem; color: #666">
+          Clean up code while keeping tests green
+        </p>
+        <ul style="margin-left: 2.5rem; color: #666">
+          <li>Extract helper methods</li>
+          <li>Improve naming</li>
+          <li>Optimize performance</li>
+          <li>All tests still pass ✓</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- E2E Testing in Detail -->
+  <section>
+    <h2>🌐 E2E Testing with Playwright</h2>
+    <p style="font-size: 1.1rem; color: #666; line-height: 1.8">
+      My E2E tests simulate real user interactions in a browser, validating the
+      complete application stack from UI to database.
+    </p>
+
+    <div
+      style="
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+      "
+    >
+      <div
+        style="
+          background: white;
+          padding: 1.5rem;
+          border-radius: 10px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        "
+      >
+        <h4 style="color: #667eea; margin-top: 0">🎯 What I Test</h4>
+        <ul style="color: #666; line-height: 1.8">
+          <li>Component loading & rendering</li>
+          <li>User interactions (clicks, typing)</li>
+          <li>Query execution workflows</li>
+          <li>Error handling & validation</li>
+          <li>Data display & formatting</li>
+          <li>Accessibility compliance</li>
+        </ul>
+      </div>
+
+      <div
+        style="
+          background: white;
+          padding: 1.5rem;
+          border-radius: 10px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        "
+      >
+        <h4 style="color: #667eea; margin-top: 0">🛠️ My Test Stack</h4>
+        <ul style="color: #666; line-height: 1.8">
+          <li><strong>Playwright</strong> - E2E framework</li>
+          <li><strong>Chromium</strong> - Test browser</li>
+          <li><strong>SF CLI</strong> - Authentication</li>
+          <li><strong>GitHub Actions</strong> - CI/CD</li>
+          <li><strong>Parallel Execution</strong> - 4 shards</li>
+          <li><strong>Video Recording</strong> - On failure</li>
+        </ul>
+      </div>
+
+      <div
+        style="
+          background: white;
+          padding: 1.5rem;
+          border-radius: 10px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        "
+      >
+        <h4 style="color: #667eea; margin-top: 0">📊 Test Categories</h4>
+        <ul style="color: #666; line-height: 1.8">
+          <li><strong>Component Tests</strong> - 15 tests</li>
+          <li><strong>Query Execution</strong> - 25 tests</li>
+          <li><strong>Run As User</strong> - 18 tests</li>
+          <li><strong>Data Preview</strong> - 12 tests</li>
+          <li><strong>Cache Management</strong> - 8 tests</li>
+          <li><strong>GitHub Pages</strong> - 40 tests</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Real Example -->
+  <section>
+    <h2>💡 Real-World Example</h2>
+    <p style="font-size: 1.1rem; color: #666; line-height: 1.8">
+      Here's a complete example from my project showing all methodologies
+      working together:
+    </p>
+
+    <div
+      style="
+        background: #f8f9fa;
+        padding: 2rem;
+        border-radius: 10px;
+        margin: 1rem 0;
+      "
+    >
+      <h3 style="color: #667eea; margin-top: 0">
+        Feature: Query Data Preview with Pagination
+      </h3>
+
+      <div style="margin: 1.5rem 0">
+        <h4>📝 BDD Scenario (Written First)</h4>
+        <div class="code-example">
+          Scenario: Preview shows max 5 records with pagination Given I have
+          selected a configuration with "Account" data When the preview loads
+          automatically Then I should see at most 5 records total And the
+          preview should display 3 records per page And pagination controls
+          should be visible if > 3 records
+        </div>
+      </div>
+
+      <div style="margin: 1.5rem 0">
+        <h4>✅ E2E + TDD Test (Written Second)</h4>
+        <div class="code-example">
+          test("should show preview with max 5 records", async ({ page }) => {
+          await selectConfiguration(page, "Account Preview"); const previewTable
+          = page.locator('[data-testid="preview-table"]'); await
+          expect(previewTable).toBeVisible(); const rows = await
+          previewTable.locator('tbody tr').count();
+          expect(rows).toBeLessThanOrEqual(5); const paginationNext =
+          page.locator('[data-testid="pagination-next"]'); if (rows > 3) { await
+          expect(paginationNext).toBeVisible(); } });
+        </div>
+      </div>
+
+      <div style="margin: 1.5rem 0">
+        <h4>🔧 EDD Implementation Journey</h4>
+        <div class="code-example">
+          Run 1: ❌ "data-testid 'preview-table' not found" → Added data-testid
+          to HTML template Run 2: ❌ "Property 'previewData' undefined" →
+          Initialized @track previewData = [] Run 3: ❌ "getPreviewData is not a
+          function" → Created Apex method with LIMIT 5 Run 4: ❌ "Pagination not
+          visible when > 3 records" → Added conditional rendering for pagination
+          Run 5: ✅ All tests pass!
+        </div>
+      </div>
+
+      <div style="margin: 1.5rem 0">
+        <h4>📊 Final Results</h4>
+        <ul style="color: #666; line-height: 1.8">
+          <li>✅ <strong>BDD Scenario</strong>: Fully implemented</li>
+          <li>✅ <strong>E2E Tests</strong>: 3 tests passing</li>
+          <li>✅ <strong>Apex Tests</strong>: 2 tests passing</li>
+          <li>✅ <strong>Code Coverage</strong>: 98%</li>
+          <li>🔧 <strong>Errors Fixed</strong>: 6 (guided by EDD)</li>
+          <li>⏱️ <strong>Time to Complete</strong>: 45 minutes</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Benefits -->
+  <section>
+    <h2>🎯 Why This Approach Works</h2>
+    <div
+      style="
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+      "
+    >
+      <div
+        style="
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          padding: 1.5rem;
+          border-radius: 10px;
+        "
+      >
+        <h4 style="margin-top: 0">🚀 Faster Development</h4>
+        <p style="opacity: 0.95">
+          Errors guide us directly to what needs to be built next, no guessing
+          or over-engineering
+        </p>
+      </div>
+
+      <div
+        style="
+          background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+          color: #1a1a1a;
+          padding: 1.5rem;
+          border-radius: 10px;
+        "
+      >
+        <h4
+          style="
+            margin-top: 0;
+            color: #1a1a1a;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+          "
+        >
+          🛡️ Higher Quality
+        </h4>
+        <p style="opacity: 0.9; color: #2c2c2c">
+          Every feature is tested before deployment, catching bugs in
+          development instead of production
+        </p>
+      </div>
+
+      <div
+        style="
+          background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+          color: #1a1a1a;
+          padding: 1.5rem;
+          border-radius: 10px;
+        "
+      >
+        <h4
+          style="
+            margin-top: 0;
+            color: #1a1a1a;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+          "
+        >
+          📚 Better Documentation
+        </h4>
+        <p style="opacity: 0.9; color: #2c2c2c">
+          BDD scenarios serve as living documentation that's always up-to-date
+          with the codebase
+        </p>
+      </div>
+
+      <div
+        style="
+          background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+          color: white;
+          padding: 1.5rem;
+          border-radius: 10px;
+        "
+      >
+        <h4 style="margin-top: 0">🔄 Safe Refactoring</h4>
+        <p style="opacity: 0.95">
+          Comprehensive test coverage means I can refactor with confidence,
+          knowing tests will catch regressions
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Running Tests -->
+  <section>
+    <h2>🏃 Running the Tests</h2>
+    <p style="font-size: 1.1rem; color: #666; line-height: 1.8">
+      You can run my test suite locally or in CI/CD:
+    </p>
+
+    <div
+      style="
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        margin: 1.5rem 0;
+      "
+    >
+      <h4 style="color: #667eea; margin-top: 0">Local Development</h4>
+      <div class="code-example">
+        # Install dependencies npm install # Run all E2E tests npm run test:e2e
+        # Run specific test file npx playwright test queryViewer.spec.js # Run
+        tests in headed mode (see browser) npx playwright test --headed # Debug
+        specific test npx playwright test --debug queryViewer.spec.js # Run
+        tests with UI mode npx playwright test --ui
+      </div>
+    </div>
+
+    <div
+      style="
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        margin: 1.5rem 0;
+      "
+    >
+      <h4 style="color: #667eea; margin-top: 0">CI/CD Pipeline</h4>
+      <ul style="color: #666; line-height: 1.8">
+        <li>Tests run automatically on every push to main</li>
+        <li>Parallel execution across 4 shards (~10 min total)</li>
+        <li>Failed tests generate video recordings for debugging</li>
+        <li>Test results posted to GitHub Actions</li>
+        <li>Deployment blocked if tests fail</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Resources -->
+  <section>
+    <h2>📚 Learn More</h2>
+    <div
+      style="
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin: 2rem 0;
+      "
+    >
+      <a
+        href="https://github.com/jterrats/JT_DynamicQueries/blob/main/DEVELOPMENT_APPROACH.md"
+        class="feature-card"
+        style="
+          text-decoration: none;
+          color: white;
+          text-align: center;
+          padding: 1.5rem;
+        "
+      >
+        <h4>📖 Development Approach</h4>
+        <p style="font-size: 0.9rem">Complete methodology guide</p>
+      </a>
+
+      <a
+        href="https://github.com/jterrats/JT_DynamicQueries/tree/main/tests/e2e"
+        class="feature-card"
+        style="
+          text-decoration: none;
+          color: white;
+          text-align: center;
+          padding: 1.5rem;
+        "
+      >
+        <h4>🧪 E2E Test Suite</h4>
+        <p style="font-size: 0.9rem">Browse all test files</p>
+      </a>
+
+      <a
+        href="https://playwright.dev/"
+        class="feature-card"
+        style="
+          text-decoration: none;
+          color: white;
+          text-align: center;
+          padding: 1.5rem;
+        "
+      >
+        <h4>🎭 Playwright Docs</h4>
+        <p style="font-size: 0.9rem">Official documentation</p>
+      </a>
+
+      <a
+        href="https://github.com/jterrats/JT_DynamicQueries/actions"
+        class="feature-card"
+        style="
+          text-decoration: none;
+          color: white;
+          text-align: center;
+          padding: 1.5rem;
+        "
+      >
+        <h4>🔄 CI/CD Pipeline</h4>
+        <p style="font-size: 0.9rem">View test results</p>
+      </a>
+    </div>
+  </section>
+</div>

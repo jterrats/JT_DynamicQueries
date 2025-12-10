@@ -1035,6 +1035,13 @@
         <value>Need help or want to report an issue? We</value>
     </labels>
     <labels>
+        <fullName>JT_jtDocumentation_welcomeTitle</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtDocumentation - welcomeTitle</shortDescription>
+        <value>Dynamic Query Viewer - Documentation</value>
+    </labels>
+    <labels>
         <fullName>JT_jtDocumentation_welcomeSubtitle</fullName>
         <language>en_US</language>
         <protected>false</protected>

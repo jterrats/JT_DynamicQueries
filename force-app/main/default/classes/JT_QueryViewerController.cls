@@ -213,10 +213,10 @@ public with sharing class JT_QueryViewerController {
       result.success = false;
       result.records = new List<Object>(); // Changed from List<SObject>
       result.recordCount = 0;
-      
+
       // Parse error message for specific cases
       String errorMessage = e.getMessage().toLowerCase();
-      
+
       // Check for object doesn't exist
       if (errorMessage.contains('sobject type') && errorMessage.contains('does not exist')) {
         result.errorMessage = 'Object does not exist or you do not have access to it. Please verify the object name in your query.';
@@ -237,7 +237,7 @@ public with sharing class JT_QueryViewerController {
       else {
         result.errorMessage = 'Query preview failed: ' + e.getMessage();
       }
-      
+
       return result;
     }
   }

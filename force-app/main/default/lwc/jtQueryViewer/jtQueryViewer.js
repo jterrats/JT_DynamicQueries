@@ -1316,14 +1316,14 @@ export default class JtQueryViewer extends LightningElement {
   // Handle query preview event from modal
   handleQueryPreview(event) {
     const { records, fields, recordCount } = event.detail;
-    
+
     this.queryPreviewResults = records || [];
     this.queryPreviewColumns = fields.map((field) => ({
       label: this.formatLabel(field),
       fieldName: field,
       type: this.getFieldType(field)
     }));
-    
+
     console.log("✅ Query preview updated from modal:", recordCount, "records");
   }
 

@@ -62,8 +62,9 @@
               data-field="developerName"
               onchange={handleFieldChange}
               required
+              disabled={isEditMode}
               placeholder="e.g., Get_Active_Accounts"
-              field-level-help="API name (auto-generated from label)"
+              field-level-help="API name (auto-generated from label, read-only in edit mode)"
             ></lightning-input>
           </lightning-layout-item>
 
@@ -229,7 +230,7 @@
                   ></lightning-icon>
                 </div>
                 <div class="slds-media__body">
-                  <strong>Note:</strong> {toolingNote}
+                  <strong>Note:</strong> {dynamicToolingNote}
                 </div>
               </div>
             </div>

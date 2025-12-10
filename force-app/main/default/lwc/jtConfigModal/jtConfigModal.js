@@ -106,6 +106,17 @@ export default class JtConfigModal extends LightningElement {
     return this.mode === "edit" ? this.updateLabel : this.saveLabel;
   }
 
+  get dynamicToolingNote() {
+    if (this.mode === "edit") {
+      return "This updates a Custom Metadata record via Tooling API. The configuration will be immediately available for use.";
+    }
+    return "This creates a Custom Metadata record via Tooling API. The configuration will be immediately available for use.";
+  }
+
+  get isEditMode() {
+    return this.mode === "edit";
+  }
+
   get showObjectName() {
     return this.queryValidation.isValid && this.queryValidation.objectName;
   }

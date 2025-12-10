@@ -380,33 +380,53 @@ Map&lt;String, Object&gt; additionalBindings = new Map&lt;String, Object&gt;{
 List&lt;SObject&gt; records = JT_DataSelector.getRecords('MixedConfig', true, additionalBindings);
 // Query example: SELECT Id, Name FROM Account WHERE Type = :accountType AND Region__c = :region
 
-// Example 4: Smart auto-strategy (automatically uses cursors if > 50K records)
-// Automatically does COUNT first and decides the best approach
-List&lt;SObject&gt; records = JT_DataSelector.getRecordsWithAutoStrategy(
-    'LargeDatasetConfig', 
-    true, 
-    bindings
+// Example 4: Check COUNT first, then decide strategy (RECOMMENDED)
+// This pattern works in ANY context (sync, async, triggers, etc.)
+Integer recordCount = JT_DataSelector.countRecordsForConfig(
+    'MyConfig', 
+    bindings, 
+    true
 );
-// If > 50K records: throws exception (you must provide a processor)
-// If &lt;= 50K records: returns records normally
 
-// Example 5: Large dataset with cursor processing
-public class MyProcessor implements JT_DataSelector.CursorProcessor {
+if (recordCount > 50000 && System.isBatch()) {
+    // Use Batch Apex for async processing
+    Database.executeBatch(new MyBatchProcessor('MyConfig', bindings));
+} else if (recordCount > 50000 && System.isQueueable()) {
+    // Use Queueable for async processing
+    System.enqueueJob(new MyQueueableProcessor('MyConfig', bindings));
+} else if (recordCount > 50000) {
+    // Use cursor processing (synchronous contexts ONLY)
+    JT_DataSelector.processRecordsWithCursor(
+        'MyConfig', 
+        bindings, 
+        true, 
+        200, 
+        new MyCursorProcessor()
+    );
+} else {
+    // Standard query for small/medium datasets
+    List&lt;SObject&gt; records = JT_DataSelector.getRecords('MyConfig', true, bindings);
+}
+
+// Example 5: Auto-strategy (for synchronous contexts ONLY)
+// WARNING: This will FAIL if called from @future, Queueable, Batch, or Triggers
+List&lt;SObject&gt; records = JT_DataSelector.getRecordsWithAutoStrategy(
+    'MyConfig', 
+    true, 
+    bindings,
+    50000,
+    new MyCursorProcessor() // Required if > 50K records
+);
+
+// Example 6: Cursor processor implementation
+public class MyCursorProcessor implements JT_DataSelector.CursorProcessor {
     public void processBatch(List&lt;SObject&gt; batch) {
         // Process each batch (200 records by default)
-        // Your custom logic here: DML, callouts, etc.
+        // Your custom logic here: DML, callouts, aggregations, etc.
     }
 }
 
-JT_DataSelector.getRecordsWithAutoStrategy(
-    'LargeDatasetConfig',
-    true,
-    bindings,
-    50000, // Threshold
-    new MyProcessor() // Your custom processor
-);
-
-// Example 6: Invocable method (for Flows/Agentforce)
+// Example 7: Invocable method (for Flows/Agentforce)
 // Access via Flow Builder or Agentforce Agent Builder as an Apex Action
                 </pre>
 
@@ -416,10 +436,18 @@ JT_DataSelector.getRecordsWithAutoStrategy(
                 </div>
 
                 <div class="alert-warning">
-                    <p><strong>Important:</strong> The <code>getRecordsWithAutoStrategy()</code> method performs a COUNT query first 
-                    to determine the best execution strategy. If the count exceeds the threshold (default 50,000), it will use 
-                    cursor-based processing which requires a <code>CursorProcessor</code> implementation. Note that cursor processing 
-                    <strong>cannot be used in triggers</strong> - only in synchronous Apex code, Invocable methods, and REST/SOAP APIs.</p>
+                    <p><strong>Important - Cursor Limitations:</strong> Apex Cursors (used by <code>processRecordsWithCursor</code>) can 
+                    <strong>ONLY</strong> be used in synchronous contexts. They <strong>CANNOT</strong> be used in:</p>
+                    <ul>
+                        <li>❌ Triggers</li>
+                        <li>❌ @future methods</li>
+                        <li>❌ Queueable jobs</li>
+                        <li>❌ Batch Apex</li>
+                        <li>❌ Any asynchronous context</li>
+                    </ul>
+                    <p><strong>Recommended Pattern:</strong> Use <code>countRecordsForConfig()</code> first to check the record count, 
+                    then decide which strategy to use based on your execution context. For async contexts with large datasets, 
+                    use Batch Apex or Queueable instead of cursors.</p>
                 </div>
 
                 <h3>LWC Components</h3>
@@ -835,33 +863,53 @@ Map&lt;String, Object&gt; bindings = new Map&lt;String, Object&gt;{
 };
 List&lt;SObject&gt; records = JT_DataSelector.getRecords('ConfigName', true, bindings);
 
-// Ejemplo 3: Estrategia automática inteligente (usa cursores si > 50K registros)
-// Automáticamente hace COUNT primero y decide el mejor enfoque
-List&lt;SObject&gt; records = JT_DataSelector.getRecordsWithAutoStrategy(
-    'ConfigDatosGrandes', 
-    true, 
-    bindings
+// Ejemplo 3: Verificar COUNT primero, luego decidir estrategia (RECOMENDADO)
+// Este patrón funciona en CUALQUIER contexto (sync, async, triggers, etc.)
+Integer recordCount = JT_DataSelector.countRecordsForConfig(
+    'MiConfig', 
+    bindings, 
+    true
 );
-// Si > 50K registros: lanza excepción (debes proveer un procesador)
-// Si &lt;= 50K registros: retorna registros normalmente
 
-// Ejemplo 4: Conjunto de datos grande con procesamiento por cursor
-public class MiProcesador implements JT_DataSelector.CursorProcessor {
+if (recordCount > 50000 && System.isBatch()) {
+    // Usar Batch Apex para procesamiento asíncrono
+    Database.executeBatch(new MiBatchProcessor('MiConfig', bindings));
+} else if (recordCount > 50000 && System.isQueueable()) {
+    // Usar Queueable para procesamiento asíncrono
+    System.enqueueJob(new MiQueueableProcessor('MiConfig', bindings));
+} else if (recordCount > 50000) {
+    // Usar procesamiento por cursor (contextos síncronos SOLAMENTE)
+    JT_DataSelector.processRecordsWithCursor(
+        'MiConfig', 
+        bindings, 
+        true, 
+        200, 
+        new MiProcesadorCursor()
+    );
+} else {
+    // Query estándar para datasets pequeños/medianos
+    List&lt;SObject&gt; records = JT_DataSelector.getRecords('MiConfig', true, bindings);
+}
+
+// Ejemplo 4: Estrategia automática (solo contextos síncronos)
+// ADVERTENCIA: Esto FALLARÁ si se llama desde @future, Queueable, Batch, o Triggers
+List&lt;SObject&gt; records = JT_DataSelector.getRecordsWithAutoStrategy(
+    'MiConfig', 
+    true, 
+    bindings,
+    50000,
+    new MiProcesadorCursor() // Requerido si > 50K registros
+);
+
+// Ejemplo 5: Implementación de procesador de cursor
+public class MiProcesadorCursor implements JT_DataSelector.CursorProcessor {
     public void processBatch(List&lt;SObject&gt; batch) {
         // Procesa cada lote (200 registros por defecto)
-        // Tu lógica personalizada aquí: DML, callouts, etc.
+        // Tu lógica personalizada aquí: DML, callouts, agregaciones, etc.
     }
 }
 
-JT_DataSelector.getRecordsWithAutoStrategy(
-    'ConfigDatosGrandes',
-    true,
-    bindings,
-    50000, // Umbral
-    new MiProcesador() // Tu procesador personalizado
-);
-
-// Ejemplo 5: Método invocable (para Flows/Agentforce)
+// Ejemplo 6: Método invocable (para Flows/Agentforce)
 // Accesible vía Flow Builder o Agentforce Agent Builder como Acción Apex
                 </pre>
 
@@ -871,10 +919,18 @@ JT_DataSelector.getRecordsWithAutoStrategy(
                 </div>
 
                 <div class="alert-warning">
-                    <p><strong>Importante:</strong> El método <code>getRecordsWithAutoStrategy()</code> realiza primero una consulta COUNT 
-                    para determinar la mejor estrategia de ejecución. Si el conteo excede el umbral (por defecto 50,000), usará 
-                    procesamiento basado en cursores que requiere una implementación de <code>CursorProcessor</code>. Nota que el procesamiento 
-                    por cursor <strong>no puede usarse en triggers</strong> - solo en código Apex síncrono, métodos Invocables, y APIs REST/SOAP.</p>
+                    <p><strong>Importante - Limitaciones de Cursores:</strong> Los Cursores Apex (usados por <code>processRecordsWithCursor</code>) 
+                    <strong>SOLO</strong> pueden usarse en contextos síncronos. <strong>NO PUEDEN</strong> usarse en:</p>
+                    <ul>
+                        <li>❌ Triggers</li>
+                        <li>❌ Métodos @future</li>
+                        <li>❌ Jobs Queueable</li>
+                        <li>❌ Batch Apex</li>
+                        <li>❌ Cualquier contexto asíncrono</li>
+                    </ul>
+                    <p><strong>Patrón Recomendado:</strong> Usa <code>countRecordsForConfig()</code> primero para verificar el conteo de registros, 
+                    luego decide qué estrategia usar basándote en tu contexto de ejecución. Para contextos async con datasets grandes, 
+                    usa Batch Apex o Queueable en lugar de cursores.</p>
                 </div>
 
                 <h3>Componentes LWC</h3>

@@ -318,14 +318,63 @@ public inherited sharing class JT_DataSelector {
   }
 
   /**
-   * @description Helper method to count records for a given query
+   * @description Count records for a given configuration
+   * This method allows users to check record count BEFORE deciding execution strategy
+   * Use this when you need to choose between standard query, cursor processing, or Batch/Queueable
+   * @param devName Configuration name
+   * @param bindings Custom bindings (merged with config bindings)
+   * @param enforceSecurity Whether to use USER_MODE
+   * @return Integer Number of records that would be returned
+   * @example
+   * // Check count first, then decide strategy
+   * Integer count = JT_DataSelector.countRecordsForConfig('MyConfig', bindings, true);
+   * if (count > 50000 && System.isBatch()) {
+   *     // Use Batch Apex for async processing
+   * } else if (count > 50000) {
+   *     // Use cursor processing (sync only)
+   *     JT_DataSelector.processRecordsWithCursor('MyConfig', bindings, true, 200, processor);
+   * } else {
+   *     // Use standard query
+   *     List<SObject> records = JT_DataSelector.getRecords('MyConfig', true, bindings);
+   * }
+   */
+  public static Integer countRecordsForConfig(
+    String devName,
+    Map<String, Object> bindings,
+    Boolean enforceSecurity
+  ) {
+    final JT_DataSelector selectorInstance = JT_DataSelector.getInstance();
+    final JT_DynamicQueryConfiguration__mdt config = selectorInstance.getConfig(
+      devName
+    );
+
+    // Merge config bindings with custom bindings
+    Map<String, Object> configBindings = String.isNotBlank(config.JT_Binding__c)
+      ? (Map<String, Object>) JSON.deserializeUntyped(config.JT_Binding__c)
+      : new Map<String, Object>();
+    Map<String, Object> mergedBindings = new Map<String, Object>(
+      configBindings
+    );
+    if (bindings != null) {
+      mergedBindings.putAll(bindings);
+    }
+
+    return countRecordsInternal(
+      config.JT_BaseQuery__c,
+      mergedBindings,
+      enforceSecurity
+    );
+  }
+
+  /**
+   * @description Internal helper to count records for a given query
    * @param baseQuery The SOQL query to count
    * @param bindings Bind variables for the query
    * @param enforceSecurity Whether to use USER_MODE
    * @return Integer Number of records that would be returned
    */
   @TestVisible
-  private static Integer countRecords(
+  private static Integer countRecordsInternal(
     String baseQuery,
     Map<String, Object> bindings,
     Boolean enforceSecurity
@@ -393,12 +442,16 @@ public inherited sharing class JT_DataSelector {
   /**
    * @description Smart method that automatically decides whether to use standard query
    * or cursor-based processing based on record count
+   * WARNING: This method uses cursor processing for large datasets, which can ONLY be used
+   * in synchronous contexts (NOT in @future, Queueable, Batch, or Triggers).
+   * For async contexts, use countRecordsForConfig() first, then decide your strategy.
    * @param devName Configuration name
    * @param enforceSecurity Whether to use USER_MODE
    * @param bindings Custom bindings (merged with config bindings)
    * @param threshold Record count threshold for using cursor processing (default: 50000)
    * @param processor Optional CursorProcessor for large result sets. If null and count > threshold, throws exception
    * @return List<SObject> Records if count <= threshold, empty list if cursor processing was used
+   * @see countRecordsForConfig For checking count before deciding strategy in async contexts
    */
   public static List<SObject> getRecordsWithAutoStrategy(
     String devName,
@@ -432,7 +485,7 @@ public inherited sharing class JT_DataSelector {
     // Step 1: Count records
     Integer recordCount;
     try {
-      recordCount = countRecords(
+      recordCount = countRecordsInternal(
         config.JT_BaseQuery__c,
         mergedBindings,
         enforceSecurity

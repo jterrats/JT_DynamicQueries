@@ -1065,4 +1065,68 @@
         <value
     >Find where this configuration is used in Apex classes and Flows</value>
     </labels>
+    <labels>
+        <fullName>JT_jtConfigModal_labelRequired</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtConfigModal - labelRequired</shortDescription>
+        <value>Label is required</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtConfigModal_labelTooLong</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtConfigModal - labelTooLong</shortDescription>
+        <value>Label is too long (max 80 characters)</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtConfigModal_developerNameRequired</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtConfigModal - developerNameRequired</shortDescription>
+        <value>Developer Name is required</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtConfigModal_developerNameTooLong</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtConfigModal - developerNameTooLong</shortDescription>
+        <value>Developer Name is too long (max 40 characters)</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtConfigModal_developerNameInvalidChars</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >jtConfigModal - developerNameInvalidChars</shortDescription>
+        <value
+    >Developer Name can only contain letters, numbers, and underscores</value>
+    </labels>
+    <labels>
+        <fullName
+    >JT_jtConfigModal_developerNameMustStartWithLetter</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >jtConfigModal - developerNameMustStartWithLetter</shortDescription>
+        <value>Developer Name must start with a letter</value>
+    </labels>
+    <labels>
+        <fullName
+    >JT_jtConfigModal_developerNameCannotEndWithUnderscore</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >jtConfigModal - developerNameCannotEndWithUnderscore</shortDescription>
+        <value>Developer Name cannot end with an underscore</value>
+    </labels>
+    <labels>
+        <fullName
+    >JT_jtConfigModal_developerNameNoConsecutiveUnderscores</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >jtConfigModal - developerNameNoConsecutiveUnderscores</shortDescription>
+        <value>Developer Name cannot contain consecutive underscores</value>
+    </labels>
 </CustomLabels>

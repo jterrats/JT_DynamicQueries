@@ -35,6 +35,9 @@ export default class JtConfigModal extends LightningElement {
   @api mode = "create"; // 'create' | 'edit'
   @api isSaving = false;
   @api canCreateMetadata = false;
+  @api isLoadingQueryPreview = false;
+  @api queryPreviewResults = [];
+  @api queryPreviewColumns = [];
 
   // Translatable labels
   @api createTitle = "Create New Configuration";
@@ -109,6 +112,10 @@ export default class JtConfigModal extends LightningElement {
 
   get showQueryPreview() {
     return this.queryValidation.isValid && this._config.baseQuery;
+  }
+
+  get hasPreviewData() {
+    return this.queryPreviewResults && this.queryPreviewResults.length > 0;
   }
 
   get saveDisabled() {

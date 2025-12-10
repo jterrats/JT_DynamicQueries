@@ -374,11 +374,7 @@ private class JT_RunAsTestExecutor_Test {
           result.runAsUserName,
           'Should have runAsUser name'
         );
-        System.assertNotEquals(
-          null,
-          result.fields,
-          'Should have fields array'
-        );
+        System.assertNotEquals(null, result.fields, 'Should have fields array');
         System.assertNotEquals(
           null,
           result.records,

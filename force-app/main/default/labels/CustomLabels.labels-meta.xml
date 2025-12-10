@@ -931,7 +931,8 @@
         <fullName>JT_jtQueryViewer_namedCredentialSetup</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - namedCredentialSetup</shortDescription>
+        <shortDescription
+    >jtQueryViewer - namedCredentialSetup</shortDescription>
         <value>Named Credential must be configured. See {0} for details.</value>
     </labels>
     <labels>

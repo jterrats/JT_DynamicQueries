@@ -184,6 +184,9 @@ export default class JtQueryViewer extends LightningElement {
   @track queryValidation = { isValid: false, message: "" };
   @track isSaving = false;
   @track showCacheModal = false;
+  @track isLoadingQueryPreview = false;
+  @track queryPreviewResults = [];
+  @track queryPreviewColumns = [];
 
   // Query Risk Assessment
   @track showRiskWarningModal = false;
@@ -467,7 +470,8 @@ export default class JtQueryViewer extends LightningElement {
 
     executeQueryPreview({
       devName: this.selectedConfig,
-      bindingsJson: bindingsToSend
+      bindingsJson: bindingsToSend,
+      queryOverride: null
     })
       .then((result) => {
         if (result.success && result.recordCount > 0) {
@@ -952,6 +956,9 @@ export default class JtQueryViewer extends LightningElement {
     };
     this.queryValidation = { isValid: false, message: "" };
     this.developerNameManuallyEdited = false;
+    this.queryPreviewResults = [];
+    this.queryPreviewColumns = [];
+    this.isLoadingQueryPreview = false;
   }
 
   // Show usage modal
@@ -1219,18 +1226,24 @@ export default class JtQueryViewer extends LightningElement {
     }
   }
 
-  // Validate query syntax
+  // Validate query syntax and load preview
   validateQuerySyntax() {
     if (!this.newConfig.baseQuery) {
       this.queryValidation = { isValid: false, message: "" };
+      this.queryPreviewResults = [];
+      this.queryPreviewColumns = [];
       return;
     }
+
+    this.isLoadingQueryPreview = true;
 
     validateQuery({ query: this.newConfig.baseQuery })
       .then((result) => {
         this.queryValidation = result;
         if (result.isValid && result.objectName) {
           this.newConfig.objectName = result.objectName;
+          // Load query preview (3 records)
+          return this.loadCreateModalPreview();
         }
       })
       .catch((error) => {
@@ -1240,6 +1253,41 @@ export default class JtQueryViewer extends LightningElement {
             error.body?.message ||
             "Invalid SOQL query. Please check syntax and try again."
         };
+        this.queryPreviewResults = [];
+        this.queryPreviewColumns = [];
+      })
+      .finally(() => {
+        this.isLoadingQueryPreview = false;
+      });
+  }
+
+  // Load preview data for create modal
+  loadCreateModalPreview() {
+    // Build bindings if present
+    const bindingsToSend = this.newConfig.bindings || null;
+
+    return executeQueryPreview({
+      devName: null,
+      bindingsJson: bindingsToSend,
+      queryOverride: this.newConfig.baseQuery // Use queryOverride parameter
+    })
+      .then((result) => {
+        if (result.success && result.recordCount > 0) {
+          this.queryPreviewResults = result.records;
+          this.queryPreviewColumns = result.fields.map((field) => ({
+            label: this.formatLabel(field),
+            fieldName: field,
+            type: this.getFieldType(field)
+          }));
+        } else {
+          this.queryPreviewResults = [];
+          this.queryPreviewColumns = [];
+        }
+      })
+      .catch(() => {
+        // Silent fail - validation is more important
+        this.queryPreviewResults = [];
+        this.queryPreviewColumns = [];
       });
   }
 

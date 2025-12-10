@@ -130,6 +130,57 @@
                     </div>
                   </template>
                 </template>
+
+                <!-- Query Preview Data -->
+                <template if:true={queryValidation.isValid}>
+                  <div class="slds-m-top_medium">
+                    <template if:true={isLoadingQueryPreview}>
+                      <div class="slds-text-align_center slds-p-around_medium">
+                        <lightning-spinner
+                          alternative-text="Loading preview..."
+                          size="small"
+                        ></lightning-spinner>
+                        <p class="slds-text-body_small slds-text-color_weak slds-m-top_small">
+                          Loading preview data...
+                        </p>
+                      </div>
+                    </template>
+
+                    <template if:true={hasPreviewData}>
+                      <div class="slds-text-heading_small slds-m-bottom_x-small">
+                        <lightning-icon
+                          icon-name="utility:preview"
+                          size="xx-small"
+                          class="slds-m-right_xx-small"
+                        ></lightning-icon>
+                        Data Preview (Sample Records)
+                      </div>
+                      <lightning-datatable
+                        key-field="Id"
+                        data={queryPreviewResults}
+                        columns={queryPreviewColumns}
+                        hide-checkbox-column
+                        class="slds-box"
+                      ></lightning-datatable>
+                      <p class="slds-text-body_small slds-text-color_weak slds-m-top_x-small">
+                        Showing up to 5 sample records
+                      </p>
+                    </template>
+
+                    <template if:false={hasPreviewData}>
+                      <template if:false={isLoadingQueryPreview}>
+                        <div class="slds-text-body_small slds-text-color_weak slds-m-top_small">
+                          <lightning-icon
+                            icon-name="utility:info"
+                            size="xx-small"
+                            class="slds-m-right_xx-small"
+                          ></lightning-icon>
+                          No data returned from query preview
+                        </div>
+                      </template>
+                    </template>
+                  </div>
+                </template>
               </div>
             </template>
           </lightning-layout-item>

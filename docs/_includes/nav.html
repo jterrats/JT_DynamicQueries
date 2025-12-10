@@ -1,7 +1,15 @@
 <div class="language-banner">
   <div style="flex: 1">
     {% if page.url != "/" and page.url != "/index.html" %}
-    <a href="{{ site.baseurl }}/" style="color: white; text-decoration: none; padding-left: 1rem; font-weight: bold;">
+    <a
+      href="{{ site.baseurl }}/"
+      style="
+        color: white;
+        text-decoration: none;
+        padding-left: 1rem;
+        font-weight: bold;
+      "
+    >
       ← Back to Home
     </a>
     {% endif %}
@@ -70,4 +78,3 @@
     />
   </div>
 </header>
-

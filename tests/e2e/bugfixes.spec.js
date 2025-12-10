@@ -357,18 +357,24 @@ test.describe("Bug Fix Validation Tests", () => {
 
         // ✅ FIX VALIDATION: Copy and Download buttons should exist
         // Try multiple selectors for robustness
-        const copyButton = page.locator(
-          'lightning-button:has-text("Copy"), button:has-text("Copy")'
-        ).first();
-        const downloadButton = page.locator(
-          'lightning-button:has-text("Download"), button:has-text("Download")'
-        ).first();
+        const copyButton = page
+          .locator('lightning-button:has-text("Copy"), button:has-text("Copy")')
+          .first();
+        const downloadButton = page
+          .locator(
+            'lightning-button:has-text("Download"), button:has-text("Download")'
+          )
+          .first();
 
         // Wait for buttons to appear
         await page.waitForTimeout(1000);
 
-        const hasCopy = await copyButton.isVisible({ timeout: 2000 }).catch(() => false);
-        const hasDownload = await downloadButton.isVisible({ timeout: 2000 }).catch(() => false);
+        const hasCopy = await copyButton
+          .isVisible({ timeout: 2000 })
+          .catch(() => false);
+        const hasDownload = await downloadButton
+          .isVisible({ timeout: 2000 })
+          .catch(() => false);
 
         console.log(`📊 Copy button exists: ${hasCopy}`);
         console.log(`📊 Download button exists: ${hasDownload}`);

@@ -645,11 +645,7 @@ private class JT_MetadataCreator_Test {
     );
     Test.stopTest();
 
-    System.assertEquals(
-      false,
-      result.isValid,
-      'Null query should be invalid'
-    );
+    System.assertEquals(false, result.isValid, 'Null query should be invalid');
     System.assertNotEquals(null, result.message, 'Should have error message');
   }
 }

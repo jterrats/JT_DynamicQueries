@@ -1448,14 +1448,19 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     // Try multiple ways to check if checked
     const isChecked = await configCheckbox.getAttribute("checked");
     const ariaChecked = await configCheckbox.getAttribute("aria-checked");
-    const hasCheckedClass = await configCheckbox.evaluate(el => {
-      return el.classList.contains("slds-is-checked") ||
-             el.shadowRoot?.querySelector('input[type="checkbox"]:checked') !== null;
+    const hasCheckedClass = await configCheckbox.evaluate((el) => {
+      return (
+        el.classList.contains("slds-is-checked") ||
+        el.shadowRoot?.querySelector('input[type="checkbox"]:checked') !== null
+      );
     });
 
-    const isSelected = isChecked !== null || ariaChecked === "true" || hasCheckedClass;
+    const isSelected =
+      isChecked !== null || ariaChecked === "true" || hasCheckedClass;
 
-    console.log(`📊 checked attr: ${isChecked}, aria-checked: ${ariaChecked}, hasClass: ${hasCheckedClass}`);
+    console.log(
+      `📊 checked attr: ${isChecked}, aria-checked: ${ariaChecked}, hasClass: ${hasCheckedClass}`
+    );
     expect(isSelected).toBeTruthy();
     console.log("✅ Select All works correctly");
 

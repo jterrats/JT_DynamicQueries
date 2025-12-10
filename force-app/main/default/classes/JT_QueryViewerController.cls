@@ -145,33 +145,43 @@ public with sharing class JT_QueryViewerController {
   /**
    * @description Executes a query preview with LIMIT 5 for data preview
    * @author Jaime Terrats | 12-01-2025
-   * @param devName Configuration developer name
+   * @param devName Configuration developer name (optional if queryOverride provided)
    * @param bindingsJson JSON string with bindings
+   * @param queryOverride Optional: Direct query string (for create modal preview)
    * @return QueryResult with max 5 records
    **/
   @AuraEnabled
   public static QueryResult executeQueryPreview(
     String devName,
-    String bindingsJson
+    String bindingsJson,
+    String queryOverride
   ) {
     try {
       Map<String, Object> bindings = String.isNotBlank(bindingsJson)
         ? (Map<String, Object>) JSON.deserializeUntyped(bindingsJson)
         : new Map<String, Object>();
 
-      // Get the configuration to modify query with LIMIT
-      JT_DynamicQueryConfiguration__mdt config = [
-        SELECT JT_BaseQuery__c, JT_ObjectName__c
-        FROM JT_DynamicQueryConfiguration__mdt
-        WHERE DeveloperName = :devName
-        WITH USER_MODE
-        LIMIT 1
-      ];
+      String baseQuery;
+
+      // If queryOverride is provided, use it directly (for create modal preview)
+      if (String.isNotBlank(queryOverride)) {
+        baseQuery = queryOverride;
+      } else {
+        // Get the configuration to modify query with LIMIT
+        JT_DynamicQueryConfiguration__mdt config = [
+          SELECT JT_BaseQuery__c, JT_ObjectName__c
+          FROM JT_DynamicQueryConfiguration__mdt
+          WHERE DeveloperName = :devName
+          WITH USER_MODE
+          LIMIT 1
+        ];
+        baseQuery = config.JT_BaseQuery__c;
+      }
 
       // Auto-add wildcards for LIKE queries in preview
-      addWildcardsForLikeBindings(config.JT_BaseQuery__c, bindings);
+      addWildcardsForLikeBindings(baseQuery, bindings);
 
-      String previewQuery = config.JT_BaseQuery__c;
+      String previewQuery = baseQuery;
 
       // Add LIMIT 5 if not already present
       if (!previewQuery.containsIgnoreCase('LIMIT')) {
@@ -479,17 +489,17 @@ public with sharing class JT_QueryViewerController {
       // Execute count query with timeout protection
       Integer estimatedCount = 0;
       try {
-        System.debug(
-          LoggingLevel.FINE,
-          '📊 COUNT Query: ' + countQuery
-        );
+        System.debug(LoggingLevel.FINE, '📊 COUNT Query: ' + countQuery);
         System.debug(
           LoggingLevel.FINE,
           '📊 COUNT Bindings: ' + JSON.serialize(countBindings)
         );
 
         // Replace bind variables in COUNT query (countQuery() doesn't support bindings)
-        String finalCountQuery = replaceBindVariables(countQuery, countBindings);
+        String finalCountQuery = replaceBindVariables(
+          countQuery,
+          countBindings
+        );
 
         System.debug(
           LoggingLevel.FINE,
@@ -499,10 +509,7 @@ public with sharing class JT_QueryViewerController {
         // Use countQuery() instead of queryWithBinds for COUNT queries
         estimatedCount = Database.countQuery(finalCountQuery);
 
-        System.debug(
-          LoggingLevel.FINE,
-          '✅ COUNT Result: ' + estimatedCount
-        );
+        System.debug(LoggingLevel.FINE, '✅ COUNT Result: ' + estimatedCount);
       } catch (Exception e) {
         // If count fails, assume it's risky
         System.debug(
@@ -594,12 +601,22 @@ public with sharing class JT_QueryViewerController {
         escapedValue = 'null';
       } else if (value instanceof String) {
         // Escape single quotes and wrap in quotes
-        escapedValue = '\'' + String.valueOf(value).replace('\'', '\\\'') + '\'';
-      } else if (value instanceof Boolean || value instanceof Integer || value instanceof Decimal) {
+        escapedValue =
+          '\'' +
+          String.valueOf(value).replace('\'', '\\\'') +
+          '\'';
+      } else if (
+        value instanceof Boolean ||
+        value instanceof Integer ||
+        value instanceof Decimal
+      ) {
         escapedValue = String.valueOf(value);
       } else {
         // For other types, use string representation
-        escapedValue = '\'' + String.valueOf(value).replace('\'', '\\\'') + '\'';
+        escapedValue =
+          '\'' +
+          String.valueOf(value).replace('\'', '\\\'') +
+          '\'';
       }
 
       // Replace :bindVar with actual value
@@ -622,10 +639,7 @@ public with sharing class JT_QueryViewerController {
       return;
     }
 
-    System.debug(
-      LoggingLevel.FINE,
-      '🔍 Adding wildcards for LIKE bindings...'
-    );
+    System.debug(LoggingLevel.FINE, '🔍 Adding wildcards for LIKE bindings...');
 
     // Find all LIKE clauses with bind variables: LIKE :bindVar
     // (?i) makes the pattern case-insensitive
@@ -649,11 +663,7 @@ public with sharing class JT_QueryViewerController {
             bindings.put(bindVar, newValue);
             System.debug(
               LoggingLevel.FINE,
-              '✅ Added wildcards: "' +
-              strValue +
-              '" → "' +
-              newValue +
-              '"'
+              '✅ Added wildcards: "' + strValue + '" → "' + newValue + '"'
             );
           } else {
             System.debug(

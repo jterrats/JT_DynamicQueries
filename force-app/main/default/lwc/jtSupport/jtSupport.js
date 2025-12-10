@@ -29,11 +29,6 @@ import responseTime from "@salesforce/label/c.JT_jtSupport_responseTime";
 
 export default class JtSupport extends LightningElement {
   // Custom Labels (imported from Translation Workbench)
-  connectedCallback() {
-    console.log('✅ jtSupport component loaded successfully');
-    console.log('Labels:', this.labels);
-  }
-
   labels = {
     title,
     welcomeTitle,

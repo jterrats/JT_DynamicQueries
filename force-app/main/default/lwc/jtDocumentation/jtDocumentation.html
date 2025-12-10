@@ -505,50 +505,8 @@ sf org assign permset --name JT_Dynamic_Queries_User
             </div>
 
             <h3 class="slds-text-heading_medium slds-m-bottom_small">
-              Public Apex Controllers
+              Public Apex Classes
             </h3>
-
-            <div class="slds-box slds-m-bottom_medium">
-              <h4 class="slds-text-heading_small slds-m-bottom_x-small">
-                <code>JT_QueryViewerController</code>
-              </h4>
-              <table
-                class="slds-table slds-table_cell-buffer slds-table_bordered slds-text-body_small"
-              >
-                <thead>
-                  <tr>
-                    <th>Method</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><code>getConfigurations()</code></td>
-                    <td>Retrieve all query configurations</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <code
-                        >executeQuery(devName, bindingsJson, runAsUserId)</code
-                      >
-                    </td>
-                    <td>Execute a query with parameters</td>
-                  </tr>
-                  <tr>
-                    <td><code>assessQueryRisk(devName, bindingsJson)</code></td>
-                    <td>Estimate record count and risk level</td>
-                  </tr>
-                  <tr>
-                    <td><code>executeQueryWithBatchProcessing(...)</code></td>
-                    <td>Execute with cursor/batch processing</td>
-                  </tr>
-                  <tr>
-                    <td><code>getAllActiveUsers()</code></td>
-                    <td>Get user list for Run As feature</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
 
             <div class="slds-box slds-m-bottom_medium">
               <h4 class="slds-text-heading_small slds-m-bottom_x-small">
@@ -581,48 +539,26 @@ sf org assign permset --name JT_Dynamic_Queries_User
                     </td>
                   </tr>
                   <tr>
+                    <td><code>countRecordsForConfig</code></td>
+                    <td>devName, bindings, enforceSecurity</td>
+                    <td>
+                      Count records before execution to decide strategy (works in any context)
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><code>getRecordsWithAutoStrategy</code></td>
+                    <td>devName, enforceSecurity, bindings, threshold, processor</td>
+                    <td>
+                      Smart method that auto-decides between query/cursor (sync contexts only)
+                    </td>
+                  </tr>
+                  <tr>
                     <td><code>processRecordsWithCursor</code></td>
-                    <td>query, bindings, processor, batchSize</td>
-                    <td>Batch process large result sets (&gt;50K records)</td>
+                    <td>devName, bindings, enforceSecurity, batchSize, processor</td>
+                    <td>Batch process large result sets (&gt;50K records, sync contexts only)</td>
                   </tr>
                 </tbody>
               </table>
-            </div>
-
-            <h3
-              class="slds-text-heading_medium slds-m-top_large slds-m-bottom_small"
-            >
-              Internal Framework Classes
-            </h3>
-
-            <div class="slds-box slds-theme_shade slds-m-bottom_medium">
-              <h4 class="slds-text-heading_small slds-m-bottom_x-small">
-                <lightning-icon
-                  icon-name="utility:lock"
-                  size="xx-small"
-                  class="slds-m-right_xx-small"
-                ></lightning-icon>
-                Internal Only (Not in Permission Set)
-              </h4>
-              <ul class="slds-list_dotted slds-text-body_small">
-                <li>
-                  <code>JT_SystemSelector</code> - Infrastructure queries
-                  (Organization, Audit Logs)
-                </li>
-                <li>
-                  <code>JT_AuditLogDomain</code> - DML operations for audit
-                  trail (without sharing)
-                </li>
-                <li>
-                  <code>JT_SettingsService</code> - Business logic for settings
-                  management
-                </li>
-              </ul>
-              <p class="slds-text-body_small slds-m-top_small">
-                <strong>Note:</strong> These classes are used internally by the
-                framework and follow the Selector/Domain/Service layer pattern
-                for separation of concerns.
-              </p>
             </div>
 
             <h3

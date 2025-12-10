@@ -430,11 +430,11 @@ public class MyCursorProcessor implements JT_DataSelector.CursorProcessor {
 trigger AccountTrigger on Account (after insert) {
     // Check count first
     Integer recordCount = JT_DataSelector.countRecordsForConfig(
-        'AccountConfig', 
-        null, 
+        'AccountConfig',
+        null,
         true
     );
-    
+
     if (recordCount > 50000) {
         // ✅ Use Batch Apex for large datasets in trigger context
         Database.executeBatch(new AccountBatchProcessor('AccountConfig', null));
@@ -471,7 +471,7 @@ public class AccountService {
                 </div>
 
                 <div class="alert-warning">
-                    <p><strong>Important - Cursor Limitations:</strong> Apex Cursors (used by <code>processRecordsWithCursor</code>) can 
+                    <p><strong>Important - Cursor Limitations:</strong> Apex Cursors (used by <code>processRecordsWithCursor</code>) can
                     <strong>ONLY</strong> be used in synchronous contexts. They <strong>CANNOT</strong> be used in:</p>
                     <ul>
                         <li>❌ Triggers (including Handler → Service layers called from triggers)</li>
@@ -480,11 +480,11 @@ public class AccountService {
                         <li>❌ Batch Apex</li>
                         <li>❌ Any asynchronous context</li>
                     </ul>
-                    <p><strong>Execution Context Matters:</strong> The <em>execution context</em> (where the code was invoked from) 
-                    determines cursor availability, not the architectural layer. If a trigger calls Handler → Service → Cursor, 
+                    <p><strong>Execution Context Matters:</strong> The <em>execution context</em> (where the code was invoked from)
+                    determines cursor availability, not the architectural layer. If a trigger calls Handler → Service → Cursor,
                     it will fail because the entire chain runs in trigger context.</p>
-                    <p><strong>Recommended Pattern:</strong> Use <code>countRecordsForConfig()</code> first to check the record count, 
-                    then decide which strategy to use based on your execution context. For async contexts with large datasets, 
+                    <p><strong>Recommended Pattern:</strong> Use <code>countRecordsForConfig()</code> first to check the record count,
+                    then decide which strategy to use based on your execution context. For async contexts with large datasets,
                     use Batch Apex or Queueable instead of cursors.</p>
                 </div>
 
@@ -951,11 +951,11 @@ public class MiProcesadorCursor implements JT_DataSelector.CursorProcessor {
 trigger AccountTrigger on Account (after insert) {
     // Verificar conteo primero
     Integer recordCount = JT_DataSelector.countRecordsForConfig(
-        'AccountConfig', 
-        null, 
+        'AccountConfig',
+        null,
         true
     );
-    
+
     if (recordCount > 50000) {
         // ✅ Usar Batch Apex para datasets grandes en contexto de trigger
         Database.executeBatch(new AccountBatchProcessor('AccountConfig', null));
@@ -992,7 +992,7 @@ public class AccountService {
                 </div>
 
                 <div class="alert-warning">
-                    <p><strong>Importante - Limitaciones de Cursores:</strong> Los Cursores Apex (usados por <code>processRecordsWithCursor</code>) 
+                    <p><strong>Importante - Limitaciones de Cursores:</strong> Los Cursores Apex (usados por <code>processRecordsWithCursor</code>)
                     <strong>SOLO</strong> pueden usarse en contextos síncronos. <strong>NO PUEDEN</strong> usarse en:</p>
                     <ul>
                         <li>❌ Triggers (incluyendo capas Handler → Service llamadas desde triggers)</li>
@@ -1001,11 +1001,11 @@ public class AccountService {
                         <li>❌ Batch Apex</li>
                         <li>❌ Cualquier contexto asíncrono</li>
                     </ul>
-                    <p><strong>El Contexto de Ejecución Importa:</strong> El <em>contexto de ejecución</em> (desde dónde se invocó el código) 
-                    determina la disponibilidad de cursores, no la capa arquitectónica. Si un trigger llama Handler → Service → Cursor, 
+                    <p><strong>El Contexto de Ejecución Importa:</strong> El <em>contexto de ejecución</em> (desde dónde se invocó el código)
+                    determina la disponibilidad de cursores, no la capa arquitectónica. Si un trigger llama Handler → Service → Cursor,
                     fallará porque toda la cadena se ejecuta en contexto de trigger.</p>
-                    <p><strong>Patrón Recomendado:</strong> Usa <code>countRecordsForConfig()</code> primero para verificar el conteo de registros, 
-                    luego decide qué estrategia usar basándote en tu contexto de ejecución. Para contextos async con datasets grandes, 
+                    <p><strong>Patrón Recomendado:</strong> Usa <code>countRecordsForConfig()</code> primero para verificar el conteo de registros,
+                    luego decide qué estrategia usar basándote en tu contexto de ejecución. Para contextos async con datasets grandes,
                     usa Batch Apex o Queueable en lugar de cursores.</p>
                 </div>
 

@@ -1,7 +1,14 @@
 const { test, expect } = require("@playwright/test");
 const { getSFSession } = require("./utils/sfAuth");
-const { setupTestContext } = require("./utils/testHelpers");
-const { TARGET_APP_NAME, QUERY_VIEWER_TAB } = require("./utils/testConstants");
+const {
+  setupTestContext,
+  selectConfiguration
+} = require("./utils/testHelpers");
+const {
+  TARGET_APP_NAME,
+  QUERY_VIEWER_TAB,
+  SELECTORS
+} = require("./utils/testConstants");
 
 /**
  * E2E tests for "Where is this used?" feature
@@ -30,25 +37,18 @@ test.describe("Where is this used? - Usage Detection", () => {
     page
   }) => {
     // Select the Account_By_Name configuration
-    const configDropdown = page.locator(
-      'lightning-combobox[data-id="configDropdown"]'
-    );
-    await configDropdown.click();
-    await page
-      .locator('lightning-base-combobox-item[data-value="Account_By_Name"]')
-      .click();
+    await selectConfiguration(page, "Account By Name");
 
-    // Wait for configuration to load
-    await page.waitForTimeout(1000);
+    // Click "Where is this used?" link
+    const whereUsedLink = page.locator('a:has-text("Where is this used?")');
+    await whereUsedLink.click();
 
-    // Click "Where is this used?" button
-    const whereUsedButton = page.locator(
-      'lightning-button[data-id="whereIsThisUsedBtn"]'
-    );
-    await whereUsedButton.click();
-
-    // Wait for modal to appear
-    await page.waitForSelector("c-jt-usage-modal", { timeout: 10000 });
+    // Wait for modal to appear and load
+    await page.waitForSelector("c-jt-usage-modal", {
+      state: "attached",
+      timeout: 15000
+    });
+    await page.waitForTimeout(2000); // Wait for search to complete
 
     // Wait for search results
     await page.waitForTimeout(3000);
@@ -81,24 +81,17 @@ test.describe("Where is this used? - Usage Detection", () => {
     page
   }) => {
     // Select the Dynamic_Input_Test configuration
-    const configDropdown = page.locator(
-      'lightning-combobox[data-id="configDropdown"]'
-    );
-    await configDropdown.click();
-    await page
-      .locator('lightning-base-combobox-item[data-value="Dynamic_Input_Test"]')
-      .click();
+    await selectConfiguration(page, "Dynamic Input Test");
 
-    await page.waitForTimeout(1000);
+    // Click "Where is this used?" link
+    const whereUsedLink = page.locator('a:has-text("Where is this used?")');
+    await whereUsedLink.click();
 
-    // Click "Where is this used?"
-    const whereUsedButton = page.locator(
-      'lightning-button[data-id="whereIsThisUsedBtn"]'
-    );
-    await whereUsedButton.click();
-
-    await page.waitForSelector("c-jt-usage-modal", { timeout: 10000 });
-    await page.waitForTimeout(3000);
+    await page.waitForSelector("c-jt-usage-modal", {
+      state: "attached",
+      timeout: 15000
+    });
+    await page.waitForTimeout(3000); // Wait for search to complete
 
     // Verify JT_AccountReportExample with getAccountsByTypeAndIndustry method
     const modalContent = page.locator("c-jt-usage-modal");
@@ -120,25 +113,17 @@ test.describe("Where is this used? - Usage Detection", () => {
     page
   }) => {
     // Select the Complete_Customer_360_View configuration
-    const configDropdown = page.locator(
-      'lightning-combobox[data-id="configDropdown"]'
-    );
-    await configDropdown.click();
-    await page
-      .locator(
-        'lightning-base-combobox-item[data-value="Complete_Customer_360_View"]'
-      )
-      .click();
+    await selectConfiguration(page, "Customer 360 View");
 
-    await page.waitForTimeout(1000);
+    // Click "Where is this used?" link
+    const whereUsedLink = page.locator('a:has-text("Where is this used?")');
+    await whereUsedLink.click();
 
-    const whereUsedButton = page.locator(
-      'lightning-button[data-id="whereIsThisUsedBtn"]'
-    );
-    await whereUsedButton.click();
-
-    await page.waitForSelector("c-jt-usage-modal", { timeout: 10000 });
-    await page.waitForTimeout(3000);
+    await page.waitForSelector("c-jt-usage-modal", {
+      state: "attached",
+      timeout: 15000
+    });
+    await page.waitForTimeout(3000); // Wait for search to complete
 
     const modalContent = page.locator("c-jt-usage-modal");
     const apexClassUsage = modalContent.locator(
@@ -163,20 +148,16 @@ test.describe("Where is this used? - Usage Detection", () => {
     // If the Flow is in Draft status, it may not be detected by Tooling API
 
     // Select any configuration (Flow should be generic)
-    const configDropdown = page.locator(
-      'lightning-combobox[data-id="configDropdown"]'
-    );
-    await configDropdown.click();
-    await page.locator("lightning-base-combobox-item").first().click();
+    await selectConfiguration(page, "Account By Name");
 
-    await page.waitForTimeout(1000);
+    // Click "Where is this used?" link
+    const whereUsedLink = page.locator('a:has-text("Where is this used?")');
+    await whereUsedLink.click();
 
-    const whereUsedButton = page.locator(
-      'lightning-button[data-id="whereIsThisUsedBtn"]'
-    );
-    await whereUsedButton.click();
-
-    await page.waitForSelector("c-jt-usage-modal", { timeout: 10000 });
+    await page.waitForSelector("c-jt-usage-modal", {
+      state: "attached",
+      timeout: 15000
+    });
     await page.waitForTimeout(5000); // Flows take longer to search
 
     const modalContent = page.locator("c-jt-usage-modal");
@@ -209,23 +190,17 @@ test.describe("Where is this used? - Usage Detection", () => {
     page
   }) => {
     // Select Test_Record configuration (used in tests but not in production code)
-    const configDropdown = page.locator(
-      'lightning-combobox[data-id="configDropdown"]'
-    );
-    await configDropdown.click();
-    await page
-      .locator('lightning-base-combobox-item[data-value="Test_Record"]')
-      .click();
+    await selectConfiguration(page, "Test Record");
 
-    await page.waitForTimeout(1000);
+    // Click "Where is this used?" link
+    const whereUsedLink = page.locator('a:has-text("Where is this used?")');
+    await whereUsedLink.click();
 
-    const whereUsedButton = page.locator(
-      'lightning-button[data-id="whereIsThisUsedBtn"]'
-    );
-    await whereUsedButton.click();
-
-    await page.waitForSelector("c-jt-usage-modal", { timeout: 10000 });
-    await page.waitForTimeout(3000);
+    await page.waitForSelector("c-jt-usage-modal", {
+      state: "attached",
+      timeout: 15000
+    });
+    await page.waitForTimeout(3000); // Wait for search to complete
 
     const modalContent = page.locator("c-jt-usage-modal");
 
@@ -240,23 +215,17 @@ test.describe("Where is this used? - Usage Detection", () => {
 
   test("should display usage statistics summary", async ({ page }) => {
     // Select a configuration with known usages
-    const configDropdown = page.locator(
-      'lightning-combobox[data-id="configDropdown"]'
-    );
-    await configDropdown.click();
-    await page
-      .locator('lightning-base-combobox-item[data-value="Account_By_Name"]')
-      .click();
+    await selectConfiguration(page, "Account By Name");
 
-    await page.waitForTimeout(1000);
+    // Click "Where is this used?" link
+    const whereUsedLink = page.locator('a:has-text("Where is this used?")');
+    await whereUsedLink.click();
 
-    const whereUsedButton = page.locator(
-      'lightning-button[data-id="whereIsThisUsedBtn"]'
-    );
-    await whereUsedButton.click();
-
-    await page.waitForSelector("c-jt-usage-modal", { timeout: 10000 });
-    await page.waitForTimeout(3000);
+    await page.waitForSelector("c-jt-usage-modal", {
+      state: "attached",
+      timeout: 15000
+    });
+    await page.waitForTimeout(3000); // Wait for search to complete
 
     const modalContent = page.locator("c-jt-usage-modal");
 

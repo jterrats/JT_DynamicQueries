@@ -468,7 +468,9 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     const labelValue = await labelInput.locator("input").inputValue();
     expect(labelValue.length).toBeGreaterThan(0);
 
-    console.log(`✅ Edit modal opened with pre-filled data for: ${selectedConfigName}`);
+    console.log(
+      `✅ Edit modal opened with pre-filled data for: ${selectedConfigName}`
+    );
 
     // Close modal
     const cancelButton = modal

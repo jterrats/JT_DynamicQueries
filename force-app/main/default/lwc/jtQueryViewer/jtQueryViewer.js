@@ -670,7 +670,6 @@ export default class JtQueryViewer extends LightningElement {
     }
 
     this.resetResults();
-
   }
 
   // Phase 1 Refactor: Clear configuration
@@ -1193,7 +1192,7 @@ export default class JtQueryViewer extends LightningElement {
       // Clear users
       if (users) {
         this.userOptions = [];
-        await this.loadUsers(true); // Force refresh
+        this.loadAllUsers(); // Reload all users
         cleared.push(this.labels.clearUsersLabel);
       }
 
@@ -1219,7 +1218,8 @@ export default class JtQueryViewer extends LightningElement {
     } catch (error) {
       this.showErrorToast(
         "Error",
-        "Error clearing cache: " + error.body.message
+        "Error clearing cache: " +
+          (error.body?.message || error.message || "Unknown error")
       );
     }
   }

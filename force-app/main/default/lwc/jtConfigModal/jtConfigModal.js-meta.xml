@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
-    <apiVersion>65.0</apiVersion>
-    <isExposed>false</isExposed>
-    <masterLabel>Config Modal (Generic)</masterLabel>
-    <description
-  >Generic modal for creating or editing query configurations. Phase 4 refactor.</description>
-</LightningComponentBundle>

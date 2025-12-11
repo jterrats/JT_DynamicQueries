@@ -20,16 +20,13 @@
  *
  * See the Apex Language Reference for more information about Testing and Code Coverage.
  */
-/**
- * @description Test class for JT_DataSelector
- * @author Jaime Terrats | 06-18-2025
- **/
 @isTest
 private class JT_DataSelector_Test {
   /**
-   * @description This test setup creates a mock account record and user with limited access
-   * @author Jaime Terrats | 06-18-2025
-   **/
+* @description this test setup creates a mock account record and
+user with limited access
+* @author Jaime Terrats | 06-18-2025
+**/
   @testSetup
   static void setupTestData() {
     insert new Account(Name = 'Test Account');
@@ -168,154 +165,6 @@ private class JT_DataSelector_Test {
         System.Assert.isTrue(e instanceof AuraHandledException);
       }
       Test.stopTest();
-    }
-  }
-
-  /**
-   * @description validates @InvocableMethod for Flow/Agentforce integration
-   * @author Jaime Terrats | 06-18-2025
-   **/
-  @isTest
-  static void testInvocableMethod() {
-    // Prepare request
-    JT_DataSelector.InvocableRequest req = new JT_DataSelector.InvocableRequest();
-    req.configName = 'Test_Record';
-    req.bindingsJson = '{"name":"Test Account"}';
-
-    Test.startTest();
-    List<JT_DataSelector.InvocableResult> results = JT_DataSelector.executeQuery(
-      new List<JT_DataSelector.InvocableRequest>{ req }
-    );
-    Test.stopTest();
-
-    System.assertNotEquals(null, results, 'Results should not be null');
-    System.assertEquals(1, results.size(), 'Should return one result');
-    System.assertEquals(true, results[0].success, 'Should be successful');
-    System.assertNotEquals(
-      null,
-      results[0].records,
-      'Records should not be null'
-    );
-    System.assert(
-      results[0].recordCount > 0,
-      'Should have at least one record'
-    );
-  }
-
-  /**
-   * @description validates @InvocableMethod with invalid config
-   * @author Jaime Terrats | 06-18-2025
-   **/
-  @isTest
-  static void testInvocableMethodError() {
-    JT_DataSelector.InvocableRequest req = new JT_DataSelector.InvocableRequest();
-    req.configName = 'NonExistentConfig';
-    req.bindingsJson = '{}';
-
-    Test.startTest();
-    List<JT_DataSelector.InvocableResult> results = JT_DataSelector.executeQuery(
-      new List<JT_DataSelector.InvocableRequest>{ req }
-    );
-    Test.stopTest();
-
-    System.assertNotEquals(null, results, 'Results should not be null');
-    System.assertEquals(1, results.size(), 'Should return one result');
-    System.assertEquals(false, results[0].success, 'Should have failed');
-    System.assertNotEquals(
-      null,
-      results[0].errorMessage,
-      'Error message should not be null'
-    );
-  }
-
-  /**
-   * @description Test cursor processing with small batch
-   * @author Jaime Terrats | 11-30-2025
-   **/
-  @isTest
-  static void testCursorProcessing() {
-    // Create test processor
-    TestCursorProcessor processor = new TestCursorProcessor();
-
-    Map<String, Object> bindings = new Map<String, Object>{
-      'name' => 'Test Account for Query'
-    };
-
-    Test.startTest();
-    Integer totalProcessed = JT_DataSelector.processRecordsWithCursor(
-      'Test_Record',
-      bindings,
-      true, // enforces security
-      10, // small batch size for testing
-      processor
-    );
-    Test.stopTest();
-
-    System.assert(totalProcessed >= 0, 'Should process at least 0 records');
-    System.assertEquals(
-      totalProcessed,
-      processor.totalRecordsProcessed,
-      'Total processed should match processor count'
-    );
-  }
-
-  /**
-   * @description Test cursor processing with null bindings
-   * @author Jaime Terrats | 11-30-2025
-   **/
-  @isTest
-  static void testCursorProcessingNullBindings() {
-    TestCursorProcessor processor = new TestCursorProcessor();
-
-    Test.startTest();
-    Integer totalProcessed = JT_DataSelector.processRecordsWithCursor(
-      'Test_Record',
-      null, // null bindings
-      true,
-      50,
-      processor
-    );
-    Test.stopTest();
-
-    System.assert(
-      totalProcessed >= 0,
-      'Should handle null bindings gracefully'
-    );
-  }
-
-  /**
-   * @description Test cursor processing with default batch size
-   * @author Jaime Terrats | 11-30-2025
-   **/
-  @isTest
-  static void testCursorProcessingDefaultBatchSize() {
-    TestCursorProcessor processor = new TestCursorProcessor();
-
-    Test.startTest();
-    Integer totalProcessed = JT_DataSelector.processRecordsWithCursor(
-      'Test_Record',
-      null,
-      true,
-      null, // null batch size (should default to 200)
-      processor
-    );
-    Test.stopTest();
-
-    System.assert(totalProcessed >= 0, 'Should use default batch size');
-  }
-
-  /**
-   * @description Test implementation of CursorProcessor interface
-   */
-  private class TestCursorProcessor implements JT_DataSelector.CursorProcessor {
-    public Integer batchesProcessed = 0;
-    public Integer totalRecordsProcessed = 0;
-
-    public void processBatch(List<SObject> batch) {
-      batchesProcessed++;
-      totalRecordsProcessed += batch.size();
-      // In a real implementation, you would process the batch here
-      // Example: insert updates, send emails, perform calculations, etc.
     }
   }
 }

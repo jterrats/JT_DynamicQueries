@@ -1,76 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
-    <applicationVisibilities>
-        <application>JT_Dynamic_Queries</application>
-        <visible>true</visible>
-    </applicationVisibilities>
     <classAccesses>
         <apexClass>JT_DataSelector</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-        <apexClass>JT_QueryViewerController</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-        <apexClass>JT_MetadataCreator</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-        <apexClass>JT_RunAsTestExecutor</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-        <apexClass>JT_ProductionSettingsController</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-        <apexClass>JT_UsageFinder</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <customMetadataTypeAccesses>
         <enabled>true</enabled>
         <name>JT_DynamicQueryConfiguration__mdt</name>
     </customMetadataTypeAccesses>
-    <customSettingAccesses>
-        <enabled>true</enabled>
-        <name>JT_DynamicQuerySettings__c</name>
-    </customSettingAccesses>
-    <description
-  >Grants access to custom metadata, apex classes, and Dynamic Queries application.</description>
+    <description>Grants access to custom metadata and apex class.</description>
     <hasActivationRequired>false</hasActivationRequired>
     <label>JT Dynamic Queries</label>
-    <pageAccesses>
-        <apexPage>JT_SessionIdPage</apexPage>
-        <enabled>true</enabled>
-    </pageAccesses>
-    <tabSettings>
-        <tab>JT_Query_Viewer</tab>
-        <visibility>Visible</visibility>
-    </tabSettings>
-    <tabSettings>
-        <tab>JT_Documentation</tab>
-        <visibility>Visible</visibility>
-    </tabSettings>
-    <tabSettings>
-        <tab>JT_SettingsAuditLog__c</tab>
-        <visibility>Visible</visibility>
-    </tabSettings>
-    <tabSettings>
-        <tab>standard-report</tab>
-        <visibility>Visible</visibility>
-    </tabSettings>
-    <tabSettings>
-        <tab>JT_Support</tab>
-        <visibility>Visible</visibility>
-    </tabSettings>
-    <objectPermissions>
-        <allowCreate>false</allowCreate>
-        <allowDelete>false</allowDelete>
-        <allowEdit>false</allowEdit>
-        <allowRead>true</allowRead>
-        <modifyAllRecords>false</modifyAllRecords>
-        <object>JT_SettingsAuditLog__c</object>
-        <viewAllRecords>true</viewAllRecords>
-    </objectPermissions>
 </PermissionSet>

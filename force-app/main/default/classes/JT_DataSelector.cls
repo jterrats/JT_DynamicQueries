@@ -210,123 +210,59 @@ public inherited sharing class JT_DataSelector {
   }
 
   /**
-   * @description Validates and converts binding types based on JT_Binding__c schema
+   * @description Validates and converts binding types by detecting operators in query
    * @param bindings Raw bindings from user input
-   * @param bindingsSchema JSON schema from JT_Binding__c field
+   * @param query SOQL query string to analyze for operators
    * @return Map<String, Object> Validated and converted bindings
    */
   @TestVisible
   private static Map<String, Object> validateAndConvertBindings(
     Map<String, Object> bindings,
-    String bindingsSchema
+    String query
   ) {
     if (bindings == null || bindings.isEmpty()) {
       return bindings;
     }
 
-    if (String.isBlank(bindingsSchema)) {
+    if (String.isBlank(query)) {
       return bindings;
     }
 
     Map<String, Object> validatedBindings = new Map<String, Object>();
-    Map<String, Object> schema = (Map<String, Object>) JSON.deserializeUntyped(
-      bindingsSchema
-    );
 
     for (String key : bindings.keySet()) {
       Object value = bindings.get(key);
 
-      // If no schema definition for this key, pass through
-      if (!schema.containsKey(key)) {
-        validatedBindings.put(key, value);
-        continue;
-      }
+      // Auto-detect if this binding is used with IN operator
+      String normalizedQuery = query.toLowerCase();
+      String bindingPattern = ':' + key.toLowerCase();
 
-      Map<String, Object> fieldDef = (Map<String, Object>) schema.get(key);
-      String expectedType = (String) fieldDef.get('type');
+      // Check if used with IN/INCLUDES/EXCLUDES (requires List)
+      Boolean requiresList =
+        normalizedQuery.contains('in ' + bindingPattern) ||
+        normalizedQuery.contains('includes ' + bindingPattern) ||
+        normalizedQuery.contains('excludes ' + bindingPattern);
 
-      // Convert based on expected type
-      if (expectedType != null) {
-        validatedBindings.put(key, convertBindingValue(value, expectedType));
+      if (requiresList) {
+        // Convert to List<String> if not already a list
+        if (!(value instanceof List<Object>)) {
+          validatedBindings.put(key, convertListToTypedList(
+            new List<Object>{ value },
+            'String'
+          ));
+        } else {
+          validatedBindings.put(key, convertListToTypedList(
+            (List<Object>) value,
+            'String'
+          ));
+        }
       } else {
+        // Pass through as-is for other operators
         validatedBindings.put(key, value);
       }
     }
 
     return validatedBindings;
-  }
-
-  /**
-   * @description Converts a binding value to the expected type
-   * @param value The raw value
-   * @param expectedType The expected type (e.g., 'List<String>', 'Integer', 'Date')
-   * @return Object Converted value
-   */
-  @TestVisible
-  private static Object convertBindingValue(Object value, String expectedType) {
-    if (value == null) {
-      return null;
-    }
-
-    // Handle List types
-    if (expectedType.startsWith('List<')) {
-      // Extract inner type: List<String> -> String
-      String innerType = expectedType.substring(
-        expectedType.indexOf('<') + 1,
-        expectedType.lastIndexOf('>')
-      );
-
-      // If already a list, ensure it's properly typed
-      if (value instanceof List<Object>) {
-        return convertListToTypedList((List<Object>) value, innerType);
-      }
-
-      // Convert single value to typed list
-      return convertListToTypedList(new List<Object>{ value }, innerType);
-    }
-
-    // Handle Set types (convert to List for Database.queryWithBinds)
-    if (expectedType.startsWith('Set<')) {
-      String innerType = expectedType.substring(
-        expectedType.indexOf('<') + 1,
-        expectedType.lastIndexOf('>')
-      );
-
-      if (value instanceof Set<Object>) {
-        return convertListToTypedList(
-          new List<Object>((Set<Object>) value),
-          innerType
-        );
-      }
-      if (value instanceof List<Object>) {
-        return convertListToTypedList((List<Object>) value, innerType);
-      }
-      return convertListToTypedList(new List<Object>{ value }, innerType);
-    }
-
-    // Handle primitive types
-    if (expectedType == 'Integer' && value instanceof String) {
-      return Integer.valueOf((String) value);
-    }
-
-    if (expectedType == 'Decimal' && value instanceof String) {
-      return Decimal.valueOf((String) value);
-    }
-
-    if (expectedType == 'Boolean' && value instanceof String) {
-      return Boolean.valueOf((String) value);
-    }
-
-    if (expectedType == 'Date' && value instanceof String) {
-      return Date.valueOf((String) value);
-    }
-
-    if (expectedType == 'Datetime' && value instanceof String) {
-      return Datetime.valueOf((String) value);
-    }
-
-    // Default: return as-is
-    return value;
   }
 
   /**
@@ -364,7 +300,11 @@ public inherited sharing class JT_DataSelector {
     if (innerType == 'Integer') {
       List<Integer> typedList = new List<Integer>();
       for (Object val : values) {
-        typedList.add(val instanceof Integer ? (Integer) val : Integer.valueOf(String.valueOf(val)));
+        typedList.add(
+          val instanceof Integer
+            ? (Integer) val
+            : Integer.valueOf(String.valueOf(val))
+        );
       }
       return typedList;
     }
@@ -372,7 +312,11 @@ public inherited sharing class JT_DataSelector {
     if (innerType == 'Decimal') {
       List<Decimal> typedList = new List<Decimal>();
       for (Object val : values) {
-        typedList.add(val instanceof Decimal ? (Decimal) val : Decimal.valueOf(String.valueOf(val)));
+        typedList.add(
+          val instanceof Decimal
+            ? (Decimal) val
+            : Decimal.valueOf(String.valueOf(val))
+        );
       }
       return typedList;
     }
@@ -380,7 +324,9 @@ public inherited sharing class JT_DataSelector {
     if (innerType == 'Date') {
       List<Date> typedList = new List<Date>();
       for (Object val : values) {
-        typedList.add(val instanceof Date ? (Date) val : Date.valueOf(String.valueOf(val)));
+        typedList.add(
+          val instanceof Date ? (Date) val : Date.valueOf(String.valueOf(val))
+        );
       }
       return typedList;
     }
@@ -388,7 +334,11 @@ public inherited sharing class JT_DataSelector {
     if (innerType == 'Datetime') {
       List<Datetime> typedList = new List<Datetime>();
       for (Object val : values) {
-        typedList.add(val instanceof Datetime ? (Datetime) val : Datetime.valueOf(String.valueOf(val)));
+        typedList.add(
+          val instanceof Datetime
+            ? (Datetime) val
+            : Datetime.valueOf(String.valueOf(val))
+        );
       }
       return typedList;
     }
@@ -506,10 +456,10 @@ public inherited sharing class JT_DataSelector {
       devName
     );
 
-    // Validate and convert bindings based on schema
+    // Validate and convert bindings (auto-detect types from query patterns)
     Map<String, Object> validatedBindings = validateAndConvertBindings(
       bindings,
-      config.JT_Binding__c
+      config.JT_BaseQuery__c
     );
 
     // Use appropriate access level

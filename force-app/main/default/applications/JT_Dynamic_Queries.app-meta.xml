@@ -4,7 +4,8 @@
         <headerColor>#1589EE</headerColor>
         <shouldOverrideOrgTheme>false</shouldOverrideOrgTheme>
     </brand>
-    <description>Metadata-driven SOQL execution framework with built-in security, batch processing, and risk assessment</description>
+    <description
+  >Metadata-driven SOQL execution framework with built-in security, batch processing, and risk assessment</description>
     <formFactors>Small</formFactors>
     <formFactors>Large</formFactors>
     <isNavAutoTempTabsDisabled>false</isNavAutoTempTabsDisabled>
@@ -13,6 +14,7 @@
     <navType>Standard</navType>
     <tabs>JT_Query_Viewer</tabs>
     <tabs>JT_Documentation</tabs>
+    <tabs>JT_SettingsAuditLog__c</tabs>
     <tabs>JT_Support</tabs>
     <tabs>standard-report</tabs>
     <uiType>Lightning</uiType>

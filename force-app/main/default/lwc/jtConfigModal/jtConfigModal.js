@@ -350,7 +350,8 @@ export default class JtConfigModal extends LightningElement {
       // Network or other error
       this.queryValidation = {
         isValid: false,
-        message: error.body?.message || "Error validating query. Please check syntax.",
+        message:
+          error.body?.message || "Error validating query. Please check syntax.",
         objectName: ""
       };
       this._config.objectName = "";

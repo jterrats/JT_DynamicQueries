@@ -7,7 +7,7 @@
  * @fires userclear - When user selection is cleared
  * @fires executeasuser - When "Execute with System.runAs" is clicked
  */
-import { LightningElement, api, track } from "lwc";
+import { LightningElement, api } from "lwc";
 
 export default class JtRunAsSection extends LightningElement {
   // Public API

@@ -7,36 +7,6 @@ import { LightningElement, api, track } from "lwc";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 
 // Pure functions for data transformation
-const pipe =
-  (...fns) =>
-  (x) =>
-    fns.reduce((v, f) => f(v), x);
-
-const addRowMetadata = (start) => (row, index) => ({
-  ...row,
-  _rowNumber: start + index + 1,
-  _displayName: row.Name || row.Id || `Record ${start + index + 1}`
-});
-
-const addExpandState = (expandedSet) => (row) => {
-  const isExpanded = expandedSet.has(row.Id);
-  return {
-    ...row,
-    _expanded: isExpanded,
-    _expandIcon: isExpanded ? "utility:chevrondown" : "utility:chevronright",
-    _expandLabel: isExpanded ? "Collapse" : "Expand"
-  };
-};
-
-const createCells = (columns) => (row) => ({
-  ...row,
-  _cells: columns.map((col) => ({
-    key: col.fieldName,
-    label: col.label,
-    value: row[col.fieldName] || ""
-  }))
-});
-
 const toggleSetMembership = (set, item) => {
   const newSet = new Set(set);
   newSet.has(item) ? newSet.delete(item) : newSet.add(item);
@@ -305,11 +275,11 @@ export default class JtQueryResults extends LightningElement {
 
     this.copyToClipboard(this.jsonOutput)
       .then(() => this.showToast("success", "Success", "JSON copied"))
-      .catch(() => {
+      .catch((error) => {
         this.showToast(
           "error",
           "Error",
-          "Copy failed: " + (err.message || "Unknown error")
+          "Copy failed: " + (error.message || "Unknown error")
         );
       });
   }
@@ -322,11 +292,11 @@ export default class JtQueryResults extends LightningElement {
 
     this.copyToClipboard(this.csvOutput)
       .then(() => this.showToast("success", "Success", "CSV copied"))
-      .catch(() => {
+      .catch((error) => {
         this.showToast(
           "error",
           "Error",
-          "Copy failed: " + (err?.message || "Unknown error")
+          "Copy failed: " + (error?.message || "Unknown error")
         );
       });
   }
@@ -360,7 +330,7 @@ export default class JtQueryResults extends LightningElement {
         null,
         2
       );
-    } catch (error) {
+    } catch {
       this.showToast("error", "JSON Error", "Generation failed");
       return "{}";
     }

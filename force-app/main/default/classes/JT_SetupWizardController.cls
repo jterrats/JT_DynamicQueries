@@ -67,8 +67,9 @@ public with sharing class JT_SetupWizardController {
     result.orgUrl = URL.getOrgDomainUrl().toExternalForm();
     result.success = true;
     result.message = 'Org URL retrieved';
-    result.details = 'Use this URL when creating Named Credential: ' + result.orgUrl;
-    
+    result.details =
+      'Use this URL when creating Named Credential: ' + result.orgUrl;
+
     return result;
   }
 }

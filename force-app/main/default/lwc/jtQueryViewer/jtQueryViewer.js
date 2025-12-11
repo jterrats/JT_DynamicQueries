@@ -112,7 +112,6 @@ import updateProductionEditingSetting from "@salesforce/apex/JT_ProductionSettin
 import getUsageTrackingSetting from "@salesforce/apex/JT_ProductionSettingsController.getUsageTrackingSetting";
 import updateUsageTrackingSetting from "@salesforce/apex/JT_ProductionSettingsController.updateUsageTrackingSetting";
 import logUsageSearch from "@salesforce/apex/JT_ProductionSettingsController.logUsageSearch";
-import findConfigurationUsage from "@salesforce/apex/JT_UsageFinder.findConfigurationUsage";
 import findAllUsagesResilient from "@salesforce/apex/JT_UsageFinder.findAllUsagesResilient";
 import assessQueryRisk from "@salesforce/apex/JT_QueryViewerController.assessQueryRisk";
 import executeQueryWithBatchProcessing from "@salesforce/apex/JT_QueryViewerController.executeQueryWithBatchProcessing";
@@ -446,65 +445,6 @@ export default class JtQueryViewer extends LightningElement {
     return this.baseQuery;
   }
 
-  // Load query preview data (max 5 records)
-  loadQueryPreview() {
-    if (!this.selectedConfig) {
-      this.showPreviewData = false;
-      return;
-    }
-
-    this.isLoadingPreview = true;
-    this.showPreviewData = false;
-
-    // Build bindings JSON
-    let bindingsToSend;
-    if (this.hasBindings && !this.hasParameters) {
-      bindingsToSend = this.bindings;
-    } else if (this.hasParameters) {
-      bindingsToSend = JSON.stringify(this.parameterValues);
-    } else {
-      bindingsToSend = null;
-    }
-
-    executeQueryPreview({
-      devName: this.selectedConfig,
-      bindingsJson: bindingsToSend,
-      queryOverride: null
-    })
-      .then((result) => {
-        if (result.success && result.recordCount > 0) {
-          this.queryPreviewData = result.records;
-          this.previewRecordCount = result.recordCount;
-          this.showPreviewData = true;
-
-          // Build columns
-          if (result.fields && result.fields.length > 0) {
-            this.previewColumns = result.fields.map((field) => ({
-              label: this.formatLabel(field),
-              fieldName: field,
-              type: this.getFieldType(field)
-            }));
-          }
-
-          // Calculate pagination
-          this.previewTotalPages = Math.ceil(
-            this.previewRecordCount / this.previewPageSize
-          );
-          this.previewCurrentPage = 1;
-        } else {
-          this.showPreviewData = false;
-          this.queryPreviewData = [];
-        }
-      })
-      .catch(() => {
-        this.showPreviewData = false;
-        this.queryPreviewData = [];
-      })
-      .finally(() => {
-        this.isLoadingPreview = false;
-      });
-  }
-
   // Preview pagination getters
   get previewPaginatedData() {
     const start = (this.previewCurrentPage - 1) * this.previewPageSize;
@@ -670,7 +610,6 @@ export default class JtQueryViewer extends LightningElement {
     }
 
     this.resetResults();
-
   }
 
   // Phase 1 Refactor: Clear configuration
@@ -716,7 +655,7 @@ export default class JtQueryViewer extends LightningElement {
 
   // Phase 2 Refactor: Updated to use jtParameterInputs event
   handleParameterChange(event) {
-    const { paramName, value, allValues } = event.detail;
+    const { allValues } = event.detail;
 
     // 🛡️ CRITICAL FIX: Validate allValues exists
     // This prevents native 'change' event from overwriting with undefined
@@ -1219,7 +1158,8 @@ export default class JtQueryViewer extends LightningElement {
     } catch (error) {
       this.showErrorToast(
         "Error",
-        "Error clearing cache: " + (error.body?.message || error.message || "Unknown error")
+        "Error clearing cache: " +
+          (error.body?.message || error.message || "Unknown error")
       );
     }
   }
@@ -1515,40 +1455,6 @@ export default class JtQueryViewer extends LightningElement {
       });
   }
 
-  // Build bindings JSON (extracted from handleExecuteQuery)
-  buildBindingsJson() {
-    let bindingsToSend;
-
-    if (this.hasBindings && !this.hasParameters) {
-      // Use bindings from configuration
-      bindingsToSend = this.bindings;
-    } else if (this.hasParameters) {
-      // Use parameter values entered by user
-      const paramValues = this.parameterValues || {};
-      const hasAnyValues = Object.keys(paramValues).some(
-        (key) =>
-          paramValues[key] !== "" &&
-          paramValues[key] !== null &&
-          paramValues[key] !== undefined
-      );
-
-      if (!hasAnyValues && this.hasBindings) {
-        // Parameters are empty but config has bindings → Use config bindings
-        bindingsToSend = this.bindings;
-      } else if (!hasAnyValues && !this.hasBindings) {
-        // No values and no config bindings → Send empty object
-        bindingsToSend = JSON.stringify({});
-      } else {
-        // Has values → Use parameter values
-        bindingsToSend = JSON.stringify(paramValues);
-      }
-    } else {
-      bindingsToSend = null;
-    }
-
-    return bindingsToSend;
-  }
-
   // Execute query normally (without batch processing)
   executeQueryNormal() {
     // Note: isLoading already set to true in handleExecuteQuery
@@ -1733,7 +1639,7 @@ export default class JtQueryViewer extends LightningElement {
         records: this.queryResults
       };
       this.jsonOutput = JSON.stringify(output, null, 2);
-    } catch (error) {
+    } catch {
       this.showErrorToast("JSON Error", "Failed to generate JSON output");
       this.jsonOutput = "{}";
     }
@@ -1793,7 +1699,7 @@ export default class JtQueryViewer extends LightningElement {
       document.body.removeChild(link);
 
       this.showSuccessToast("CSV downloaded successfully");
-    } catch (error) {
+    } catch {
       this.showErrorToast("CSV Error", "Failed to generate CSV file");
     }
   }
@@ -1841,28 +1747,6 @@ export default class JtQueryViewer extends LightningElement {
     }, 3000);
 
     this.announceToScreenReader(`Error: ${title}. ${message}`, true);
-  }
-
-  showInfoToast(title, message) {
-    // ✅ Clear previous toast to avoid stacking
-    if (this._toastTimeout) {
-      clearTimeout(this._toastTimeout);
-    }
-
-    this.dispatchEvent(
-      new ShowToastEvent({
-        title: title,
-        message: message,
-        variant: "info",
-        mode: "dismissible"
-      })
-    );
-
-    this._toastTimeout = setTimeout(() => {
-      this._toastTimeout = null;
-    }, 3000);
-
-    this.announceToScreenReader(`${title}: ${message}`);
   }
 
   // Announce to screen readers

@@ -53,10 +53,12 @@ export function getFieldType(fieldName) {
   if (lowerField.includes("phone")) return "phone";
 
   // URL fields
-  if (lowerField.includes("url") || lowerField.includes("website")) return "url";
+  if (lowerField.includes("url") || lowerField.includes("website"))
+    return "url";
 
   // Currency fields
-  if (lowerField.includes("amount") || lowerField.includes("price")) return "currency";
+  if (lowerField.includes("amount") || lowerField.includes("price"))
+    return "currency";
 
   return "text";
 }
@@ -272,23 +274,39 @@ export function validateDeveloperName(devName) {
   }
 
   if (devName.length > 40) {
-    return { isValid: false, message: "Developer Name cannot exceed 40 characters" };
+    return {
+      isValid: false,
+      message: "Developer Name cannot exceed 40 characters"
+    };
   }
 
   if (!/^[a-zA-Z]/.test(devName)) {
-    return { isValid: false, message: "Developer Name must start with a letter" };
+    return {
+      isValid: false,
+      message: "Developer Name must start with a letter"
+    };
   }
 
   if (!/^[a-zA-Z0-9_]+$/.test(devName)) {
-    return { isValid: false, message: "Developer Name can only contain letters, numbers, and underscores" };
+    return {
+      isValid: false,
+      message:
+        "Developer Name can only contain letters, numbers, and underscores"
+    };
   }
 
   if (/__/.test(devName)) {
-    return { isValid: false, message: "Developer Name cannot contain consecutive underscores" };
+    return {
+      isValid: false,
+      message: "Developer Name cannot contain consecutive underscores"
+    };
   }
 
   if (/_$/.test(devName)) {
-    return { isValid: false, message: "Developer Name cannot end with an underscore" };
+    return {
+      isValid: false,
+      message: "Developer Name cannot end with an underscore"
+    };
   }
 
   return { isValid: true, message: "" };
@@ -310,4 +328,3 @@ export function validateLabel(label) {
 
   return { isValid: true, message: "" };
 }
-

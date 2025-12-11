@@ -201,7 +201,8 @@ private class JT_QueryViewerController_Test {
     Test.startTest();
     JT_QueryViewerController.QueryResult result = JT_QueryViewerController.executeQueryPreview(
       'Test_Record',
-      bindingsJson
+      bindingsJson,
+      null
     );
     Test.stopTest();
 
@@ -231,7 +232,8 @@ private class JT_QueryViewerController_Test {
     Test.startTest();
     JT_QueryViewerController.QueryResult result = JT_QueryViewerController.executeQueryPreview(
       'Test_Record',
-      invalidBindings
+      invalidBindings,
+      null
     );
     Test.stopTest();
 

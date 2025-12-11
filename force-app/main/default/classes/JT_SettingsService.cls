@@ -9,7 +9,7 @@
  *
  * PMD: AvoidBooleanMethodParameters suppressed - enabled/disabled flags are self-documenting
  */
-@SuppressWarnings('PMD.AvoidBooleanMethodParameters')
+@SuppressWarnings('PMD.AvoidBooleanMethodParameters, PMD.ApexDoc')
 public with sharing class JT_SettingsService {
   /**
    * @description Updates production editing setting with audit log

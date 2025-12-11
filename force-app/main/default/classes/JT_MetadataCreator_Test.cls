@@ -5,7 +5,8 @@
  * @last modified on 11-29-2025
  * @last modified by Jaime Terrats
  **/
-@isTest
+@IsTest
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs, PMD.ApexDoc')
 private class JT_MetadataCreator_Test {
   /**
    * @description Helper to create ConfigurationInput for tests
@@ -51,7 +52,7 @@ private class JT_MetadataCreator_Test {
    * @description Test isSandboxOrScratch method
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testIsSandboxOrScratch() {
     Test.startTest();
     Boolean isSandbox = JT_MetadataCreator.isSandboxOrScratch();
@@ -64,7 +65,7 @@ private class JT_MetadataCreator_Test {
    * @description Test getOrgInfo method
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testGetOrgInfo() {
     Test.startTest();
     Map<String, Object> orgInfo = JT_MetadataCreator.getOrgInfo();
@@ -86,7 +87,7 @@ private class JT_MetadataCreator_Test {
    * @description Test validateQuery with valid SOQL
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testValidateQueryValid() {
     String validQuery = 'SELECT Id, Name FROM Account WHERE Name = :accountName';
 
@@ -117,7 +118,7 @@ private class JT_MetadataCreator_Test {
    * @description Test validateQuery with invalid SOQL
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testValidateQueryInvalid() {
     String invalidQuery = 'INVALID QUERY';
 
@@ -135,7 +136,7 @@ private class JT_MetadataCreator_Test {
    * @description Test validateQuery without FROM clause
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testValidateQueryNoFrom() {
     String invalidQuery = 'SELECT Id, Name';
 
@@ -156,7 +157,7 @@ private class JT_MetadataCreator_Test {
    * @description Test validateQuery with multiple bind variables
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testValidateQueryMultipleBinds() {
     String query = 'SELECT Id FROM Contact WHERE FirstName = :firstName AND LastName = :lastName';
 
@@ -178,7 +179,7 @@ private class JT_MetadataCreator_Test {
    * @description Test createConfiguration validation logic
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testCreateConfigurationValidation() {
     Test.startTest();
 
@@ -208,7 +209,7 @@ private class JT_MetadataCreator_Test {
    * @description Test createConfiguration with missing required fields
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testCreateConfigurationMissingFields() {
     Test.startTest();
     JT_MetadataCreator.MetadataCreationResult result = JT_MetadataCreator.createConfiguration(
@@ -232,7 +233,7 @@ private class JT_MetadataCreator_Test {
    * @description Test createConfiguration with invalid query
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testCreateConfigurationInvalidQuery() {
     Test.startTest();
     JT_MetadataCreator.MetadataCreationResult result = JT_MetadataCreator.createConfiguration(
@@ -248,7 +249,7 @@ private class JT_MetadataCreator_Test {
    * @description Test createConfiguration with all parameters
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testCreateConfigurationComplete() {
     Test.startTest();
     JT_MetadataCreator.MetadataCreationResult result = JT_MetadataCreator.createConfiguration(
@@ -275,7 +276,7 @@ private class JT_MetadataCreator_Test {
    * @description Test validation result wrapper
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testValidationResultWrapper() {
     JT_MetadataCreator.ValidationResult result = new JT_MetadataCreator.ValidationResult();
     result.isValid = true;
@@ -297,7 +298,7 @@ private class JT_MetadataCreator_Test {
    * @description Test metadata creation result wrapper
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testMetadataCreationResultWrapper() {
     JT_MetadataCreator.MetadataCreationResult result = new JT_MetadataCreator.MetadataCreationResult();
     result.success = true;
@@ -323,7 +324,7 @@ private class JT_MetadataCreator_Test {
    * @description Test query validation with lowercase SELECT
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testValidateQueryLowercase() {
     String query = 'select Id from Account where Name = :name';
 
@@ -343,7 +344,7 @@ private class JT_MetadataCreator_Test {
    * @description Test exception handling in createConfiguration
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testCreateConfigurationException() {
     Test.startTest();
 
@@ -375,7 +376,7 @@ private class JT_MetadataCreator_Test {
    * @description Test updateConfiguration with valid parameters
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testUpdateConfigurationValid() {
     Test.startTest();
     JT_MetadataCreator.MetadataCreationResult result = JT_MetadataCreator.updateConfiguration(
@@ -402,7 +403,7 @@ private class JT_MetadataCreator_Test {
    * @description Test updateConfiguration with missing required fields
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testUpdateConfigurationMissingFields() {
     Test.startTest();
     JT_MetadataCreator.MetadataCreationResult result = JT_MetadataCreator.updateConfiguration(
@@ -426,7 +427,7 @@ private class JT_MetadataCreator_Test {
    * @description Test updateConfiguration with all parameters
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testUpdateConfigurationComplete() {
     Test.startTest();
     JT_MetadataCreator.MetadataCreationResult result = JT_MetadataCreator.updateConfiguration(
@@ -448,7 +449,7 @@ private class JT_MetadataCreator_Test {
    * @description Test createConfiguration with XML special characters (escapeXml)
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testCreateConfigurationWithXmlChars() {
     Test.startTest();
     JT_MetadataCreator.MetadataCreationResult result = JT_MetadataCreator.createConfiguration(
@@ -470,7 +471,7 @@ private class JT_MetadataCreator_Test {
    * @description Test createConfiguration with developer name starting with number
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testCreateConfigurationDeveloperNameStartsWithNumber() {
     Test.startTest();
     JT_MetadataCreator.MetadataCreationResult result = JT_MetadataCreator.createConfiguration(
@@ -492,7 +493,7 @@ private class JT_MetadataCreator_Test {
    * @description Test createConfiguration with special characters in developer name
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testCreateConfigurationDeveloperNameSpecialChars() {
     Test.startTest();
     JT_MetadataCreator.MetadataCreationResult result = JT_MetadataCreator.createConfiguration(
@@ -514,7 +515,7 @@ private class JT_MetadataCreator_Test {
    * @description Test isSandboxOrScratch with production override setting
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testIsSandboxOrScratchWithProductionOverride() {
     // Create custom setting to enable production editing
     JT_DynamicQuerySettings__c settings = new JT_DynamicQuerySettings__c();
@@ -534,7 +535,7 @@ private class JT_MetadataCreator_Test {
    * @description Test getOrgInfo with production override setting
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testGetOrgInfoWithProductionOverride() {
     // Create custom setting to enable production editing
     JT_DynamicQuerySettings__c settings = new JT_DynamicQuerySettings__c();
@@ -561,7 +562,7 @@ private class JT_MetadataCreator_Test {
    * @description Test validateQuery with complex query and multiple binds
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testValidateQueryComplex() {
     String complexQuery = 'SELECT Id, Name, (SELECT Id FROM Contacts WHERE LastName = :lastName) FROM Account WHERE CreatedDate > :startDate AND Industry = :industry ORDER BY Name LIMIT :recordLimit';
 
@@ -601,7 +602,7 @@ private class JT_MetadataCreator_Test {
    * @description Test validateQuery with no bind variables
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testValidateQueryNoBinds() {
     String query = 'SELECT Id, Name FROM Account WHERE IsDeleted = false ORDER BY CreatedDate DESC';
 
@@ -623,7 +624,7 @@ private class JT_MetadataCreator_Test {
    * @description Test createConfiguration with empty bindings
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testCreateConfigurationEmptyBindings() {
     Test.startTest();
     JT_MetadataCreator.MetadataCreationResult result = JT_MetadataCreator.createConfiguration(
@@ -644,7 +645,7 @@ private class JT_MetadataCreator_Test {
    * @description Test createConfiguration with null objectName
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testCreateConfigurationNullObjectName() {
     Test.startTest();
     JT_MetadataCreator.MetadataCreationResult result = JT_MetadataCreator.createConfiguration(
@@ -665,7 +666,7 @@ private class JT_MetadataCreator_Test {
    * @description Test updateConfiguration with XML special characters
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testUpdateConfigurationWithXmlChars() {
     Test.startTest();
     JT_MetadataCreator.MetadataCreationResult result = JT_MetadataCreator.updateConfiguration(
@@ -687,7 +688,7 @@ private class JT_MetadataCreator_Test {
    * @description Test exception path in validateQuery
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testValidateQueryExceptionPath() {
     Test.startTest();
     JT_MetadataCreator.ValidationResult result = JT_MetadataCreator.validateQuery(

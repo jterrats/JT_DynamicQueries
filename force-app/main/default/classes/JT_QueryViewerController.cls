@@ -10,7 +10,7 @@
  * - AvoidDeeplyNestedIfStmts: Necessary for bind variable processing and risk assessment
  **/
 @SuppressWarnings(
-  'PMD.CognitiveComplexity, PMD.CyclomaticComplexity, PMD.StdCyclomaticComplexity, PMD.AvoidDeeplyNestedIfStmts'
+  'PMD.CognitiveComplexity, PMD.CyclomaticComplexity, PMD.StdCyclomaticComplexity, PMD.AvoidDeeplyNestedIfStmts, PMD.ApexDoc'
 )
 public with sharing class JT_QueryViewerController {
   /**

@@ -5,13 +5,13 @@
  * @last modified on 11-29-2025
  * @last modified by Jaime Terrats
  **/
-@isTest
+@IsTest
 @SuppressWarnings(
-  'PMD.AvoidDebugStatements, PMD.ApexDoc, PMD.AvoidBooleanMethodParameters'
+  'PMD.AvoidDebugStatements, PMD.ApexDoc, PMD.AvoidBooleanMethodParameters, PMD.ApexUnitTestClassShouldHaveRunAs'
 )
 public class JT_GenericRunAsTest {
   // Functional composition of test execution
-  @isTest
+  @IsTest
   static void executeRunAsTest() {
     // Get parameters functionally from cache/custom setting
     TestParameters params = getTestParameters();

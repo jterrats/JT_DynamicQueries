@@ -5,7 +5,7 @@
  * @last modified on 11-29-2025
  * @last modified by Jaime Terrats
  **/
-@isTest
+@IsTest
 private class JT_RunAsTestExecutor_Test {
   @testSetup
   static void setupTestData() {
@@ -17,7 +17,7 @@ private class JT_RunAsTestExecutor_Test {
    * @description Test canUseRunAsTest method
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testCanUseRunAsTest() {
     Test.startTest();
     Boolean canUse = JT_RunAsTestExecutor.canUseRunAsTest();
@@ -30,7 +30,7 @@ private class JT_RunAsTestExecutor_Test {
    * @description Test executeAsUser with valid parameters
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testExecuteAsUserValid() {
     User currentUser = [SELECT Id FROM User WHERE Id = :UserInfo.getUserId()];
     Map<String, Object> bindings = new Map<String, Object>{
@@ -55,7 +55,7 @@ private class JT_RunAsTestExecutor_Test {
    * @description Test executeAsUser with invalid user
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testExecuteAsUserInvalidUser() {
     // Create a fake but properly formatted User ID
     String fakeUserId = '005' + '0'.repeat(15);
@@ -80,7 +80,7 @@ private class JT_RunAsTestExecutor_Test {
    * @description Test executeAsUser with null bindings
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testExecuteAsUserNullBindings() {
     User currentUser = [SELECT Id FROM User WHERE Id = :UserInfo.getUserId()];
 
@@ -99,7 +99,7 @@ private class JT_RunAsTestExecutor_Test {
    * @description Test executeAsUser with empty bindings
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testExecuteAsUserEmptyBindings() {
     User currentUser = [SELECT Id FROM User WHERE Id = :UserInfo.getUserId()];
 
@@ -118,7 +118,7 @@ private class JT_RunAsTestExecutor_Test {
    * @description Test getTestResults with no cached results
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testGetTestResultsNoCachedResults() {
     User currentUser = [SELECT Id FROM User WHERE Id = :UserInfo.getUserId()];
 
@@ -141,7 +141,7 @@ private class JT_RunAsTestExecutor_Test {
    * @author Jaime Terrats | 11-29-2025
    * Note: Platform Cache may not be available in all test orgs
    **/
-  @isTest
+  @IsTest
   static void testGetTestResultsPath() {
     User currentUser = [SELECT Id FROM User WHERE Id = :UserInfo.getUserId()];
 
@@ -188,7 +188,7 @@ private class JT_RunAsTestExecutor_Test {
    * @description Test getTestStatus with no results
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testGetTestStatusNotFound() {
     User currentUser = [SELECT Id FROM User WHERE Id = :UserInfo.getUserId()];
 
@@ -206,7 +206,7 @@ private class JT_RunAsTestExecutor_Test {
    * @description Test getTestStatus path coverage
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testGetTestStatusPath() {
     User currentUser = [SELECT Id FROM User WHERE Id = :UserInfo.getUserId()];
 
@@ -241,7 +241,7 @@ private class JT_RunAsTestExecutor_Test {
    * @description Test async execution via executeAsUser (covers Queueable indirectly)
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testAsyncExecutionPath() {
     User currentUser = [SELECT Id FROM User WHERE Id = :UserInfo.getUserId()];
     Map<String, Object> bindings = new Map<String, Object>{
@@ -264,7 +264,7 @@ private class JT_RunAsTestExecutor_Test {
    * @description Test error handling in async execution
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testAsyncExecutionWithError() {
     User currentUser = [SELECT Id FROM User WHERE Id = :UserInfo.getUserId()];
 
@@ -284,7 +284,7 @@ private class JT_RunAsTestExecutor_Test {
    * @description Test finalizer path coverage
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testFinalizerPath() {
     User currentUser = [SELECT Id FROM User WHERE Id = :UserInfo.getUserId()];
 
@@ -305,7 +305,7 @@ private class JT_RunAsTestExecutor_Test {
    * @description Test TestExecutionResult wrapper
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testTestExecutionResultWrapper() {
     JT_RunAsTestExecutor.TestExecutionResult result = new JT_RunAsTestExecutor.TestExecutionResult();
 
@@ -335,7 +335,7 @@ private class JT_RunAsTestExecutor_Test {
    * @description Test getTestResults with populated cache and assertMessage
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testGetTestResultsWithAssertMessage() {
     User currentUser = [SELECT Id FROM User WHERE Id = :UserInfo.getUserId()];
 
@@ -392,7 +392,7 @@ private class JT_RunAsTestExecutor_Test {
    * @description Test getTestResults with error result in cache
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testGetTestResultsWithError() {
     User currentUser = [SELECT Id FROM User WHERE Id = :UserInfo.getUserId()];
 
@@ -433,7 +433,7 @@ private class JT_RunAsTestExecutor_Test {
    * @description Test getTestStatus with completed execution
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testGetTestStatusCompleted() {
     User currentUser = [SELECT Id FROM User WHERE Id = :UserInfo.getUserId()];
 
@@ -472,7 +472,7 @@ private class JT_RunAsTestExecutor_Test {
    * @description Test getTestStatus with running execution
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testGetTestStatusRunning() {
     User currentUser = [SELECT Id FROM User WHERE Id = :UserInfo.getUserId()];
 
@@ -514,7 +514,7 @@ private class JT_RunAsTestExecutor_Test {
    * @description Test RunAsTestQueueable directly with success path
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testRunAsTestQueueableSuccess() {
     User currentUser = [SELECT Id FROM User WHERE Id = :UserInfo.getUserId()];
     Map<String, Object> bindings = new Map<String, Object>{
@@ -541,7 +541,7 @@ private class JT_RunAsTestExecutor_Test {
    * @description Test RunAsTestQueueable with invalid config (error path)
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testRunAsTestQueueableError() {
     User currentUser = [SELECT Id FROM User WHERE Id = :UserInfo.getUserId()];
 
@@ -564,7 +564,7 @@ private class JT_RunAsTestExecutor_Test {
    * @description Test RunAsTestQueueable with null bindings
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testRunAsTestQueueableNullBindings() {
     User currentUser = [SELECT Id FROM User WHERE Id = :UserInfo.getUserId()];
 
@@ -585,7 +585,7 @@ private class JT_RunAsTestExecutor_Test {
    * @description Test RunAsTestQueueable with empty bindings string
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testRunAsTestQueueableEmptyBindings() {
     User currentUser = [SELECT Id FROM User WHERE Id = :UserInfo.getUserId()];
 
@@ -606,7 +606,7 @@ private class JT_RunAsTestExecutor_Test {
    * @description Test TestExecutionFinalizer directly
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testTestExecutionFinalizer() {
     User currentUser = [SELECT Id FROM User WHERE Id = :UserInfo.getUserId()];
 
@@ -628,7 +628,7 @@ private class JT_RunAsTestExecutor_Test {
    * @description Test executeAsUser with inactive user
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   @SuppressWarnings(
     'PMD.AvoidHardcodingId'
   ) // Hardcoded ID intentional for negative test case
@@ -652,7 +652,7 @@ private class JT_RunAsTestExecutor_Test {
    * @description Test getTestResults exception handling
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testGetTestResultsExceptionHandling() {
     // Use invalid user ID format to potentially trigger exception
     String invalidUserId = 'invalid_id_format';
@@ -672,7 +672,7 @@ private class JT_RunAsTestExecutor_Test {
    * @description Test getTestStatus exception handling
    * @author Jaime Terrats | 11-29-2025
    **/
-  @isTest
+  @IsTest
   static void testGetTestStatusExceptionHandling() {
     // Use invalid user ID to potentially trigger exception
     String invalidUserId = 'invalid_id_format';

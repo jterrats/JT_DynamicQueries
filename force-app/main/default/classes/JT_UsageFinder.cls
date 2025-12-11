@@ -9,7 +9,7 @@
  * - AvoidDeeplyNestedIfStmts: Necessary for parsing Tooling API responses
  */
 @SuppressWarnings(
-  'PMD.CognitiveComplexity, PMD.CyclomaticComplexity, PMD.StdCyclomaticComplexity, PMD.AvoidBooleanMethodParameters, PMD.AvoidDeeplyNestedIfStmts'
+  'PMD.CognitiveComplexity, PMD.CyclomaticComplexity, PMD.StdCyclomaticComplexity, PMD.AvoidBooleanMethodParameters, PMD.AvoidDeeplyNestedIfStmts, PMD.AvoidDebugStatements, PMD.ApexDoc, PMD.NcssMethodCount'
 )
 public with sharing class JT_UsageFinder {
   /**

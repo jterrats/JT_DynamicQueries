@@ -452,7 +452,7 @@ public inherited sharing class JT_DataSelector {
    * @description Smart method that automatically decides whether to use standard query
    * or cursor-based processing based on record count
    * WARNING: This method uses cursor processing for large datasets, which can ONLY be used
-   * in synchronous contexts (NOT in @future, Queueable, Batch, or Triggers).
+   * in synchronous contexts (NOT in @Future, Queueable, Batch, or Triggers).
    * For async contexts, use countRecordsForConfig() first, then decide your strategy.
    * @param devName Configuration name
    * @param enforceSecurity Whether to use USER_MODE

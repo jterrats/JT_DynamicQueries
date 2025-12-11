@@ -5,7 +5,8 @@
  * @last modified on 11-28-2025
  * @last modified by Jaime Terrats
  **/
-@isTest
+@IsTest
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs, PMD.ApexDoc')
 private class JT_QueryViewerController_Test {
   @testSetup
   static void setupTestData() {
@@ -128,7 +129,7 @@ private class JT_QueryViewerController_Test {
    * @description Test getConfigurations method
    * @author Jaime Terrats | 11-28-2025
    **/
-  @isTest
+  @IsTest
   static void testGetConfigurations() {
     Test.startTest();
     List<JT_QueryViewerController.ConfigurationOption> configs = JT_QueryViewerController.getConfigurations();
@@ -142,7 +143,7 @@ private class JT_QueryViewerController_Test {
    * @description Test executeQuery with bindings
    * @author Jaime Terrats | 11-28-2025
    **/
-  @isTest
+  @IsTest
   static void testExecuteQueryWithBindings() {
     Map<String, Object> bindings = new Map<String, Object>{
       'name' => 'Test Account for Viewer'
@@ -166,7 +167,7 @@ private class JT_QueryViewerController_Test {
    * @description Test executeQuery without custom bindings (uses config bindings)
    * @author Jaime Terrats | 11-28-2025
    **/
-  @isTest
+  @IsTest
   static void testExecuteQueryWithoutBindings() {
     Test.startTest();
     JT_QueryViewerController.QueryResult result = JT_QueryViewerController.executeQuery(
@@ -191,7 +192,7 @@ private class JT_QueryViewerController_Test {
    * @description Test executeQueryPreview method
    * @author Jaime Terrats | 12-01-2025
    **/
-  @isTest
+  @IsTest
   static void testExecuteQueryPreview() {
     Map<String, Object> bindings = new Map<String, Object>{
       'name' => 'Test Account for Viewer'
@@ -225,7 +226,7 @@ private class JT_QueryViewerController_Test {
    * @description Test executeQueryPreview with invalid bindings
    * @author Jaime Terrats | 12-01-2025
    **/
-  @isTest
+  @IsTest
   static void testExecuteQueryPreviewError() {
     String invalidBindings = '{invalid json}';
 
@@ -253,7 +254,7 @@ private class JT_QueryViewerController_Test {
    * @description Test extractParameters method
    * @author Jaime Terrats | 11-28-2025
    **/
-  @isTest
+  @IsTest
   static void testExtractParameters() {
     String query = 'SELECT Id, Name FROM Account WHERE Name = :accountName AND Type = :accountType';
 
@@ -270,7 +271,7 @@ private class JT_QueryViewerController_Test {
    * @description Test extractParameters with empty query
    * @author Jaime Terrats | 11-28-2025
    **/
-  @isTest
+  @IsTest
   static void testExtractParametersEmpty() {
     Test.startTest();
     List<String> params = JT_QueryViewerController.extractParameters('');
@@ -283,7 +284,7 @@ private class JT_QueryViewerController_Test {
    * @description Test executeQuery with invalid config
    * @author Jaime Terrats | 11-28-2025
    **/
-  @isTest
+  @IsTest
   static void testExecuteQueryError() {
     Test.startTest();
     JT_QueryViewerController.QueryResult result = JT_QueryViewerController.executeQuery(
@@ -305,7 +306,7 @@ private class JT_QueryViewerController_Test {
    * @description Test canUseRunAs method
    * @author Jaime Terrats | 11-28-2025
    **/
-  @isTest
+  @IsTest
   static void testCanUseRunAs() {
     Test.startTest();
     Boolean canUse = JT_QueryViewerController.canUseRunAs();
@@ -319,7 +320,7 @@ private class JT_QueryViewerController_Test {
    * @description Test searchUsers method
    * @author Jaime Terrats | 11-28-2025
    **/
-  @isTest
+  @IsTest
   static void testGetAllActiveUsers() {
     Test.startTest();
     try {
@@ -348,7 +349,7 @@ private class JT_QueryViewerController_Test {
    * @description Test executeQuery with Run As User
    * @author Jaime Terrats | 11-28-2025
    **/
-  @isTest
+  @IsTest
   static void testExecuteQueryWithRunAs() {
     User currentUser = [SELECT Id FROM User WHERE Id = :UserInfo.getUserId()];
     Map<String, Object> bindings = new Map<String, Object>{
@@ -376,7 +377,7 @@ private class JT_QueryViewerController_Test {
    * @description Test extractParameters with various spacing formats
    * @author Jaime Terrats | 11-30-2025
    **/
-  @isTest
+  @IsTest
   static void testExtractParametersVariousSpacing() {
     String query1 = 'SELECT Id FROM Account WHERE Name = :name';
     String query2 = 'SELECT Id FROM Account WHERE Name =:name';
@@ -406,7 +407,7 @@ private class JT_QueryViewerController_Test {
    * @description Test assessQueryRisk for low risk queries
    * @author Jaime Terrats | 12-02-2025
    **/
-  @isTest
+  @IsTest
   static void testAssessQueryRiskLowRisk() {
     Map<String, Object> bindings = new Map<String, Object>{
       'name' => 'Test Account for Viewer'
@@ -456,7 +457,7 @@ private class JT_QueryViewerController_Test {
    * @description Test assessQueryRisk with empty bindings (high risk)
    * @author Jaime Terrats | 12-02-2025
    **/
-  @isTest
+  @IsTest
   static void testAssessQueryRiskEmptyBindings() {
     // Empty bindings (empty string value)
     Map<String, Object> bindings = new Map<String, Object>{ 'name' => '' };
@@ -481,7 +482,7 @@ private class JT_QueryViewerController_Test {
    * @description Test executeQueryWithBatchProcessing
    * @author Jaime Terrats | 12-02-2025
    **/
-  @isTest
+  @IsTest
   static void testExecuteQueryWithBatchProcessing() {
     // Create a specific account that matches the test
     Account testAcc = new Account(Name = 'Batch Processing Test Account');
@@ -514,7 +515,7 @@ private class JT_QueryViewerController_Test {
    * @description Test batch processing with large result set simulation
    * @author Jaime Terrats | 12-02-2025
    **/
-  @isTest
+  @IsTest
   static void testExecuteQueryWithBatchProcessingLargeSet() {
     // Create a single account that will be queried
     Account testAcc = new Account(Name = 'Large Set Test Account');
@@ -542,7 +543,7 @@ private class JT_QueryViewerController_Test {
    * @description Test ResultCollector inner class
    * @author Jaime Terrats | 12-02-2025
    **/
-  @isTest
+  @IsTest
   static void testResultCollector() {
     // Create test records
     List<Account> accounts = new List<Account>{

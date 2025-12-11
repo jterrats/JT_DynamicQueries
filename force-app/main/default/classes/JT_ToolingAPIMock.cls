@@ -5,7 +5,7 @@
  * @last modified on 11-29-2025
  * @last modified by Jaime Terrats
  **/
-@isTest
+@IsTest
 public class JT_ToolingAPIMock implements HttpCalloutMock {
   private Integer statusCode;
   private String responseBody;

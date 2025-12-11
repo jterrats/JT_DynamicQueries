@@ -3,9 +3,11 @@
  * @author Jaime Terrats
  * @date 2025-12-02
  */
-@isTest
+@IsTest
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 private class JT_SettingsService_Test {
-  @isTest
+  @IsTest
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
   static void testUpdateProductionEditingSetting() {
     Test.startTest();
     Boolean result = JT_SettingsService.updateProductionEditingSetting(true);
@@ -32,7 +34,8 @@ private class JT_SettingsService_Test {
     System.assertEquals(1, logs.size(), 'Should create audit log');
   }
 
-  @isTest
+  @IsTest
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
   static void testUpdateUsageTrackingSetting() {
     Test.startTest();
     Boolean result = JT_SettingsService.updateUsageTrackingSetting(true);
@@ -59,7 +62,8 @@ private class JT_SettingsService_Test {
     System.assertEquals(1, logs.size(), 'Should create audit log');
   }
 
-  @isTest
+  @IsTest
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
   static void testLogUsageSearch() {
     Test.startTest();
     JT_SettingsService.logUsageSearch('Test_Config', 10);
@@ -84,7 +88,8 @@ private class JT_SettingsService_Test {
     );
   }
 
-  @isTest
+  @IsTest
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
   static void testGetProductionEditingSettingDefault() {
     // No custom setting exists yet
     Test.startTest();
@@ -94,7 +99,8 @@ private class JT_SettingsService_Test {
     System.assertEquals(false, result, 'Should default to false');
   }
 
-  @isTest
+  @IsTest
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
   static void testGetUsageTrackingSettingDefault() {
     // No custom setting exists yet
     Test.startTest();
@@ -104,7 +110,8 @@ private class JT_SettingsService_Test {
     System.assertEquals(false, result, 'Should default to false');
   }
 
-  @isTest
+  @IsTest
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
   static void testUpdateProductionEditingSettingToggle() {
     // Enable
     JT_SettingsService.updateProductionEditingSetting(true);

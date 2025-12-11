@@ -3,12 +3,14 @@
  * @author Jaime Terrats
  * @date 2025-11-30
  */
-@isTest
+@IsTest
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 private class JT_ProductionSettingsController_Test {
   /**
    * @description Test getting production editing setting (default false)
    */
-  @isTest
+  @IsTest
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
   static void testGetProductionEditingSettingDefault() {
     Test.startTest();
     Boolean result = JT_ProductionSettingsController.getProductionEditingSetting();
@@ -20,7 +22,8 @@ private class JT_ProductionSettingsController_Test {
   /**
    * @description Test updating production editing setting
    */
-  @isTest
+  @IsTest
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
   static void testUpdateProductionEditingSetting() {
     Test.startTest();
     Boolean updateResult = JT_ProductionSettingsController.updateProductionEditingSetting(
@@ -53,7 +56,8 @@ private class JT_ProductionSettingsController_Test {
   /**
    * @description Test disabling production editing
    */
-  @isTest
+  @IsTest
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
   static void testDisableProductionEditing() {
     // First enable it
     JT_ProductionSettingsController.updateProductionEditingSetting(true);
@@ -73,7 +77,8 @@ private class JT_ProductionSettingsController_Test {
   /**
    * @description Test audit log creation directly
    */
-  @isTest
+  @IsTest
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
   static void testAuditLogCreationViaQuery() {
     // Create some audit entries
     JT_ProductionSettingsController.updateProductionEditingSetting(true);
@@ -95,7 +100,8 @@ private class JT_ProductionSettingsController_Test {
   /**
    * @description Test Starter/Free Edition detection
    */
-  @isTest
+  @IsTest
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
   static void testIsStarterOrFreeEdition() {
     Test.startTest();
     Boolean isStarter = JT_ProductionSettingsController.isStarterOrFreeEdition();
@@ -110,7 +116,8 @@ private class JT_ProductionSettingsController_Test {
    * @description Test audit log creation with without sharing
    * Verifies that audit logs can be created even without explicit permissions
    */
-  @isTest
+  @IsTest
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
   static void testAuditLogCreationWithoutSharing() {
     // This test verifies the @SuppressWarnings('PMD.ApexCRUDViolation')
     // annotation is correctly applied for AppExchange security review
@@ -135,7 +142,8 @@ private class JT_ProductionSettingsController_Test {
   /**
    * @description Test error handling in get setting
    */
-  @isTest
+  @IsTest
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
   static void testGetSettingErrorHandling() {
     // This test verifies graceful error handling
     Test.startTest();
@@ -149,7 +157,8 @@ private class JT_ProductionSettingsController_Test {
   /**
    * @description Test getting usage tracking setting
    */
-  @isTest
+  @IsTest
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
   static void testGetUsageTrackingSetting() {
     Test.startTest();
     Boolean result = JT_ProductionSettingsController.getUsageTrackingSetting();
@@ -165,7 +174,8 @@ private class JT_ProductionSettingsController_Test {
   /**
    * @description Test updating usage tracking setting
    */
-  @isTest
+  @IsTest
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
   static void testUpdateUsageTrackingSetting() {
     Test.startTest();
     Boolean updateResult = JT_ProductionSettingsController.updateUsageTrackingSetting(
@@ -185,7 +195,8 @@ private class JT_ProductionSettingsController_Test {
    * or if audit logging is intentionally disabled. The method uses try-catch
    * to prevent failures from breaking the main functionality.
    */
-  @isTest
+  @IsTest
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
   static void testLogUsageSearch() {
     Test.startTest();
     // Call the method - it should not throw any exceptions

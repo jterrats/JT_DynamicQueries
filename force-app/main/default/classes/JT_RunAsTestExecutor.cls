@@ -88,7 +88,7 @@ public with sharing class JT_RunAsTestExecutor {
    * @param configName Configuration name
    * @param bindingsJson Bindings JSON
    **/
-  @future
+  @Future
   private static void executeTestAsync(
     String userId,
     String configName,

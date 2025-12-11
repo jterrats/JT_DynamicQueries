@@ -3,12 +3,12 @@
  * @author Jaime Terrats
  * @date 2025-11-30
  */
-@isTest
+@IsTest
 private class JT_UsageFinder_Test {
   /**
    * @description Test finding configuration usage in Apex classes
    */
-  @isTest
+  @IsTest
   static void testFindConfigurationUsageInApex() {
     Test.startTest();
     List<JT_UsageFinder.UsageResult> results = JT_UsageFinder.findConfigurationUsage(
@@ -44,7 +44,7 @@ private class JT_UsageFinder_Test {
   /**
    * @description Test finding all usages
    */
-  @isTest
+  @IsTest
   static void testFindAllUsages() {
     Test.startTest();
     List<JT_UsageFinder.UsageResult> results = JT_UsageFinder.findAllUsages();
@@ -58,7 +58,7 @@ private class JT_UsageFinder_Test {
   /**
    * @description Test with non-existent configuration
    */
-  @isTest
+  @IsTest
   static void testFindNonExistentConfig() {
     Test.startTest();
     List<JT_UsageFinder.UsageResult> results = JT_UsageFinder.findConfigurationUsage(
@@ -80,7 +80,7 @@ private class JT_UsageFinder_Test {
    * Note: Flow search requires Tooling API callout which cannot be tested directly
    * This test ensures the method doesn't fail when session ID is unavailable
    */
-  @isTest
+  @IsTest
   static void testFlowSearchWithoutSession() {
     // Mock scenario: No VF page available (returns null session)
     Test.startTest();
@@ -100,7 +100,7 @@ private class JT_UsageFinder_Test {
   /**
    * @description Test UsageResult wrapper class
    */
-  @isTest
+  @IsTest
   @SuppressWarnings(
     'PMD.AvoidHardcodingId'
   ) // Hardcoded ID intentional for test data

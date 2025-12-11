@@ -1,5 +1,7 @@
-import { test, expect } from "@playwright/test";
-import { loginToSalesforce } from "./utils/auth.js";
+const { test, expect } = require("@playwright/test");
+const { getSFSession } = require("./utils/sfAuth");
+const { setupTestContext } = require("./utils/testHelpers");
+const { TARGET_APP_NAME, QUERY_VIEWER_TAB } = require("./utils/testConstants");
 
 /**
  * E2E tests for "Where is this used?" feature
@@ -8,11 +10,20 @@ import { loginToSalesforce } from "./utils/auth.js";
  * - Flows (JT_Account_Report_Flow)
  */
 test.describe("Where is this used? - Usage Detection", () => {
-  test.beforeEach(async ({ page }) => {
-    await loginToSalesforce(page);
+  let session;
 
-    // Navigate to Query Viewer
-    await page.goto("/lightning/n/JT_Query_Viewer");
+  test.beforeAll(() => {
+    // Get SF CLI active session once for all tests
+    session = getSFSession();
+    console.log(`✅ Using SF session for: ${session.username}`);
+  });
+
+  test.beforeEach(async ({ page }) => {
+    // Setup authenticated context
+    await setupTestContext(page, session, TARGET_APP_NAME);
+
+    // Navigate to Query Viewer tab
+    await page.click(`a[data-label="${QUERY_VIEWER_TAB}"]`);
     await page.waitForSelector("c-jt-query-viewer", { timeout: 15000 });
   });
 

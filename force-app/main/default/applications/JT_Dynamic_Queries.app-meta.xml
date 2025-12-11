@@ -12,8 +12,8 @@
     <isNavPersonalizationDisabled>false</isNavPersonalizationDisabled>
     <label>Dynamic Query Framework</label>
     <navType>Standard</navType>
-    <tabs>JT_Query_Viewer</tabs>
     <tabs>JT_Documentation</tabs>
+    <tabs>JT_Query_Viewer</tabs>
     <tabs>JT_SettingsAuditLog__c</tabs>
     <tabs>JT_Support</tabs>
     <tabs>standard-report</tabs>

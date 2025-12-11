@@ -1279,7 +1279,7 @@ export default class JtQueryViewer extends LightningElement {
     const { records, fields, recordCount } = event.detail;
 
     this.queryPreviewResults = records || [];
-    
+
     if (fields && fields.length > 0) {
       this.queryPreviewColumns = fields.map((field) => ({
         label: this.formatLabel(field),

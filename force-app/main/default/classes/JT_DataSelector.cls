@@ -192,6 +192,9 @@ public inherited sharing class JT_DataSelector {
       devName
     );
 
+    // Check if query uses unsupported operators and throw descriptive error
+    validateSupportedOperators(config.JT_BaseQuery__c);
+
     // Deserialize bindings only once
     Map<String, Object> bindings = String.isNotBlank(config.JT_Binding__c)
       ? (Map<String, Object>) JSON.deserializeUntyped(config.JT_Binding__c)
@@ -207,6 +210,40 @@ public inherited sharing class JT_DataSelector {
       bindings,
       accessMode
     );
+  }
+
+  /**
+   * @description Validates query doesn't use operators not supported by Salesforce SOQL
+   * @param query SOQL query string to validate
+   * @throws UnsupportedOperatorException If unsupported operators are detected
+   */
+  @TestVisible
+  private static void validateSupportedOperators(String query) {
+    if (String.isBlank(query)) {
+      return;
+    }
+
+    String normalizedQuery = query.toLowerCase();
+
+    // Check for BETWEEN operator
+    if (normalizedQuery.contains(' between ')) {
+      throw new UnsupportedOperatorException(
+        System.Label.JT_Error_BetweenOperatorNotSupported
+      );
+    }
+
+    // Check for NOT LIKE operator
+    if (normalizedQuery.contains(' not like ')) {
+      throw new UnsupportedOperatorException(
+        System.Label.JT_Error_NotLikeOperatorNotSupported
+      );
+    }
+  }
+
+  /**
+   * @description Custom exception for unsupported SOQL operators
+   */
+  public class UnsupportedOperatorException extends Exception {
   }
 
   /**
@@ -455,6 +492,9 @@ public inherited sharing class JT_DataSelector {
     final JT_DynamicQueryConfiguration__mdt config = selectorInstance.getConfig(
       devName
     );
+
+    // Check if query uses unsupported operators and throw descriptive error
+    validateSupportedOperators(config.JT_BaseQuery__c);
 
     // Validate and convert bindings (auto-detect types from query patterns)
     Map<String, Object> validatedBindings = validateAndConvertBindings(

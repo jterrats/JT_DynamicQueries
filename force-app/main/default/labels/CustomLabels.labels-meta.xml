@@ -1237,4 +1237,40 @@
     >jtDocumentation - createFirstQueryTitle</shortDescription>
         <value>4. Create Your First Query</value>
     </labels>
+    <labels>
+        <fullName>JT_Error_BetweenOperatorNotSupported</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Error - BETWEEN operator not supported</shortDescription>
+        <value>BETWEEN operator is not supported in Salesforce SOQL.
+
+Instead of:
+  WHERE Field BETWEEN :min AND :max
+
+Please use:
+  WHERE Field &gt;= :min AND Field &lt;= :max</value>
+    </labels>
+    <labels>
+        <fullName>JT_Error_NotLikeOperatorNotSupported</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Error - NOT LIKE operator not supported</shortDescription>
+        <value>NOT LIKE operator is not supported in Salesforce SOQL.
+
+Instead of:
+  WHERE Field NOT LIKE :pattern
+
+Please use one of these alternatives:
+  1. WHERE NOT (Field LIKE :pattern)
+  2. Apex filtering after query execution</value>
+    </labels>
+    <labels>
+        <fullName>JT_Error_UnsupportedOperatorGeneric</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Error - Unsupported operator generic</shortDescription>
+        <value>Your query contains operators not supported by Salesforce SOQL: {0}
+
+Please refer to Salesforce SOQL documentation for supported operators.</value>
+    </labels>
 </CustomLabels>

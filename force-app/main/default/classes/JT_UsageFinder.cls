@@ -1,8 +1,16 @@
 /**
  * @description Controller to find usage of JT_DataSelector configurations in Apex classes and Flows
  * @author Jaime Terrats
- * @date 2025-11-30
+ * @date 2025-12-11
+ *
+ * PMD Suppressions:
+ * - CognitiveComplexity/CyclomaticComplexity: Searches multiple metadata types with complex filtering
+ * - AvoidBooleanMethodParameters: includeInactive flag is standard pattern for search methods
+ * - AvoidDeeplyNestedIfStmts: Necessary for parsing Tooling API responses
  */
+@SuppressWarnings(
+  'PMD.CognitiveComplexity, PMD.CyclomaticComplexity, PMD.StdCyclomaticComplexity, PMD.AvoidBooleanMethodParameters, PMD.AvoidDeeplyNestedIfStmts'
+)
 public with sharing class JT_UsageFinder {
   /**
    * @description Wrapper for usage results

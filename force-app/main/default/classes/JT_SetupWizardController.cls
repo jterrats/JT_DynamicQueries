@@ -39,7 +39,7 @@ public with sharing class JT_SetupWizardController {
       req.setTimeout(5000);
 
       Http http = new Http();
-      HttpResponse res = http.send(req);
+      http.send(req); // Verify Named Credential is accessible
 
       result.success = true;
       result.message = 'Named Credentials are configured and working';

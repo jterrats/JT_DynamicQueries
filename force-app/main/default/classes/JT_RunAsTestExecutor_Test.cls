@@ -629,6 +629,9 @@ private class JT_RunAsTestExecutor_Test {
    * @author Jaime Terrats | 11-29-2025
    **/
   @isTest
+  @SuppressWarnings(
+    'PMD.AvoidHardcodingId'
+  ) // Hardcoded ID intentional for negative test case
   static void testExecuteAsUserInactiveUser() {
     // Find or create an inactive user (this may not be possible in all orgs)
     // Instead, test with a non-existent user to trigger validation

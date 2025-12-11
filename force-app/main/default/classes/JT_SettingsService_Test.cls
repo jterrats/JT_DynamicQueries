@@ -85,7 +85,7 @@ private class JT_SettingsService_Test {
   }
 
   @isTest
-  static void testGetProductionEditingSetting_Default() {
+  static void testGetProductionEditingSettingDefault() {
     // No custom setting exists yet
     Test.startTest();
     Boolean result = JT_SettingsService.getProductionEditingSetting();
@@ -95,7 +95,7 @@ private class JT_SettingsService_Test {
   }
 
   @isTest
-  static void testGetUsageTrackingSetting_Default() {
+  static void testGetUsageTrackingSettingDefault() {
     // No custom setting exists yet
     Test.startTest();
     Boolean result = JT_SettingsService.getUsageTrackingSetting();
@@ -105,7 +105,7 @@ private class JT_SettingsService_Test {
   }
 
   @isTest
-  static void testUpdateProductionEditingSetting_Toggle() {
+  static void testUpdateProductionEditingSettingToggle() {
     // Enable
     JT_SettingsService.updateProductionEditingSetting(true);
     System.assertEquals(

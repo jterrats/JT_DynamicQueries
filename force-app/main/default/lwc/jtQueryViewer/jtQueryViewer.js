@@ -709,7 +709,7 @@ export default class JtQueryViewer extends LightningElement {
     this.testAssertMessage = "";
 
     // Build bindings JSON
-    let bindingsToSend = this.buildBindingsJson();
+    const bindingsToSend = this.buildBindingsJson();
 
     executeAsUser({
       userId: this.runAsUserId,

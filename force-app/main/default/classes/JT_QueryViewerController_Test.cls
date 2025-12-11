@@ -407,7 +407,7 @@ private class JT_QueryViewerController_Test {
    * @author Jaime Terrats | 12-02-2025
    **/
   @isTest
-  static void testAssessQueryRisk_LowRisk() {
+  static void testAssessQueryRiskLowRisk() {
     Map<String, Object> bindings = new Map<String, Object>{
       'name' => 'Test Account for Viewer'
     };
@@ -457,7 +457,7 @@ private class JT_QueryViewerController_Test {
    * @author Jaime Terrats | 12-02-2025
    **/
   @isTest
-  static void testAssessQueryRisk_EmptyBindings() {
+  static void testAssessQueryRiskEmptyBindings() {
     // Empty bindings (empty string value)
     Map<String, Object> bindings = new Map<String, Object>{ 'name' => '' };
     String bindingsJson = JSON.serialize(bindings);
@@ -515,7 +515,7 @@ private class JT_QueryViewerController_Test {
    * @author Jaime Terrats | 12-02-2025
    **/
   @isTest
-  static void testExecuteQueryWithBatchProcessing_LargeSet() {
+  static void testExecuteQueryWithBatchProcessingLargeSet() {
     // Create a single account that will be queried
     Account testAcc = new Account(Name = 'Large Set Test Account');
     insert testAcc;

@@ -1,10 +1,19 @@
 /**
- * @description       :
- * @author            : Jaime Terrats
- * @group             :
- * @last modified on  : 11-28-2025
- * @last modified by  : Jaime Terrats
+ * @description Data Selector for dynamic SOQL queries with security enforcement
+ * @author Jaime Terrats
+ * @group Selector Layer
+ * @last modified on 12-11-2025
+ * @last modified by Jaime Terrats
+ *
+ * PMD Suppressions:
+ * - CognitiveComplexity/CyclomaticComplexity: Inherent to bind variable processing and security checks
+ * - AvoidBooleanMethodParameters: enforceSecurity flag is a common pattern for security-aware methods
+ * - ExcessiveParameterList: All parameters are necessary for query execution flexibility
+ * - AvoidDeeplyNestedIfStmts: Required for comprehensive bind variable validation
  **/
+@SuppressWarnings(
+  'PMD.CognitiveComplexity, PMD.CyclomaticComplexity, PMD.StdCyclomaticComplexity, PMD.AvoidBooleanMethodParameters, PMD.ExcessiveParameterList, PMD.AvoidDeeplyNestedIfStmts'
+)
 public inherited sharing class JT_DataSelector {
   /** Cache to store configurations and avoid repeated queries */
   private static Map<String, JT_DynamicQueryConfiguration__mdt> configCache = new Map<String, JT_DynamicQueryConfiguration__mdt>();

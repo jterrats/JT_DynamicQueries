@@ -1,7 +1,0 @@
-# Salesforce Code Analyzer Configuration
-# Excludes problematic rules that generate false positives
-
-rules:
-  GlobalVariable:
-    disabled: true
-    message: "PMD GlobalVariable rule generates false positives for valid LWC patterns (this.property, event handlers, etc.)"

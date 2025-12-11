@@ -8,6 +8,46 @@
 @isTest
 private class JT_MetadataCreator_Test {
   /**
+   * @description Helper to create ConfigurationInput for tests
+   */
+  private static JT_MetadataCreator.ConfigurationInput createInput(
+    String label,
+    String developerName,
+    String baseQuery,
+    String bindings,
+    String objectName
+  ) {
+    JT_MetadataCreator.ConfigurationInput input = new JT_MetadataCreator.ConfigurationInput();
+    input.label = label;
+    input.developerName = developerName;
+    input.baseQuery = baseQuery;
+    input.bindings = bindings;
+    input.objectName = objectName;
+    return input;
+  }
+
+  /**
+   * @description Helper to create ConfigurationInput for updates
+   */
+  private static JT_MetadataCreator.ConfigurationInput createUpdateInput(
+    String originalDevName,
+    String label,
+    String baseQuery,
+    String bindings,
+    String objectName
+  ) {
+    JT_MetadataCreator.ConfigurationInput input = createInput(
+      label,
+      null,
+      baseQuery,
+      bindings,
+      objectName
+    );
+    input.originalDevName = originalDevName;
+    return input;
+  }
+
+  /**
    * @description Test isSandboxOrScratch method
    * @author Jaime Terrats | 11-29-2025
    **/
@@ -143,11 +183,13 @@ private class JT_MetadataCreator_Test {
     Test.startTest();
 
     JT_MetadataCreator.MetadataCreationResult result = JT_MetadataCreator.createConfiguration(
-      'Test Config',
-      'Test_Config',
-      'SELECT Id FROM Account',
-      null,
-      'Account'
+      createInput(
+        'Test Config',
+        'Test_Config',
+        'SELECT Id FROM Account',
+        null,
+        'Account'
+      )
     );
 
     Test.stopTest();
@@ -170,11 +212,7 @@ private class JT_MetadataCreator_Test {
   static void testCreateConfigurationMissingFields() {
     Test.startTest();
     JT_MetadataCreator.MetadataCreationResult result = JT_MetadataCreator.createConfiguration(
-      '', // Empty label
-      '', // Empty developer name
-      '', // Empty query
-      null,
-      null
+      createInput('', '', '', null, null) // Empty fields
     );
     Test.stopTest();
 
@@ -198,11 +236,7 @@ private class JT_MetadataCreator_Test {
   static void testCreateConfigurationInvalidQuery() {
     Test.startTest();
     JT_MetadataCreator.MetadataCreationResult result = JT_MetadataCreator.createConfiguration(
-      'Test Config',
-      'Test_Config',
-      'SELECT', // Incomplete query
-      null,
-      null
+      createInput('Test Config', 'Test_Config', 'SELECT', null, null) // Incomplete query
     );
     Test.stopTest();
 
@@ -218,11 +252,13 @@ private class JT_MetadataCreator_Test {
   static void testCreateConfigurationComplete() {
     Test.startTest();
     JT_MetadataCreator.MetadataCreationResult result = JT_MetadataCreator.createConfiguration(
-      'Complete Test Config',
-      'Complete_Test_Config',
-      'SELECT Id, Name FROM Account WHERE Name = :accountName',
-      '{"accountName": "Test"}',
-      'Account'
+      createInput(
+        'Complete Test Config',
+        'Complete_Test_Config',
+        'SELECT Id, Name FROM Account WHERE Name = :accountName',
+        '{"accountName": "Test"}',
+        'Account'
+      )
     );
     Test.stopTest();
 
@@ -314,11 +350,13 @@ private class JT_MetadataCreator_Test {
     try {
       // Try with very long developer name to trigger sanitization
       JT_MetadataCreator.MetadataCreationResult result = JT_MetadataCreator.createConfiguration(
-        'Test',
-        'This_Is_A_Very_Long_Developer_Name_That_Exceeds_Forty_Characters_Limit',
-        'SELECT Id FROM Account',
-        null,
-        'Account'
+        createInput(
+          'Test',
+          'This_Is_A_Very_Long_Developer_Name_That_Exceeds_Forty_Characters_Limit',
+          'SELECT Id FROM Account',
+          null,
+          'Account'
+        )
       );
 
       System.assertNotEquals(
@@ -341,11 +379,13 @@ private class JT_MetadataCreator_Test {
   static void testUpdateConfigurationValid() {
     Test.startTest();
     JT_MetadataCreator.MetadataCreationResult result = JT_MetadataCreator.updateConfiguration(
-      'Test_Record', // Original dev name (cannot change)
-      'Updated Label',
-      'SELECT Id, Name FROM Account WHERE CreatedDate = LAST_N_DAYS:30',
-      '{"days": 30}',
-      'Account'
+      createUpdateInput(
+        'Test_Record',
+        'Updated Label',
+        'SELECT Id, Name FROM Account WHERE CreatedDate = LAST_N_DAYS:30',
+        '{"days": 30}',
+        'Account'
+      )
     );
     Test.stopTest();
 
@@ -366,11 +406,7 @@ private class JT_MetadataCreator_Test {
   static void testUpdateConfigurationMissingFields() {
     Test.startTest();
     JT_MetadataCreator.MetadataCreationResult result = JT_MetadataCreator.updateConfiguration(
-      '', // Empty original dev name
-      '', // Empty label
-      '', // Empty query
-      null,
-      null
+      createUpdateInput('', '', '', null, null)
     );
     Test.stopTest();
 
@@ -394,11 +430,13 @@ private class JT_MetadataCreator_Test {
   static void testUpdateConfigurationComplete() {
     Test.startTest();
     JT_MetadataCreator.MetadataCreationResult result = JT_MetadataCreator.updateConfiguration(
-      'Test_Record',
-      'Updated Complete Config',
-      'SELECT Id, Name FROM Contact WHERE FirstName = :firstName',
-      '{"firstName": "John"}',
-      'Contact'
+      createUpdateInput(
+        'Test_Record',
+        'Updated Complete Config',
+        'SELECT Id, Name FROM Contact WHERE FirstName = :firstName',
+        '{"firstName": "John"}',
+        'Contact'
+      )
     );
     Test.stopTest();
 
@@ -414,11 +452,13 @@ private class JT_MetadataCreator_Test {
   static void testCreateConfigurationWithXmlChars() {
     Test.startTest();
     JT_MetadataCreator.MetadataCreationResult result = JT_MetadataCreator.createConfiguration(
-      'Test & Config <>"\'', // XML special chars
-      'Test_XML_Config',
-      'SELECT Id FROM Account WHERE Name = :name AND Description LIKE \'%test%\'',
-      '{"name": "Test & Company"}',
-      'Account'
+      createInput(
+        'Test & Config <>"\'',
+        'Test_XML_Config',
+        'SELECT Id FROM Account WHERE Name = :name AND Description LIKE \'%test%\'',
+        '{"name": "Test & Company"}',
+        'Account'
+      )
     );
     Test.stopTest();
 
@@ -434,11 +474,13 @@ private class JT_MetadataCreator_Test {
   static void testCreateConfigurationDeveloperNameStartsWithNumber() {
     Test.startTest();
     JT_MetadataCreator.MetadataCreationResult result = JT_MetadataCreator.createConfiguration(
-      'Test Config',
-      '123_Invalid_Start', // Starts with number
-      'SELECT Id FROM Account',
-      null,
-      'Account'
+      createInput(
+        'Test Config',
+        '123_Invalid_Start',
+        'SELECT Id FROM Account',
+        null,
+        'Account'
+      )
     );
     Test.stopTest();
 
@@ -454,11 +496,13 @@ private class JT_MetadataCreator_Test {
   static void testCreateConfigurationDeveloperNameSpecialChars() {
     Test.startTest();
     JT_MetadataCreator.MetadataCreationResult result = JT_MetadataCreator.createConfiguration(
-      'Test Config',
-      'Test-Config!@#$%^&*()Name', // Special chars
-      'SELECT Id FROM Account',
-      null,
-      'Account'
+      createInput(
+        'Test Config',
+        'Test-Config!@#$%^&*()Name',
+        'SELECT Id FROM Account',
+        null,
+        'Account'
+      )
     );
     Test.stopTest();
 
@@ -583,11 +627,13 @@ private class JT_MetadataCreator_Test {
   static void testCreateConfigurationEmptyBindings() {
     Test.startTest();
     JT_MetadataCreator.MetadataCreationResult result = JT_MetadataCreator.createConfiguration(
-      'No Bindings Config',
-      'No_Bindings_Config',
-      'SELECT Id FROM Account ORDER BY CreatedDate DESC LIMIT 10',
-      '', // Empty string instead of null
-      'Account'
+      createInput(
+        'No Bindings Config',
+        'No_Bindings_Config',
+        'SELECT Id FROM Account ORDER BY CreatedDate DESC LIMIT 10',
+        '',
+        'Account'
+      )
     );
     Test.stopTest();
 
@@ -602,11 +648,13 @@ private class JT_MetadataCreator_Test {
   static void testCreateConfigurationNullObjectName() {
     Test.startTest();
     JT_MetadataCreator.MetadataCreationResult result = JT_MetadataCreator.createConfiguration(
-      'Null Object Config',
-      'Null_Object_Config',
-      'SELECT Id FROM Contact',
-      '{}',
-      null // Null object name
+      createInput(
+        'Null Object Config',
+        'Null_Object_Config',
+        'SELECT Id FROM Contact',
+        '{}',
+        null
+      )
     );
     Test.stopTest();
 
@@ -621,11 +669,13 @@ private class JT_MetadataCreator_Test {
   static void testUpdateConfigurationWithXmlChars() {
     Test.startTest();
     JT_MetadataCreator.MetadataCreationResult result = JT_MetadataCreator.updateConfiguration(
-      'Test_Record',
-      'Updated & Modified <Config>',
-      'SELECT Id FROM Account WHERE Name LIKE \'%Test & Co%\'',
-      '{"special": "<test>"}',
-      'Account'
+      createUpdateInput(
+        'Test_Record',
+        'Updated & Modified <Config>',
+        'SELECT Id FROM Account WHERE Name LIKE \'%Test & Co%\'',
+        '{"special": "<test>"}',
+        'Account'
+      )
     );
     Test.stopTest();
 

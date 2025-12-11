@@ -4,9 +4,12 @@
  * Follows Service Layer pattern (business logic + orchestration)
  *
  * @author Jaime Terrats
- * @date 2025-12-02
+ * @date 2025-12-11
  * @group Service Layer
+ *
+ * PMD: AvoidBooleanMethodParameters suppressed - enabled/disabled flags are self-documenting
  */
+@SuppressWarnings('PMD.AvoidBooleanMethodParameters')
 public with sharing class JT_SettingsService {
   /**
    * @description Updates production editing setting with audit log

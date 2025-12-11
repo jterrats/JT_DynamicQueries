@@ -6,7 +6,7 @@
 @isTest
 private class JT_AuditLogDomain_Test {
   @isTest
-  static void testInsertLog_Success() {
+  static void testInsertLogSuccess() {
     // Create audit log
     JT_SettingsAuditLog__c log = new JT_SettingsAuditLog__c(
       JT_Action__c = 'Test Action',
@@ -33,7 +33,7 @@ private class JT_AuditLogDomain_Test {
   }
 
   @isTest
-  static void testInsertLog_NullLog() {
+  static void testInsertLogNullLog() {
     Boolean exceptionThrown = false;
 
     Test.startTest();
@@ -56,7 +56,7 @@ private class JT_AuditLogDomain_Test {
   }
 
   @isTest
-  static void testInsertLog_MissingRequiredField() {
+  static void testInsertLogMissingRequiredField() {
     // Create log without required JT_Action__c field
     JT_SettingsAuditLog__c log = new JT_SettingsAuditLog__c(
       JT_ChangedBy__c = UserInfo.getUserId()
@@ -84,7 +84,7 @@ private class JT_AuditLogDomain_Test {
   }
 
   @isTest
-  static void testInsertLogs_Bulk() {
+  static void testInsertLogsBulk() {
     List<JT_SettingsAuditLog__c> logs = new List<JT_SettingsAuditLog__c>();
 
     for (Integer i = 0; i < 5; i++) {
@@ -115,7 +115,7 @@ private class JT_AuditLogDomain_Test {
   }
 
   @isTest
-  static void testInsertLogs_EmptyList() {
+  static void testInsertLogsEmptyList() {
     Test.startTest();
     JT_AuditLogDomain.insertLogs(new List<JT_SettingsAuditLog__c>());
     Test.stopTest();

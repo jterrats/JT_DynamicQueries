@@ -2,9 +2,16 @@
  * @description Controller for the Query Viewer LWC
  * @author Jaime Terrats
  * @group Dynamic Queries
- * @last modified on 11-28-2025
+ * @last modified on 12-11-2025
  * @last modified by Jaime Terrats
+ *
+ * PMD Suppressions:
+ * - CognitiveComplexity/CyclomaticComplexity: Controller orchestrates complex query operations
+ * - AvoidDeeplyNestedIfStmts: Necessary for bind variable processing and risk assessment
  **/
+@SuppressWarnings(
+  'PMD.CognitiveComplexity, PMD.CyclomaticComplexity, PMD.StdCyclomaticComplexity, PMD.AvoidDeeplyNestedIfStmts'
+)
 public with sharing class JT_QueryViewerController {
   /**
    * @description Retrieves all available query configurations

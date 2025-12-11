@@ -116,9 +116,7 @@ private class JT_ProductionSettingsController_Test {
     // annotation is correctly applied for AppExchange security review
 
     Test.startTest();
-    Boolean result = JT_ProductionSettingsController.updateProductionEditingSetting(
-      true
-    );
+    JT_ProductionSettingsController.updateProductionEditingSetting(true);
     Test.stopTest();
 
     // Verify audit log was created despite without sharing context

@@ -7,26 +7,36 @@
  * @warning Use only in Sandbox, Scratch Org, Developer Edition, or Trial - Blocked in Production
  **/
 @SuppressWarnings(
-  'PMD.ExcessiveParameterList,PMD.AvoidDebugStatements,PMD.UnusedLocalVariable'
+  'PMD.AvoidDebugStatements, PMD.UnusedLocalVariable, PMD.CyclomaticComplexity, PMD.StdCyclomaticComplexity'
 )
 public with sharing class JT_MetadataCreator {
   /**
+   * @description Input wrapper for configuration data
+   */
+  public class ConfigurationInput {
+    @AuraEnabled
+    public String label;
+    @AuraEnabled
+    public String developerName;
+    @AuraEnabled
+    public String baseQuery;
+    @AuraEnabled
+    public String bindings;
+    @AuraEnabled
+    public String objectName;
+    @AuraEnabled
+    public String originalDevName; // For updates only
+  }
+
+  /**
    * @description Creates a new Dynamic Query Configuration metadata record
-   * @author Jaime Terrats | 11-29-2025
-   * @param label Display label
-   * @param developerName API name
-   * @param baseQuery SOQL query
-   * @param bindings JSON bindings
-   * @param objectName Object name
+   * @author Jaime Terrats | 12-11-2025
+   * @param input Configuration input data
    * @return MetadataCreationResult
    **/
   @AuraEnabled
   public static MetadataCreationResult createConfiguration(
-    String label,
-    String developerName,
-    String baseQuery,
-    String bindings,
-    String objectName
+    ConfigurationInput input
   ) {
     MetadataCreationResult result = new MetadataCreationResult();
 
@@ -40,9 +50,9 @@ public with sharing class JT_MetadataCreator {
 
       // Validate required fields
       if (
-        String.isBlank(label) ||
-        String.isBlank(developerName) ||
-        String.isBlank(baseQuery)
+        String.isBlank(input.label) ||
+        String.isBlank(input.developerName) ||
+        String.isBlank(input.baseQuery)
       ) {
         throw new AuraHandledException(
           'Label, Developer Name, and Base Query are required.'
@@ -50,22 +60,22 @@ public with sharing class JT_MetadataCreator {
       }
 
       // Sanitize developer name
-      String sanitizedDevName = sanitizeDeveloperName(developerName);
+      String sanitizedDevName = sanitizeDeveloperName(input.developerName);
 
       // Build metadata XML
       String metadataXml = buildMetadataXml(
-        label,
+        input.label,
         sanitizedDevName,
-        baseQuery,
-        bindings,
-        objectName
+        input.baseQuery,
+        input.bindings,
+        input.objectName
       );
 
       // Deploy via Metadata API
       String deploymentId = deployMetadata(metadataXml, sanitizedDevName);
 
       result.success = true;
-      result.message = 'Configuration created successfully: ' + label;
+      result.message = 'Configuration created successfully: ' + input.label;
       result.developerName = sanitizedDevName;
       result.deploymentId = deploymentId;
 
@@ -82,21 +92,13 @@ public with sharing class JT_MetadataCreator {
 
   /**
    * @description Updates an existing Dynamic Query Configuration metadata record
-   * @author Jaime Terrats | 11-29-2025
-   * @param originalDevName Original developer name (cannot be changed)
-   * @param label Display label
-   * @param baseQuery SOQL query
-   * @param bindings JSON bindings
-   * @param objectName Object name
+   * @author Jaime Terrats | 12-11-2025
+   * @param input Configuration input data (must include originalDevName)
    * @return MetadataCreationResult
    **/
   @AuraEnabled
   public static MetadataCreationResult updateConfiguration(
-    String originalDevName,
-    String label,
-    String baseQuery,
-    String bindings,
-    String objectName
+    ConfigurationInput input
   ) {
     MetadataCreationResult result = new MetadataCreationResult();
 
@@ -110,9 +112,9 @@ public with sharing class JT_MetadataCreator {
 
       // Validate required fields
       if (
-        String.isBlank(originalDevName) ||
-        String.isBlank(label) ||
-        String.isBlank(baseQuery)
+        String.isBlank(input.originalDevName) ||
+        String.isBlank(input.label) ||
+        String.isBlank(input.baseQuery)
       ) {
         throw new AuraHandledException(
           'Developer Name, Label, and Base Query are required.'
@@ -121,19 +123,19 @@ public with sharing class JT_MetadataCreator {
 
       // Build metadata XML (using original dev name - cannot change)
       String metadataXml = buildMetadataXml(
-        label,
-        originalDevName,
-        baseQuery,
-        bindings,
-        objectName
+        input.label,
+        input.originalDevName,
+        input.baseQuery,
+        input.bindings,
+        input.objectName
       );
 
       // Deploy via Metadata API (will update existing record)
-      String deploymentId = deployMetadata(metadataXml, originalDevName);
+      String deploymentId = deployMetadata(metadataXml, input.originalDevName);
 
       result.success = true;
-      result.message = 'Configuration updated successfully: ' + label;
-      result.developerName = originalDevName;
+      result.message = 'Configuration updated successfully: ' + input.label;
+      result.developerName = input.originalDevName;
       result.deploymentId = deploymentId;
 
       return result;

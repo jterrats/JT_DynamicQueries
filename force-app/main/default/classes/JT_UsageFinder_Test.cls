@@ -101,6 +101,9 @@ private class JT_UsageFinder_Test {
    * @description Test UsageResult wrapper class
    */
   @isTest
+  @SuppressWarnings(
+    'PMD.AvoidHardcodingId'
+  ) // Hardcoded ID intentional for test data
   static void testUsageResultWrapper() {
     JT_UsageFinder.UsageResult result = new JT_UsageFinder.UsageResult();
     result.className = 'TestClass';

@@ -6,7 +6,9 @@
  * @last modified by Jaime Terrats
  **/
 @isTest
-@SuppressWarnings('PMD.AvoidDebugStatements,PMD.ApexDoc')
+@SuppressWarnings(
+  'PMD.AvoidDebugStatements, PMD.ApexDoc, PMD.AvoidBooleanMethodParameters'
+)
 public class JT_GenericRunAsTest {
   // Functional composition of test execution
   @isTest

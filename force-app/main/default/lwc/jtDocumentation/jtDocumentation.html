@@ -209,11 +209,10 @@ sf org assign permset --name JT_Dynamic_Queries_User
             </div>
 
             <h3 class="slds-text-heading_medium slds-m-bottom_small">
-              3. Configure Named Credential (Required)
+              {labels.namedCredentialTitle}
             </h3>
             <p class="slds-text-body_regular slds-m-bottom_small">
-              To create and edit query configurations dynamically, you must
-              configure the <code>JT_Tooling_API</code> Named Credential:
+              {labels.namedCredentialIntro}
             </p>
             <div class="slds-box slds-theme_warning slds-m-bottom_small">
               <p class="slds-text-body_small">
@@ -222,32 +221,20 @@ sf org assign permset --name JT_Dynamic_Queries_User
                   size="xx-small"
                   class="slds-m-right_xx-small"
                 ></lightning-icon>
-                <strong>Why is this required?</strong> The framework uses the
-                Tooling API to create Custom Metadata records programmatically.
-                Without this, you can only create configurations manually via
-                Setup → Custom Metadata Types.
+                <strong>{labels.namedCredentialWhyRequired}</strong>
+                {labels.namedCredentialWhyText}
               </p>
             </div>
             <div class="slds-box slds-theme_shade slds-m-bottom_medium">
               <p class="slds-text-body_small slds-m-bottom_x-small">
-                <strong>Setup Steps:</strong>
+                <strong>{labels.namedCredentialSetupSteps}</strong>
               </p>
               <ol class="slds-list_ordered slds-text-body_small">
-                <li>Go to Setup → Named Credentials</li>
-                <li>
-                  Find <code>JT_Tooling_API</code> (should be deployed with the
-                  package)
-                </li>
-                <li>
-                  Edit the Named Credential and set the URL to your org's
-                  instance (e.g.,
-                  <code>https://yourinstance.salesforce.com</code>)
-                </li>
-                <li>
-                  For Authentication, select "Named Principal" with "No
-                  Authentication"
-                </li>
-                <li>Save and activate</li>
+                <li>{labels.namedCredentialStep1}</li>
+                <li>{labels.namedCredentialStep2}</li>
+                <li>{labels.namedCredentialStep3}</li>
+                <li>{labels.namedCredentialStep4}</li>
+                <li>{labels.namedCredentialStep5}</li>
               </ol>
               <p class="slds-text-body_small slds-m-top_small">
                 📖
@@ -255,13 +242,13 @@ sf org assign permset --name JT_Dynamic_Queries_User
                   href="https://help.salesforce.com/s/articleView?id=sf.named_credentials_about.htm"
                   target="_blank"
                   class="slds-text-link"
-                  >Official Salesforce Documentation</a
+                  >{labels.namedCredentialDocsLink}</a
                 >
               </p>
             </div>
 
             <h3 class="slds-text-heading_medium slds-m-bottom_small">
-              4. Create Your First Query
+              {labels.createFirstQueryTitle}
             </h3>
             <p class="slds-text-body_regular slds-m-bottom_small">
               Navigate to <strong>Query Viewer</strong> tab → Click

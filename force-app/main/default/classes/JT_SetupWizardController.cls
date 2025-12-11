@@ -28,18 +28,18 @@ public with sharing class JT_SetupWizardController {
   public static SetupResult setupNamedCredentials() {
     SetupResult result = new SetupResult();
     result.orgUrl = URL.getOrgDomainUrl().toExternalForm();
-    
+
     // Automatic setup disabled - ConnectAPI not available
     result.success = false;
     result.message = 'Automatic setup not available';
-    result.details = 
+    result.details =
       'ConnectAPI.ExternalCredentials is not available in API 65.0.\n\n' +
       'Please configure Named Credentials manually:\n' +
       '1. Setup → Named Credentials → New\n' +
       '2. Name: JT_Tooling_API\n' +
       '3. URL: ' + result.orgUrl + '\n\n' +
       'See documentation: docs/SSO_FLOWS.md';
-    
+
     return result;
 
     /* COMMENTED OUT - ConnectAPI not available in API 65.0

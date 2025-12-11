@@ -31,7 +31,7 @@ global class JT_PostInstallScript implements InstallHandler {
     System.debug('⚠️  Automatic Named Credential setup is disabled');
     System.debug('📖 Please configure Named Credentials manually via Setup');
     System.debug('📚 See documentation: docs/SSO_FLOWS.md');
-    
+
     /* COMMENTED OUT - ConnectAPI not available in API 65.0
     try {
       String orgUrl = URL.getOrgDomainUrl().toExternalForm();

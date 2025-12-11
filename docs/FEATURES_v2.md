@@ -485,11 +485,13 @@ jtQueryViewer (Parent)
 - ✅ No external state management library needed
 - ✅ LWC lifecycle handles reactivity
 
-### Future: State Management Components (Included but Optional)
+### ~~State Management Components~~ (REMOVED)
 
-**Components:** `queryState`, `settingsState`
+**Components:** ~~`queryState`, `settingsState`~~ - **Deleted December 2025**
 
-**When to Use:**
+**Status:** Never used in production, removed during code cleanup.
+
+**Current Approach:**
 
 - Multiple unrelated components need same state
 - Deep nesting (>3 levels)

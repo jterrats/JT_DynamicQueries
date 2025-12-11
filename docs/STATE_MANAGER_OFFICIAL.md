@@ -1,8 +1,15 @@
 # 🎯 Official Salesforce LWC State Management (Beta)
 
+> ⚠️ **DEPRECATED - December 10, 2025**  
+> State management components (`queryState`, `settingsState`) have been **removed from the codebase**.  
+> They were never used in production and have been deleted as part of code cleanup.  
+> This documentation is kept for historical reference only.
+
 ## Overview
 
-JT Dynamic Queries v2.0.0 uses **Salesforce's official State Management API for LWC**, which provides native, reactive state management without external dependencies.
+~~JT Dynamic Queries v2.0.0 uses **Salesforce's official State Management API for LWC**, which provides native, reactive state management without external dependencies.~~
+
+**Status**: **REMOVED** - Components used direct parent-child communication instead.
 
 **Reference**: [Official Salesforce Documentation](https://developer.salesforce.com/docs/platform/lwc/guide/state-management.html)
 

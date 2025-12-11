@@ -6,11 +6,11 @@
 
 #### **State Management**
 
-- ✅ **Official Salesforce State Manager** ([docs](https://developer.salesforce.com/docs/platform/lwc/guide/state-management.html))
-  - `queryState`: Query execution state
-  - `settingsState`: Application settings
-  - Native reactivity, zero boilerplate
-  - Replaced custom LMS implementation
+- ⚠️ **~~Official Salesforce State Manager~~** (REMOVED - December 2025)
+  - ~~`queryState`: Query execution state~~
+  - ~~`settingsState`: Application settings~~
+  - **Status**: Components were never used in production and have been deleted
+  - Current approach: Direct parent-child communication via props/events
 
 #### **Component Modularization**
 
@@ -138,8 +138,8 @@
 #### **State Management**
 
 - ❌ **Removed**: Custom LMS-based state management
-- ✅ **Added**: Official Salesforce State Manager API
-- **Impact**: Components now import `queryState`/`settingsState` directly
+- ⚠️ **~~Added~~**: ~~Official Salesforce State Manager API~~ (Later removed - unused)
+- **Current Status**: Components use direct parent-child communication (props/events)
 
 ---
 

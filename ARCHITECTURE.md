@@ -15,7 +15,7 @@ The application follows a **layered architecture** with clear separation of conc
 │     (JT_DataSelector, JT_UsageFinder, JT_MetadataCreator)  │
 ├─────────────────────────────────────────────────────────────┤
 │                   STATE MANAGEMENT LAYER                    │
-│              (queryState, settingsState - Optional)         │
+│          (Props/Events - Direct parent-child comm)          │
 ├─────────────────────────────────────────────────────────────┤
 │                      DATA LAYER                             │
 │  (Custom Metadata, Custom Objects, Custom Settings, SOQL)  │
@@ -428,11 +428,13 @@ handleConfigSelect(event) {
 }
 ```
 
-### State Management (Optional - v2.0)
+### State Management (Direct Communication)
 
-**Note:** State management components (`queryState`, `settingsState`) are included but **optional**. Current implementation uses direct parent-child communication for simplicity.
+**Current Approach:** Direct parent-child communication via props and events.
 
-**When to use state management:**
+**Previous Approach:** State management components (`queryState`, `settingsState`) were considered but **removed** as they were never used in production.
+
+**Why Direct Communication:**
 
 - Multiple unrelated components need same state
 - Deep component nesting (>3 levels)

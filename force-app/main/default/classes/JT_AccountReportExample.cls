@@ -117,7 +117,9 @@ public with sharing class JT_AccountReportExample {
    * @return List of AccountSummary objects
    */
   @AuraEnabled(cacheable=true)
-  public static List<AccountSummary> searchAccountsForLWC(String searchPattern) {
+  public static List<AccountSummary> searchAccountsForLWC(
+    String searchPattern
+  ) {
     List<SObject> accounts = JT_DataSelector.getRecords(
       'Account_By_Name', // Simple search configuration
       true // Enforce security

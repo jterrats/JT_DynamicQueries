@@ -99,7 +99,9 @@ private class JT_AccountReportExample_Test {
 
     // Uses 'Account_By_Name' configuration
     try {
-      List<Account> results = JT_AccountReportExample.searchAccountsByName('%Tech%');
+      List<Account> results = JT_AccountReportExample.searchAccountsByName(
+        '%Tech%'
+      );
 
       // If configuration exists, validate results
       if (results != null) {
@@ -171,7 +173,9 @@ private class JT_AccountReportExample_Test {
 
     // Uses 'Complete_Customer_360_View' configuration with custom type
     try {
-      List<Account> partners = JT_AccountReportExample.getCustomer360View('Customer - Channel');
+      List<Account> partners = JT_AccountReportExample.getCustomer360View(
+        'Customer - Channel'
+      );
 
       // If configuration exists, validate child relationships
       if (partners != null && !partners.isEmpty()) {
@@ -232,8 +236,9 @@ private class JT_AccountReportExample_Test {
 
     // Uses 'Account_By_Name' configuration
     try {
-      List<JT_AccountReportExample.AccountSummary> summaries = 
-        JT_AccountReportExample.searchAccountsForLWC('%Tech%');
+      List<JT_AccountReportExample.AccountSummary> summaries = JT_AccountReportExample.searchAccountsForLWC(
+        '%Tech%'
+      );
 
       // If configuration exists, validate wrapper class
       if (summaries != null) {

@@ -76,9 +76,7 @@ test.describe("Where is this used? - Usage Detection", () => {
     );
     await configDropdown.click();
     await page
-      .locator(
-        'lightning-base-combobox-item[data-value="Dynamic_Input_Test"]'
-      )
+      .locator('lightning-base-combobox-item[data-value="Dynamic_Input_Test"]')
       .click();
 
     await page.waitForTimeout(1000);

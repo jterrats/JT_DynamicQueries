@@ -246,15 +246,15 @@ public inherited sharing class JT_DataSelector {
       if (requiresList) {
         // Convert to List<String> if not already a list
         if (!(value instanceof List<Object>)) {
-          validatedBindings.put(key, convertListToTypedList(
-            new List<Object>{ value },
-            'String'
-          ));
+          validatedBindings.put(
+            key,
+            convertListToTypedList(new List<Object>{ value }, 'String')
+          );
         } else {
-          validatedBindings.put(key, convertListToTypedList(
-            (List<Object>) value,
-            'String'
-          ));
+          validatedBindings.put(
+            key,
+            convertListToTypedList((List<Object>) value, 'String')
+          );
         }
       } else {
         // Pass through as-is for other operators

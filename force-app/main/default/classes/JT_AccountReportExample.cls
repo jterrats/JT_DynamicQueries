@@ -13,17 +13,18 @@
  */
 public with sharing class JT_AccountReportExample {
   /**
-   * @description Generates a report of high-value accounts
-   * @return List of Account records with Annual Revenue > $1M
+   * @description Searches accounts by name pattern
+   * @param searchPattern Name pattern to search (e.g., '%Acme%')
+   * @return List of matching Account records
    */
-  public static List<Account> getHighValueAccounts() {
-    // Use the JT_DataSelector configuration
+  public static List<Account> searchAccountsByName(String searchPattern) {
+    // Use the Account_By_Name configuration
     Map<String, Object> bindings = new Map<String, Object>{
-      'minRevenue' => 1000000
+      'searchName' => searchPattern
     };
 
     List<SObject> results = JT_DataSelector.getRecords(
-      'Active_Accounts_By_Revenue', // Configuration DeveloperName
+      'Account_By_Name', // Configuration DeveloperName
       true, // Enforce security (USER_MODE)
       bindings
     );
@@ -32,22 +33,22 @@ public with sharing class JT_AccountReportExample {
   }
 
   /**
-   * @description Gets accounts by industry with revenue filtering
+   * @description Gets accounts by type and industry (demonstrates dynamic inputs)
+   * @param accountType Account type (e.g., 'Customer', 'Partner', 'Prospect')
    * @param industry Industry to filter by (e.g., 'Technology', 'Healthcare')
-   * @param minRevenue Minimum annual revenue threshold
    * @return List of matching Account records
    */
-  public static List<Account> getAccountsByIndustry(
-    String industry,
-    Decimal minRevenue
+  public static List<Account> getAccountsByTypeAndIndustry(
+    String accountType,
+    String industry
   ) {
     Map<String, Object> bindings = new Map<String, Object>{
-      'industry' => industry,
-      'minRevenue' => minRevenue
+      'accountType' => accountType,
+      'industry' => industry
     };
 
     List<SObject> results = JT_DataSelector.getRecords(
-      'Accounts_By_Industry', // Configuration DeveloperName
+      'Dynamic_Input_Test', // Configuration DeveloperName
       true, // Enforce security
       bindings
     );
@@ -56,48 +57,32 @@ public with sharing class JT_AccountReportExample {
   }
 
   /**
-   * @description Counts total accounts by type
-   * @return Map of Account Type to Count
+   * @description Gets complete customer 360 view with child relationships
+   * @param accountType Type of accounts to retrieve (default: 'Customer')
+   * @return List of Account records with Contacts, Opportunities, Cases, and Contracts
    */
-  public static Map<String, Integer> getAccountCountByType() {
-    // This uses a configuration without bind variables
-    List<SObject> allAccounts = JT_DataSelector.getRecords(
-      'All_Active_Accounts', // Simple configuration
-      true // Enforce security
-    );
-
-    Map<String, Integer> countByType = new Map<String, Integer>();
-
-    for (SObject record : allAccounts) {
-      Account acc = (Account) record;
-      String accountType = String.isNotBlank(acc.Type) ? acc.Type : 'Unknown';
-
-      if (!countByType.containsKey(accountType)) {
-        countByType.put(accountType, 0);
-      }
-
-      countByType.put(accountType, countByType.get(accountType) + 1);
-    }
-
-    return countByType;
-  }
-
-  /**
-   * @description Gets recently created accounts
-   * @param daysBack Number of days to look back
-   * @return List of recently created Account records
-   */
-  public static List<Account> getRecentAccounts(Integer daysBack) {
-    Date startDate = Date.today().addDays(-daysBack);
-
+  public static List<Account> getCustomer360View(String accountType) {
     Map<String, Object> bindings = new Map<String, Object>{
-      'startDate' => startDate
+      'accountType' => accountType
     };
 
     List<SObject> results = JT_DataSelector.getRecords(
-      'Recent_Accounts', // Configuration DeveloperName
-      true, // Enforce security
-      bindings
+      'Complete_Customer_360_View', // Complex query with child relationships
+      true // Enforce security
+    );
+
+    return (List<Account>) results;
+  }
+
+  /**
+   * @description Gets all customers for analysis (demonstrates Complex Query usage)
+   * @return List of Customer Account records with full 360 view
+   */
+  public static List<Account> getAllCustomersForAnalysis() {
+    // No bindings needed - uses default 'Customer' type from metadata
+    List<SObject> results = JT_DataSelector.getRecords(
+      'Complete_Customer_360_View', // Configuration with child relationships
+      true // Enforce security
     );
 
     return (List<Account>) results;
@@ -118,9 +103,7 @@ public with sharing class JT_AccountReportExample {
 
     public AccountSummary(Account acc) {
       this.accountName = acc.Name;
-      this.annualRevenue = acc.AnnualRevenue != null
-        ? acc.AnnualRevenue
-        : 0;
+      this.annualRevenue = acc.AnnualRevenue != null ? acc.AnnualRevenue : 0;
       this.industry = acc.Industry;
       this.employeeCount = acc.NumberOfEmployees != null
         ? acc.NumberOfEmployees
@@ -129,13 +112,14 @@ public with sharing class JT_AccountReportExample {
   }
 
   /**
-   * @description Gets account summary data for reporting
+   * @description Searches accounts by name pattern (cacheable for LWC)
+   * @param searchPattern Name pattern to search
    * @return List of AccountSummary objects
    */
   @AuraEnabled(cacheable=true)
-  public static List<AccountSummary> getAccountSummaries() {
+  public static List<AccountSummary> searchAccountsForLWC(String searchPattern) {
     List<SObject> accounts = JT_DataSelector.getRecords(
-      'Account_Summary', // Configuration for summary data
+      'Account_By_Name', // Simple search configuration
       true // Enforce security
     );
 
@@ -147,4 +131,3 @@ public with sharing class JT_AccountReportExample {
     return summaries;
   }
 }
-

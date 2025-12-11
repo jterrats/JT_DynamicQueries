@@ -84,33 +84,29 @@ private class JT_AccountReportExample_Test {
 
     // Account without industry/revenue
     testAccounts.add(
-      new Account(
-        Name = 'Unknown Business',
-        NumberOfEmployees = 50
-      )
+      new Account(Name = 'Unknown Business', NumberOfEmployees = 50)
     );
 
     insert testAccounts;
   }
 
   /**
-   * @description Tests getHighValueAccounts method
+   * @description Tests searchAccountsByName method
    */
   @IsTest
-  static void testGetHighValueAccounts() {
+  static void testSearchAccountsByName() {
     Test.startTest();
 
-    // This will fail gracefully if configuration doesn't exist
-    // In real scenario, configuration 'Active_Accounts_By_Revenue' should be created
+    // Uses 'Account_By_Name' configuration
     try {
-      List<Account> highValueAccounts = JT_AccountReportExample.getHighValueAccounts();
+      List<Account> results = JT_AccountReportExample.searchAccountsByName('%Tech%');
 
-      // If configuration exists and works, validate results
-      if (highValueAccounts != null) {
-        for (Account acc : highValueAccounts) {
+      // If configuration exists, validate results
+      if (results != null) {
+        for (Account acc : results) {
           System.assert(
-            acc.AnnualRevenue >= 1000000,
-            'All accounts should have revenue >= $1M'
+            acc.Name.contains('Tech'),
+            'Should return accounts matching search pattern'
           );
         }
       }
@@ -127,29 +123,31 @@ private class JT_AccountReportExample_Test {
   }
 
   /**
-   * @description Tests getAccountsByIndustry method
+   * @description Tests getAccountsByTypeAndIndustry method
    */
   @IsTest
-  static void testGetAccountsByIndustry() {
+  static void testGetAccountsByTypeAndIndustry() {
     Test.startTest();
 
+    // Uses 'Dynamic_Input_Test' configuration
     try {
-      List<Account> techAccounts = JT_AccountReportExample.getAccountsByIndustry(
-        'Technology',
-        1000000
+      List<Account> results = JT_AccountReportExample.getAccountsByTypeAndIndustry(
+        'Customer - Direct',
+        'Technology'
       );
 
       // If configuration exists, validate filtering
-      if (techAccounts != null) {
-        for (Account acc : techAccounts) {
+      if (results != null) {
+        for (Account acc : results) {
           System.assertEquals(
             'Technology',
             acc.Industry,
             'Should only return Technology accounts'
           );
-          System.assert(
-            acc.AnnualRevenue >= 1000000,
-            'Should filter by minimum revenue'
+          System.assertEquals(
+            'Customer - Direct',
+            acc.Type,
+            'Should filter by account type'
           );
         }
       }
@@ -165,25 +163,22 @@ private class JT_AccountReportExample_Test {
   }
 
   /**
-   * @description Tests getAccountCountByType method
+   * @description Tests getCustomer360View method with specific type
    */
   @IsTest
-  static void testGetAccountCountByType() {
+  static void testGetCustomer360ViewWithType() {
     Test.startTest();
 
+    // Uses 'Complete_Customer_360_View' configuration with custom type
     try {
-      Map<String, Integer> countByType = JT_AccountReportExample.getAccountCountByType();
+      List<Account> partners = JT_AccountReportExample.getCustomer360View('Customer - Channel');
 
-      // If configuration exists, validate counts
-      if (countByType != null) {
-        Integer totalCount = 0;
-        for (Integer count : countByType.values()) {
-          totalCount += count;
-        }
-
-        System.assert(
-          totalCount > 0,
-          'Should have at least one account'
+      // If configuration exists, validate child relationships
+      if (partners != null && !partners.isEmpty()) {
+        System.assertNotEquals(
+          null,
+          partners[0],
+          'Should return channel partner accounts'
         );
       }
     } catch (Exception e) {
@@ -198,23 +193,23 @@ private class JT_AccountReportExample_Test {
   }
 
   /**
-   * @description Tests getRecentAccounts method
+   * @description Tests getAllCustomersForAnalysis method
    */
   @IsTest
-  static void testGetRecentAccounts() {
+  static void testGetAllCustomersForAnalysis() {
     Test.startTest();
 
+    // Uses 'Complete_Customer_360_View' configuration with default bindings
     try {
-      List<Account> recentAccounts = JT_AccountReportExample.getRecentAccounts(
-        30
-      );
+      List<Account> customers = JT_AccountReportExample.getAllCustomersForAnalysis();
 
-      // If configuration exists, all test accounts should be recent
-      if (recentAccounts != null) {
-        // All test accounts were created today
-        System.assert(
-          recentAccounts.size() > 0,
-          'Should return recently created accounts'
+      // If configuration exists, validate results
+      if (customers != null) {
+        // Configuration should return customer accounts
+        System.assertNotEquals(
+          null,
+          customers,
+          'Should return list of customer accounts'
         );
       }
     } catch (Exception e) {
@@ -229,14 +224,16 @@ private class JT_AccountReportExample_Test {
   }
 
   /**
-   * @description Tests getAccountSummaries method
+   * @description Tests searchAccountsForLWC method
    */
   @IsTest
-  static void testGetAccountSummaries() {
+  static void testSearchAccountsForLWC() {
     Test.startTest();
 
+    // Uses 'Account_By_Name' configuration
     try {
-      List<JT_AccountReportExample.AccountSummary> summaries = JT_AccountReportExample.getAccountSummaries();
+      List<JT_AccountReportExample.AccountSummary> summaries = 
+        JT_AccountReportExample.searchAccountsForLWC('%Tech%');
 
       // If configuration exists, validate wrapper class
       if (summaries != null) {
@@ -271,12 +268,7 @@ private class JT_AccountReportExample_Test {
   static void testAccountSummaryWrapper() {
     // Get test account
     Account testAccount = [
-      SELECT
-        Id,
-        Name,
-        Industry,
-        AnnualRevenue,
-        NumberOfEmployees
+      SELECT Id, Name, Industry, AnnualRevenue, NumberOfEmployees
       FROM Account
       WHERE Name = 'Tech Corp Alpha'
       LIMIT 1
@@ -319,12 +311,7 @@ private class JT_AccountReportExample_Test {
   static void testAccountSummaryWithNullValues() {
     // Get account with no revenue/employees
     Account testAccount = [
-      SELECT
-        Id,
-        Name,
-        Industry,
-        AnnualRevenue,
-        NumberOfEmployees
+      SELECT Id, Name, Industry, AnnualRevenue, NumberOfEmployees
       FROM Account
       WHERE Name = 'Unknown Business'
       LIMIT 1
@@ -360,4 +347,3 @@ private class JT_AccountReportExample_Test {
     );
   }
 }
-

@@ -3,7 +3,7 @@
     <description
   >Platform Cache partition for JT Dynamic Queries - Run As Test feature</description>
     <isDefaultPartition>true</isDefaultPartition>
-    <masterLabel>JT Dynamic Queries Cache</masterLabel>
+    <masterLabel>JTDynamicQueriesCache</masterLabel>
     <platformCachePartitionTypes>
         <allocatedCapacity>5</allocatedCapacity>
         <allocatedPurchasedCapacity>0</allocatedPurchasedCapacity>

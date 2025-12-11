@@ -2,5 +2,7 @@
 <LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>65.0</apiVersion>
     <isExposed>false</isExposed>
+    <masterLabel>Query Results Viewer</masterLabel>
+    <description
+  >Reusable component for displaying query results with Table/JSON/CSV views</description>
 </LightningComponentBundle>
-

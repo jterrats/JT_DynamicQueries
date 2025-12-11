@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fields>
+        <name>JT_BaseQuery__c</name>
+        <label>Consulta Base (SOQL)</label>
+        <help
+    >A consulta SOQL a ser executada. Use variáveis de ligação com sintaxe de dois pontos (ex: :nomeConta) para parâmetros dinâmicos.</help>
+    </fields>
+    <fields>
+        <name>JT_Binding__c</name>
+        <label>Ligações (JSON)</label>
+        <help
+    >Objeto JSON opcional com valores predefinidos de variáveis de ligação. Exemplo: {"nomeConta":"ACME Corp","status":"Ativo"}</help>
+    </fields>
+    <fields>
+        <name>JT_ObjectName__c</name>
+        <label>Nome do Objeto</label>
+        <help
+    >O objeto Salesforce sendo consultado (ex: Account, Contact, Opportunity).</help>
+    </fields>
+    <caseValues>
+        <plural>false</plural>
+        <value>Configuração de Consulta Dinâmica</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Configurações de Consulta Dinâmica</value>
+    </caseValues>
+    <gender>Feminine</gender>
+    <nameFieldLabel>Nome da Configuração</nameFieldLabel>
+</CustomObjectTranslation>

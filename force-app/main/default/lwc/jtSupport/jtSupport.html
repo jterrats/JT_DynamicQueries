@@ -1,0 +1,213 @@
+<template>
+  <lightning-card
+    title={labels.title}
+    icon-name="standard:customer_portal_users"
+  >
+    <div class="slds-p-around_medium">
+      <!-- Welcome Section -->
+      <div class="slds-m-bottom_large">
+        <h2 class="slds-text-heading_small slds-m-bottom_small">
+          {labels.welcomeTitle}
+        </h2>
+        <p class="slds-text-body_regular slds-text-color_weak">
+          {labels.welcomeMessage}
+        </p>
+      </div>
+
+      <!-- GitHub Integration Info -->
+      <div class="slds-box slds-theme_shade slds-m-bottom_large">
+        <div
+          class="slds-grid slds-grid_vertical-align-center slds-m-bottom_small"
+        >
+          <lightning-icon
+            icon-name="custom:custom19"
+            size="small"
+            class="slds-m-right_small"
+          ></lightning-icon>
+          <h3 class="slds-text-heading_small">{labels.githubIntegration}</h3>
+        </div>
+        <p class="slds-text-body_small slds-m-bottom_small">
+          {labels.githubDescription}
+        </p>
+        <div class="slds-text-body_small">
+          <strong>{labels.githubRepo}:</strong>
+          <a
+            href={githubRepoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="GitHub repository: JT Dynamic Queries (opens in new tab)"
+            class="slds-m-left_x-small"
+          >
+            jterrats/JT_DynamicQueries
+          </a>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="slds-grid slds-wrap slds-gutters slds-m-bottom_large">
+        <!-- Report Bug Card -->
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+          <article class="slds-card support-card">
+            <div class="slds-card__header">
+              <div class="slds-media slds-media_center">
+                <div class="slds-media__figure">
+                  <lightning-icon
+                    icon-name="utility:bug"
+                    variant="error"
+                    size="medium"
+                  ></lightning-icon>
+                </div>
+                <div class="slds-media__body">
+                  <h3 class="slds-card__header-title">
+                    <span>{labels.reportBug}</span>
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="slds-card__body slds-card__body_inner">
+              <p class="slds-text-body_small slds-m-bottom_small">
+                {labels.reportBugDescription}
+              </p>
+              <lightning-button
+                label={labels.reportBugButton}
+                variant="brand"
+                onclick={handleNavigateToNewIssue}
+                icon-name="utility:new"
+                class="slds-m-top_small"
+                aria-label="Report a bug - Opens GitHub issue form in new tab"
+              >
+              </lightning-button>
+            </div>
+          </article>
+        </div>
+
+        <!-- View Issues Card -->
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+          <article class="slds-card support-card">
+            <div class="slds-card__header">
+              <div class="slds-media slds-media_center">
+                <div class="slds-media__figure">
+                  <lightning-icon
+                    icon-name="utility:list"
+                    variant="warning"
+                    size="medium"
+                  ></lightning-icon>
+                </div>
+                <div class="slds-media__body">
+                  <h3 class="slds-card__header-title">
+                    <span>{labels.viewIssues}</span>
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="slds-card__body slds-card__body_inner">
+              <p class="slds-text-body_small slds-m-bottom_small">
+                {labels.viewIssuesDescription}
+              </p>
+              <lightning-button
+                label={labels.viewIssuesButton}
+                variant="neutral"
+                onclick={handleNavigateToIssues}
+                icon-name="utility:open"
+                class="slds-m-top_small"
+                aria-label="View all issues - Opens GitHub issues page in new tab"
+              >
+              </lightning-button>
+            </div>
+          </article>
+        </div>
+
+        <!-- Feature Request Card -->
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+          <article class="slds-card support-card">
+            <div class="slds-card__header">
+              <div class="slds-media slds-media_center">
+                <div class="slds-media__figure">
+                  <lightning-icon
+                    icon-name="utility:sparkles"
+                    variant="success"
+                    size="medium"
+                  ></lightning-icon>
+                </div>
+                <div class="slds-media__body">
+                  <h3 class="slds-card__header-title">
+                    <span>{labels.featureRequest}</span>
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="slds-card__body slds-card__body_inner">
+              <p class="slds-text-body_small slds-m-bottom_small">
+                {labels.featureRequestDescription}
+              </p>
+              <lightning-button
+                label={labels.featureRequestButton}
+                variant="success"
+                onclick={handleNavigateToNewIssue}
+                icon-name="utility:add"
+                class="slds-m-top_small"
+                aria-label="Request a feature - Opens GitHub issue form in new tab"
+              >
+              </lightning-button>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <!-- Additional Resources -->
+      <div class="slds-m-top_large">
+        <h3 class="slds-text-heading_small slds-m-bottom_small">
+          {labels.additionalResources}
+        </h3>
+        <ul class="slds-list_dotted">
+          <li class="slds-m-bottom_small">
+            <lightning-icon
+              icon-name="utility:knowledge_base"
+              size="x-small"
+              class="slds-m-right_xx-small"
+            ></lightning-icon>
+            <strong>{labels.documentation}:</strong>
+            {labels.documentationDescription}
+          </li>
+          <li class="slds-m-bottom_small">
+            <lightning-icon
+              icon-name="utility:video"
+              size="x-small"
+              class="slds-m-right_xx-small"
+            ></lightning-icon>
+            <strong>{labels.tutorials}:</strong> {labels.tutorialsDescription}
+          </li>
+          <li>
+            <lightning-icon
+              icon-name="utility:comments"
+              size="x-small"
+              class="slds-m-right_xx-small"
+            ></lightning-icon>
+            <strong>{labels.community}:</strong> {labels.communityDescription}
+          </li>
+        </ul>
+      </div>
+
+      <!-- Contact Info -->
+      <div class="slds-box slds-theme_default slds-m-top_large">
+        <div class="slds-grid slds-grid_vertical-align-center">
+          <lightning-icon
+            icon-name="utility:email"
+            size="small"
+            class="slds-m-right_small"
+          ></lightning-icon>
+          <div>
+            <p class="slds-text-body_small">
+              <strong>{labels.directContact}:</strong> {labels.contactEmail}
+            </p>
+            <p
+              class="slds-text-body_small slds-text-color_weak slds-m-top_xx-small"
+            >
+              {labels.responseTime}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </lightning-card>
+</template>

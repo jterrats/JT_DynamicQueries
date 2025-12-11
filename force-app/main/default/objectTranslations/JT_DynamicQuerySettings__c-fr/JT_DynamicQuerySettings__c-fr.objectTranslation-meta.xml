@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fields>
+        <name>JT_AllowProductionEditing__c</name>
+        <label>Autoriser l'Édition en Production</label>
+        <help
+    >⚠️ AVERTISSEMENT : Active la création/modification de métadonnées dans les environnements de production (éditions Starter/Free uniquement). À utiliser avec une extrême prudence.</help>
+    </fields>
+    <caseValues>
+        <plural>false</plural>
+        <value>Paramètre de Requête Dynamique</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Paramètres de Requête Dynamique</value>
+    </caseValues>
+    <gender>Masculine</gender>
+    <startsWith>Consonant</startsWith>
+</CustomObjectTranslation>

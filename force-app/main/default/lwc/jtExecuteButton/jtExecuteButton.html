@@ -1,0 +1,41 @@
+<template>
+  <div class={buttonClass} role="region" aria-label="Query execution controls">
+    <lightning-button
+      label={label}
+      variant={variant}
+      icon-name={iconName}
+      disabled={isDisabled}
+      onclick={handleClick}
+      class="slds-m-right_small"
+      data-testid={testId}
+      name={name}
+      aria-label={ariaLabel}
+      aria-busy={ariaBusy}
+      aria-describedby={ariaDescribedBy}
+    ></lightning-button>
+
+    <template if:true={showSpinner}>
+      <lightning-spinner
+        alternative-text="Executing query, please wait"
+        size="small"
+        class="slds-m-left_small"
+      ></lightning-spinner>
+    </template>
+
+    <!-- Screen reader status -->
+    <div
+      id="execute-button-status"
+      class="slds-assistive-text"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    >
+      <template if:true={isLoading}> Query is executing, please wait </template>
+      <template if:true={isDisabled}>
+        <template if:false={selectedConfig}>
+          Please select a configuration to enable query execution
+        </template>
+      </template>
+    </div>
+  </div>
+</template>

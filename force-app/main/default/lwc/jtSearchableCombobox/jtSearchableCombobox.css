@@ -1,0 +1,270 @@
+/* Generic Searchable Combobox Styles - Self-Contained (Shadow DOM) */
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+/* Form Element - Lightning Layout handles positioning */
+.slds-form-element {
+  width: 100%;
+}
+
+.slds-form-element__label {
+  display: inline-block;
+  color: #3e3e3c;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  margin-bottom: 0.125rem;
+}
+
+.slds-form-element__label strong {
+  font-weight: 700;
+}
+
+.slds-required {
+  color: #c23934;
+  margin-right: 0.125rem;
+}
+
+.slds-form-element__control {
+  position: relative;
+}
+
+.slds-form-element__help {
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+/* Combobox Container */
+.slds-combobox_container {
+  position: relative;
+  width: 100%;
+}
+
+.slds-combobox {
+  position: relative;
+  width: 100%;
+}
+
+.slds-combobox__form-element {
+  position: relative;
+  width: 100%;
+}
+
+/* Dropdown positioning and sizing */
+.slds-dropdown {
+  position: absolute;
+  z-index: 9999 !important;
+  /* left: 0 !important; */ /* Commented - was causing misalignment */
+  top: 100% !important;
+  width: 100% !important;
+  max-height: 300px !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  margin-top: 0.125rem !important;
+  background-color: #ffffff !important;
+  border: 1px solid #dddbda !important;
+  border-radius: 0.25rem !important;
+  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16) !important;
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  transition:
+    opacity 0.1s linear,
+    visibility 0.1s linear !important;
+}
+
+.slds-dropdown.slds-is-open {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.slds-dropdown_fluid {
+  min-width: 100% !important;
+}
+
+/* Listbox */
+.slds-listbox {
+  margin: 0 !important;
+  padding: 0.25rem 0 !important;
+  list-style: none !important;
+  background: white !important;
+}
+
+.slds-listbox_vertical {
+  margin: 0 !important;
+  padding: 0 !important;
+  display: block !important;
+}
+
+.slds-listbox__item {
+  list-style: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  display: block !important;
+}
+
+/* Option hover effect */
+.slds-listbox__option {
+  display: block !important;
+  width: 100% !important;
+  padding: 0.75rem 1rem !important;
+  cursor: pointer !important;
+  min-height: 2.5rem !important;
+  text-align: left !important;
+  background-color: white !important;
+  transition: background-color 0.1s linear !important;
+  border: none !important;
+  color: #080707 !important;
+  font-size: 0.8125rem !important;
+  line-height: 1.5 !important;
+}
+
+.slds-listbox__option_plain {
+  padding: 0.75rem 1rem !important;
+}
+
+.slds-listbox__option:hover {
+  background-color: #f3f3f3 !important;
+  outline: 0 !important;
+}
+
+.slds-listbox__option:focus,
+.slds-listbox__option:active {
+  background-color: #f3f3f3 !important;
+  outline: 2px solid #1589ee !important;
+  outline-offset: -2px !important;
+}
+
+/* Icon button styles */
+.slds-input__icon_right {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: auto;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  padding: 0.25rem;
+  z-index: 1;
+}
+
+.slds-input__icon_right:hover {
+  color: #014486;
+}
+
+.slds-input__icon_right:focus {
+  outline: 2px solid #1589ee;
+  outline-offset: 2px;
+}
+
+/* Input styles */
+input {
+  display: inline-block;
+  padding: 0 1rem;
+  padding-right: 2.5rem;
+  width: 100%;
+  line-height: 2.5rem;
+  min-height: calc(1.875rem + (1px * 2));
+  background-color: white;
+  border: 1px solid #dddbda;
+  border-radius: 0.25rem;
+  color: #080707;
+  font-size: 0.8125rem;
+}
+
+input:focus {
+  outline: 0;
+  border-color: #1589ee;
+  box-shadow: 0 0 3px #0070d2;
+  background-color: white;
+}
+
+input:disabled {
+  background-color: #f3f3f3;
+  border-color: #dddbda;
+  cursor: not-allowed;
+  color: #706e6b;
+}
+
+input::placeholder {
+  color: #706e6b;
+  opacity: 1;
+}
+
+/* Error state */
+.slds-has-error {
+  border-color: #c23934 !important;
+  box-shadow: #c23934 0 0 0 1px inset !important;
+  background-clip: padding-box;
+}
+
+/* Media (icon + text) in options */
+.slds-media {
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+
+.slds-media_small {
+  /* Small media variation */
+}
+
+.slds-media_center {
+  align-items: center !important;
+}
+
+.slds-media__figure {
+  margin-right: 0.5rem !important;
+  flex-shrink: 0 !important;
+}
+
+.slds-media__body {
+  flex: 1 !important;
+  min-width: 0 !important;
+  overflow: visible !important;
+  color: #080707 !important;
+}
+
+.slds-media__body .slds-truncate {
+  color: #080707 !important;
+}
+
+.slds-truncate {
+  display: block !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  width: 100% !important;
+  color: #080707 !important;
+}
+
+/* Text color utilities */
+.slds-text-color_weak {
+  color: #706e6b;
+}
+
+/* Accessibility */
+.slds-assistive-text {
+  position: absolute;
+  margin: -1px;
+  border: 0;
+  padding: 0;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  text-transform: none;
+  white-space: nowrap;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .slds-dropdown {
+    max-height: 250px;
+  }
+}

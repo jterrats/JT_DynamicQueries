@@ -1,0 +1,168 @@
+<template>
+  <template if:true={isOpen}>
+    <!-- Modal Backdrop -->
+    <section
+      role="dialog"
+      tabindex="-1"
+      aria-modal="true"
+      aria-labelledby="cache-modal-heading"
+      class="slds-modal slds-fade-in-open"
+      onkeydown={handleKeyDown}
+    >
+      <div class="slds-modal__container">
+        <!-- Modal Header -->
+        <header class="slds-modal__header">
+          <button
+            class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+            title={labels.close}
+            onclick={handleCancel}
+          >
+            <lightning-icon
+              icon-name="utility:close"
+              alternative-text={labels.close}
+              size="small"
+            ></lightning-icon>
+          </button>
+          <h2 id="cache-modal-heading" class="slds-modal__title slds-hyphenate">
+            <lightning-icon
+              icon-name="utility:refresh"
+              size="small"
+              class="slds-m-right_x-small"
+            ></lightning-icon>
+            {labels.clearCacheTitle}
+          </h2>
+        </header>
+
+        <!-- Modal Body -->
+        <div class="slds-modal__content slds-p-around_medium">
+          <!-- Description -->
+          <div class="slds-m-bottom_large">
+            <p class="slds-text-body_regular">{labels.clearCacheDescription}</p>
+          </div>
+
+          <!-- Select All Option -->
+          <div class="slds-m-bottom_medium">
+            <lightning-input
+              type="checkbox"
+              label={labels.selectAll}
+              checked={allSelected}
+              onchange={handleSelectAll}
+              class="slds-text-heading_small"
+              data-testid="cache-select-all"
+              name="cache-select-all"
+            ></lightning-input>
+          </div>
+
+          <div class="slds-border_top slds-m-top_small slds-p-top_medium"></div>
+
+          <!-- Cache Options -->
+          <div class="slds-form" role="list">
+            <!-- Configurations Cache -->
+            <div class="slds-form__item slds-m-bottom_medium" role="listitem">
+              <lightning-input
+                type="checkbox"
+                label={labels.clearConfigurationsLabel}
+                checked={clearConfigurations}
+                onchange={handleConfigChange}
+                field-level-help={labels.clearConfigurationsHelp}
+                data-testid="cache-option-configurations"
+                name="cache-option-configurations"
+              ></lightning-input>
+            </div>
+
+            <!-- Results Cache -->
+            <div class="slds-form__item slds-m-bottom_medium" role="listitem">
+              <lightning-input
+                type="checkbox"
+                label={labels.clearResultsLabel}
+                checked={clearResults}
+                onchange={handleResultsChange}
+                field-level-help={labels.clearResultsHelp}
+                data-testid="cache-option-results"
+                name="cache-option-results"
+              ></lightning-input>
+            </div>
+
+            <!-- Users Cache -->
+            <div class="slds-form__item slds-m-bottom_medium" role="listitem">
+              <lightning-input
+                type="checkbox"
+                label={labels.clearUsersLabel}
+                checked={clearUsers}
+                onchange={handleUsersChange}
+                field-level-help={labels.clearUsersHelp}
+                data-testid="cache-option-users"
+                name="cache-option-users"
+              ></lightning-input>
+            </div>
+
+            <!-- Recent Selections Cache -->
+            <div class="slds-form__item slds-m-bottom_medium" role="listitem">
+              <lightning-input
+                type="checkbox"
+                label={labels.clearRecentLabel}
+                checked={clearRecent}
+                onchange={handleRecentChange}
+                field-level-help={labels.clearRecentHelp}
+                data-testid="cache-option-recent"
+                name="cache-option-recent"
+              ></lightning-input>
+            </div>
+          </div>
+
+          <!-- Warning Box -->
+          <template if:true={hasSelections}>
+            <div
+              class="slds-box slds-theme_warning slds-m-top_medium"
+              role="alert"
+            >
+              <div class="slds-media slds-media_center">
+                <div class="slds-media__figure">
+                  <lightning-icon
+                    icon-name="utility:warning"
+                    variant="warning"
+                    size="small"
+                  ></lightning-icon>
+                </div>
+                <div class="slds-media__body">
+                  <p class="slds-text-body_small">{labels.clearCacheWarning}</p>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <!-- Modal Footer -->
+        <footer class="slds-modal__footer">
+          <button
+            class="slds-button slds-button_neutral"
+            onclick={handleCancel}
+            data-testid="cache-cancel-button"
+            name="cache-cancel"
+            aria-label="Cancel cache clearing"
+          >
+            {labels.cancel}
+          </button>
+          <button
+            class="slds-button slds-button_brand"
+            onclick={handleClear}
+            disabled={isClearDisabled}
+            data-testid="cache-clear-button"
+            name="cache-clear"
+            aria-label="Clear selected cache options"
+          >
+            <lightning-icon
+              icon-name="utility:refresh"
+              size="x-small"
+              class="slds-m-right_x-small"
+            ></lightning-icon>
+            {labels.clearCacheButton}
+          </button>
+        </footer>
+      </div>
+    </section>
+
+    <!-- Backdrop -->
+    <div class="slds-backdrop slds-backdrop_open"></div>
+  </template>
+</template>

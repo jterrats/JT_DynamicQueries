@@ -3,7 +3,12 @@
     <apiVersion>65.0</apiVersion>
     <isExposed>true</isExposed>
     <targets>
+        <target>lightning__AppPage</target>
+        <target>lightning__RecordPage</target>
+        <target>lightning__HomePage</target>
         <target>lightning__Tab</target>
     </targets>
+    <masterLabel>JT Query Viewer</masterLabel>
+    <description
+  >Dynamic Query Viewer with state management and modular components</description>
 </LightningComponentBundle>
-

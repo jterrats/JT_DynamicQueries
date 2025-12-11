@@ -2,5 +2,7 @@
 <LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>65.0</apiVersion>
     <isExposed>false</isExposed>
+    <masterLabel>Query Parameter Inputs</masterLabel>
+    <description
+  >Dynamic parameter inputs for SOQL queries. Phase 2 refactor component.</description>
 </LightningComponentBundle>
-

@@ -23,16 +23,9 @@ global class JT_PostInstallScript implements InstallHandler {
 
   /**
    * @description Sets up Named Credentials with current org URL
-   * @note TEMPORARILY DISABLED: ConnectAPI.ExternalCredentials not available in API 65.0
-   *       Named Credentials must be configured manually via Setup
    */
   @future(callout=true)
   private static void setupNamedCredentials() {
-    System.debug('⚠️  Automatic Named Credential setup is disabled');
-    System.debug('📖 Please configure Named Credentials manually via Setup');
-    System.debug('📚 See documentation: docs/SSO_FLOWS.md');
-
-    /* COMMENTED OUT - ConnectAPI not available in API 65.0
     try {
       String orgUrl = URL.getOrgDomainUrl().toExternalForm();
       System.debug('Current Org URL: ' + orgUrl);
@@ -76,7 +69,6 @@ global class JT_PostInstallScript implements InstallHandler {
     } catch (Exception e) {
       System.debug('❌ Unexpected error: ' + e.getMessage());
     }
-    */
   }
 
   /**

@@ -1,0 +1,42 @@
+.support-card {
+  height: 100%;
+  transition:
+    transform 0.2s ease-in-out,
+    box-shadow 0.2s ease-in-out;
+}
+
+.support-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.support-card .slds-card__body {
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .support-card {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Link styling */
+a {
+  color: #0176d3;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Accessibility - Focus indicators */
+lightning-button:focus-visible,
+a:focus-visible {
+  outline: 2px solid #0176d3 !important;
+  outline-offset: 2px;
+}

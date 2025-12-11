@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomMetadata
+  xmlns="http://soap.sforce.com/2006/04/metadata"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+>
+    <label>Customer 360 View (Complex Query)</label>
+    <protected>false</protected>
+    <values>
+        <field>JT_BaseQuery__c</field>
+        <value
+      xsi:type="xsd:string"
+    >SELECT Id, Name, Industry, AnnualRevenue, Type, BillingCity, BillingState, BillingCountry,
+    (SELECT Id, FirstName, LastName, Email, Phone, Title, Department FROM Contacts ORDER BY CreatedDate DESC LIMIT 50),
+    (SELECT Id, Name, StageName, Amount, CloseDate, Probability, Type FROM Opportunities WHERE IsClosed = false ORDER BY Amount DESC LIMIT 50),
+    (SELECT Id, CaseNumber, Subject, Status, Priority, Origin, CreatedDate FROM Cases WHERE IsClosed = false ORDER BY CreatedDate DESC LIMIT 30),
+    (SELECT Id, ContractNumber, Status, StartDate, EndDate FROM Contracts WHERE Status = &apos;Activated&apos; LIMIT 20)
+FROM Account
+WHERE Type =: accountType
+ORDER BY AnnualRevenue DESC NULLS LAST</value>
+    </values>
+    <values>
+        <field>JT_Binding__c</field>
+        <value
+      xsi:type="xsd:string"
+    >{&quot;accountType&quot;: &quot;Customer&quot;}</value>
+    </values>
+    <values>
+        <field>JT_ObjectName__c</field>
+        <value xsi:type="xsd:string">Account</value>
+    </values>
+</CustomMetadata>

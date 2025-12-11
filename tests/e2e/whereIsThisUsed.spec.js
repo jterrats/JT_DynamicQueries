@@ -19,12 +19,11 @@ test.describe("Where is this used? - Usage Detection", () => {
   });
 
   test.beforeEach(async ({ page }) => {
-    // Setup authenticated context
-    await setupTestContext(page, session, TARGET_APP_NAME);
-
-    // Navigate to Query Viewer tab
-    await page.click(`a[data-label="${QUERY_VIEWER_TAB}"]`);
-    await page.waitForSelector("c-jt-query-viewer", { timeout: 15000 });
+    // Setup authenticated context and navigate to Query Viewer
+    await setupTestContext(page, session, {
+      targetTab: QUERY_VIEWER_TAB,
+      waitForComponent: true
+    });
   });
 
   test("should detect JT_AccountReportExample class using Account_By_Name", async ({

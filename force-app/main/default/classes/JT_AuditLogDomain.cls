@@ -13,7 +13,9 @@
  * 2. All values are from UserInfo/System methods (trusted sources)
  * 3. Required for compliance - audit logs must always be created
  */
-@SuppressWarnings('PMD.ApexCRUDViolation, PMD.AvoidDebugStatements, PMD.DebugsShouldUseLoggingLevel')
+@SuppressWarnings(
+  'PMD.ApexCRUDViolation, PMD.AvoidDebugStatements, PMD.DebugsShouldUseLoggingLevel'
+)
 public without sharing class JT_AuditLogDomain {
   /**
    * @description Inserts a single audit log record

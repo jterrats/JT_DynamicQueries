@@ -5,12 +5,12 @@
     <isDefaultPartition>false</isDefaultPartition>
     <masterLabel>JTDynamicQueriesCache</masterLabel>
     <platformCachePartitionTypes>
-        <allocatedCapacity>5</allocatedCapacity>
+        <allocatedCapacity>1</allocatedCapacity>
         <allocatedPurchasedCapacity>0</allocatedPurchasedCapacity>
         <cacheType>Session</cacheType>
     </platformCachePartitionTypes>
     <platformCachePartitionTypes>
-        <allocatedCapacity>5</allocatedCapacity>
+        <allocatedCapacity>1</allocatedCapacity>
         <allocatedPurchasedCapacity>0</allocatedPurchasedCapacity>
         <cacheType>Organization</cacheType>
     </platformCachePartitionTypes>

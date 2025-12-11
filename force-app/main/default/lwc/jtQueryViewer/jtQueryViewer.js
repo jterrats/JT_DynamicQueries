@@ -108,8 +108,6 @@ import isSandboxOrScratch from "@salesforce/apex/JT_MetadataCreator.isSandboxOrS
 import getOrgInfo from "@salesforce/apex/JT_MetadataCreator.getOrgInfo";
 import createConfiguration from "@salesforce/apex/JT_MetadataCreator.createConfiguration";
 import updateConfiguration from "@salesforce/apex/JT_MetadataCreator.updateConfiguration";
-// validateQuery now handled by jtConfigModal component directly
-// import getProductionEditingSetting from "@salesforce/apex/JT_ProductionSettingsController.getProductionEditingSetting"; // Unused
 import updateProductionEditingSetting from "@salesforce/apex/JT_ProductionSettingsController.updateProductionEditingSetting";
 import getUsageTrackingSetting from "@salesforce/apex/JT_ProductionSettingsController.getUsageTrackingSetting";
 import updateUsageTrackingSetting from "@salesforce/apex/JT_ProductionSettingsController.updateUsageTrackingSetting";
@@ -673,8 +671,6 @@ export default class JtQueryViewer extends LightningElement {
 
     this.resetResults();
 
-    // 🐛 FIX: Don't auto-execute preview - wait for user to enter parameters or click Execute
-    // this.loadQueryPreview(); // REMOVED - only execute on parameter change or Execute click
   }
 
   // Phase 1 Refactor: Clear configuration
@@ -1599,10 +1595,6 @@ export default class JtQueryViewer extends LightningElement {
       .then((result) => {
         if (result.success) {
           this.processQueryResults(result);
-          // 🐛 BUG: This creates duplicate toast with normal processQueryResults
-          // this.showSuccessToast(
-          //   `Found ${result.recordCount} record(s) (Batch Processing)`
-          // );
         } else {
           this.showError = true;
           this.errorMessage = result.errorMessage;

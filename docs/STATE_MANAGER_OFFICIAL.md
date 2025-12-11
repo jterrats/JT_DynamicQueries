@@ -1,8 +1,8 @@
 # 🎯 Official Salesforce LWC State Management (Beta)
 
-> ⚠️ **DEPRECATED - December 10, 2025**  
-> State management components (`queryState`, `settingsState`) have been **removed from the codebase**.  
-> They were never used in production and have been deleted as part of code cleanup.  
+> ⚠️ **DEPRECATED - December 10, 2025**
+> State management components (`queryState`, `settingsState`) have been **removed from the codebase**.
+> They were never used in production and have been deleted as part of code cleanup.
 > This documentation is kept for historical reference only.
 
 ## Overview

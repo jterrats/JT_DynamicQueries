@@ -971,6 +971,13 @@ export default class JtQueryViewer extends LightningElement {
     this.originalDevName = currentConfig.value; // Save original dev name for update
     this.developerNameManuallyEdited = true; // Prevent auto-generation in edit mode
 
+    // Initialize queryValidation for existing query (assume valid)
+    this.queryValidation = {
+      isValid: true,
+      message: "Valid SOQL syntax",
+      objectName: currentConfig.objectName || ""
+    };
+
     // Set modal mode and show it
     this.configModalMode = "edit";
     this.showCreateModal = true;
@@ -1304,7 +1311,7 @@ export default class JtQueryViewer extends LightningElement {
       return;
     }
 
-    if (!this.queryValidation.isValid) {
+    if (!this.queryValidation || !this.queryValidation.isValid) {
       this.showErrorToast(
         "Invalid Query",
         "Please fix the query syntax before saving."

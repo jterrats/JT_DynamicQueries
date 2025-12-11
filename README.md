@@ -316,6 +316,7 @@ sf project deploy start \
 ```
 
 **Benefits over custom export/import:**
+
 - ✅ Native Salesforce validation (SOQL syntax, object existence)
 - ✅ Full Git history and auditing
 - ✅ Branch-based development workflow

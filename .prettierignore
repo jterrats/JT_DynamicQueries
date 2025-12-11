@@ -9,3 +9,6 @@
 .vscode
 
 coverage/
+
+# Mermaid diagrams (contains syntax that confuses Prettier)
+docs/architecture.html

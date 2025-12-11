@@ -130,11 +130,12 @@ test.describe("GitHub Pages - Documentation Site", () => {
   });
 
   test("All critical pages return 200 (no 404s)", async ({ page }) => {
-    const criticalPages = ["/", "/testing/", "/gallery.html"];
+    const criticalPages = ["/", "/testing/", "/gallery.html", "/architecture/"];
 
     for (const pagePath of criticalPages) {
       const response = await page.goto(`${BASE_URL}${pagePath}`, {
-        waitUntil: "domcontentloaded"
+        waitUntil: "domcontentloaded",
+        timeout: 15000
       });
 
       expect(
@@ -146,7 +147,85 @@ test.describe("GitHub Pages - Documentation Site", () => {
         [200, 304].includes(response.status()),
         `Page ${pagePath} should return 200 or 304, got ${response.status()}`
       ).toBeTruthy();
+
+      console.log(`   ✅ ${pagePath}: ${response.status()}`);
     }
+  });
+
+  test("All internal links work (no broken links)", async ({ page }) => {
+    await page.goto(BASE_URL, { waitUntil: "networkidle" });
+
+    // Get all internal links
+    const allLinks = await page.locator("a[href]").all();
+    const brokenLinks = [];
+    const testedLinks = new Set();
+
+    console.log(`   Testing ${allLinks.length} links...`);
+
+    for (const link of allLinks) {
+      const href = await link.getAttribute("href");
+
+      // Skip external links, anchors, mailto, tel
+      if (
+        !href ||
+        href === "#" ||
+        href.startsWith("http://") ||
+        href.startsWith("https://") ||
+        href.startsWith("mailto:") ||
+        href.startsWith("tel:")
+      ) {
+        continue;
+      }
+
+      // Construct full URL
+      let fullUrl = href;
+      if (href.startsWith("/")) {
+        fullUrl = `${BASE_URL}${href}`;
+      } else if (href.startsWith("./") || href.startsWith("../")) {
+        const currentUrl = page.url();
+        fullUrl = new URL(href, currentUrl).href;
+      } else if (!href.startsWith("http")) {
+        // Relative link
+        const currentUrl = page.url();
+        fullUrl = new URL(href, currentUrl).href;
+      }
+
+      // Skip if already tested
+      if (testedLinks.has(fullUrl)) {
+        continue;
+      }
+      testedLinks.add(fullUrl);
+
+      try {
+        const response = await page.request.get(fullUrl, { timeout: 10000 });
+        const status = response.status();
+
+        if (status === 404) {
+          brokenLinks.push({ href, fullUrl, status: 404 });
+          console.log(`   ❌ 404: ${href}`);
+        } else if (status >= 400) {
+          brokenLinks.push({ href, fullUrl, status });
+          console.log(`   ⚠️  ${status}: ${href}`);
+        }
+      } catch (error) {
+        brokenLinks.push({ href, fullUrl, error: error.message });
+        console.log(`   ❌ Error: ${href} - ${error.message}`);
+      }
+    }
+
+    // Report results
+    if (brokenLinks.length > 0) {
+      console.log(`\n⚠️  Found ${brokenLinks.length} broken links:`);
+      brokenLinks.forEach((link) => {
+        console.log(
+          `   - ${link.href} → ${link.fullUrl} (${link.status || link.error})`
+        );
+      });
+    } else {
+      console.log(`\n✅ All ${testedLinks.size} internal links work`);
+    }
+
+    expect(brokenLinks).toHaveLength(0);
   });
 
   test("Testing methodology page is accessible", async ({ page }) => {

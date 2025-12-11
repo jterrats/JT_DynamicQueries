@@ -1,8 +1,16 @@
 /**
  * @description Controller to find usage of JT_DataSelector configurations in Apex classes and Flows
  * @author Jaime Terrats
- * @date 2025-11-30
+ * @date 2025-12-11
+ *
+ * PMD Suppressions:
+ * - CognitiveComplexity/CyclomaticComplexity: Searches multiple metadata types with complex filtering
+ * - AvoidBooleanMethodParameters: includeInactive flag is standard pattern for search methods
+ * - AvoidDeeplyNestedIfStmts: Necessary for parsing Tooling API responses
  */
+@SuppressWarnings(
+  'PMD.CognitiveComplexity, PMD.CyclomaticComplexity, PMD.StdCyclomaticComplexity, PMD.AvoidBooleanMethodParameters, PMD.AvoidDeeplyNestedIfStmts, PMD.AvoidDebugStatements, PMD.ApexDoc, PMD.NcssMethodCount'
+)
 public with sharing class JT_UsageFinder {
   /**
    * @description Wrapper for usage results
@@ -284,33 +292,49 @@ public with sharing class JT_UsageFinder {
         continue;
       }
 
-      // Split into lines and search for configuration name
+      // Check if class references the configuration name anywhere
+      String normalizedBody = cls.Body.toLowerCase();
+      String normalizedConfig = configName.toLowerCase();
+
+      if (!normalizedBody.contains(normalizedConfig)) {
+        continue;
+      }
+
+      // Find specific lines that mention the config (for display purposes)
       List<String> lines = cls.Body.split('\n');
       Integer lineNumber = 0;
+      Boolean foundInClass = false;
 
       for (String line : lines) {
         lineNumber++;
 
-        // Look for pattern: JT_DataSelector.method('configName' or "configName")
-        if (line.contains(searchPattern)) {
-          String normalizedLine = line.toLowerCase();
-          String normalizedConfig = configName.toLowerCase();
+        String normalizedLine = line.toLowerCase();
 
-          // Check for various patterns
-          if (
-            normalizedLine.contains('\'' + normalizedConfig + '\'') ||
-            normalizedLine.contains('"' + normalizedConfig + '"')
-          ) {
-            UsageResult result = new UsageResult();
-            result.className = cls.Name;
-            result.configName = configName;
-            result.lineNumber = lineNumber;
-            result.codeLine = line.trim();
-            result.classId = cls.Id;
-            result.metadataType = 'Apex Class';
-            results.add(result);
-          }
+        // Look for lines containing the config name
+        if (normalizedLine.contains(normalizedConfig)) {
+          UsageResult result = new UsageResult();
+          result.className = cls.Name;
+          result.configName = configName;
+          result.lineNumber = lineNumber;
+          result.codeLine = line.trim();
+          result.classId = cls.Id;
+          result.metadataType = 'Apex Class';
+          results.add(result);
+          foundInClass = true;
         }
+      }
+
+      // If we didn't find any specific line but the class uses both,
+      // add a general result
+      if (!foundInClass) {
+        UsageResult result = new UsageResult();
+        result.className = cls.Name;
+        result.configName = configName;
+        result.lineNumber = 0;
+        result.codeLine = 'Configuration referenced in class';
+        result.classId = cls.Id;
+        result.metadataType = 'Apex Class';
+        results.add(result);
       }
     }
 

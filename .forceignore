@@ -15,8 +15,9 @@ package.xml
 **/*.backup
 
 # Named Credentials (user-specific configuration)
-**/namedCredentials/**
-**/externalCredentials/**
+# TEMPORARILY COMMENTED FOR DEPLOYMENT
+# **/namedCredentials/**
+# **/externalCredentials/**
 
 # 🚫 CI/CD External Client Apps (prevent sync from org)
 **/externalClientApps/JT_CI_*.eca-meta.xml

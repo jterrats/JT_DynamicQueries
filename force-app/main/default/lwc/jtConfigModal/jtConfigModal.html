@@ -49,6 +49,7 @@
               data-field="label"
               onchange={handleFieldChange}
               required
+              maxlength="40"
               placeholder="e.g., Get Active Accounts"
             ></lightning-input>
           </lightning-layout-item>
@@ -62,8 +63,10 @@
               data-field="developerName"
               onchange={handleFieldChange}
               required
+              disabled={isEditMode}
+              maxlength="40"
               placeholder="e.g., Get_Active_Accounts"
-              field-level-help="API name (auto-generated from label)"
+              field-level-help="API name (auto-generated from label, read-only in edit mode, max 40 characters)"
             ></lightning-input>
           </lightning-layout-item>
 
@@ -102,9 +105,9 @@
 
                   <!-- Query Preview -->
                   <template if:true={showQueryPreview}>
-                    <div class="slds-box slds-theme_shade slds-m-top_small">
+                    <div class="slds-m-top_small">
                       <div
-                        class="slds-text-heading_small slds-m-bottom_x-small"
+                        class="slds-text-body_small slds-text-color_weak slds-m-bottom_xx-small"
                       >
                         <lightning-icon
                           icon-name="utility:preview"
@@ -140,14 +143,18 @@
                           alternative-text="Loading preview..."
                           size="small"
                         ></lightning-spinner>
-                        <p class="slds-text-body_small slds-text-color_weak slds-m-top_small">
+                        <p
+                          class="slds-text-body_small slds-text-color_weak slds-m-top_small"
+                        >
                           Loading preview data...
                         </p>
                       </div>
                     </template>
 
                     <template if:true={hasPreviewData}>
-                      <div class="slds-text-heading_small slds-m-bottom_x-small">
+                      <div
+                        class="slds-text-heading_small slds-m-bottom_x-small"
+                      >
                         <lightning-icon
                           icon-name="utility:preview"
                           size="xx-small"
@@ -162,14 +169,18 @@
                         hide-checkbox-column
                         class="slds-box"
                       ></lightning-datatable>
-                      <p class="slds-text-body_small slds-text-color_weak slds-m-top_x-small">
+                      <p
+                        class="slds-text-body_small slds-text-color_weak slds-m-top_x-small"
+                      >
                         Showing up to 5 sample records
                       </p>
                     </template>
 
                     <template if:false={hasPreviewData}>
                       <template if:false={isLoadingQueryPreview}>
-                        <div class="slds-text-body_small slds-text-color_weak slds-m-top_small">
+                        <div
+                          class="slds-text-body_small slds-text-color_weak slds-m-top_small"
+                        >
                           <lightning-icon
                             icon-name="utility:info"
                             size="xx-small"
@@ -221,7 +232,7 @@
                   ></lightning-icon>
                 </div>
                 <div class="slds-media__body">
-                  <strong>Note:</strong> {toolingNote}
+                  <strong>Note:</strong> {dynamicToolingNote}
                 </div>
               </div>
             </div>

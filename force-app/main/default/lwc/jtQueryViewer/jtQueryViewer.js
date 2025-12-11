@@ -99,7 +99,6 @@ import whereIsThisUsedTooltipLabel from "@salesforce/label/c.JT_jtQueryViewer_wh
 import getConfigurations from "@salesforce/apex/JT_QueryViewerController.getConfigurations";
 import extractParameters from "@salesforce/apex/JT_QueryViewerController.extractParameters";
 import executeQuery from "@salesforce/apex/JT_QueryViewerController.executeQuery";
-import executeQueryPreview from "@salesforce/apex/JT_QueryViewerController.executeQueryPreview";
 import canUseRunAs from "@salesforce/apex/JT_QueryViewerController.canUseRunAs";
 import getAllActiveUsers from "@salesforce/apex/JT_QueryViewerController.getAllActiveUsers";
 import executeAsUser from "@salesforce/apex/JT_RunAsTestExecutor.executeAsUser";
@@ -109,13 +108,10 @@ import isSandboxOrScratch from "@salesforce/apex/JT_MetadataCreator.isSandboxOrS
 import getOrgInfo from "@salesforce/apex/JT_MetadataCreator.getOrgInfo";
 import createConfiguration from "@salesforce/apex/JT_MetadataCreator.createConfiguration";
 import updateConfiguration from "@salesforce/apex/JT_MetadataCreator.updateConfiguration";
-import validateQuery from "@salesforce/apex/JT_MetadataCreator.validateQuery";
-// import getProductionEditingSetting from "@salesforce/apex/JT_ProductionSettingsController.getProductionEditingSetting"; // Unused
 import updateProductionEditingSetting from "@salesforce/apex/JT_ProductionSettingsController.updateProductionEditingSetting";
 import getUsageTrackingSetting from "@salesforce/apex/JT_ProductionSettingsController.getUsageTrackingSetting";
 import updateUsageTrackingSetting from "@salesforce/apex/JT_ProductionSettingsController.updateUsageTrackingSetting";
 import logUsageSearch from "@salesforce/apex/JT_ProductionSettingsController.logUsageSearch";
-import findConfigurationUsage from "@salesforce/apex/JT_UsageFinder.findConfigurationUsage";
 import findAllUsagesResilient from "@salesforce/apex/JT_UsageFinder.findAllUsagesResilient";
 import assessQueryRisk from "@salesforce/apex/JT_QueryViewerController.assessQueryRisk";
 import executeQueryWithBatchProcessing from "@salesforce/apex/JT_QueryViewerController.executeQueryWithBatchProcessing";
@@ -449,65 +445,6 @@ export default class JtQueryViewer extends LightningElement {
     return this.baseQuery;
   }
 
-  // Load query preview data (max 5 records)
-  loadQueryPreview() {
-    if (!this.selectedConfig) {
-      this.showPreviewData = false;
-      return;
-    }
-
-    this.isLoadingPreview = true;
-    this.showPreviewData = false;
-
-    // Build bindings JSON
-    let bindingsToSend;
-    if (this.hasBindings && !this.hasParameters) {
-      bindingsToSend = this.bindings;
-    } else if (this.hasParameters) {
-      bindingsToSend = JSON.stringify(this.parameterValues);
-    } else {
-      bindingsToSend = null;
-    }
-
-    executeQueryPreview({
-      devName: this.selectedConfig,
-      bindingsJson: bindingsToSend,
-      queryOverride: null
-    })
-      .then((result) => {
-        if (result.success && result.recordCount > 0) {
-          this.queryPreviewData = result.records;
-          this.previewRecordCount = result.recordCount;
-          this.showPreviewData = true;
-
-          // Build columns
-          if (result.fields && result.fields.length > 0) {
-            this.previewColumns = result.fields.map((field) => ({
-              label: this.formatLabel(field),
-              fieldName: field,
-              type: this.getFieldType(field)
-            }));
-          }
-
-          // Calculate pagination
-          this.previewTotalPages = Math.ceil(
-            this.previewRecordCount / this.previewPageSize
-          );
-          this.previewCurrentPage = 1;
-        } else {
-          this.showPreviewData = false;
-          this.queryPreviewData = [];
-        }
-      })
-      .catch(() => {
-        this.showPreviewData = false;
-        this.queryPreviewData = [];
-      })
-      .finally(() => {
-        this.isLoadingPreview = false;
-      });
-  }
-
   // Preview pagination getters
   get previewPaginatedData() {
     const start = (this.previewCurrentPage - 1) * this.previewPageSize;
@@ -673,9 +610,6 @@ export default class JtQueryViewer extends LightningElement {
     }
 
     this.resetResults();
-
-    // 🐛 FIX: Don't auto-execute preview - wait for user to enter parameters or click Execute
-    // this.loadQueryPreview(); // REMOVED - only execute on parameter change or Execute click
   }
 
   // Phase 1 Refactor: Clear configuration
@@ -721,7 +655,7 @@ export default class JtQueryViewer extends LightningElement {
 
   // Phase 2 Refactor: Updated to use jtParameterInputs event
   handleParameterChange(event) {
-    const { paramName, value, allValues } = event.detail;
+    const { allValues } = event.detail;
 
     // 🛡️ CRITICAL FIX: Validate allValues exists
     // This prevents native 'change' event from overwriting with undefined
@@ -775,7 +709,7 @@ export default class JtQueryViewer extends LightningElement {
     this.testAssertMessage = "";
 
     // Build bindings JSON
-    let bindingsToSend = this.buildBindingsJson();
+    const bindingsToSend = this.buildBindingsJson();
 
     executeAsUser({
       userId: this.runAsUserId,
@@ -951,28 +885,49 @@ export default class JtQueryViewer extends LightningElement {
       return;
     }
 
-    this.configModalMode = "edit";
-    this.showCreateModal = true;
-
     // Load current configuration data
     const currentConfig = this.configurationOptions.find(
       (cfg) => cfg.value === this.selectedConfig
     );
 
-    if (currentConfig) {
-      this.newConfig = {
-        label: currentConfig.label,
-        developerName: currentConfig.value,
-        baseQuery: currentConfig.data.baseQuery,
-        bindings: currentConfig.data.bindings,
-        objectName: currentConfig.data.objectName
-      };
-      this.originalDevName = currentConfig.value; // Save original dev name for update
-      this.queryValidation = { isValid: true, message: "Valid SOQL syntax" };
-      
-      // Load preview for existing config
-      this.validateQuerySyntax();
+    if (!currentConfig) {
+      this.showErrorToast(
+        "Configuration Not Found",
+        "Could not find the selected configuration. Please refresh and try again."
+      );
+      return;
     }
+
+    // Prepare config data
+    this.newConfig = {
+      label: currentConfig.label,
+      developerName: currentConfig.value,
+      baseQuery: currentConfig.baseQuery,
+      bindings: currentConfig.bindings,
+      objectName: currentConfig.objectName
+    };
+
+    this.originalDevName = currentConfig.value; // Save original dev name for update
+    this.developerNameManuallyEdited = true; // Prevent auto-generation in edit mode
+
+    // Initialize queryValidation for existing query (assume valid)
+    this.queryValidation = {
+      isValid: true,
+      message: "Valid SOQL syntax",
+      objectName: currentConfig.objectName || ""
+    };
+
+    // Set modal mode and show it
+    this.configModalMode = "edit";
+    this.showCreateModal = true;
+
+    // Wait for modal to render, then set config
+    setTimeout(() => {
+      const modal = this.refs.configModal;
+      if (modal) {
+        modal.setConfig(this.newConfig);
+      }
+    }, 100);
   }
 
   // Hide create/edit configuration modal
@@ -1177,7 +1132,7 @@ export default class JtQueryViewer extends LightningElement {
       // Clear users
       if (users) {
         this.userOptions = [];
-        await this.loadUsers(true); // Force refresh
+        this.loadAllUsers(); // Reload all users
         cleared.push(this.labels.clearUsersLabel);
       }
 
@@ -1203,7 +1158,8 @@ export default class JtQueryViewer extends LightningElement {
     } catch (error) {
       this.showErrorToast(
         "Error",
-        "Error clearing cache: " + error.body.message
+        "Error clearing cache: " +
+          (error.body?.message || error.message || "Unknown error")
       );
     }
   }
@@ -1258,75 +1214,26 @@ export default class JtQueryViewer extends LightningElement {
         .substring(0, 40); // Salesforce API name limit
     }
 
-    // Validate query when it changes
-    if (field === "baseQuery") {
-      this.validateQuerySyntax();
-    }
+    // Note: Query validation now handled directly by jtConfigModal component
   }
 
-  // Validate query syntax and load preview
-  validateQuerySyntax() {
-    if (!this.newConfig.baseQuery) {
-      this.queryValidation = { isValid: false, message: "" };
-      this.queryPreviewResults = [];
+  // Handle query preview event from modal (Modal now handles validation & preview)
+  handleQueryPreview(event) {
+    const { records, fields, recordCount } = event.detail;
+
+    this.queryPreviewResults = records || [];
+
+    if (fields && fields.length > 0) {
+      this.queryPreviewColumns = fields.map((field) => ({
+        label: this.formatLabel(field),
+        fieldName: field,
+        type: this.getFieldType(field)
+      }));
+    } else {
       this.queryPreviewColumns = [];
-      return;
     }
 
-    this.isLoadingQueryPreview = true;
-
-    validateQuery({ query: this.newConfig.baseQuery })
-      .then((result) => {
-        this.queryValidation = result;
-        if (result.isValid && result.objectName) {
-          this.newConfig.objectName = result.objectName;
-          // Load query preview (3 records)
-          return this.loadCreateModalPreview();
-        }
-      })
-      .catch((error) => {
-        this.queryValidation = {
-          isValid: false,
-          message:
-            error.body?.message ||
-            "Invalid SOQL query. Please check syntax and try again."
-        };
-        this.queryPreviewResults = [];
-        this.queryPreviewColumns = [];
-      })
-      .finally(() => {
-        this.isLoadingQueryPreview = false;
-      });
-  }
-
-  // Load preview data for create modal
-  loadCreateModalPreview() {
-    // Build bindings if present
-    const bindingsToSend = this.newConfig.bindings || null;
-
-    return executeQueryPreview({
-      devName: null,
-      bindingsJson: bindingsToSend,
-      queryOverride: this.newConfig.baseQuery // Use queryOverride parameter
-    })
-      .then((result) => {
-        if (result.success && result.recordCount > 0) {
-          this.queryPreviewResults = result.records;
-          this.queryPreviewColumns = result.fields.map((field) => ({
-            label: this.formatLabel(field),
-            fieldName: field,
-            type: this.getFieldType(field)
-          }));
-        } else {
-          this.queryPreviewResults = [];
-          this.queryPreviewColumns = [];
-        }
-      })
-      .catch(() => {
-        // Silent fail - validation is more important
-        this.queryPreviewResults = [];
-        this.queryPreviewColumns = [];
-      });
+    console.log("✅ Query preview updated from modal:", recordCount, "records");
   }
 
   // Save configuration (create or update)
@@ -1344,7 +1251,7 @@ export default class JtQueryViewer extends LightningElement {
       return;
     }
 
-    if (!this.queryValidation.isValid) {
+    if (!this.queryValidation || !this.queryValidation.isValid) {
       this.showErrorToast(
         "Invalid Query",
         "Please fix the query syntax before saving."
@@ -1371,16 +1278,12 @@ export default class JtQueryViewer extends LightningElement {
           })
         : createConfiguration(configData);
 
-    const actionLabel =
-      this.configModalMode === "edit" ? "Updated" : "Created";
+    const actionLabel = this.configModalMode === "edit" ? "Updated" : "Created";
 
     saveMethod
       .then((result) => {
         if (result.success) {
-          this.showSuccessToast(
-            `Configuration ${actionLabel}`,
-            result.message
-          );
+          this.showSuccessToast(`Configuration ${actionLabel}`, result.message);
           this.handleCloseCreateModal();
 
           // Refresh the configurations list using refreshApex
@@ -1552,40 +1455,6 @@ export default class JtQueryViewer extends LightningElement {
       });
   }
 
-  // Build bindings JSON (extracted from handleExecuteQuery)
-  buildBindingsJson() {
-    let bindingsToSend;
-
-    if (this.hasBindings && !this.hasParameters) {
-      // Use bindings from configuration
-      bindingsToSend = this.bindings;
-    } else if (this.hasParameters) {
-      // Use parameter values entered by user
-      const paramValues = this.parameterValues || {};
-      const hasAnyValues = Object.keys(paramValues).some(
-        (key) =>
-          paramValues[key] !== "" &&
-          paramValues[key] !== null &&
-          paramValues[key] !== undefined
-      );
-
-      if (!hasAnyValues && this.hasBindings) {
-        // Parameters are empty but config has bindings → Use config bindings
-        bindingsToSend = this.bindings;
-      } else if (!hasAnyValues && !this.hasBindings) {
-        // No values and no config bindings → Send empty object
-        bindingsToSend = JSON.stringify({});
-      } else {
-        // Has values → Use parameter values
-        bindingsToSend = JSON.stringify(paramValues);
-      }
-    } else {
-      bindingsToSend = null;
-    }
-
-    return bindingsToSend;
-  }
-
   // Execute query normally (without batch processing)
   executeQueryNormal() {
     // Note: isLoading already set to true in handleExecuteQuery
@@ -1639,10 +1508,6 @@ export default class JtQueryViewer extends LightningElement {
       .then((result) => {
         if (result.success) {
           this.processQueryResults(result);
-          // 🐛 BUG: This creates duplicate toast with normal processQueryResults
-          // this.showSuccessToast(
-          //   `Found ${result.recordCount} record(s) (Batch Processing)`
-          // );
         } else {
           this.showError = true;
           this.errorMessage = result.errorMessage;
@@ -1774,7 +1639,7 @@ export default class JtQueryViewer extends LightningElement {
         records: this.queryResults
       };
       this.jsonOutput = JSON.stringify(output, null, 2);
-    } catch (error) {
+    } catch {
       this.showErrorToast("JSON Error", "Failed to generate JSON output");
       this.jsonOutput = "{}";
     }
@@ -1834,7 +1699,7 @@ export default class JtQueryViewer extends LightningElement {
       document.body.removeChild(link);
 
       this.showSuccessToast("CSV downloaded successfully");
-    } catch (error) {
+    } catch {
       this.showErrorToast("CSV Error", "Failed to generate CSV file");
     }
   }
@@ -1882,28 +1747,6 @@ export default class JtQueryViewer extends LightningElement {
     }, 3000);
 
     this.announceToScreenReader(`Error: ${title}. ${message}`, true);
-  }
-
-  showInfoToast(title, message) {
-    // ✅ Clear previous toast to avoid stacking
-    if (this._toastTimeout) {
-      clearTimeout(this._toastTimeout);
-    }
-
-    this.dispatchEvent(
-      new ShowToastEvent({
-        title: title,
-        message: message,
-        variant: "info",
-        mode: "dismissible"
-      })
-    );
-
-    this._toastTimeout = setTimeout(() => {
-      this._toastTimeout = null;
-    }, 3000);
-
-    this.announceToScreenReader(`${title}: ${message}`);
   }
 
   // Announce to screen readers

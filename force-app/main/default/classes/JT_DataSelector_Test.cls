@@ -14,8 +14,8 @@
  * required to have at least 75% code coverage in order to be deployed
  * to a production org. In addition, all triggers must have some code coverage.
  *
- * The @isTest class annotation indicates this class only contains test
- * methods. Classes defined with the @isTest annotation do not count against
+ * The @IsTest class annotation indicates this class only contains test
+ * methods. Classes defined with the @IsTest annotation do not count against
  * the org size limit for all Apex scripts.
  *
  * See the Apex Language Reference for more information about Testing and Code Coverage.
@@ -24,7 +24,8 @@
  * @description Test class for JT_DataSelector
  * @author Jaime Terrats | 06-18-2025
  **/
-@isTest
+@IsTest
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs, PMD.ApexDoc')
 private class JT_DataSelector_Test {
   /**
    * @description This test setup creates a mock account record and user with limited access
@@ -57,7 +58,7 @@ private class JT_DataSelector_Test {
    * @description validates configurable bindings in user access mode
    * @author Jaime Terrats | 06-18-2025
    **/
-  @isTest
+  @IsTest
   static void testGetRecordsUserAccessMode() {
     Test.startTest();
     List<SObject> results = JT_DataSelector.getRecords('Test_Record', true);
@@ -79,7 +80,7 @@ private class JT_DataSelector_Test {
    * @description validates configurable bindings in system access mode
    * @author Jaime Terrats | 06-18-2025
    **/
-  @isTest
+  @IsTest
   static void testGetRecordsSystemAccessMode() {
     Test.startTest();
     List<SObject> results = JT_DataSelector.getRecords('Test_Record', false);
@@ -101,7 +102,7 @@ private class JT_DataSelector_Test {
    * @description validates system access mode using dynamic bindings from apex or js context
    * @author Jaime Terrats | 06-18-2025
    **/
-  @isTest
+  @IsTest
   static void testGetRecordsOverloadBindingsSA() {
     Test.startTest();
     List<SObject> results = JT_DataSelector.getRecords(
@@ -127,7 +128,7 @@ private class JT_DataSelector_Test {
    * @description validates user acces mode using dynamic bindings from apex or js context
    * @author Jaime Terrats | 06-18-2025
    **/
-  @isTest
+  @IsTest
   static void testGetRecordsOverloadBindingsUAM() {
     Test.startTest();
     List<SObject> results = JT_DataSelector.getRecords(
@@ -153,7 +154,7 @@ private class JT_DataSelector_Test {
    * @description validates exception to check if user has access to the custom metadata
    * @author Jaime Terrats | 06-18-2025
    **/
-  @isTest
+  @IsTest
   static void testException() {
     User testUser = [SELECT Id FROM User WHERE Name = 'John Doe'];
     System.runAs(testUser) {
@@ -175,7 +176,7 @@ private class JT_DataSelector_Test {
    * @description validates @InvocableMethod for Flow/Agentforce integration
    * @author Jaime Terrats | 06-18-2025
    **/
-  @isTest
+  @IsTest
   static void testInvocableMethod() {
     // Prepare request
     JT_DataSelector.InvocableRequest req = new JT_DataSelector.InvocableRequest();
@@ -206,7 +207,7 @@ private class JT_DataSelector_Test {
    * @description validates @InvocableMethod with invalid config
    * @author Jaime Terrats | 06-18-2025
    **/
-  @isTest
+  @IsTest
   static void testInvocableMethodError() {
     JT_DataSelector.InvocableRequest req = new JT_DataSelector.InvocableRequest();
     req.configName = 'NonExistentConfig';
@@ -232,7 +233,7 @@ private class JT_DataSelector_Test {
    * @description Test cursor processing with small batch
    * @author Jaime Terrats | 11-30-2025
    **/
-  @isTest
+  @IsTest
   static void testCursorProcessing() {
     // Create test processor
     TestCursorProcessor processor = new TestCursorProcessor();
@@ -263,7 +264,7 @@ private class JT_DataSelector_Test {
    * @description Test cursor processing with null bindings
    * @author Jaime Terrats | 11-30-2025
    **/
-  @isTest
+  @IsTest
   static void testCursorProcessingNullBindings() {
     TestCursorProcessor processor = new TestCursorProcessor();
 
@@ -287,7 +288,7 @@ private class JT_DataSelector_Test {
    * @description Test cursor processing with default batch size
    * @author Jaime Terrats | 11-30-2025
    **/
-  @isTest
+  @IsTest
   static void testCursorProcessingDefaultBatchSize() {
     TestCursorProcessor processor = new TestCursorProcessor();
 

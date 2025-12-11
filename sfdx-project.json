@@ -8,12 +8,5 @@
   "name": "JT_DynamicQueries",
   "namespace": "",
   "sfdcLoginUrl": "https://login.salesforce.com",
-  "sourceApiVersion": "65.0",
-  "replacements": [
-    {
-      "filename": "force-app/main/default/namedCredentials/JT_Tooling_API.namedCredential-meta.xml",
-      "stringToReplace": "{!$Credential.JT_Tooling_API}",
-      "replaceWithEnv": "SF_ORG_SQF"
-    }
-  ]
+  "sourceApiVersion": "65.0"
 }

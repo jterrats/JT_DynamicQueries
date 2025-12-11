@@ -3,10 +3,12 @@
  * @author Jaime Terrats
  * @date 2025-12-02
  */
-@isTest
+@IsTest
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 private class JT_AuditLogDomain_Test {
-  @isTest
-  static void testInsertLog_Success() {
+  @IsTest
+  @SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
+  static void testInsertLogSuccess() {
     // Create audit log
     JT_SettingsAuditLog__c log = new JT_SettingsAuditLog__c(
       JT_Action__c = 'Test Action',
@@ -32,8 +34,9 @@ private class JT_AuditLogDomain_Test {
     System.assertNotEquals(null, log.Id, 'Log should have Id after insert');
   }
 
-  @isTest
-  static void testInsertLog_NullLog() {
+  @IsTest
+  @SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
+  static void testInsertLogNullLog() {
     Boolean exceptionThrown = false;
 
     Test.startTest();
@@ -55,8 +58,9 @@ private class JT_AuditLogDomain_Test {
     );
   }
 
-  @isTest
-  static void testInsertLog_MissingRequiredField() {
+  @IsTest
+  @SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
+  static void testInsertLogMissingRequiredField() {
     // Create log without required JT_Action__c field
     JT_SettingsAuditLog__c log = new JT_SettingsAuditLog__c(
       JT_ChangedBy__c = UserInfo.getUserId()
@@ -83,8 +87,9 @@ private class JT_AuditLogDomain_Test {
     );
   }
 
-  @isTest
-  static void testInsertLogs_Bulk() {
+  @IsTest
+  @SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
+  static void testInsertLogsBulk() {
     List<JT_SettingsAuditLog__c> logs = new List<JT_SettingsAuditLog__c>();
 
     for (Integer i = 0; i < 5; i++) {
@@ -114,8 +119,9 @@ private class JT_AuditLogDomain_Test {
     System.assertEquals(5, insertedLogs.size(), 'Should create 5 audit logs');
   }
 
-  @isTest
-  static void testInsertLogs_EmptyList() {
+  @IsTest
+  @SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
+  static void testInsertLogsEmptyList() {
     Test.startTest();
     JT_AuditLogDomain.insertLogs(new List<JT_SettingsAuditLog__c>());
     Test.stopTest();
@@ -124,7 +130,8 @@ private class JT_AuditLogDomain_Test {
     System.assert(true, 'Should handle empty list gracefully');
   }
 
-  @isTest
+  @IsTest
+  @SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
   static void testDeleteOldLogs() {
     // Create old logs (simulate 31 days ago)
     List<JT_SettingsAuditLog__c> oldLogs = new List<JT_SettingsAuditLog__c>();

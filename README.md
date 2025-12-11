@@ -241,6 +241,88 @@ sf config set target-org my-sandbox
 
 - Searching configuration references in Flows
 
+## 🔄 Configuration Migration
+
+### Export Configurations from Source Org
+
+All query configurations are stored as **Custom Metadata Types** (`JT_DataSelector__mdt`), making them fully version-controllable and migratable.
+
+```bash
+# Export all Dynamic Query configurations
+sf project retrieve start \
+  --metadata CustomMetadata:JT_DataSelector \
+  --target-org production
+
+# Result: force-app/main/default/customMetadata/*.md-meta.xml
+```
+
+### Import Configurations to Target Org
+
+```bash
+# Deploy to another org
+sf project deploy start \
+  --source-dir force-app/main/default/customMetadata \
+  --target-org sandbox
+
+# Validate before deploying (dry-run)
+sf project deploy start \
+  --source-dir force-app/main/default/customMetadata \
+  --target-org sandbox \
+  --dry-run
+```
+
+### Version Control & CI/CD
+
+Since configurations are metadata, they integrate seamlessly with Git:
+
+```bash
+# Commit configurations to version control
+git add force-app/main/default/customMetadata/
+git commit -m "feat: add Account query config"
+git push
+
+# Deploy via CI/CD (GitHub Actions example)
+sf project deploy start \
+  --source-dir force-app/main/default/customMetadata \
+  --target-org ${{ secrets.SF_PROD_USERNAME }}
+```
+
+### Conflict Resolution
+
+If multiple developers create configs with the same name:
+
+```bash
+# Git shows conflicts in .md-meta.xml files
+git merge feature/new-configs
+
+# Resolve manually or rename configs
+# Then deploy with validation
+sf project deploy start \
+  --source-dir force-app/main/default/customMetadata \
+  --target-org sandbox \
+  --dry-run
+```
+
+### Rollback Configurations
+
+```bash
+# Revert to previous version
+git revert <commit-hash>
+
+# Deploy rollback
+sf project deploy start \
+  --source-dir force-app/main/default/customMetadata \
+  --target-org production
+```
+
+**Benefits over custom export/import:**
+
+- ✅ Native Salesforce validation (SOQL syntax, object existence)
+- ✅ Full Git history and auditing
+- ✅ Branch-based development workflow
+- ✅ Automated CI/CD integration
+- ✅ No custom UI maintenance required
+
 ## 📖 Documentation
 
 ### In-App Documentation

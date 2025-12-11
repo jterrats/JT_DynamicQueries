@@ -1,10 +1,19 @@
 /**
- * @description       :
- * @author            : Jaime Terrats
- * @group             :
- * @last modified on  : 11-28-2025
- * @last modified by  : Jaime Terrats
+ * @description Data Selector for dynamic SOQL queries with security enforcement
+ * @author Jaime Terrats
+ * @group Selector Layer
+ * @last modified on 12-11-2025
+ * @last modified by Jaime Terrats
+ *
+ * PMD Suppressions:
+ * - CognitiveComplexity/CyclomaticComplexity: Inherent to bind variable processing and security checks
+ * - AvoidBooleanMethodParameters: enforceSecurity flag is a common pattern for security-aware methods
+ * - ExcessiveParameterList: All parameters are necessary for query execution flexibility
+ * - AvoidDeeplyNestedIfStmts: Required for comprehensive bind variable validation
  **/
+@SuppressWarnings(
+  'PMD.CognitiveComplexity, PMD.CyclomaticComplexity, PMD.StdCyclomaticComplexity, PMD.AvoidBooleanMethodParameters, PMD.ExcessiveParameterList, PMD.AvoidDeeplyNestedIfStmts'
+)
 public inherited sharing class JT_DataSelector {
   /** Cache to store configurations and avoid repeated queries */
   private static Map<String, JT_DynamicQueryConfiguration__mdt> configCache = new Map<String, JT_DynamicQueryConfiguration__mdt>();
@@ -201,6 +210,148 @@ public inherited sharing class JT_DataSelector {
   }
 
   /**
+   * @description Validates and converts binding types by detecting operators in query
+   * @param bindings Raw bindings from user input
+   * @param query SOQL query string to analyze for operators
+   * @return Map<String, Object> Validated and converted bindings
+   */
+  @TestVisible
+  private static Map<String, Object> validateAndConvertBindings(
+    Map<String, Object> bindings,
+    String query
+  ) {
+    if (bindings == null || bindings.isEmpty()) {
+      return bindings;
+    }
+
+    if (String.isBlank(query)) {
+      return bindings;
+    }
+
+    Map<String, Object> validatedBindings = new Map<String, Object>();
+
+    for (String key : bindings.keySet()) {
+      Object value = bindings.get(key);
+
+      // Auto-detect if this binding is used with IN operator
+      String normalizedQuery = query.toLowerCase();
+      String bindingPattern = ':' + key.toLowerCase();
+
+      // Check if used with IN/INCLUDES/EXCLUDES (requires List)
+      Boolean requiresList =
+        normalizedQuery.contains('in ' + bindingPattern) ||
+        normalizedQuery.contains('includes ' + bindingPattern) ||
+        normalizedQuery.contains('excludes ' + bindingPattern);
+
+      if (requiresList) {
+        // Convert to List<String> if not already a list
+        if (!(value instanceof List<Object>)) {
+          validatedBindings.put(
+            key,
+            convertListToTypedList(new List<Object>{ value }, 'String')
+          );
+        } else {
+          validatedBindings.put(
+            key,
+            convertListToTypedList((List<Object>) value, 'String')
+          );
+        }
+      } else {
+        // Pass through as-is for other operators
+        validatedBindings.put(key, value);
+      }
+    }
+
+    return validatedBindings;
+  }
+
+  /**
+   * @description Converts List<Object> to properly typed list for Database.queryWithBinds
+   * @param values List of values
+   * @param innerType Type of elements (String, Id, Integer, etc.)
+   * @return Object Typed list
+   */
+  @TestVisible
+  private static Object convertListToTypedList(
+    List<Object> values,
+    String innerType
+  ) {
+    if (values == null || values.isEmpty()) {
+      return values;
+    }
+
+    // Handle common types
+    if (innerType == 'String') {
+      List<String> typedList = new List<String>();
+      for (Object val : values) {
+        typedList.add(String.valueOf(val));
+      }
+      return typedList;
+    }
+
+    if (innerType == 'Id') {
+      List<String> typedList = new List<String>();
+      for (Object val : values) {
+        typedList.add(String.valueOf(val));
+      }
+      return typedList;
+    }
+
+    if (innerType == 'Integer') {
+      List<Integer> typedList = new List<Integer>();
+      for (Object val : values) {
+        typedList.add(
+          val instanceof Integer
+            ? (Integer) val
+            : Integer.valueOf(String.valueOf(val))
+        );
+      }
+      return typedList;
+    }
+
+    if (innerType == 'Decimal') {
+      List<Decimal> typedList = new List<Decimal>();
+      for (Object val : values) {
+        typedList.add(
+          val instanceof Decimal
+            ? (Decimal) val
+            : Decimal.valueOf(String.valueOf(val))
+        );
+      }
+      return typedList;
+    }
+
+    if (innerType == 'Date') {
+      List<Date> typedList = new List<Date>();
+      for (Object val : values) {
+        typedList.add(
+          val instanceof Date ? (Date) val : Date.valueOf(String.valueOf(val))
+        );
+      }
+      return typedList;
+    }
+
+    if (innerType == 'Datetime') {
+      List<Datetime> typedList = new List<Datetime>();
+      for (Object val : values) {
+        typedList.add(
+          val instanceof Datetime
+            ? (Datetime) val
+            : Datetime.valueOf(String.valueOf(val))
+        );
+      }
+      return typedList;
+    }
+
+    // Default: return as List<String> (safest for most cases)
+    List<String> defaultList = new List<String>();
+    for (Object val : values) {
+      defaultList.add(String.valueOf(val));
+    }
+    return defaultList;
+  }
+
+  /**
    * @description Process large query results using Apex Cursors (Beta)
    * Allows efficient processing of >50K records in batches
    * @param devName Configuration name
@@ -305,6 +456,12 @@ public inherited sharing class JT_DataSelector {
       devName
     );
 
+    // Validate and convert bindings (auto-detect types from query patterns)
+    Map<String, Object> validatedBindings = validateAndConvertBindings(
+      bindings,
+      config.JT_BaseQuery__c
+    );
+
     // Use appropriate access level
     AccessLevel accessMode = enforceSecurity
       ? AccessLevel.USER_MODE
@@ -312,8 +469,235 @@ public inherited sharing class JT_DataSelector {
 
     return Database.queryWithBinds(
       config.JT_BaseQuery__c,
-      bindings,
+      validatedBindings,
       accessMode
+    );
+  }
+
+  /**
+   * @description Count records for a given configuration
+   * This method allows users to check record count BEFORE deciding execution strategy
+   * Use this when you need to choose between standard query, cursor processing, or Batch/Queueable
+   * @param devName Configuration name
+   * @param bindings Custom bindings (merged with config bindings)
+   * @param enforceSecurity Whether to use USER_MODE
+   * @return Integer Number of records that would be returned
+   * @example
+   * // Check count first, then decide strategy
+   * Integer count = JT_DataSelector.countRecordsForConfig('MyConfig', bindings, true);
+   * if (count > 50000 && System.isBatch()) {
+   *     // Use Batch Apex for async processing
+   * } else if (count > 50000) {
+   *     // Use cursor processing (sync only)
+   *     JT_DataSelector.processRecordsWithCursor('MyConfig', bindings, true, 200, processor);
+   * } else {
+   *     // Use standard query
+   *     List<SObject> records = JT_DataSelector.getRecords('MyConfig', true, bindings);
+   * }
+   */
+  public static Integer countRecordsForConfig(
+    String devName,
+    Map<String, Object> bindings,
+    Boolean enforceSecurity
+  ) {
+    final JT_DataSelector selectorInstance = JT_DataSelector.getInstance();
+    final JT_DynamicQueryConfiguration__mdt config = selectorInstance.getConfig(
+      devName
+    );
+
+    // Merge config bindings with custom bindings
+    Map<String, Object> configBindings = String.isNotBlank(config.JT_Binding__c)
+      ? (Map<String, Object>) JSON.deserializeUntyped(config.JT_Binding__c)
+      : new Map<String, Object>();
+    Map<String, Object> mergedBindings = new Map<String, Object>(
+      configBindings
+    );
+    if (bindings != null) {
+      mergedBindings.putAll(bindings);
+    }
+
+    return countRecordsInternal(
+      config.JT_BaseQuery__c,
+      mergedBindings,
+      enforceSecurity
+    );
+  }
+
+  /**
+   * @description Internal helper to count records for a given query
+   * @param baseQuery The SOQL query to count
+   * @param bindings Bind variables for the query
+   * @param enforceSecurity Whether to use USER_MODE
+   * @return Integer Number of records that would be returned
+   */
+  @TestVisible
+  private static Integer countRecordsInternal(
+    String baseQuery,
+    Map<String, Object> bindings,
+    Boolean enforceSecurity
+  ) {
+    // Convert SELECT query to COUNT query
+    String countQuery = baseQuery.replaceAll(
+      '(?i)SELECT[\\s\\S]+?FROM',
+      'SELECT COUNT() FROM'
+    );
+
+    // Remove ORDER BY, LIMIT, OFFSET clauses for COUNT
+    countQuery = countQuery.replaceAll('(?i)\\s+ORDER\\s+BY[^\\n]+', '');
+    countQuery = countQuery.replaceAll('(?i)\\s+LIMIT\\s+\\d+', '');
+    countQuery = countQuery.replaceAll('(?i)\\s+OFFSET\\s+\\d+', '');
+
+    // Use appropriate access level
+    AccessLevel accessMode = enforceSecurity
+      ? AccessLevel.USER_MODE
+      : AccessLevel.SYSTEM_MODE;
+
+    // Replace bind variables in the query string for Database.countQuery()
+    String finalQuery = countQuery;
+    if (bindings != null && !bindings.isEmpty()) {
+      for (String key : bindings.keySet()) {
+        Object value = bindings.get(key);
+        String replacement = '';
+
+        if (value instanceof String) {
+          replacement = '\'' + String.escapeSingleQuotes((String) value) + '\'';
+        } else if (value instanceof Date) {
+          replacement = String.valueOf((Date) value);
+        } else if (value instanceof Datetime) {
+          replacement = ((Datetime) value)
+            .format('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'');
+        } else if (
+          value instanceof Boolean ||
+          value instanceof Integer ||
+          value instanceof Decimal
+        ) {
+          replacement = String.valueOf(value);
+        } else if (value instanceof List<Object>) {
+          List<Object> listValue = (List<Object>) value;
+          List<String> escapedValues = new List<String>();
+          for (Object item : listValue) {
+            if (item instanceof String) {
+              escapedValues.add(
+                '\'' + String.escapeSingleQuotes((String) item) + '\''
+              );
+            } else {
+              escapedValues.add(String.valueOf(item));
+            }
+          }
+          replacement = '(' + String.join(escapedValues, ',') + ')';
+        } else {
+          replacement = String.valueOf(value);
+        }
+
+        finalQuery = finalQuery.replaceAll(':' + key + '\\b', replacement);
+      }
+    }
+
+    return Database.countQuery(finalQuery, accessMode);
+  }
+
+  /**
+   * @description Smart method that automatically decides whether to use standard query
+   * or cursor-based processing based on record count
+   * WARNING: This method uses cursor processing for large datasets, which can ONLY be used
+   * in synchronous contexts (NOT in @Future, Queueable, Batch, or Triggers).
+   * For async contexts, use countRecordsForConfig() first, then decide your strategy.
+   * @param devName Configuration name
+   * @param enforceSecurity Whether to use USER_MODE
+   * @param bindings Custom bindings (merged with config bindings)
+   * @param threshold Record count threshold for using cursor processing (default: 50000)
+   * @param processor Optional CursorProcessor for large result sets. If null and count > threshold, throws exception
+   * @return List<SObject> Records if count <= threshold, empty list if cursor processing was used
+   * @see countRecordsForConfig For checking count before deciding strategy in async contexts
+   */
+  public static List<SObject> getRecordsWithAutoStrategy(
+    String devName,
+    Boolean enforceSecurity,
+    Map<String, Object> bindings,
+    Integer threshold,
+    CursorProcessor processor
+  ) {
+    final JT_DataSelector selectorInstance = JT_DataSelector.getInstance();
+    final JT_DynamicQueryConfiguration__mdt config = selectorInstance.getConfig(
+      devName
+    );
+
+    // Merge config bindings with custom bindings
+    Map<String, Object> configBindings = String.isNotBlank(config.JT_Binding__c)
+      ? (Map<String, Object>) JSON.deserializeUntyped(config.JT_Binding__c)
+      : new Map<String, Object>();
+    Map<String, Object> mergedBindings = new Map<String, Object>(
+      configBindings
+    );
+    if (bindings != null) {
+      mergedBindings.putAll(bindings);
+    }
+
+    // Set threshold (default 50,000)
+    Integer effectiveThreshold = threshold != null &&
+      threshold > 0
+      ? threshold
+      : 50000;
+
+    // Step 1: Count records
+    Integer recordCount;
+    try {
+      recordCount = countRecordsInternal(
+        config.JT_BaseQuery__c,
+        mergedBindings,
+        enforceSecurity
+      );
+    } catch (Exception e) {
+      // If COUNT fails, fall back to standard query
+      return getRecords(devName, enforceSecurity, mergedBindings);
+    }
+
+    // Step 2: Decide strategy based on count
+    if (recordCount > effectiveThreshold) {
+      // Large result set - use cursor processing
+      if (processor == null) {
+        throw new AuraHandledException(
+          'Query would return ' +
+            recordCount +
+            ' records (>' +
+            effectiveThreshold +
+            '). Please provide a CursorProcessor to handle large result sets.'
+        );
+      }
+
+      // Process with cursor and return empty list (data is handled by processor)
+      processRecordsWithCursor(
+        devName,
+        mergedBindings,
+        enforceSecurity,
+        200,
+        processor
+      );
+      return new List<SObject>();
+    } else {
+      // Small/medium result set - use standard query
+      return getRecords(devName, enforceSecurity, mergedBindings);
+    }
+  }
+
+  /**
+   * @description Overload with default threshold (50,000) and no processor
+   * @param devName Configuration name
+   * @param enforceSecurity Whether to use USER_MODE
+   * @param bindings Custom bindings
+   * @return List<SObject> Records if count <= 50000, throws exception if more
+   */
+  public static List<SObject> getRecordsWithAutoStrategy(
+    String devName,
+    Boolean enforceSecurity,
+    Map<String, Object> bindings
+  ) {
+    return getRecordsWithAutoStrategy(
+      devName,
+      enforceSecurity,
+      bindings,
+      50000,
+      null
     );
   }
 }

@@ -50,7 +50,7 @@
           <lightning-helptext
             content="Create a new query configuration with a SOQL query (SELECT fields FROM object WHERE condition), optional bind variables in JSON format, and field mappings."
             icon-variant="inverse"
-            class="slds-m-left_xx-small slds-m-right_small"
+            class="slds-m-left_small"
           >
           </lightning-helptext>
         </template>
@@ -63,6 +63,7 @@
             onclick={handleShowEditModal}
             variant="neutral"
             icon-name="utility:edit"
+            class="slds-m-left_x-small slds-m-right_small"
             data-testid="header-edit-config-button"
             name="edit-configuration"
             aria-label="Edit selected query configuration"
@@ -75,6 +76,7 @@
           <lightning-badge
             label={orgTypeBadge}
             title={orgTypeBadgeTitle}
+            class="slds-m-left_small"
           ></lightning-badge>
         </template>
         <template if:true={isProduction}>
@@ -587,11 +589,10 @@
   <!-- Create/Edit Configuration Modal -->
   <template if:true={showCreateModal}>
     <c-jt-config-modal
+      lwc:ref="configModal"
       mode={configModalMode}
       is-saving={isSaving}
       can-create-metadata={canCreateMetadata}
-      config={newConfig}
-      query-validation={queryValidation}
       is-loading-query-preview={isLoadingQueryPreview}
       query-preview-results={queryPreviewResults}
       query-preview-columns={queryPreviewColumns}
@@ -614,6 +615,7 @@
       onconfigchange={handleNewConfigChange}
       onsave={handleSaveConfiguration}
       oncancel={handleCloseCreateModal}
+      onquerypreview={handleQueryPreview}
     ></c-jt-config-modal>
   </template>
 

@@ -990,7 +990,7 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>jtQueryViewer - usageModalTitle</shortDescription>
-        <value>Where is </value>
+        <value>Where is</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_validQuery</fullName>
@@ -1033,6 +1033,13 @@
         <protected>false</protected>
         <shortDescription>jtSupport - welcomeMessage</shortDescription>
         <value>Need help or want to report an issue? We</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_welcomeTitle</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtDocumentation - welcomeTitle</shortDescription>
+        <value>Dynamic Query Viewer - Documentation</value>
     </labels>
     <labels>
         <fullName>JT_jtDocumentation_welcomeSubtitle</fullName>
@@ -1083,14 +1090,16 @@
         <fullName>JT_jtConfigModal_developerNameRequired</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtConfigModal - developerNameRequired</shortDescription>
+        <shortDescription
+    >jtConfigModal - developerNameRequired</shortDescription>
         <value>Developer Name is required</value>
     </labels>
     <labels>
         <fullName>JT_jtConfigModal_developerNameTooLong</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtConfigModal - developerNameTooLong</shortDescription>
+        <shortDescription
+    >jtConfigModal - developerNameTooLong</shortDescription>
         <value>Developer Name is too long (max 40 characters)</value>
     </labels>
     <labels>
@@ -1103,8 +1112,7 @@
     >Developer Name can only contain letters, numbers, and underscores</value>
     </labels>
     <labels>
-        <fullName
-    >JT_jtConfigModal_developerNameMustStartWithLetter</fullName>
+        <fullName>JT_jtConfigModal_developerNameMustStartWithLetter</fullName>
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription
@@ -1128,5 +1136,105 @@
         <shortDescription
     >jtConfigModal - developerNameNoConsecutiveUnderscores</shortDescription>
         <value>Developer Name cannot contain consecutive underscores</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_namedCredentialTitle</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >jtDocumentation - namedCredentialTitle</shortDescription>
+        <value>3. Configure Named Credential (Required)</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_namedCredentialIntro</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >jtDocumentation - namedCredentialIntro</shortDescription>
+        <value
+    >To create and edit query configurations dynamically, you must configure the JT_Tooling_API Named Credential:</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_namedCredentialWhyRequired</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >jtDocumentation - namedCredentialWhyRequired</shortDescription>
+        <value>Why is this required?</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_namedCredentialWhyText</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >jtDocumentation - namedCredentialWhyText</shortDescription>
+        <value
+    >The framework uses the Tooling API to create Custom Metadata records programmatically. Without this, you can only create configurations manually via Setup → Custom Metadata Types.</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_namedCredentialSetupSteps</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >jtDocumentation - namedCredentialSetupSteps</shortDescription>
+        <value>Setup Steps:</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_namedCredentialStep1</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >jtDocumentation - namedCredentialStep1</shortDescription>
+        <value>Go to Setup → Named Credentials</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_namedCredentialStep2</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >jtDocumentation - namedCredentialStep2</shortDescription>
+        <value>Find JT_Tooling_API (should be deployed with the package)</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_namedCredentialStep3</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >jtDocumentation - namedCredentialStep3</shortDescription>
+        <value
+    >Edit the Named Credential and set the URL to your org&apos;s instance (e.g., https://yourinstance.salesforce.com)</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_namedCredentialStep4</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >jtDocumentation - namedCredentialStep4</shortDescription>
+        <value
+    >For Authentication, select &quot;Named Principal&quot; with &quot;No Authentication&quot;</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_namedCredentialStep5</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >jtDocumentation - namedCredentialStep5</shortDescription>
+        <value>Save and activate</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_namedCredentialDocsLink</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >jtDocumentation - namedCredentialDocsLink</shortDescription>
+        <value>Official Salesforce Documentation</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtDocumentation_createFirstQueryTitle</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >jtDocumentation - createFirstQueryTitle</shortDescription>
+        <value>4. Create Your First Query</value>
     </labels>
 </CustomLabels>

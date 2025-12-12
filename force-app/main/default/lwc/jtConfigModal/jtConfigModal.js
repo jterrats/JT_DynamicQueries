@@ -41,6 +41,7 @@ export default class JtConfigModal extends LightningElement {
   @api isLoadingQueryPreview = false;
   @api queryPreviewResults = [];
   @api queryPreviewColumns = [];
+  @api queryPreviewPageSize = 5; // Page size for preview (max 5 records)
 
   // Translatable labels
   @api createTitle = "Create New Configuration";
@@ -89,6 +90,10 @@ export default class JtConfigModal extends LightningElement {
 
   @track originalDeveloperName = ""; // Store original Developer Name for edit mode
 
+  // Visibility toggles for preview sections
+  @track showQueryPreviewContent = true; // Toggle for Query Preview content
+  @track showDataPreviewContent = true; // Toggle for Data Preview content
+
   // Public API to set initial config (for edit mode)
   @api
   setConfig(config) {
@@ -104,6 +109,11 @@ export default class JtConfigModal extends LightningElement {
   @api
   getConfig() {
     return { ...this._config };
+  }
+
+  @api
+  getQueryValidation() {
+    return { ...this.queryValidation };
   }
 
   // Computed
@@ -149,14 +159,32 @@ export default class JtConfigModal extends LightningElement {
   }
 
   get saveDisabled() {
-    return (
+    // DEBUG TEMPORAL
+    console.log("=== DEBUG saveDisabled ===");
+    console.log("isSaving:", this.isSaving);
+    console.log("_config:", JSON.stringify(this._config, null, 2));
+    console.log(
+      "labelValidation:",
+      JSON.stringify(this.labelValidation, null, 2)
+    );
+    console.log(
+      "developerNameValidation:",
+      JSON.stringify(this.developerNameValidation, null, 2)
+    );
+    console.log(
+      "queryValidation:",
+      JSON.stringify(this.queryValidation, null, 2)
+    );
+    const disabled =
       this.isSaving ||
       !this._config.label ||
       !this._config.developerName ||
       !this._config.baseQuery ||
       !this.labelValidation.isValid ||
-      !this.developerNameValidation.isValid
-    );
+      !this.developerNameValidation.isValid;
+    console.log("saveDisabled result:", disabled);
+    console.log("=========================");
+    return disabled;
   }
 
   // Event Handlers
@@ -164,7 +192,20 @@ export default class JtConfigModal extends LightningElement {
     const field = event.target.dataset.field;
     const value = event.target.value;
 
+    // DEBUG TEMPORAL
+    console.log("=== DEBUG handleFieldChange ===");
+    console.log("field:", field);
+    console.log("value:", value);
+    console.log("value type:", typeof value);
+    console.log("value length:", value ? value.length : 0);
+    console.log("value trimmed:", value ? value.trim() : "");
+    console.log("value trimmed length:", value ? value.trim().length : 0);
+    console.log("_config before:", JSON.stringify(this._config, null, 2));
+
     this._config[field] = value;
+
+    console.log("_config after:", JSON.stringify(this._config, null, 2));
+    console.log("==============================");
 
     // Auto-generate developer name from label
     if (field === "label" && this.mode === "create") {
@@ -189,6 +230,26 @@ export default class JtConfigModal extends LightningElement {
   }
 
   handleSave() {
+    // DEBUG TEMPORAL
+    console.log("=== DEBUG handleSave ===");
+    console.log("mode:", this.mode);
+    console.log("_config:", JSON.stringify(this._config, null, 2));
+    console.log("getConfig():", JSON.stringify(this.getConfig(), null, 2));
+    console.log(
+      "labelValidation:",
+      JSON.stringify(this.labelValidation, null, 2)
+    );
+    console.log(
+      "developerNameValidation:",
+      JSON.stringify(this.developerNameValidation, null, 2)
+    );
+    console.log(
+      "queryValidation:",
+      JSON.stringify(this.queryValidation, null, 2)
+    );
+    console.log("saveDisabled:", this.saveDisabled);
+    console.log("========================");
+
     // Emit save event with config data
     this.dispatchEvent(
       new CustomEvent("save", {
@@ -376,6 +437,36 @@ export default class JtConfigModal extends LightningElement {
     }
   }
 
+  // Getters for dynamic icon names and labels
+  get queryPreviewIconName() {
+    return this.showQueryPreviewContent ? "utility:preview" : "utility:hide";
+  }
+
+  get queryPreviewIconAlt() {
+    return this.showQueryPreviewContent
+      ? "Hide Query Preview"
+      : "Show Query Preview";
+  }
+
+  get dataPreviewIconName() {
+    return this.showDataPreviewContent ? "utility:preview" : "utility:hide";
+  }
+
+  get dataPreviewIconAlt() {
+    return this.showDataPreviewContent
+      ? "Hide Data Preview"
+      : "Show Data Preview";
+  }
+
+  // Toggle handlers for preview sections
+  handleToggleQueryPreview() {
+    this.showQueryPreviewContent = !this.showQueryPreviewContent;
+  }
+
+  handleToggleDataPreview() {
+    this.showDataPreviewContent = !this.showDataPreviewContent;
+  }
+
   // Public API to reset
   @api
   reset() {
@@ -400,5 +491,7 @@ export default class JtConfigModal extends LightningElement {
       isValid: true,
       message: ""
     };
+    this.showQueryPreviewContent = true;
+    this.showDataPreviewContent = true;
   }
 }

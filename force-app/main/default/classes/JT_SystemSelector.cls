@@ -205,4 +205,51 @@ public without sharing class JT_SystemSelector {
 
     return !assignments.isEmpty();
   }
+
+  // ========================================
+  // CUSTOM METADATA QUERIES (System Settings)
+  // ========================================
+
+  /**
+   * @description Gets system settings with full Long Text Area support
+   * Used when JT_SystemSettings__mdt contains Long Text Area fields
+   * @note getInstance() truncates Long Text Area fields, so use this method instead
+   * @param developerName Developer name of the Custom Metadata record (default: 'Default')
+   * @return JT_SystemSettings__mdt System settings record with all fields
+   */
+  public static JT_SystemSettings__mdt getSystemSettings(
+    final String developerName
+  ) {
+    final List<JT_SystemSettings__mdt> settings = [
+      SELECT JT_ApiVersion__c, JT_ToolingApiPath__c, JT_ApexClassQueryFilter__c
+      FROM JT_SystemSettings__mdt
+      WHERE DeveloperName = :developerName
+      LIMIT 1
+    ];
+    return settings.isEmpty() ? null : settings[0];
+  }
+
+  // ========================================
+  // METADATA QUERIES (Apex Classes)
+  // ========================================
+
+  /**
+   * @description Gets Apex classes for usage search with configurable filter
+   * Used by: JT_UsageFinder for finding configuration usages
+   * @return List<ApexClass> List of Apex classes matching the system filter
+   */
+  public static List<ApexClass> getApexClassesForUsageSearch() {
+    final JT_SystemSettings__mdt settings = getSystemSettings('Default');
+    final String filter = settings != null &&
+      String.isNotBlank(settings.JT_ApexClassQueryFilter__c)
+      ? settings.JT_ApexClassQueryFilter__c
+      : 'NamespacePrefix = NULL AND Name != \'JT_UsageFinder\'';
+
+    // Escape single quotes to prevent SOQL injection (even though filter comes from Custom Metadata)
+    final String escapedFilter = String.escapeSingleQuotes(filter);
+
+    return Database.query(
+      'SELECT Id, Name, Body FROM ApexClass WHERE ' + escapedFilter + ' ORDER BY Name'
+    );
+  }
 }

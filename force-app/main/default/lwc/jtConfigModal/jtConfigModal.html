@@ -133,14 +133,26 @@
                       <div
                         class="slds-text-body_small slds-text-color_weak slds-m-bottom_xx-small"
                       >
-                        <lightning-icon
-                          icon-name="utility:preview"
-                          size="xx-small"
-                          class="slds-m-right_xx-small"
-                        ></lightning-icon>
+                        <button
+                          type="button"
+                          class="slds-button slds-button_icon slds-button_icon-x-small slds-button_icon-bare slds-m-right_xx-small"
+                          onclick={handleToggleQueryPreview}
+                          title={queryPreviewLabel}
+                          aria-label={queryPreviewLabel}
+                        >
+                          <lightning-icon
+                            icon-name={queryPreviewIconName}
+                            size="xx-small"
+                            alternative-text={queryPreviewIconAlt}
+                          ></lightning-icon>
+                        </button>
                         {queryPreviewLabel}
                       </div>
-                      <pre class="query-preview-text">{_config.baseQuery}</pre>
+                      <template if:true={showQueryPreviewContent}>
+                        <pre class="query-preview-text">
+{_config.baseQuery}</pre
+                        >
+                      </template>
                     </div>
                   </template>
                 </template>
@@ -160,7 +172,7 @@
 
                 <!-- Query Preview Data -->
                 <template if:true={queryValidation.isValid}>
-                  <div class="slds-m-top_medium">
+                  <div class="preview-datatable-container slds-m-top_small">
                     <template if:true={isLoadingQueryPreview}>
                       <div class="slds-text-align_center slds-p-around_medium">
                         <lightning-spinner
@@ -176,26 +188,33 @@
                     </template>
 
                     <template if:true={hasPreviewData}>
-                      <div class="slds-text-heading_small slds-m-bottom_none">
-                        <lightning-icon
-                          icon-name="utility:preview"
-                          size="xx-small"
-                          class="slds-m-right_xx-small"
-                        ></lightning-icon>
+                      <div
+                        class="slds-text-heading_small slds-m-top_small slds-m-bottom_x-small"
+                      >
+                        <button
+                          type="button"
+                          class="slds-button slds-button_icon slds-button_icon-x-small slds-button_icon-bare slds-m-right_xx-small"
+                          onclick={handleToggleDataPreview}
+                          title="Data Preview (Sample Records)"
+                          aria-label="Toggle Data Preview"
+                        >
+                          <lightning-icon
+                            icon-name={dataPreviewIconName}
+                            size="xx-small"
+                            alternative-text={dataPreviewIconAlt}
+                          ></lightning-icon>
+                        </button>
                         Data Preview (Sample Records)
                       </div>
-                      <lightning-datatable
-                        key-field="Id"
-                        data={queryPreviewResults}
-                        columns={queryPreviewColumns}
-                        hide-checkbox-column
-                        class="preview-datatable"
-                      ></lightning-datatable>
-                      <p
-                        class="slds-text-body_small slds-text-color_weak slds-m-top_xx-small"
-                      >
-                        Showing up to 5 sample records
-                      </p>
+                      <template if:true={showDataPreviewContent}>
+                        <c-jt-query-results
+                          columns={queryPreviewColumns}
+                          records={queryPreviewResults}
+                          record-count={queryPreviewResults.length}
+                          page-size={queryPreviewPageSize}
+                          class="preview-results"
+                        ></c-jt-query-results>
+                      </template>
                     </template>
 
                     <template if:false={hasPreviewData}>

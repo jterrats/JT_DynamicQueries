@@ -116,25 +116,25 @@ public with sharing class JT_MetadataCreator {
       }
 
       // Delete via Tooling API
-      HttpRequest req = new HttpRequest();
-      req.setEndpoint(
+      final HttpRequest request = new HttpRequest();
+      request.setEndpoint(
         'callout:Tooling_API/sobjects/CustomMetadata/JT_DynamicQueryConfiguration.' +
         developerName
       );
-      req.setMethod('DELETE');
-      req.setHeader('Content-Type', 'application/json');
+      request.setMethod('DELETE');
+      request.setHeader('Content-Type', 'application/json');
 
-      Http http = new Http();
-      HttpResponse res = http.send(req);
+      final Http httpClient = new Http();
+      final HttpResponse response = httpClient.send(request);
 
-      if (res.getStatusCode() == 204 || res.getStatusCode() == 200) {
+      if (response.getStatusCode() == 204 || response.getStatusCode() == 200) {
         result.success = true;
         result.message = 'Configuration deleted successfully: ' + developerName;
         result.developerName = developerName;
         return result;
       } else {
         throw new AuraHandledException(
-          'Failed to delete metadata: ' + res.getBody()
+          'Failed to delete metadata: ' + response.getBody()
         );
       }
     } catch (Exception e) {
@@ -419,29 +419,29 @@ public with sharing class JT_MetadataCreator {
 
     // Deploy via Metadata API (simplified - in real implementation use MetadataService)
     // For now, use Tooling API as workaround
-    HttpRequest req = new HttpRequest();
-    req.setEndpoint('callout:Tooling_API/sobjects/CustomMetadata');
-    req.setMethod('POST');
-    req.setHeader('Content-Type', 'application/json');
+    final HttpRequest request = new HttpRequest();
+    request.setEndpoint('callout:Tooling_API/sobjects/CustomMetadata');
+    request.setMethod('POST');
+    request.setHeader('Content-Type', 'application/json');
 
-    Map<String, Object> metadata = new Map<String, Object>{
+    final Map<String, Object> metadata = new Map<String, Object>{
       'FullName' => 'JT_DynamicQueryConfiguration.' + devName,
       'Metadata' => parseMetadataXmlToJson(metadataXml)
     };
 
-    req.setBody(JSON.serialize(metadata));
+    request.setBody(JSON.serialize(metadata));
 
-    Http http = new Http();
-    HttpResponse res = http.send(req);
+    final Http httpClient = new Http();
+    final HttpResponse response = httpClient.send(request);
 
-    if (res.getStatusCode() == 201) {
-      Map<String, Object> responseMap = (Map<String, Object>) JSON.deserializeUntyped(
-        res.getBody()
+    if (response.getStatusCode() == 201) {
+      final Map<String, Object> responseMap = (Map<String, Object>) JSON.deserializeUntyped(
+        response.getBody()
       );
       return (String) responseMap.get('id');
     } else {
       throw new AuraHandledException(
-        'Failed to deploy metadata: ' + res.getBody()
+        'Failed to deploy metadata: ' + response.getBody()
       );
     }
   }
@@ -473,8 +473,8 @@ public with sharing class JT_MetadataCreator {
     Map<String, Object> metadata = new Map<String, Object>();
 
     // Extract label
-    Pattern labelPattern = Pattern.compile('<label>(.*?)</label>');
-    Matcher labelMatcher = labelPattern.matcher(xml);
+    final Pattern labelPattern = Pattern.compile('<label>(.*?)</label>');
+    final Matcher labelMatcher = labelPattern.matcher(xml);
     if (labelMatcher.find()) {
       metadata.put('label', labelMatcher.group(1));
     }
@@ -522,20 +522,22 @@ public with sharing class JT_MetadataCreator {
       }
 
       // Try to extract object name (case insensitive)
-      Pattern objectPattern = Pattern.compile('(?i)FROM\\s+(\\w+)');
-      Matcher objectMatcher = objectPattern.matcher(query);
+      final Pattern objectPattern = Pattern.compile('(?i)FROM\\s+(\\w+)');
+      final Matcher objectMatcher = objectPattern.matcher(query);
 
       if (objectMatcher.find()) {
         result.objectName = objectMatcher.group(1);
       }
 
       // Extract bind variables
-      Pattern bindPattern = Pattern.compile(':([a-zA-Z_][a-zA-Z0-9_]*)');
-      Matcher bindMatcher = bindPattern.matcher(query);
+      final Pattern bindVariablePattern = Pattern.compile(
+        ':([a-zA-Z_][a-zA-Z0-9_]*)'
+      );
+      final Matcher bindVariableMatcher = bindVariablePattern.matcher(query);
 
-      Set<String> bindings = new Set<String>();
-      while (bindMatcher.find()) {
-        bindings.add(bindMatcher.group(1));
+      final Set<String> bindings = new Set<String>();
+      while (bindVariableMatcher.find()) {
+        bindings.add(bindVariableMatcher.group(1));
       }
 
       result.bindVariables = new List<String>(bindings);

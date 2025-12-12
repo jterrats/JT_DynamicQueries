@@ -31,9 +31,54 @@ export default class JtUsageModal extends LightningElement {
   @api nameColumn = "Name";
   @api lineColumn = "Line";
 
+  // Public API property to receive usage data from parent
+  @api
+  get usageData() {
+    return this._usageData;
+  }
+
+  set usageData(data) {
+    // Map Apex fields to template fields and ensure unique id
+    if (Array.isArray(data)) {
+      this._usageData = data.map((item, index) => {
+        // Generate unique id if not present
+        const uniqueId =
+          item.id ||
+          `${item.classId || "unknown"}-${item.lineNumber || "0"}-${index}`;
+
+        // Map Apex UsageResult fields to template fields
+        return {
+          id: uniqueId,
+          type: item.metadataType || item.type || "Unknown",
+          name: item.className || item.name || "Unknown",
+          lineNumber: item.lineNumber || 0,
+          icon: this.getIconForType(item.metadataType || item.type),
+          // Keep original fields for reference
+          ...item
+        };
+      });
+    } else {
+      this._usageData = [];
+    }
+  }
+
+  // Helper to get icon based on metadata type
+  getIconForType(type) {
+    if (!type) return "utility:file";
+    const normalizedType = type.toLowerCase();
+    if (normalizedType.includes("apex") || normalizedType.includes("class")) {
+      return "utility:code";
+    }
+    if (normalizedType.includes("flow")) {
+      return "utility:flow";
+    }
+    return "utility:file";
+  }
+
   @api
   setUsageData(data) {
-    this._usageData = data || [];
+    // Use the setter logic to ensure proper mapping
+    this.usageData = data;
   }
 
   @api

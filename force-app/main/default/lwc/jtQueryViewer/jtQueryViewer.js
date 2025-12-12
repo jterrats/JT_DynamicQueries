@@ -1009,7 +1009,12 @@ export default class JtQueryViewer extends LightningElement {
   }
 
   // Show usage modal
-  handleShowUsageModal() {
+  handleShowUsageModal(event) {
+    // Prevent default anchor behavior to avoid CSP violation
+    if (event) {
+      event.preventDefault();
+    }
+
     if (!this.selectedConfig) {
       this.showErrorToast(
         "No Configuration Selected",
@@ -1033,17 +1038,12 @@ export default class JtQueryViewer extends LightningElement {
         this.usageResults = aggregated.allResults || [];
         this.hasPartialUsageResults = aggregated.hasPartialResults;
 
-        // Track service errors
+        // Track service errors (only show toasts for failures, not for success)
         if (!aggregated.apexService.success) {
           this.usageServiceErrors.apex = aggregated.apexService.error;
           this.showWarningToast(
             "Apex Search Failed",
             aggregated.apexService.error
-          );
-        } else if (aggregated.apexService.data.length > 0) {
-          this.showInfoToast(
-            "Apex Search",
-            `Found ${aggregated.apexService.data.length} reference(s) in Apex`
           );
         }
 
@@ -1053,23 +1053,13 @@ export default class JtQueryViewer extends LightningElement {
             "Flow Search Failed",
             aggregated.flowService.error
           );
-        } else if (aggregated.flowService.data.length > 0) {
-          this.showInfoToast(
-            "Flow Search",
-            `Found ${aggregated.flowService.data.length} reference(s) in Flows`
-          );
         }
 
-        // Show partial results warning
-        if (this.hasPartialUsageResults) {
+        // Show partial results warning only if there are partial results
+        if (this.hasPartialUsageResults && this.usageResults.length > 0) {
           this.showWarningToast(
             "Partial Results",
             `Showing ${this.usageResults.length} available result(s). Some searches failed.`
-          );
-        } else if (this.usageResults.length === 0) {
-          this.showInfoToast(
-            "No References Found",
-            "This configuration is not currently used in Apex or Flows."
           );
         }
 
@@ -1291,13 +1281,49 @@ export default class JtQueryViewer extends LightningElement {
   }
 
   // Save configuration (create or update)
-  handleSaveConfiguration() {
+  handleSaveConfiguration(event) {
+    // DEBUG TEMPORAL
+    console.log("=== DEBUG handleSaveConfiguration ===");
+    console.log("event:", event);
+    console.log("event.detail:", event?.detail);
+    console.log("this.newConfig:", JSON.stringify(this.newConfig, null, 2));
+    console.log("this.configModalMode:", this.configModalMode);
+    console.log(
+      "this.queryValidation:",
+      JSON.stringify(this.queryValidation, null, 2)
+    );
+
+    // Get config from modal if available
+    const modal = this.refs.configModal;
+    let configFromModal = null;
+    let modalQueryValidation = null;
+    if (modal) {
+      configFromModal = modal.getConfig();
+      console.log("configFromModal:", JSON.stringify(configFromModal, null, 2));
+      // Get query validation state from modal (it handles its own validation)
+      modalQueryValidation = modal.getQueryValidation();
+      console.log(
+        "modalQueryValidation:",
+        JSON.stringify(modalQueryValidation, null, 2)
+      );
+    }
+
+    // Use config from event detail if available, otherwise use newConfig
+    const configToUse =
+      event?.detail?.config || configFromModal || this.newConfig;
+    console.log("configToUse:", JSON.stringify(configToUse, null, 2));
+    console.log("================================");
+
     // Validate required fields
     if (
-      !this.newConfig.label ||
-      !this.newConfig.developerName ||
-      !this.newConfig.baseQuery
+      !configToUse.label ||
+      !configToUse.developerName ||
+      !configToUse.baseQuery
     ) {
+      console.error("VALIDATION FAILED:");
+      console.error("label:", configToUse.label);
+      console.error("developerName:", configToUse.developerName);
+      console.error("baseQuery:", configToUse.baseQuery);
       this.showErrorToast(
         "Validation Error",
         "Label, Developer Name, and Base Query are required."
@@ -1305,7 +1331,13 @@ export default class JtQueryViewer extends LightningElement {
       return;
     }
 
-    if (!this.queryValidation || !this.queryValidation.isValid) {
+    // Use modal's query validation if available, otherwise fall back to this.queryValidation
+    const queryValidationToCheck = modalQueryValidation || this.queryValidation;
+    if (!queryValidationToCheck || !queryValidationToCheck.isValid) {
+      console.error("QUERY VALIDATION FAILED:");
+      console.error("modalQueryValidation:", modalQueryValidation);
+      console.error("this.queryValidation:", this.queryValidation);
+      console.error("queryValidationToCheck:", queryValidationToCheck);
       this.showErrorToast(
         "Invalid Query",
         "Please fix the query syntax before saving."
@@ -1316,23 +1348,28 @@ export default class JtQueryViewer extends LightningElement {
     this.isSaving = true;
 
     const configData = {
-      label: this.newConfig.label,
-      developerName: this.newConfig.developerName,
-      baseQuery: this.newConfig.baseQuery,
-      bindings: this.newConfig.bindings,
-      objectName: this.newConfig.objectName
+      label: configToUse.label,
+      developerName: configToUse.developerName,
+      baseQuery: configToUse.baseQuery,
+      bindings: configToUse.bindings || "",
+      objectName: configToUse.objectName || ""
     };
 
+    console.log("configData being sent:", JSON.stringify(configData, null, 2));
+
     // Choose create or update based on mode
+    const modeFromEvent = event?.detail?.mode || this.configModalMode;
+    console.log("modeFromEvent:", modeFromEvent);
+
     const saveMethod =
-      this.configModalMode === "edit"
+      modeFromEvent === "edit"
         ? updateConfiguration({
             originalDevName: this.originalDevName,
             ...configData
           })
         : createConfiguration(configData);
 
-    const actionLabel = this.configModalMode === "edit" ? "Updated" : "Created";
+    const actionLabel = modeFromEvent === "edit" ? "Updated" : "Created";
 
     saveMethod
       .then((result) => {

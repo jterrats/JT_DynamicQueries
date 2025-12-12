@@ -532,85 +532,44 @@ public with sharing class JT_QueryViewerController {
       // Execute count query with timeout protection
       Integer estimatedCount = 0;
       try {
-        System.debug(LoggingLevel.FINE, '📊 COUNT Query: ' + countQuery);
-        System.debug(
-          LoggingLevel.FINE,
-          '📊 COUNT Bindings: ' + JSON.serialize(countBindings)
-        );
-
         // Replace bind variables in COUNT query (countQuery() doesn't support bindings)
-        String finalCountQuery = replaceBindVariables(
+        final String finalCountQuery = replaceBindVariables(
           countQuery,
           countBindings
         );
 
-        System.debug(
-          LoggingLevel.FINE,
-          '📊 Final COUNT Query: ' + finalCountQuery
-        );
-
         // Use countQuery() instead of queryWithBinds for COUNT queries
         estimatedCount = Database.countQuery(finalCountQuery);
-
-        System.debug(LoggingLevel.FINE, '✅ COUNT Result: ' + estimatedCount);
       } catch (Exception e) {
         // If count fails, assume it's risky
         System.debug(
           LoggingLevel.ERROR,
-          '❌ COUNT Failed: ' + e.getMessage() + ' | ' + e.getStackTraceString()
+          'COUNT query failed: ' + e.getMessage()
         );
         estimatedCount = 99999;
       }
 
-      QueryRiskAssessment assessment = new QueryRiskAssessment();
+      final QueryRiskAssessment assessment = new QueryRiskAssessment();
       assessment.estimatedRecordCount = estimatedCount;
+      assessment.hasEmptyParameters = hasEmptyParameters(mergedBindings);
 
-      // ⚠️ CRITICAL: Batch processing breaks child relationships
-      // If query has child relationships, disable batch processing
-      Boolean hasChildRelationships = hasChildRelationships(
+      // CRITICAL: Batch processing breaks child relationships
+      final Boolean hasChildRelationships = hasChildRelationships(
         config.JT_BaseQuery__c
       );
 
       if (hasChildRelationships) {
-        // ⚠️ CRITICAL: Batch processing breaks child relationships
-        // Force LOW risk to skip batch processing modal
-        assessment.isHighRisk = false;
-        assessment.isCriticalRisk = false;
-        assessment.recommendBatchProcessing = false;
-        assessment.riskLevel = 'LOW';
-        assessment.message = 'Query contains child relationships. Using standard processing.';
+        setLowRiskAssessment(
+          assessment,
+          'Query contains child relationships. Using standard processing.'
+        );
       } else {
-        assessment.isHighRisk = estimatedCount > 10000; // >10K is high risk
-        assessment.isCriticalRisk = estimatedCount > 50000; // >50K will fail
-        assessment.recommendBatchProcessing = estimatedCount > 5000;
-
-        if (assessment.isCriticalRisk) {
-          assessment.riskLevel = 'CRITICAL';
-          assessment.message = 'This query will exceed the 50,000 record limit. Batch processing is required.';
-        } else if (assessment.isHighRisk) {
-          assessment.riskLevel = 'HIGH';
-          assessment.message =
-            'This query may return a large number of records (' +
-            estimatedCount +
-            '). Consider using batch processing.';
-        } else if (assessment.recommendBatchProcessing) {
-          assessment.riskLevel = 'MEDIUM';
-          assessment.message =
-            'Query will return ' +
-            estimatedCount +
-            ' records. Batch processing recommended for better performance.';
-        } else {
-          assessment.riskLevel = 'LOW';
-          assessment.message =
-            'Query is safe to execute (' +
-            estimatedCount +
-            ' records).';
-        }
+        assessRiskByCount(assessment, estimatedCount);
       }
 
       return assessment;
     } catch (Exception e) {
-      QueryRiskAssessment assessment = new QueryRiskAssessment();
+      final QueryRiskAssessment assessment = new QueryRiskAssessment();
       assessment.estimatedRecordCount = 0;
       assessment.isHighRisk = true;
       assessment.isCriticalRisk = false;
@@ -849,5 +808,79 @@ public with sharing class JT_QueryViewerController {
     public String riskLevel; // LOW, MEDIUM, HIGH, CRITICAL, UNKNOWN
     @AuraEnabled
     public String message;
+  }
+
+  /**
+   * @description Sets assessment to LOW risk for queries with child relationships
+   * @param assessment Risk assessment to update
+   * @param message Message to set
+   */
+  private static void setLowRiskAssessment(
+    final QueryRiskAssessment assessment,
+    final String message
+  ) {
+    assessment.isHighRisk = false;
+    assessment.isCriticalRisk = false;
+    assessment.recommendBatchProcessing = false;
+    assessment.riskLevel = 'LOW';
+    assessment.message = message;
+  }
+
+  /**
+   * @description Assesses risk based on estimated record count
+   * @param assessment Risk assessment to update
+   * @param estimatedCount Estimated number of records
+   */
+  private static void assessRiskByCount(
+    final QueryRiskAssessment assessment,
+    final Integer estimatedCount
+  ) {
+    assessment.isHighRisk = estimatedCount > 10000;
+    assessment.isCriticalRisk = estimatedCount > 50000;
+    assessment.recommendBatchProcessing = estimatedCount > 5000;
+
+    if (assessment.isCriticalRisk) {
+      assessment.riskLevel = 'CRITICAL';
+      assessment.message = 'This query will exceed the 50,000 record limit. Batch processing is required.';
+    } else if (assessment.isHighRisk) {
+      assessment.riskLevel = 'HIGH';
+      assessment.message =
+        'This query may return a large number of records (' +
+        estimatedCount +
+        '). Consider using batch processing.';
+    } else if (assessment.recommendBatchProcessing) {
+      assessment.riskLevel = 'MEDIUM';
+      assessment.message =
+        'Query will return ' +
+        estimatedCount +
+        ' records. Batch processing recommended for better performance.';
+    } else {
+      assessment.riskLevel = 'LOW';
+      assessment.message =
+        'Query is safe to execute (' +
+        estimatedCount +
+        ' records).';
+    }
+  }
+
+  /**
+   * @description Checks if any bind parameters are empty strings
+   * @param bindings Map of bind parameters
+   * @return Boolean True if any parameter is empty string
+   */
+  private static Boolean hasEmptyParameters(
+    final Map<String, Object> bindings
+  ) {
+    if (bindings == null || bindings.isEmpty()) {
+      return false;
+    }
+
+    for (Object value : bindings.values()) {
+      if (value instanceof String && String.isBlank((String) value)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 }

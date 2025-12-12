@@ -1141,8 +1141,10 @@
         <fullName>JT_jtConfigModal_developerNameChangeWarning</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtConfigModal - developerNameChangeWarning</shortDescription>
-        <value>Warning: Entiendo que al cambiar el developer name, cualquier referencia en Apex / Flow / LWC, se verá afectada y debo actualizarla.</value>
+        <shortDescription
+    >jtConfigModal - developerNameChangeWarning</shortDescription>
+        <value
+    >Warning: Entiendo que al cambiar el developer name, cualquier referencia en Apex / Flow / LWC, se verá afectada y debo actualizarla.</value>
     </labels>
     <labels>
         <fullName>JT_jtDocumentation_namedCredentialTitle</fullName>

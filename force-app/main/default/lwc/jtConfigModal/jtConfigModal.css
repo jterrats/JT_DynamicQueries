@@ -18,10 +18,38 @@
   line-height: 1.5;
 }
 
-/* Remove borders and spacing from preview datatable */
-.preview-datatable {
-  border: none !important;
-  box-shadow: none !important;
+/* Preview results component - remove borders and spacing */
+.preview-results {
   margin-top: 0 !important;
   margin-bottom: 0 !important;
+}
+
+/* Remove top border from results container */
+.preview-results .results-container {
+  border-top: none !important;
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+/* Hide header section (Results count and view toggle buttons) */
+.preview-results .results-container > div:first-child {
+  display: none !important;
+}
+
+/* Remove top border/margin from Data Preview section */
+.preview-datatable-container {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  border-top: none !important;
+}
+
+/* Toggle button styles for preview icons */
+.slds-button_icon-bare:hover {
+  background-color: #f3f3f3;
+  border-radius: 0.25rem;
+}
+
+.slds-button_icon-bare:focus {
+  outline: 0.125rem solid #0176d3;
+  outline-offset: 0.125rem;
 }

@@ -94,10 +94,6 @@
         <application>JT_Dynamic_Queries</application>
         <visible>true</visible>
     </applicationVisibilities>
-    <pageAccesses>
-        <apexPage>JT_SessionIdPage</apexPage>
-        <enabled>true</enabled>
-    </pageAccesses>
     <description
   >Grants full access to JT Dynamic Queries framework: all Apex classes, Custom Objects, Tabs, and Lightning Application.</description>
     <hasActivationRequired>false</hasActivationRequired>

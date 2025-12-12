@@ -54,7 +54,7 @@ test.describe("Metadata Lifecycle Tests", () => {
     // Step 2: Fill all fields with valid data
     const timestamp = Date.now();
     const configLabel = `E2E Test Config ${timestamp}`;
-    const configDevName = `E2E_Test_Config_${timestamp}`;
+    let configDevName = `E2E_Test_Config_${timestamp}`;
     const testQuery =
       "SELECT Id, Name FROM Account WHERE Name LIKE :searchName LIMIT 10";
     const testBindings = '{"searchName": "%"}';

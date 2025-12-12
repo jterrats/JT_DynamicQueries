@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <actionCalls>
         <description>get account records</description>
@@ -19,7 +19,8 @@
         <inputParameters>
             <name>bindingsJson</name>
             <value>
-                <stringValue>{&quot;searchName&quot;: &quot;%Dynamic%&quot;}</stringValue>
+                <stringValue
+        >{&quot;searchName&quot;: &quot;%Dynamic%&quot;}</stringValue>
             </value>
         </inputParameters>
         <inputParameters>
@@ -34,7 +35,8 @@
     </actionCalls>
     <apiVersion>65.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
-    <description>Example Screen Flow demonstrating JT_DataSelector usage with datatable display. This Flow serves as a real-world example and will be detected by the &quot;Where is this used?&quot; feature.</description>
+    <description
+  >Example Screen Flow demonstrating JT_DataSelector usage with datatable display. This Flow serves as a real-world example and will be detected by the &quot;Where is this used?&quot; feature.</description>
     <environments>Default</environments>
     <interviewLabel>Account Report {!$Flow.CurrentDateTime}</interviewLabel>
     <label>JT Account Report Flow</label>
@@ -52,7 +54,8 @@
     </processMetadataValues>
     <processType>Flow</processType>
     <screens>
-        <description>this is used to show case dynamic query framework working in flow</description>
+        <description
+    >this is used to show case dynamic query framework working in flow</description>
         <name>screen_example</name>
         <label>screen example</label>
         <locationX>0</locationX>
@@ -107,24 +110,30 @@
             <inputParameters>
                 <name>keyField</name>
                 <value>
-                    <complexValue>{&quot;dataType&quot;:&quot;SObject&quot;,&quot;objectType&quot;:&quot;Account&quot;,&quot;fieldReferences&quot;:[&quot;Id&quot;],&quot;elementReference&quot;:&quot;getRecords.records&quot;}</complexValue>
-                    <complexValueType>ComplexObjectFieldDetails</complexValueType>
+                    <complexValue
+          >{&quot;dataType&quot;:&quot;SObject&quot;,&quot;objectType&quot;:&quot;Account&quot;,&quot;fieldReferences&quot;:[&quot;Id&quot;],&quot;elementReference&quot;:&quot;getRecords.records&quot;}</complexValue>
+                    <complexValueType
+          >ComplexObjectFieldDetails</complexValueType>
                 </value>
             </inputParameters>
             <inputParameters>
                 <name>columns</name>
                 <value>
-                    <stringValue>[{&quot;apiName&quot;:&quot;Id&quot;,&quot;guid&quot;:&quot;column-5543&quot;,&quot;editable&quot;:false,&quot;hasCustomHeaderLabel&quot;:false,&quot;customHeaderLabel&quot;:&quot;&quot;,&quot;wrapText&quot;:true,&quot;order&quot;:0,&quot;label&quot;:&quot;Account ID&quot;,&quot;type&quot;:&quot;text&quot;},{&quot;apiName&quot;:&quot;Name&quot;,&quot;guid&quot;:&quot;column-24cb&quot;,&quot;editable&quot;:false,&quot;hasCustomHeaderLabel&quot;:false,&quot;customHeaderLabel&quot;:&quot;&quot;,&quot;wrapText&quot;:true,&quot;order&quot;:1,&quot;label&quot;:&quot;Account Name&quot;,&quot;type&quot;:&quot;text&quot;}]</stringValue>
+                    <stringValue
+          >[{&quot;apiName&quot;:&quot;Id&quot;,&quot;guid&quot;:&quot;column-5543&quot;,&quot;editable&quot;:false,&quot;hasCustomHeaderLabel&quot;:false,&quot;customHeaderLabel&quot;:&quot;&quot;,&quot;wrapText&quot;:true,&quot;order&quot;:0,&quot;label&quot;:&quot;Account ID&quot;,&quot;type&quot;:&quot;text&quot;},{&quot;apiName&quot;:&quot;Name&quot;,&quot;guid&quot;:&quot;column-24cb&quot;,&quot;editable&quot;:false,&quot;hasCustomHeaderLabel&quot;:false,&quot;customHeaderLabel&quot;:&quot;&quot;,&quot;wrapText&quot;:true,&quot;order&quot;:1,&quot;label&quot;:&quot;Account Name&quot;,&quot;type&quot;:&quot;text&quot;}]</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
                 <name>columnReferences</name>
                 <value>
-                    <complexValue>{&quot;dataType&quot;:&quot;SObject&quot;,&quot;objectType&quot;:&quot;Account&quot;,&quot;fieldReferences&quot;:[&quot;Id&quot;,&quot;Name&quot;],&quot;elementReference&quot;:&quot;getRecords.records&quot;}</complexValue>
-                    <complexValueType>ComplexObjectFieldDetails</complexValueType>
+                    <complexValue
+          >{&quot;dataType&quot;:&quot;SObject&quot;,&quot;objectType&quot;:&quot;Account&quot;,&quot;fieldReferences&quot;:[&quot;Id&quot;,&quot;Name&quot;],&quot;elementReference&quot;:&quot;getRecords.records&quot;}</complexValue>
+                    <complexValueType
+          >ComplexObjectFieldDetails</complexValueType>
                 </value>
             </inputParameters>
-            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <inputsOnNextNavToAssocScrn
+      >UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>true</isRequired>
             <storeOutputAutomatically>true</storeOutputAutomatically>
             <styleProperties>

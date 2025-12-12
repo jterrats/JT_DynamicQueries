@@ -1,1 +1,126 @@
-<template> </template>
+<template>
+  <lightning-card title="OAuth 2.0 Setup Wizard" icon-name="utility:settings">
+    <div class="slds-p-around_medium">
+      <!-- Loading State -->
+      <template if:true={isLoading}>
+        <lightning-spinner
+          alternative-text="Checking setup status..."
+        ></lightning-spinner>
+      </template>
+
+      <!-- Setup Status -->
+      <template if:false={isLoading}>
+        <!-- Overall Status -->
+        <div class="slds-m-bottom_large">
+          <template if:true={allStepsComplete}>
+            <div class="slds-box slds-theme_success slds-m-bottom_medium">
+              <div class="slds-media">
+                <div class="slds-media__figure">
+                  <lightning-icon
+                    icon-name="utility:success"
+                    size="small"
+                    variant="success"
+                  ></lightning-icon>
+                </div>
+                <div class="slds-media__body">
+                  <h2 class="slds-text-heading_small">Setup Complete!</h2>
+                  <p class="slds-text-body_regular">
+                    All OAuth 2.0 components are configured and working.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </template>
+          <template if:false={allStepsComplete}>
+            <div class="slds-box slds-theme_warning slds-m-bottom_medium">
+              <div class="slds-media">
+                <div class="slds-media__figure">
+                  <lightning-icon
+                    icon-name="utility:warning"
+                    size="small"
+                    variant="warning"
+                  ></lightning-icon>
+                </div>
+                <div class="slds-media__body">
+                  <h2 class="slds-text-heading_small">Setup Required</h2>
+                  <p class="slds-text-body_regular">
+                    Complete the steps below to configure OAuth 2.0 for Tooling
+                    API access.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <!-- Setup Steps -->
+        <div class="slds-m-bottom_medium">
+          <h3 class="slds-text-heading_small slds-m-bottom_small">
+            Setup Steps
+          </h3>
+          <template for:each={setupSteps} for:item="step">
+            <div key={step.stepName} class="slds-box slds-m-bottom_small">
+              <div
+                class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center"
+              >
+                <div class="slds-col slds-grow">
+                  <div class="slds-media">
+                    <div class="slds-media__figure">
+                      <template if:true={step.isComplete}>
+                        <lightning-icon
+                          icon-name="utility:success"
+                          size="x-small"
+                          variant="success"
+                        ></lightning-icon>
+                      </template>
+                      <template if:false={step.isComplete}>
+                        <lightning-icon
+                          icon-name="utility:close"
+                          size="x-small"
+                          variant="error"
+                        ></lightning-icon>
+                      </template>
+                    </div>
+                    <div class="slds-media__body">
+                      <h4 class="slds-text-heading_small">{step.stepName}</h4>
+                      <p class="slds-text-body_small slds-text-color_weak">
+                        {step.statusMessage}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div class="slds-col slds-no-flex">
+                  <template if:true={step.setupUrl}>
+                    <lightning-button
+                      label="Configure"
+                      variant="brand"
+                      onclick={handleNavigateToSetup}
+                      data-url={step.setupUrl}
+                      class="slds-m-left_small"
+                    ></lightning-button>
+                  </template>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <!-- Actions -->
+        <div class="slds-grid slds-grid_align-spread">
+          <lightning-button
+            label="Refresh Status"
+            variant="neutral"
+            onclick={handleRefresh}
+            icon-name="utility:refresh"
+          ></lightning-button>
+          <lightning-button
+            label="View Documentation"
+            variant="neutral"
+            onclick={handleViewDocs}
+            icon-name="utility:bookmark"
+          ></lightning-button>
+        </div>
+      </template>
+    </div>
+  </lightning-card>
+</template>

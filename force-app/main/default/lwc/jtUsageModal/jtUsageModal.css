@@ -1,0 +1,29 @@
+/* Modal Container - Limit size */
+.slds-modal__container {
+  max-width: 90vw;
+  max-height: 90vh;
+  width: 800px;
+}
+
+/* Modal Content - Make scrollable if content is too large */
+.slds-modal__content {
+  max-height: calc(90vh - 200px);
+  overflow-y: auto;
+}
+
+/* Ensure backdrop is properly styled and behind modal */
+.slds-backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+/* Ensure modal is on top */
+.slds-modal {
+  z-index: 9001;
+  position: fixed;
+}

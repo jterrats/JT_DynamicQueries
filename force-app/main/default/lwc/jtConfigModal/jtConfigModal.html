@@ -176,9 +176,7 @@
                     </template>
 
                     <template if:true={hasPreviewData}>
-                      <div
-                        class="slds-text-heading_small slds-m-bottom_xx-small"
-                      >
+                      <div class="slds-text-heading_small slds-m-bottom_none">
                         <lightning-icon
                           icon-name="utility:preview"
                           size="xx-small"
@@ -191,7 +189,7 @@
                         data={queryPreviewResults}
                         columns={queryPreviewColumns}
                         hide-checkbox-column
-                        class="slds-box"
+                        class="preview-datatable"
                       ></lightning-datatable>
                       <p
                         class="slds-text-body_small slds-text-color_weak slds-m-top_xx-small"

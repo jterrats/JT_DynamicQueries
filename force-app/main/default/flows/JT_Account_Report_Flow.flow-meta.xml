@@ -1,8 +1,41 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <description>get account records</description>
+        <name>getRecords</name>
+        <label>getRecords</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>JT_DataSelector</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>screen_example</targetReference>
+        </connector>
+        <dataTypeMappings>
+            <typeName>U__records</typeName>
+            <typeValue>Account</typeValue>
+        </dataTypeMappings>
+        <flowTransactionModel>Automatic</flowTransactionModel>
+        <inputParameters>
+            <name>bindingsJson</name>
+            <value>
+                <stringValue>{&quot;searchName&quot;: &quot;%Dynamic%&quot;}</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>configName</name>
+            <value>
+                <stringValue>Account_By_Name</stringValue>
+            </value>
+        </inputParameters>
+        <nameSegment>JT_DataSelector</nameSegment>
+        <offset>0</offset>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
     <apiVersion>65.0</apiVersion>
-    <description
-  >Example Screen Flow demonstrating JT_DataSelector usage with datatable display. This Flow serves as a real-world example and will be detected by the &quot;Where is this used?&quot; feature.</description>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description>Example Screen Flow demonstrating JT_DataSelector usage with datatable display. This Flow serves as a real-world example and will be detected by the &quot;Where is this used?&quot; feature.</description>
+    <environments>Default</environments>
     <interviewLabel>Account Report {!$Flow.CurrentDateTime}</interviewLabel>
     <label>JT Account Report Flow</label>
     <processMetadataValues>
@@ -18,9 +51,100 @@
         </value>
     </processMetadataValues>
     <processType>Flow</processType>
-    <start>
-        <locationX>50</locationX>
+    <screens>
+        <description>this is used to show case dynamic query framework working in flow</description>
+        <name>screen_example</name>
+        <label>screen example</label>
+        <locationX>0</locationX>
         <locationY>0</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>true</allowPause>
+        <fields>
+            <name>display_data</name>
+            <dataTypeMappings>
+                <typeName>T</typeName>
+                <typeValue>Account</typeValue>
+            </dataTypeMappings>
+            <extensionName>flowruntime:datatable</extensionName>
+            <fieldType>ComponentInstance</fieldType>
+            <inputParameters>
+                <name>label</name>
+                <value>
+                    <stringValue>Data Table</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>selectionMode</name>
+                <value>
+                    <stringValue>MULTI_SELECT</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>minRowSelection</name>
+                <value>
+                    <numberValue>0.0</numberValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>isShowSearchBar</name>
+                <value>
+                    <booleanValue>true</booleanValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>shouldDisplayLabel</name>
+                <value>
+                    <booleanValue>true</booleanValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>tableData</name>
+                <value>
+                    <elementReference>getRecords.records</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>keyField</name>
+                <value>
+                    <complexValue>{&quot;dataType&quot;:&quot;SObject&quot;,&quot;objectType&quot;:&quot;Account&quot;,&quot;fieldReferences&quot;:[&quot;Id&quot;],&quot;elementReference&quot;:&quot;getRecords.records&quot;}</complexValue>
+                    <complexValueType>ComplexObjectFieldDetails</complexValueType>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>columns</name>
+                <value>
+                    <stringValue>[{&quot;apiName&quot;:&quot;Id&quot;,&quot;guid&quot;:&quot;column-5543&quot;,&quot;editable&quot;:false,&quot;hasCustomHeaderLabel&quot;:false,&quot;customHeaderLabel&quot;:&quot;&quot;,&quot;wrapText&quot;:true,&quot;order&quot;:0,&quot;label&quot;:&quot;Account ID&quot;,&quot;type&quot;:&quot;text&quot;},{&quot;apiName&quot;:&quot;Name&quot;,&quot;guid&quot;:&quot;column-24cb&quot;,&quot;editable&quot;:false,&quot;hasCustomHeaderLabel&quot;:false,&quot;customHeaderLabel&quot;:&quot;&quot;,&quot;wrapText&quot;:true,&quot;order&quot;:1,&quot;label&quot;:&quot;Account Name&quot;,&quot;type&quot;:&quot;text&quot;}]</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>columnReferences</name>
+                <value>
+                    <complexValue>{&quot;dataType&quot;:&quot;SObject&quot;,&quot;objectType&quot;:&quot;Account&quot;,&quot;fieldReferences&quot;:[&quot;Id&quot;,&quot;Name&quot;],&quot;elementReference&quot;:&quot;getRecords.records&quot;}</complexValue>
+                    <complexValueType>ComplexObjectFieldDetails</complexValueType>
+                </value>
+            </inputParameters>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+            <storeOutputAutomatically>true</storeOutputAutomatically>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>getRecords</targetReference>
+        </connector>
     </start>
     <status>Draft</status>
 </Flow>

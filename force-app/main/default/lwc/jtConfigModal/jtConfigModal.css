@@ -17,3 +17,11 @@
   border-radius: 0.25rem;
   line-height: 1.5;
 }
+
+/* Remove borders and spacing from preview datatable */
+.preview-datatable {
+  border: none !important;
+  box-shadow: none !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}

@@ -180,7 +180,8 @@ public with sharing class JT_MetadataCreator {
       String sanitizedDevName = sanitizeDeveloperName(input.developerName);
 
       // Check if Developer Name changed (renaming scenario)
-      Boolean isRenaming = String.isNotBlank(sanitizedDevName) &&
+      Boolean isRenaming =
+        String.isNotBlank(sanitizedDevName) &&
         sanitizedDevName != input.originalDevName;
 
       if (isRenaming) {
@@ -235,7 +236,10 @@ public with sharing class JT_MetadataCreator {
         );
 
         // Deploy via Metadata API (will update existing record)
-        String deploymentId = deployMetadata(metadataXml, input.originalDevName);
+        String deploymentId = deployMetadata(
+          metadataXml,
+          input.originalDevName
+        );
 
         result.success = true;
         result.message = 'Configuration updated successfully: ' + input.label;

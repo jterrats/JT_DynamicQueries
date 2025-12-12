@@ -85,11 +85,17 @@ export default class JtConfigModal extends LightningElement {
     message: ""
   };
 
+  @track originalDeveloperName = ""; // Store original Developer Name for edit mode
+
   // Public API to set initial config (for edit mode)
   @api
   setConfig(config) {
     if (config) {
       this._config = { ...config };
+      // Store original Developer Name when loading config for edit
+      if (this.mode === "edit" && config.developerName) {
+        this.originalDeveloperName = config.developerName;
+      }
     }
   }
 
@@ -116,6 +122,16 @@ export default class JtConfigModal extends LightningElement {
 
   get isEditMode() {
     return this.mode === "edit";
+  }
+
+  // Check if Developer Name changed in edit mode
+  get hasDeveloperNameChanged() {
+    return (
+      this.isEditMode &&
+      this.originalDeveloperName &&
+      this._config.developerName &&
+      this._config.developerName !== this.originalDeveloperName
+    );
   }
 
   get showObjectName() {
@@ -368,6 +384,7 @@ export default class JtConfigModal extends LightningElement {
       bindings: "",
       objectName: ""
     };
+    this.originalDeveloperName = "";
     this.queryValidation = {
       isValid: false,
       message: "",

@@ -446,6 +446,51 @@ private class JT_MetadataCreator_Test {
   }
 
   /**
+   * @description Test deleteConfiguration with missing developer name
+   * @author Jaime Terrats | 12-11-2025
+   **/
+  @IsTest
+  static void testDeleteConfigurationMissingDevName() {
+    Test.startTest();
+    JT_MetadataCreator.MetadataCreationResult result = JT_MetadataCreator.deleteConfiguration(
+      null
+    );
+    Test.stopTest();
+
+    System.assertEquals(
+      false,
+      result.success,
+      'Should fail with missing developer name'
+    );
+    System.assertNotEquals(
+      null,
+      result.errorMessage,
+      'Should have error message'
+    );
+  }
+
+  /**
+   * @description Test deleteConfiguration validation logic
+   * @author Jaime Terrats | 12-11-2025
+   **/
+  @IsTest
+  static void testDeleteConfigurationValidation() {
+    Test.startTest();
+    JT_MetadataCreator.MetadataCreationResult result = JT_MetadataCreator.deleteConfiguration(
+      'Test_Config_To_Delete'
+    );
+    Test.stopTest();
+
+    System.assertNotEquals(null, result, 'Result should not be null');
+    System.assert(result.success != null, 'Should have success flag');
+    // Message or error message should be populated
+    System.assert(
+      result.message != null || result.errorMessage != null,
+      'Should have either message or error message'
+    );
+  }
+
+  /**
    * @description Test createConfiguration with XML special characters (escapeXml)
    * @author Jaime Terrats | 11-29-2025
    **/

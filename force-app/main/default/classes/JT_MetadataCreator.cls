@@ -91,6 +91,61 @@ public with sharing class JT_MetadataCreator {
   }
 
   /**
+   * @description Deletes a Dynamic Query Configuration metadata record
+   * @author Jaime Terrats | 12-11-2025
+   * @param developerName Developer name of configuration to delete
+   * @return MetadataCreationResult
+   **/
+  @AuraEnabled
+  public static MetadataCreationResult deleteConfiguration(
+    String developerName
+  ) {
+    MetadataCreationResult result = new MetadataCreationResult();
+
+    try {
+      // CRITICAL: Only allow in development/test environments
+      if (!isSandboxOrScratch()) {
+        throw new AuraHandledException(
+          'Configuration deletion is only allowed in development/test environments (Sandbox, Scratch Org, Developer Edition, or Trial). For production orgs (including Starter/Free Editions), use Setup > Custom Metadata Types.'
+        );
+      }
+
+      // Validate required field
+      if (String.isBlank(developerName)) {
+        throw new AuraHandledException('Developer Name is required.');
+      }
+
+      // Delete via Tooling API
+      HttpRequest req = new HttpRequest();
+      req.setEndpoint(
+        'callout:Tooling_API/sobjects/CustomMetadata/JT_DynamicQueryConfiguration.' +
+        developerName
+      );
+      req.setMethod('DELETE');
+      req.setHeader('Content-Type', 'application/json');
+
+      Http http = new Http();
+      HttpResponse res = http.send(req);
+
+      if (res.getStatusCode() == 204 || res.getStatusCode() == 200) {
+        result.success = true;
+        result.message = 'Configuration deleted successfully: ' + developerName;
+        result.developerName = developerName;
+        return result;
+      } else {
+        throw new AuraHandledException(
+          'Failed to delete metadata: ' + res.getBody()
+        );
+      }
+    } catch (Exception e) {
+      result.success = false;
+      result.errorMessage = e.getMessage();
+      result.stackTrace = e.getStackTraceString();
+      return result;
+    }
+  }
+
+  /**
    * @description Updates an existing Dynamic Query Configuration metadata record
    * @author Jaime Terrats | 12-11-2025
    * @param input Configuration input data (must include originalDevName)

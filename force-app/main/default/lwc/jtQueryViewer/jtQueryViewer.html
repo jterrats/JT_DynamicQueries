@@ -63,10 +63,26 @@
             onclick={handleShowEditModal}
             variant="neutral"
             icon-name="utility:edit"
-            class="slds-m-left_x-small slds-m-right_small"
+            class="slds-m-left_x-small"
             data-testid="header-edit-config-button"
             name="edit-configuration"
             aria-label="Edit selected query configuration"
+          >
+          </lightning-button>
+        </template>
+
+        <!-- Delete Configuration Button (Sandbox/Scratch only + config selected) -->
+        <template if:true={showDeleteConfigButton}>
+          <lightning-button
+            label="Delete Configuration"
+            title="Delete selected configuration"
+            onclick={handleDeleteConfiguration}
+            variant="destructive"
+            icon-name="utility:delete"
+            class="slds-m-left_x-small slds-m-right_small"
+            data-testid="header-delete-config-button"
+            name="delete-configuration"
+            aria-label="Delete selected query configuration"
           >
           </lightning-button>
         </template>

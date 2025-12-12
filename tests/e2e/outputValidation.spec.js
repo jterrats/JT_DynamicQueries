@@ -111,7 +111,9 @@ test.describe("Output Validation Tests", () => {
     await expect(queryResults).toBeVisible({ timeout: TIMEOUTS.component });
 
     // ✅ Validate empty state message (format: "Results (0 records):")
-    const resultsHeading = queryResults.locator("#results-heading, .slds-text-heading_small");
+    const resultsHeading = queryResults.locator(
+      "#results-heading, .slds-text-heading_small"
+    );
     const headingVisible = await resultsHeading
       .isVisible({ timeout: 5000 })
       .catch(() => false);
@@ -139,7 +141,9 @@ test.describe("Output Validation Tests", () => {
       const emptyMessage = queryResults.locator(
         "text=/no records found|no results|0 records/i"
       );
-      const emptyVisible = await emptyMessage.isVisible({ timeout: 2000 }).catch(() => false);
+      const emptyVisible = await emptyMessage
+        .isVisible({ timeout: 2000 })
+        .catch(() => false);
       expect(emptyVisible).toBe(true);
       console.log("✅ Empty state message shown");
     }
@@ -306,7 +310,7 @@ test.describe("Output Validation Tests", () => {
 
     // ✅ Validate Named Credential content exists (check entire component)
     const contentText = await docComponent.textContent();
-    
+
     expect(contentText).toBeTruthy();
     expect(contentText.toLowerCase()).toContain("named credential");
     expect(contentText.toLowerCase()).toContain("tooling api");
@@ -336,12 +340,18 @@ test.describe("Output Validation Tests", () => {
 
     // ✅ Validate error appears (could be toast OR error message in component)
     const errorToast = page.locator(".slds-notify--error");
-    const errorMessage = page.locator('[data-testid="error-message"], .error-message');
-    
+    const errorMessage = page.locator(
+      '[data-testid="error-message"], .error-message'
+    );
+
     // Wait for either error toast or error message
     const errorVisible = await Promise.race([
-      errorToast.isVisible({ timeout: TIMEOUTS.component }).then(() => ({ type: 'toast', element: errorToast })),
-      errorMessage.isVisible({ timeout: TIMEOUTS.component }).then(() => ({ type: 'message', element: errorMessage }))
+      errorToast
+        .isVisible({ timeout: TIMEOUTS.component })
+        .then(() => ({ type: "toast", element: errorToast })),
+      errorMessage
+        .isVisible({ timeout: TIMEOUTS.component })
+        .then(() => ({ type: "message", element: errorMessage }))
     ]).catch(() => null);
 
     if (!errorVisible) {
@@ -355,7 +365,7 @@ test.describe("Output Validation Tests", () => {
       const errorText = await errorVisible.element.textContent();
       expect(errorText.toLowerCase()).toContain("between");
       expect(errorText.toLowerCase()).toContain("not supported");
-      
+
       // ✅ Validate error message suggests alternative
       expect(errorText.toLowerCase()).toContain(">=");
       expect(errorText.toLowerCase()).toContain("<=");
@@ -372,8 +382,12 @@ test.describe("Output Validation Tests", () => {
 
     // ✅ Validate NOT LIKE error
     const notLikeErrorVisible = await Promise.race([
-      errorToast.isVisible({ timeout: TIMEOUTS.component }).then(() => ({ type: 'toast', element: errorToast })),
-      errorMessage.isVisible({ timeout: TIMEOUTS.component }).then(() => ({ type: 'message', element: errorMessage }))
+      errorToast
+        .isVisible({ timeout: TIMEOUTS.component })
+        .then(() => ({ type: "toast", element: errorToast })),
+      errorMessage
+        .isVisible({ timeout: TIMEOUTS.component })
+        .then(() => ({ type: "message", element: errorMessage }))
     ]).catch(() => null);
 
     if (notLikeErrorVisible) {

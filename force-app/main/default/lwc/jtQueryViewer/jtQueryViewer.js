@@ -108,6 +108,7 @@ import isSandboxOrScratch from "@salesforce/apex/JT_MetadataCreator.isSandboxOrS
 import getOrgInfo from "@salesforce/apex/JT_MetadataCreator.getOrgInfo";
 import createConfiguration from "@salesforce/apex/JT_MetadataCreator.createConfiguration";
 import updateConfiguration from "@salesforce/apex/JT_MetadataCreator.updateConfiguration";
+import deleteConfiguration from "@salesforce/apex/JT_MetadataCreator.deleteConfiguration";
 import updateProductionEditingSetting from "@salesforce/apex/JT_ProductionSettingsController.updateProductionEditingSetting";
 import getUsageTrackingSetting from "@salesforce/apex/JT_ProductionSettingsController.getUsageTrackingSetting";
 import updateUsageTrackingSetting from "@salesforce/apex/JT_ProductionSettingsController.updateUsageTrackingSetting";
@@ -937,6 +938,59 @@ export default class JtQueryViewer extends LightningElement {
     this.configModalMode = "create";
   }
 
+  // Handle delete configuration
+  handleDeleteConfiguration() {
+    if (!this.selectedConfig) {
+      this.showErrorToast(
+        "No Configuration Selected",
+        "Please select a configuration to delete."
+      );
+      return;
+    }
+
+    // Get developer name from selected config
+    const currentConfig = this.configurationOptions.find(
+      (cfg) => cfg.value === this.selectedConfig
+    );
+
+    if (!currentConfig) {
+      this.showErrorToast(
+        "Configuration Not Found",
+        "Could not find the selected configuration. Please refresh and try again."
+      );
+      return;
+    }
+
+    // Confirm deletion
+    if (
+      !confirm(
+        `Are you sure you want to delete "${currentConfig.label}"?\n\nThis action cannot be undone.`
+      )
+    ) {
+      return;
+    }
+
+    // Call delete method
+    deleteConfiguration({ developerName: currentConfig.developerName })
+      .then((result) => {
+        if (result.success) {
+          this.showSuccessToast("Configuration Deleted", result.message);
+          // Clear selection
+          this.selectedConfig = "";
+          // Refresh the configurations list
+          return refreshApex(this.wiredConfigurationsResult);
+        }
+        this.showErrorToast("Delete Failed", result.errorMessage);
+        return Promise.resolve();
+      })
+      .catch((error) => {
+        this.showErrorToast(
+          "Error",
+          error.body?.message || "Failed to delete configuration"
+        );
+      });
+  }
+
   // Reset new configuration form
   resetNewConfig() {
     this.newConfig = {
@@ -1376,6 +1430,11 @@ export default class JtQueryViewer extends LightningElement {
 
   // Computed property for showing edit button
   get showEditConfigButton() {
+    return this.canCreateMetadata && this.selectedConfig;
+  }
+
+  // Computed property for showing delete button
+  get showDeleteConfigButton() {
     return this.canCreateMetadata && this.selectedConfig;
   }
 

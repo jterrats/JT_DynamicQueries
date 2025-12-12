@@ -55,7 +55,8 @@ test.describe("Metadata Lifecycle Tests", () => {
     const timestamp = Date.now();
     const configLabel = `E2E Test Config ${timestamp}`;
     const configDevName = `E2E_Test_Config_${timestamp}`;
-    const testQuery = "SELECT Id, Name FROM Account WHERE Name LIKE :searchName LIMIT 10";
+    const testQuery =
+      "SELECT Id, Name FROM Account WHERE Name LIKE :searchName LIMIT 10";
     const testBindings = '{"searchName": "%"}';
     const testObject = "Account";
 
@@ -72,7 +73,9 @@ test.describe("Metadata Lifecycle Tests", () => {
     await page.waitForTimeout(300);
 
     // Fill Base Query
-    const queryInput = modal.locator('lightning-textarea[data-id="config-query"]');
+    const queryInput = modal.locator(
+      'lightning-textarea[data-id="config-query"]'
+    );
     await queryInput.locator("textarea").fill(testQuery);
     await page.waitForTimeout(500); // Wait for query validation
 
@@ -84,7 +87,9 @@ test.describe("Metadata Lifecycle Tests", () => {
     await page.waitForTimeout(300);
 
     // Fill Object Name
-    const objectInput = modal.locator('lightning-input[data-id="config-object"]');
+    const objectInput = modal.locator(
+      'lightning-input[data-id="config-object"]'
+    );
     await objectInput.locator("input").fill(testObject);
     await page.waitForTimeout(300);
 
@@ -145,9 +150,7 @@ test.describe("Metadata Lifecycle Tests", () => {
       }
     } else {
       // Alternative: Check for empty state message
-      const emptyMessage = queryResults.locator(
-        "text=/results.*0.*record/i"
-      );
+      const emptyMessage = queryResults.locator("text=/results.*0.*record/i");
       const emptyVisible = await emptyMessage
         .isVisible({ timeout: 2000 })
         .catch(() => false);
@@ -157,10 +160,48 @@ test.describe("Metadata Lifecycle Tests", () => {
 
     // ✅ No error toast (query executed successfully)
     const errorToast = page.locator(".slds-notify--error");
-    const errorVisible = await errorToast.isVisible({ timeout: 2000 }).catch(() => false);
+    const errorVisible = await errorToast
+      .isVisible({ timeout: 2000 })
+      .catch(() => false);
     expect(errorVisible).toBe(false);
 
-    console.log(`✅ Configuration "${configLabel}" created and executed successfully`);
+    console.log(
+      `✅ Configuration "${configLabel}" created and executed successfully`
+    );
+
+    // Step 6: Delete the configuration (cleanup)
+    const deleteButton = page
+      .locator("lightning-button")
+      .filter({ hasText: /Delete.*Configuration/i });
+    const deleteVisible = await deleteButton.isVisible({ timeout: 2000 }).catch(() => false);
+
+    if (deleteVisible) {
+      // Set up dialog handler BEFORE clicking
+      page.once("dialog", async (dialog) => {
+        expect(dialog.message().toLowerCase()).toContain("are you sure");
+        await dialog.accept();
+      });
+
+      await deleteButton.click();
+      await page.waitForTimeout(2000); // Wait for deletion
+
+      // ✅ Validate success toast for deletion
+      const deleteSuccessToast = page.locator(".slds-notify--success");
+      const deleteToastVisible = await deleteSuccessToast
+        .isVisible({ timeout: TIMEOUTS.component })
+        .catch(() => false);
+      expect(deleteToastVisible).toBe(true);
+      console.log("✅ Configuration deleted successfully");
+
+      // ✅ Validate configuration no longer selected
+      const configInput = page.locator(SELECTORS.configSelectorInput);
+      await page.waitForTimeout(1000); // Wait for refresh
+      const inputValue = await configInput.inputValue();
+      expect(inputValue).not.toBe(configLabel);
+      console.log("✅ Configuration removed from selection");
+    } else {
+      console.log("⚠️  Delete button not visible - skipping cleanup");
+    }
   });
 
   test("should update configuration and execute query successfully", async ({
@@ -196,7 +237,9 @@ test.describe("Metadata Lifecycle Tests", () => {
     await expect(modal).toBeVisible();
 
     // Step 3: Get current query to modify
-    const queryInput = modal.locator('lightning-textarea[data-id="config-query"]');
+    const queryInput = modal.locator(
+      'lightning-textarea[data-id="config-query"]'
+    );
     const currentQuery = await queryInput.locator("textarea").inputValue();
     console.log(`Current query: ${currentQuery}`);
 
@@ -254,9 +297,7 @@ test.describe("Metadata Lifecycle Tests", () => {
       console.log(`✅ Table structure valid: ${headerCount} columns`);
     } else {
       // Check for empty state
-      const emptyMessage = queryResults.locator(
-        "text=/results.*0.*record/i"
-      );
+      const emptyMessage = queryResults.locator("text=/results.*0.*record/i");
       const emptyVisible = await emptyMessage
         .isVisible({ timeout: 2000 })
         .catch(() => false);
@@ -266,10 +307,14 @@ test.describe("Metadata Lifecycle Tests", () => {
 
     // ✅ No error toast
     const errorToast = page.locator(".slds-notify--error");
-    const errorVisible = await errorToast.isVisible({ timeout: 2000 }).catch(() => false);
+    const errorVisible = await errorToast
+      .isVisible({ timeout: 2000 })
+      .catch(() => false);
     expect(errorVisible).toBe(false);
 
-    console.log(`✅ Configuration "${updatedLabel}" updated and executed successfully`);
+    console.log(
+      `✅ Configuration "${updatedLabel}" updated and executed successfully`
+    );
   });
 
   test("should create configuration with parameters and execute with bindings", async ({
@@ -296,24 +341,43 @@ test.describe("Metadata Lifecycle Tests", () => {
     const timestamp = Date.now();
     const configLabel = `E2E Param Config ${timestamp}`;
     const configDevName = `E2E_Param_Config_${timestamp}`;
-    const testQuery = "SELECT Id, Name, Industry FROM Account WHERE Industry = :industry AND Name LIKE :namePattern LIMIT 10";
+    const testQuery =
+      "SELECT Id, Name, Industry FROM Account WHERE Industry = :industry AND Name LIKE :namePattern LIMIT 10";
     const testBindings = '{"industry": "Technology", "namePattern": "%"}';
     const testObject = "Account";
 
     // Fill all fields
-    await modal.locator('lightning-input[data-id="config-label"]').locator("input").fill(configLabel);
+    await modal
+      .locator('lightning-input[data-id="config-label"]')
+      .locator("input")
+      .fill(configLabel);
     await page.waitForTimeout(300);
-    await modal.locator('lightning-input[data-id="config-developer-name"]').locator("input").fill(configDevName);
+    await modal
+      .locator('lightning-input[data-id="config-developer-name"]')
+      .locator("input")
+      .fill(configDevName);
     await page.waitForTimeout(300);
-    await modal.locator('lightning-textarea[data-id="config-query"]').locator("textarea").fill(testQuery);
+    await modal
+      .locator('lightning-textarea[data-id="config-query"]')
+      .locator("textarea")
+      .fill(testQuery);
     await page.waitForTimeout(500);
-    await modal.locator('lightning-textarea[data-id="config-bindings"]').locator("textarea").fill(testBindings);
+    await modal
+      .locator('lightning-textarea[data-id="config-bindings"]')
+      .locator("textarea")
+      .fill(testBindings);
     await page.waitForTimeout(300);
-    await modal.locator('lightning-input[data-id="config-object"]').locator("input").fill(testObject);
+    await modal
+      .locator('lightning-input[data-id="config-object"]')
+      .locator("input")
+      .fill(testObject);
     await page.waitForTimeout(300);
 
     // Save
-    await modal.locator("lightning-button").filter({ hasText: /Save|Create/i }).click();
+    await modal
+      .locator("lightning-button")
+      .filter({ hasText: /Save|Create/i })
+      .click();
     await page.waitForTimeout(2000);
 
     // ✅ Validate success
@@ -357,7 +421,9 @@ test.describe("Metadata Lifecycle Tests", () => {
     if (tableVisible) {
       const rows = resultsTable.locator("tbody tr");
       const rowCount = await rows.count();
-      console.log(`✅ Query with parameters executed: ${rowCount} records returned`);
+      console.log(
+        `✅ Query with parameters executed: ${rowCount} records returned`
+      );
 
       // ✅ Validate Industry column if results exist
       if (rowCount > 0) {
@@ -372,17 +438,22 @@ test.describe("Metadata Lifecycle Tests", () => {
           const industryCell = firstRow.locator("td").nth(industryIndex + 1);
           const industryValue = await industryCell.textContent();
           expect(industryValue.toLowerCase()).toContain("technology");
-          console.log(`✅ Parameter binding validated: Industry = "${industryValue}"`);
+          console.log(
+            `✅ Parameter binding validated: Industry = "${industryValue}"`
+          );
         }
       }
     }
 
     // ✅ No error toast
     const errorToast = page.locator(".slds-notify--error");
-    const errorVisible = await errorToast.isVisible({ timeout: 2000 }).catch(() => false);
+    const errorVisible = await errorToast
+      .isVisible({ timeout: 2000 })
+      .catch(() => false);
     expect(errorVisible).toBe(false);
 
-    console.log(`✅ Configuration "${configLabel}" with parameters created and executed successfully`);
+    console.log(
+      `✅ Configuration "${configLabel}" with parameters created and executed successfully`
+    );
   });
 });
-

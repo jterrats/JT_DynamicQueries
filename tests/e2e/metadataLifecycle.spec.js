@@ -1,0 +1,388 @@
+/**
+ * E2E Tests for Metadata Lifecycle (Create/Update/Execute)
+ * Validates that created/updated configurations actually work by executing queries
+ */
+
+const { test, expect } = require("@playwright/test");
+const {
+  setupTestContext,
+  selectConfiguration,
+  executeQuery
+} = require("./utils/testHelpers");
+const { getSFSession } = require("./utils/sfAuth");
+const {
+  QUERY_VIEWER_TAB,
+  SELECTORS,
+  TIMEOUTS
+} = require("./utils/testConstants");
+
+let session;
+
+test.beforeAll(async () => {
+  session = await getSFSession();
+});
+
+test.describe("Metadata Lifecycle Tests", () => {
+  test.beforeEach(async ({ page }) => {
+    await setupTestContext(page, session, {
+      targetTab: QUERY_VIEWER_TAB,
+      waitForComponent: true
+    });
+  });
+
+  test("should create configuration and execute query successfully", async ({
+    page
+  }) => {
+    const isProduction = !session.instanceUrl.toLowerCase().includes("sandbox");
+
+    if (isProduction) {
+      console.log("⚠️  Skipping in production");
+      return;
+    }
+
+    // Step 1: Open Create Configuration modal
+    const createButton = page
+      .locator("lightning-button")
+      .filter({ hasText: /Create.*Configuration/i })
+      .first();
+    await createButton.click();
+    await page.waitForTimeout(500);
+
+    const modal = page.locator('section[role="dialog"]');
+    await expect(modal).toBeVisible();
+
+    // Step 2: Fill all fields with valid data
+    const timestamp = Date.now();
+    const configLabel = `E2E Test Config ${timestamp}`;
+    const configDevName = `E2E_Test_Config_${timestamp}`;
+    const testQuery = "SELECT Id, Name FROM Account WHERE Name LIKE :searchName LIMIT 10";
+    const testBindings = '{"searchName": "%"}';
+    const testObject = "Account";
+
+    // Fill Label
+    const labelInput = modal.locator('lightning-input[data-id="config-label"]');
+    await labelInput.locator("input").fill(configLabel);
+    await page.waitForTimeout(300);
+
+    // Fill Developer Name
+    const devNameInput = modal.locator(
+      'lightning-input[data-id="config-developer-name"]'
+    );
+    await devNameInput.locator("input").fill(configDevName);
+    await page.waitForTimeout(300);
+
+    // Fill Base Query
+    const queryInput = modal.locator('lightning-textarea[data-id="config-query"]');
+    await queryInput.locator("textarea").fill(testQuery);
+    await page.waitForTimeout(500); // Wait for query validation
+
+    // Fill Bindings (JSON)
+    const bindingsInput = modal.locator(
+      'lightning-textarea[data-id="config-bindings"]'
+    );
+    await bindingsInput.locator("textarea").fill(testBindings);
+    await page.waitForTimeout(300);
+
+    // Fill Object Name
+    const objectInput = modal.locator('lightning-input[data-id="config-object"]');
+    await objectInput.locator("input").fill(testObject);
+    await page.waitForTimeout(300);
+
+    // Step 3: Save configuration
+    const saveButton = modal
+      .locator("lightning-button")
+      .filter({ hasText: /Save|Create/i });
+    await saveButton.click();
+    await page.waitForTimeout(2000); // Wait for save and refresh
+
+    // ✅ Validate success toast appears
+    const successToast = page.locator(".slds-notify--success");
+    const toastVisible = await successToast
+      .isVisible({ timeout: TIMEOUTS.component })
+      .catch(() => false);
+    expect(toastVisible).toBe(true);
+    console.log("✅ Configuration created successfully");
+
+    // ✅ Validate modal closed
+    await expect(modal).not.toBeVisible({ timeout: TIMEOUTS.medium });
+
+    // Step 4: Select the newly created configuration
+    await selectConfiguration(page, configLabel);
+
+    // Step 5: Execute query with the new configuration
+    await executeQuery(page, { waitTime: TIMEOUTS.long });
+
+    // ✅ Validate query executed successfully
+    const queryResults = page.locator(SELECTORS.queryResults);
+    await expect(queryResults).toBeVisible({ timeout: TIMEOUTS.component });
+
+    // ✅ Validate results table appears
+    const resultsTable = queryResults.locator(SELECTORS.resultsTable);
+    const tableVisible = await resultsTable
+      .isVisible({ timeout: TIMEOUTS.component })
+      .catch(() => false);
+
+    if (tableVisible) {
+      // ✅ Validate records returned (may be 0, but table should exist)
+      const rows = resultsTable.locator("tbody tr");
+      const rowCount = await rows.count();
+      console.log(`✅ Query executed: ${rowCount} records returned`);
+
+      // ✅ Validate table structure (columns exist)
+      const headers = resultsTable.locator("thead th");
+      const headerCount = await headers.count();
+      expect(headerCount).toBeGreaterThan(0);
+      console.log(`✅ Table structure valid: ${headerCount} columns`);
+
+      // ✅ If results exist, validate Name column has data
+      if (rowCount > 0) {
+        const firstRow = rows.first();
+        const nameCell = firstRow.locator("td").nth(1); // Name column (skip checkbox)
+        const nameText = await nameCell.textContent();
+        expect(nameText).toBeTruthy();
+        expect(nameText.trim().length).toBeGreaterThan(0);
+        console.log(`✅ Data validated: Account Name = "${nameText.trim()}"`);
+      }
+    } else {
+      // Alternative: Check for empty state message
+      const emptyMessage = queryResults.locator(
+        "text=/results.*0.*record/i"
+      );
+      const emptyVisible = await emptyMessage
+        .isVisible({ timeout: 2000 })
+        .catch(() => false);
+      expect(emptyVisible).toBe(true);
+      console.log("✅ Empty results message shown (valid - no Accounts match)");
+    }
+
+    // ✅ No error toast (query executed successfully)
+    const errorToast = page.locator(".slds-notify--error");
+    const errorVisible = await errorToast.isVisible({ timeout: 2000 }).catch(() => false);
+    expect(errorVisible).toBe(false);
+
+    console.log(`✅ Configuration "${configLabel}" created and executed successfully`);
+  });
+
+  test("should update configuration and execute query successfully", async ({
+    page
+  }) => {
+    const isProduction = !session.instanceUrl.toLowerCase().includes("sandbox");
+
+    if (isProduction) {
+      console.log("⚠️  Skipping in production");
+      return;
+    }
+
+    // Step 1: Select an existing configuration
+    const configDropdown = page.locator("lightning-combobox").first();
+    await configDropdown.click();
+    await page.waitForTimeout(300);
+
+    const firstOption = page
+      .locator('lightning-base-combobox-item[role="option"]')
+      .first();
+    const selectedConfigName = await firstOption.textContent();
+    await firstOption.click();
+    await page.waitForTimeout(500);
+
+    // Step 2: Open Edit modal
+    const editButton = page
+      .locator("lightning-button")
+      .filter({ hasText: /Edit.*Configuration/i });
+    await editButton.click();
+    await page.waitForTimeout(500);
+
+    const modal = page.locator('section[role="dialog"]');
+    await expect(modal).toBeVisible();
+
+    // Step 3: Get current query to modify
+    const queryInput = modal.locator('lightning-textarea[data-id="config-query"]');
+    const currentQuery = await queryInput.locator("textarea").inputValue();
+    console.log(`Current query: ${currentQuery}`);
+
+    // Step 4: Modify Label (add test suffix)
+    const labelInput = modal.locator('lightning-input[data-id="config-label"]');
+    const originalLabel = await labelInput.locator("input").inputValue();
+    const updatedLabel = `${originalLabel} (Updated ${Date.now()})`;
+    await labelInput.locator("input").fill(updatedLabel);
+    await page.waitForTimeout(300);
+
+    // Step 5: Update configuration
+    const updateButton = modal
+      .locator("lightning-button")
+      .filter({ hasText: /Update/i });
+    await updateButton.click();
+    await page.waitForTimeout(2000); // Wait for update and refresh
+
+    // ✅ Validate success toast appears
+    const successToast = page.locator(".slds-notify--success");
+    const toastVisible = await successToast
+      .isVisible({ timeout: TIMEOUTS.component })
+      .catch(() => false);
+    expect(toastVisible).toBe(true);
+    console.log("✅ Configuration updated successfully");
+
+    // ✅ Validate modal closed
+    await expect(modal).not.toBeVisible({ timeout: TIMEOUTS.medium });
+
+    // Step 6: Select the updated configuration (by new label)
+    await selectConfiguration(page, updatedLabel);
+
+    // Step 7: Execute query with the updated configuration
+    await executeQuery(page, { waitTime: TIMEOUTS.long });
+
+    // ✅ Validate query executed successfully
+    const queryResults = page.locator(SELECTORS.queryResults);
+    await expect(queryResults).toBeVisible({ timeout: TIMEOUTS.component });
+
+    // ✅ Validate results table appears
+    const resultsTable = queryResults.locator(SELECTORS.resultsTable);
+    const tableVisible = await resultsTable
+      .isVisible({ timeout: TIMEOUTS.component })
+      .catch(() => false);
+
+    if (tableVisible) {
+      // ✅ Validate records returned
+      const rows = resultsTable.locator("tbody tr");
+      const rowCount = await rows.count();
+      console.log(`✅ Query executed: ${rowCount} records returned`);
+
+      // ✅ Validate table structure
+      const headers = resultsTable.locator("thead th");
+      const headerCount = await headers.count();
+      expect(headerCount).toBeGreaterThan(0);
+      console.log(`✅ Table structure valid: ${headerCount} columns`);
+    } else {
+      // Check for empty state
+      const emptyMessage = queryResults.locator(
+        "text=/results.*0.*record/i"
+      );
+      const emptyVisible = await emptyMessage
+        .isVisible({ timeout: 2000 })
+        .catch(() => false);
+      expect(emptyVisible).toBe(true);
+      console.log("✅ Empty results message shown");
+    }
+
+    // ✅ No error toast
+    const errorToast = page.locator(".slds-notify--error");
+    const errorVisible = await errorToast.isVisible({ timeout: 2000 }).catch(() => false);
+    expect(errorVisible).toBe(false);
+
+    console.log(`✅ Configuration "${updatedLabel}" updated and executed successfully`);
+  });
+
+  test("should create configuration with parameters and execute with bindings", async ({
+    page
+  }) => {
+    const isProduction = !session.instanceUrl.toLowerCase().includes("sandbox");
+
+    if (isProduction) {
+      console.log("⚠️  Skipping in production");
+      return;
+    }
+
+    // Step 1: Create configuration with parameters
+    const createButton = page
+      .locator("lightning-button")
+      .filter({ hasText: /Create.*Configuration/i })
+      .first();
+    await createButton.click();
+    await page.waitForTimeout(500);
+
+    const modal = page.locator('section[role="dialog"]');
+    await expect(modal).toBeVisible();
+
+    const timestamp = Date.now();
+    const configLabel = `E2E Param Config ${timestamp}`;
+    const configDevName = `E2E_Param_Config_${timestamp}`;
+    const testQuery = "SELECT Id, Name, Industry FROM Account WHERE Industry = :industry AND Name LIKE :namePattern LIMIT 10";
+    const testBindings = '{"industry": "Technology", "namePattern": "%"}';
+    const testObject = "Account";
+
+    // Fill all fields
+    await modal.locator('lightning-input[data-id="config-label"]').locator("input").fill(configLabel);
+    await page.waitForTimeout(300);
+    await modal.locator('lightning-input[data-id="config-developer-name"]').locator("input").fill(configDevName);
+    await page.waitForTimeout(300);
+    await modal.locator('lightning-textarea[data-id="config-query"]').locator("textarea").fill(testQuery);
+    await page.waitForTimeout(500);
+    await modal.locator('lightning-textarea[data-id="config-bindings"]').locator("textarea").fill(testBindings);
+    await page.waitForTimeout(300);
+    await modal.locator('lightning-input[data-id="config-object"]').locator("input").fill(testObject);
+    await page.waitForTimeout(300);
+
+    // Save
+    await modal.locator("lightning-button").filter({ hasText: /Save|Create/i }).click();
+    await page.waitForTimeout(2000);
+
+    // ✅ Validate success
+    const successToast = page.locator(".slds-notify--success");
+    await expect(successToast).toBeVisible({ timeout: TIMEOUTS.component });
+    await expect(modal).not.toBeVisible({ timeout: TIMEOUTS.medium });
+
+    // Step 2: Select configuration
+    await selectConfiguration(page, configLabel);
+
+    // Step 3: Fill parameter inputs (should appear automatically)
+    const paramInputs = page.locator("c-jt-parameter-inputs lightning-input");
+    const paramCount = await paramInputs.count();
+
+    if (paramCount > 0) {
+      // Fill industry parameter
+      const industryInput = paramInputs.first();
+      await industryInput.locator("input").fill("Technology");
+      await page.waitForTimeout(300);
+
+      // Fill namePattern parameter (if exists)
+      if (paramCount > 1) {
+        const nameInput = paramInputs.nth(1);
+        await nameInput.locator("input").fill("%");
+        await page.waitForTimeout(300);
+      }
+    }
+
+    // Step 4: Execute query
+    await executeQuery(page, { waitTime: TIMEOUTS.long });
+
+    // ✅ Validate execution
+    const queryResults = page.locator(SELECTORS.queryResults);
+    await expect(queryResults).toBeVisible({ timeout: TIMEOUTS.component });
+
+    const resultsTable = queryResults.locator(SELECTORS.resultsTable);
+    const tableVisible = await resultsTable
+      .isVisible({ timeout: TIMEOUTS.component })
+      .catch(() => false);
+
+    if (tableVisible) {
+      const rows = resultsTable.locator("tbody tr");
+      const rowCount = await rows.count();
+      console.log(`✅ Query with parameters executed: ${rowCount} records returned`);
+
+      // ✅ Validate Industry column if results exist
+      if (rowCount > 0) {
+        const headers = resultsTable.locator("thead th");
+        const headerTexts = await headers.allTextContents();
+        const industryIndex = headerTexts.findIndex((h) =>
+          h.toLowerCase().includes("industry")
+        );
+
+        if (industryIndex >= 0) {
+          const firstRow = rows.first();
+          const industryCell = firstRow.locator("td").nth(industryIndex + 1);
+          const industryValue = await industryCell.textContent();
+          expect(industryValue.toLowerCase()).toContain("technology");
+          console.log(`✅ Parameter binding validated: Industry = "${industryValue}"`);
+        }
+      }
+    }
+
+    // ✅ No error toast
+    const errorToast = page.locator(".slds-notify--error");
+    const errorVisible = await errorToast.isVisible({ timeout: 2000 }).catch(() => false);
+    expect(errorVisible).toBe(false);
+
+    console.log(`✅ Configuration "${configLabel}" with parameters created and executed successfully`);
+  });
+});
+

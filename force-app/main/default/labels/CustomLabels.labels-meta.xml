@@ -1241,7 +1241,8 @@
         <fullName>JT_Error_BetweenOperatorNotSupported</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>Error - BETWEEN operator not supported</shortDescription>
+        <shortDescription
+    >Error - BETWEEN operator not supported</shortDescription>
         <value>BETWEEN operator is not supported in Salesforce SOQL.
 
 Instead of:
@@ -1254,7 +1255,8 @@ Please use:
         <fullName>JT_Error_NotLikeOperatorNotSupported</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>Error - NOT LIKE operator not supported</shortDescription>
+        <shortDescription
+    >Error - NOT LIKE operator not supported</shortDescription>
         <value>NOT LIKE operator is not supported in Salesforce SOQL.
 
 Instead of:
@@ -1268,8 +1270,10 @@ Please use one of these alternatives:
         <fullName>JT_Error_UnsupportedOperatorGeneric</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>Error - Unsupported operator generic</shortDescription>
-        <value>Your query contains operators not supported by Salesforce SOQL: {0}
+        <shortDescription
+    >Error - Unsupported operator generic</shortDescription>
+        <value
+    >Your query contains operators not supported by Salesforce SOQL: {0}
 
 Please refer to Salesforce SOQL documentation for supported operators.</value>
     </labels>

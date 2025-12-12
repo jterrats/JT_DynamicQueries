@@ -88,11 +88,13 @@ test.describe("SOQL Operators Validation", () => {
     // ✅ Validate Name column exists and has data (if results)
     const rows = resultsTable.locator("tbody tr");
     const rowCount = await rows.count();
-    
+
     if (rowCount > 0) {
       const headers = resultsTable.locator("thead th");
       const headerTexts = await headers.allTextContents();
-      expect(headerTexts.some((h) => h.toLowerCase().includes("name"))).toBe(true);
+      expect(headerTexts.some((h) => h.toLowerCase().includes("name"))).toBe(
+        true
+      );
 
       // Validate first row has Name data
       const firstRow = rows.first();
@@ -164,7 +166,7 @@ test.describe("SOQL Operators Validation", () => {
     // ✅ Validate Name column has data (static validation)
     const rows = resultsTable.locator("tbody tr");
     const rowCount = await rows.count();
-    
+
     if (rowCount > 0) {
       const firstRow = rows.first();
       const nameCell = firstRow.locator("td").nth(1); // Name column

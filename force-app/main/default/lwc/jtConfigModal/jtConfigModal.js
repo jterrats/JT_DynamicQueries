@@ -18,6 +18,7 @@ import developerNameInvalidChars from "@salesforce/label/c.JT_jtConfigModal_deve
 import developerNameMustStartWithLetter from "@salesforce/label/c.JT_jtConfigModal_developerNameMustStartWithLetter";
 import developerNameCannotEndWithUnderscore from "@salesforce/label/c.JT_jtConfigModal_developerNameCannotEndWithUnderscore";
 import developerNameNoConsecutiveUnderscores from "@salesforce/label/c.JT_jtConfigModal_developerNameNoConsecutiveUnderscores";
+import developerNameChangeWarning from "@salesforce/label/c.JT_jtConfigModal_developerNameChangeWarning";
 
 export default class JtConfigModal extends LightningElement {
   // Custom Labels (imported from Translation Workbench)
@@ -29,7 +30,8 @@ export default class JtConfigModal extends LightningElement {
     developerNameInvalidChars,
     developerNameMustStartWithLetter,
     developerNameCannotEndWithUnderscore,
-    developerNameNoConsecutiveUnderscores
+    developerNameNoConsecutiveUnderscores,
+    developerNameChangeWarning
   };
 
   // Public API

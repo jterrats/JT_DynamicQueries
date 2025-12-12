@@ -67,7 +67,7 @@
               placeholder="e.g., Get_Active_Accounts"
               field-level-help="API name (auto-generated from label, editable for manual adjustment or renaming, max 40 characters)"
             ></lightning-input>
-            
+
             <!-- Warning when Developer Name changes in edit mode -->
             <template if:true={hasDeveloperNameChanged}>
               <div class="slds-m-top_x-small">
@@ -87,7 +87,9 @@
                     ></lightning-icon>
                   </span>
                   <div class="slds-text-body_small">
-                    <strong>Warning:</strong> Entiendo que al cambiar el developer name, cualquier referencia en Apex / Flow / LWC, se verá afectada y debo actualizarla.
+                    <strong>Warning:</strong> Entiendo que al cambiar el
+                    developer name, cualquier referencia en Apex / Flow / LWC,
+                    se verá afectada y debo actualizarla.
                   </div>
                 </div>
               </div>

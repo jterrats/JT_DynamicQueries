@@ -63,10 +63,10 @@
               data-field="developerName"
               onchange={handleFieldChange}
               required
-              disabled={isEditMode}
+              readonly
               maxlength="40"
               placeholder="e.g., Get_Active_Accounts"
-              field-level-help="API name (auto-generated from label, read-only in edit mode, max 40 characters)"
+              field-level-help="API name (auto-generated from label, read-only, max 40 characters)"
             ></lightning-input>
           </lightning-layout-item>
 
@@ -152,7 +152,9 @@
                     </template>
 
                     <template if:true={hasPreviewData}>
-                      <div class="slds-text-heading_small slds-m-bottom_xx-small">
+                      <div
+                        class="slds-text-heading_small slds-m-bottom_xx-small"
+                      >
                         <lightning-icon
                           icon-name="utility:preview"
                           size="xx-small"
@@ -167,7 +169,9 @@
                         hide-checkbox-column
                         class="slds-box"
                       ></lightning-datatable>
-                      <p class="slds-text-body_small slds-text-color_weak slds-m-top_xx-small">
+                      <p
+                        class="slds-text-body_small slds-text-color_weak slds-m-top_xx-small"
+                      >
                         Showing up to 5 sample records
                       </p>
                     </template>

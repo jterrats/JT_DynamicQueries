@@ -60,17 +60,10 @@ test.describe("Metadata Lifecycle Tests", () => {
     const testBindings = '{"searchName": "%"}';
     const testObject = "Account";
 
-    // Fill Label
+    // Fill Label (Developer Name will auto-generate)
     const labelInput = modal.locator('lightning-input[data-id="config-label"]');
     await labelInput.locator("input").fill(configLabel);
-    await page.waitForTimeout(300);
-
-    // Fill Developer Name
-    const devNameInput = modal.locator(
-      'lightning-input[data-id="config-developer-name"]'
-    );
-    await devNameInput.locator("input").fill(configDevName);
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(500); // Wait for auto-generation of Developer Name
 
     // Fill Base Query
     const queryInput = modal.locator(
@@ -173,7 +166,9 @@ test.describe("Metadata Lifecycle Tests", () => {
     const deleteButton = page
       .locator("lightning-button")
       .filter({ hasText: /Delete.*Configuration/i });
-    const deleteVisible = await deleteButton.isVisible({ timeout: 2000 }).catch(() => false);
+    const deleteVisible = await deleteButton
+      .isVisible({ timeout: 2000 })
+      .catch(() => false);
 
     if (deleteVisible) {
       // Set up dialog handler BEFORE clicking
@@ -346,17 +341,12 @@ test.describe("Metadata Lifecycle Tests", () => {
     const testBindings = '{"industry": "Technology", "namePattern": "%"}';
     const testObject = "Account";
 
-    // Fill all fields
+    // Fill Label (Developer Name will auto-generate)
     await modal
       .locator('lightning-input[data-id="config-label"]')
       .locator("input")
       .fill(configLabel);
-    await page.waitForTimeout(300);
-    await modal
-      .locator('lightning-input[data-id="config-developer-name"]')
-      .locator("input")
-      .fill(configDevName);
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(500); // Wait for auto-generation of Developer Name
     await modal
       .locator('lightning-textarea[data-id="config-query"]')
       .locator("textarea")

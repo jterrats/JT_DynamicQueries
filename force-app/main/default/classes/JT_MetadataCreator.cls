@@ -176,24 +176,74 @@ public with sharing class JT_MetadataCreator {
         );
       }
 
-      // Build metadata XML (using original dev name - cannot change)
-      String metadataXml = buildMetadataXml(
-        input.label,
-        input.originalDevName,
-        input.baseQuery,
-        input.bindings,
-        input.objectName
-      );
+      // Sanitize developer name
+      String sanitizedDevName = sanitizeDeveloperName(input.developerName);
 
-      // Deploy via Metadata API (will update existing record)
-      String deploymentId = deployMetadata(metadataXml, input.originalDevName);
+      // Check if Developer Name changed (renaming scenario)
+      Boolean isRenaming = String.isNotBlank(sanitizedDevName) &&
+        sanitizedDevName != input.originalDevName;
 
-      result.success = true;
-      result.message = 'Configuration updated successfully: ' + input.label;
-      result.developerName = input.originalDevName;
-      result.deploymentId = deploymentId;
+      if (isRenaming) {
+        // Rename: Delete old record and create new one
+        // Step 1: Delete old record
+        MetadataCreationResult deleteResult = deleteConfiguration(
+          input.originalDevName
+        );
 
-      return result;
+        if (!deleteResult.success) {
+          throw new AuraHandledException(
+            'Failed to delete old configuration during rename: ' +
+            deleteResult.errorMessage
+          );
+        }
+
+        // Step 2: Create new record with new Developer Name
+        ConfigurationInput createInput = new ConfigurationInput();
+        createInput.label = input.label;
+        createInput.developerName = sanitizedDevName;
+        createInput.baseQuery = input.baseQuery;
+        createInput.bindings = input.bindings;
+        createInput.objectName = input.objectName;
+
+        MetadataCreationResult createResult = createConfiguration(createInput);
+
+        if (!createResult.success) {
+          throw new AuraHandledException(
+            'Failed to create renamed configuration: ' +
+            createResult.errorMessage
+          );
+        }
+
+        result.success = true;
+        result.message =
+          'Configuration renamed successfully: ' +
+          input.originalDevName +
+          ' → ' +
+          sanitizedDevName;
+        result.developerName = sanitizedDevName;
+        result.deploymentId = createResult.deploymentId;
+
+        return result;
+      } else {
+        // Normal update: Use original dev name
+        String metadataXml = buildMetadataXml(
+          input.label,
+          input.originalDevName,
+          input.baseQuery,
+          input.bindings,
+          input.objectName
+        );
+
+        // Deploy via Metadata API (will update existing record)
+        String deploymentId = deployMetadata(metadataXml, input.originalDevName);
+
+        result.success = true;
+        result.message = 'Configuration updated successfully: ' + input.label;
+        result.developerName = input.originalDevName;
+        result.deploymentId = deploymentId;
+
+        return result;
+      }
     } catch (Exception e) {
       result.success = false;
       result.errorMessage = e.getMessage();

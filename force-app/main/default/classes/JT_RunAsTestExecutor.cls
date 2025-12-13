@@ -55,8 +55,8 @@ public with sharing class JT_RunAsTestExecutor {
         WITH USER_MODE
       ];
 
-      final Integer MAX_PENDING_EXECUTIONS = 3;
-      if (pendingExecutions >= MAX_PENDING_EXECUTIONS) {
+      final Integer maxPendingExecutions = 3;
+      if (pendingExecutions >= maxPendingExecutions) {
         System.debug(
           '⚠️ Rate limit exceeded: ' + pendingExecutions + ' pending executions'
         );
@@ -92,6 +92,13 @@ public with sharing class JT_RunAsTestExecutor {
         Bindings_Json__c = bindingsJson,
         Initiated_By__c = UserInfo.getUserId()
       );
+
+      // Validate CRUD permissions before DML
+      if (!Schema.sObjectType.JT_RunAsTest_Execution__c.isCreateable()) {
+        throw new AuraHandledException(
+          'Insufficient permissions to create execution records.'
+        );
+      }
 
       try {
         insert execution;
@@ -158,6 +165,13 @@ public with sharing class JT_RunAsTestExecutor {
           System.now() +
           '. Job ID: ' +
           queueableJobId;
+        
+        // Validate CRUD permissions before DML
+        if (!Schema.sObjectType.JT_RunAsTest_Execution__c.isUpdateable()) {
+          throw new AuraHandledException(
+            'Insufficient permissions to update execution records.'
+          );
+        }
         update execution;
         System.debug(
           '✅ Execution record updated to Running with Queueable Job ID: ' +
@@ -292,7 +306,11 @@ public with sharing class JT_RunAsTestExecutor {
                 result.message = result.errorMessage;
                 execution.Test_Status__c = 'Failed';
                 execution.Error_Message__c = result.errorMessage;
-                update execution;
+                
+                // Validate CRUD permissions before DML
+                if (Schema.sObjectType.JT_RunAsTest_Execution__c.isUpdateable()) {
+                  update execution;
+                }
                 return result;
               }
             }

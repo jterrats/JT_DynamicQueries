@@ -165,7 +165,7 @@ public with sharing class JT_RunAsTestExecutor {
           System.now() +
           '. Job ID: ' +
           queueableJobId;
-        
+
         // Validate CRUD permissions before DML
         if (!Schema.sObjectType.JT_RunAsTest_Execution__c.isUpdateable()) {
           throw new AuraHandledException(
@@ -306,7 +306,7 @@ public with sharing class JT_RunAsTestExecutor {
                 result.message = result.errorMessage;
                 execution.Test_Status__c = 'Failed';
                 execution.Error_Message__c = result.errorMessage;
-                
+
                 // Validate CRUD permissions before DML
                 if (Schema.sObjectType.JT_RunAsTest_Execution__c.isUpdateable()) {
                   update execution;

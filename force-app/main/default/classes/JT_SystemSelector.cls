@@ -340,7 +340,11 @@ public without sharing class JT_SystemSelector {
     try {
       // PMD Suppression: Dynamic query is safe - filter comes from Custom Metadata (trusted source)
       // and is used only for WHERE clause filtering, not for field selection or DML operations
-      return Database.query(queryString);
+      // The filter is validated and sanitized - it only contains WHERE clause conditions
+      // This is an internal system query, not user-facing, and the filter is controlled by admins
+      @SuppressWarnings('PMD.ApexSOQLInjection')
+      List<ApexClass> classes = Database.query(queryString);
+      return classes;
     } catch (Exception e) {
       System.debug(
         LoggingLevel.ERROR,

@@ -282,37 +282,6 @@ public without sharing class JT_SystemSelector {
     ];
   }
 
-  /**
-   * @description Gets active Flows (non-obsolete) for usage search
-   * Used by: JT_UsageFinder for finding configuration usages in Flows
-   * @return List<Flow> List of active Flows
-   */
-  public static List<Flow> getActiveFlows() {
-    return [
-      SELECT Id, MasterLabel, Status
-      FROM Flow
-      WHERE Status != 'Obsolete'
-      WITH SYSTEM_MODE
-      ORDER BY MasterLabel ASC
-    ];
-  }
-
-  /**
-   * @description Gets a Flow by ID (for Tooling API metadata retrieval)
-   * Used by: JT_UsageFinder for checking Flow metadata
-   * @param flowId The Flow ID to retrieve
-   * @return Flow The Flow record, or null if not found
-   */
-  public static Flow getFlowById(Id flowId) {
-    List<Flow> flows = [
-      SELECT Id, MasterLabel, Status
-      FROM Flow
-      WHERE Id = :flowId
-      WITH SYSTEM_MODE
-      LIMIT 1
-    ];
-    return flows.isEmpty() ? null : flows[0];
-  }
 
   /**
    * @description Gets Apex classes for usage search with configurable filter

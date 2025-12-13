@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <help>The SOQL query to execute. Use bind variables with colon syntax (e.g., :accountName) for dynamic parameters.</help>
+    <label>Base Query (SOQL)</label>
+    <name>JT_BaseQuery__c</name>
+</CustomFieldTranslation>

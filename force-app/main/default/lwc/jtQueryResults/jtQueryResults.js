@@ -5,6 +5,47 @@
  */
 import { LightningElement, api, track } from "lwc";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
+// Import Custom Labels
+import queryResultsLabel from "@salesforce/label/c.JT_jtQueryResults_queryResults";
+import viewModeSelectionLabel from "@salesforce/label/c.JT_jtQueryResults_viewModeSelection";
+import tableLabel from "@salesforce/label/c.JT_jtQueryResults_table";
+import viewAsTableLabel from "@salesforce/label/c.JT_jtQueryResults_viewAsTable";
+import viewResultsAsTableLabel from "@salesforce/label/c.JT_jtQueryResults_viewResultsAsTable";
+import jsonLabel from "@salesforce/label/c.JT_jtQueryResults_json";
+import viewAsJsonLabel from "@salesforce/label/c.JT_jtQueryResults_viewAsJson";
+import viewResultsAsJsonLabel from "@salesforce/label/c.JT_jtQueryResults_viewResultsAsJson";
+import csvLabel from "@salesforce/label/c.JT_jtQueryResults_csv";
+import downloadAsCsvLabel from "@salesforce/label/c.JT_jtQueryResults_downloadAsCsv";
+import downloadResultsAsCsvFileLabel from "@salesforce/label/c.JT_jtQueryResults_downloadResultsAsCsvFile";
+import expandCollapseLabel from "@salesforce/label/c.JT_jtQueryResults_expandCollapse";
+import resultsAsExpandableCardsLabel from "@salesforce/label/c.JT_jtQueryResults_resultsAsExpandableCards";
+import recordLabel from "@salesforce/label/c.JT_jtQueryResults_record";
+import toggleDetailsForLabel from "@salesforce/label/c.JT_jtQueryResults_toggleDetailsFor";
+import rowNumberLabel from "@salesforce/label/c.JT_jtQueryResults_rowNumber";
+import jsonOutputLabel from "@salesforce/label/c.JT_jtQueryResults_jsonOutput";
+import copyLabel from "@salesforce/label/c.JT_jtQueryResults_copy";
+import csvPreviewLabel from "@salesforce/label/c.JT_jtQueryResults_csvPreview";
+import downloadLabel from "@salesforce/label/c.JT_jtQueryResults_download";
+import noteLabel from "@salesforce/label/c.JT_jtQueryResults_note";
+import csvNoteLabel from "@salesforce/label/c.JT_jtQueryResults_csvNote";
+import paginationNavigationLabel from "@salesforce/label/c.JT_jtQueryResults_paginationNavigation";
+import paginationControlsLabel from "@salesforce/label/c.JT_jtQueryResults_paginationControls";
+import previousPageLabel from "@salesforce/label/c.JT_jtQueryResults_previousPage";
+import goToPreviousPageLabel from "@salesforce/label/c.JT_jtQueryResults_goToPreviousPage";
+import nextPageLabel from "@salesforce/label/c.JT_jtQueryResults_nextPage";
+import goToNextPageLabel from "@salesforce/label/c.JT_jtQueryResults_goToNextPage";
+import recordsLabel from "@salesforce/label/c.JT_jtQueryResults_records";
+import recordSingularLabel from "@salesforce/label/c.JT_jtQueryResults_recordSingular";
+import successLabel from "@salesforce/label/c.JT_jtQueryResults_success";
+import jsonCopiedLabel from "@salesforce/label/c.JT_jtQueryResults_jsonCopied";
+import errorLabel from "@salesforce/label/c.JT_jtQueryResults_error";
+import copyFailedLabel from "@salesforce/label/c.JT_jtQueryResults_copyFailed";
+import csvCopiedLabel from "@salesforce/label/c.JT_jtQueryResults_csvCopied";
+import csvDownloadedLabel from "@salesforce/label/c.JT_jtQueryResults_csvDownloaded";
+import noDataLabel from "@salesforce/label/c.JT_jtQueryResults_noData";
+import noRecordsToExportLabel from "@salesforce/label/c.JT_jtQueryResults_noRecordsToExport";
+import jsonErrorLabel from "@salesforce/label/c.JT_jtQueryResults_jsonError";
+import generationFailedLabel from "@salesforce/label/c.JT_jtQueryResults_generationFailed";
 
 // Pure functions for data transformation
 const toggleSetMembership = (set, item) => {
@@ -38,6 +79,50 @@ export default class JtQueryResults extends LightningElement {
   _records = [];
   _previousRecordCount = 0;
 
+  // Custom Labels
+  labels = {
+    queryResults: queryResultsLabel,
+    viewModeSelection: viewModeSelectionLabel,
+    table: tableLabel,
+    viewAsTable: viewAsTableLabel,
+    viewResultsAsTable: viewResultsAsTableLabel,
+    json: jsonLabel,
+    viewAsJson: viewAsJsonLabel,
+    viewResultsAsJson: viewResultsAsJsonLabel,
+    csv: csvLabel,
+    downloadAsCsv: downloadAsCsvLabel,
+    downloadResultsAsCsvFile: downloadResultsAsCsvFileLabel,
+    expandCollapse: expandCollapseLabel,
+    resultsAsExpandableCards: resultsAsExpandableCardsLabel,
+    record: recordLabel,
+    toggleDetailsFor: toggleDetailsForLabel,
+    rowNumber: rowNumberLabel,
+    jsonOutput: jsonOutputLabel,
+    copy: copyLabel,
+    csvPreview: csvPreviewLabel,
+    download: downloadLabel,
+    note: noteLabel,
+    csvNote: csvNoteLabel,
+    paginationNavigation: paginationNavigationLabel,
+    paginationControls: paginationControlsLabel,
+    previousPage: previousPageLabel,
+    goToPreviousPage: goToPreviousPageLabel,
+    nextPage: nextPageLabel,
+    goToNextPage: goToNextPageLabel,
+    records: recordsLabel,
+    recordSingular: recordSingularLabel,
+    success: successLabel,
+    jsonCopied: jsonCopiedLabel,
+    error: errorLabel,
+    copyFailed: copyFailedLabel,
+    csvCopied: csvCopiedLabel,
+    csvDownloaded: csvDownloadedLabel,
+    noData: noDataLabel,
+    noRecordsToExport: noRecordsToExportLabel,
+    jsonError: jsonErrorLabel,
+    generationFailed: generationFailedLabel
+  };
+
   // 🐛 FIX: Reset pagination when records change
   @api
   get records() {
@@ -45,7 +130,17 @@ export default class JtQueryResults extends LightningElement {
   }
 
   set records(value) {
-    this._records = value;
+    // Debug: Log when records are set
+    console.log("jtQueryResults: records setter called", {
+      valueLength: value?.length,
+      value: value,
+      recordCount: this.recordCount,
+      previousRecordCount: this._previousRecordCount
+    });
+
+    // Create a new array reference for LWC reactivity
+    this._records = value ? [...value] : [];
+
     // Reset to page 1 when new data arrives
     if (
       value &&
@@ -55,6 +150,12 @@ export default class JtQueryResults extends LightningElement {
       this.currentPage = 1;
       this._previousRecordCount = this.recordCount;
     }
+
+    // Debug: Log after assignment
+    console.log("jtQueryResults: _records after assignment", {
+      _recordsLength: this._records?.length,
+      paginatedResultsLength: this.paginatedResults?.length
+    });
   }
 
   // Computed - View mode
@@ -95,7 +196,7 @@ export default class JtQueryResults extends LightningElement {
   }
 
   get recordCountLabel() {
-    return this.recordCount !== 1 ? "records" : "record";
+    return this.recordCount !== 1 ? this.labels.records : this.labels.recordSingular;
   }
 
   // Event handlers - Pure intent, side effects isolated
@@ -146,11 +247,16 @@ export default class JtQueryResults extends LightningElement {
       const firstRecord = this._records[0];
       const value = firstRecord[col.fieldName];
 
-      const isChildRelationship =
-        value &&
+      // Support two formats:
+      // 1. Direct array (from JT_GenericRunAsTest): value = [record1, record2, ...]
+      // 2. Wrapped format (from regular queries): value = { records: [record1, record2, ...] }
+      const isDirectArray = Array.isArray(value) && value.length > 0 && value[0] && typeof value[0] === "object";
+      const isWrappedFormat = value &&
         typeof value === "object" &&
         value.records &&
         Array.isArray(value.records);
+
+      const isChildRelationship = isDirectArray || isWrappedFormat;
 
       return !isChildRelationship;
     });
@@ -160,7 +266,13 @@ export default class JtQueryResults extends LightningElement {
 
   // Override paginatedResults to include child relationship metadata
   get paginatedResults() {
+    // Debug: Log when paginatedResults is computed
     if (!this._records || this._records.length === 0) {
+      console.log("jtQueryResults: paginatedResults - no records", {
+        _records: this._records,
+        _recordsLength: this._records?.length,
+        recordCount: this.recordCount
+      });
       return [];
     }
 
@@ -175,6 +287,8 @@ export default class JtQueryResults extends LightningElement {
       enrichedRow._rowNumber = start + index + 1;
       enrichedRow._displayName =
         row.Name || row.Id || `Record ${start + index + 1}`;
+      enrichedRow._ariaLabel = `${this.labels.record} ${enrichedRow._rowNumber}`;
+      enrichedRow._toggleAriaLabel = `${this.labels.toggleDetailsFor} ${enrichedRow._displayName}`;
 
       // ✅ Create _cells array for template iteration (LWC doesn't allow computed property access)
       enrichedRow._cells = this.parentColumns.map((col) => ({
@@ -184,23 +298,40 @@ export default class JtQueryResults extends LightningElement {
       }));
 
       // Detect child relationships
+      // Support two formats:
+      // 1. Direct array (from JT_GenericRunAsTest): value = [record1, record2, ...]
+      // 2. Wrapped format (from regular queries): value = { records: [record1, record2, ...] }
       const childRelationships = [];
       Object.keys(row).forEach((key) => {
         const value = row[key];
-        if (
+        let childRecords = null;
+
+        // Check if it's a direct array (from Run As User test)
+        if (Array.isArray(value) && value.length > 0) {
+          // Verify it's an array of objects (not primitives)
+          if (value[0] && typeof value[0] === "object") {
+            childRecords = value;
+          }
+        }
+        // Check if it's wrapped format (from regular queries)
+        else if (
           value &&
           typeof value === "object" &&
           value.records &&
           Array.isArray(value.records) &&
           value.records.length > 0
         ) {
+          childRecords = value.records;
+        }
+
+        if (childRecords) {
           // Generate columns for this child relationship
-          const childColumns = this.generateColumnsForRecords(value.records);
+          const childColumns = this.generateColumnsForRecords(childRecords);
 
           childRelationships.push({
             name: key,
-            label: `${this.formatLabel(key)} (${value.records.length})`,
-            records: value.records,
+            label: `${this.formatLabel(key)} (${childRecords.length})`,
+            records: childRecords,
             columns: childColumns
           });
         }
@@ -274,12 +405,13 @@ export default class JtQueryResults extends LightningElement {
     }
 
     this.copyToClipboard(this.jsonOutput)
-      .then(() => this.showToast("success", "Success", "JSON copied"))
+      .then(() => this.showToast("success", this.labels.success, this.labels.jsonCopied))
       .catch((error) => {
+        const errorMessage = error.message || "Unknown error";
         this.showToast(
           "error",
-          "Error",
-          "Copy failed: " + (error.message || "Unknown error")
+          this.labels.error,
+          this.labels.copyFailed.replace("{0}", errorMessage)
         );
       });
   }
@@ -291,24 +423,25 @@ export default class JtQueryResults extends LightningElement {
     }
 
     this.copyToClipboard(this.csvOutput)
-      .then(() => this.showToast("success", "Success", "CSV copied"))
+      .then(() => this.showToast("success", this.labels.success, this.labels.csvCopied))
       .catch((error) => {
+        const errorMessage = error?.message || "Unknown error";
         this.showToast(
           "error",
-          "Error",
-          "Copy failed: " + (error?.message || "Unknown error")
+          this.labels.error,
+          this.labels.copyFailed.replace("{0}", errorMessage)
         );
       });
   }
 
   handleDownloadCsv() {
     if (!this._records?.length) {
-      return this.showToast("error", "No Data", "No records to export");
+      return this.showToast("error", this.labels.noData, this.labels.noRecordsToExport);
     }
 
     const csv = this.generateCSV();
     this.downloadFile(csv, `query_results_${Date.now()}.csv`, "text/csv");
-    this.showToast("success", "Success", "CSV downloaded");
+    this.showToast("success", this.labels.success, this.labels.csvDownloaded);
   }
 
   handlePreviousPage() {
@@ -331,23 +464,26 @@ export default class JtQueryResults extends LightningElement {
         2
       );
     } catch {
-      this.showToast("error", "JSON Error", "Generation failed");
+      this.showToast("error", this.labels.jsonError, this.labels.generationFailed);
       return "{}";
     }
   }
 
   generateCSV() {
     // Check if records have child relationships
+    // Support both formats: direct arrays and wrapped format
     const hasChildren = this._records.some((record) => {
       return Object.keys(record).some((key) => {
         const value = record[key];
-        return (
-          value &&
+        // Check for direct array format
+        const isDirectArray = Array.isArray(value) && value.length > 0 && value[0] && typeof value[0] === "object";
+        // Check for wrapped format
+        const isWrappedFormat = value &&
           typeof value === "object" &&
           value.records &&
           Array.isArray(value.records) &&
-          value.records.length > 0
-        );
+          value.records.length > 0;
+        return isDirectArray || isWrappedFormat;
       });
     });
 
@@ -367,16 +503,28 @@ export default class JtQueryResults extends LightningElement {
     const childFieldsSet = new Set();
 
     // Collect all unique child fields
+    // Support both formats: direct arrays and wrapped format
     this._records.forEach((record) => {
       Object.keys(record).forEach((key) => {
         const value = record[key];
-        if (
+        let childRecords = null;
+
+        // Check for direct array format
+        if (Array.isArray(value) && value.length > 0 && value[0] && typeof value[0] === "object") {
+          childRecords = value;
+        }
+        // Check for wrapped format
+        else if (
           value &&
           typeof value === "object" &&
           value.records &&
           Array.isArray(value.records)
         ) {
-          value.records.forEach((childRecord) => {
+          childRecords = value.records;
+        }
+
+        if (childRecords) {
+          childRecords.forEach((childRecord) => {
             Object.keys(childRecord).forEach((childKey) => {
               if (childKey !== "attributes" && childKey !== "AccountId") {
                 childFieldsSet.add(childKey);
@@ -407,17 +555,29 @@ export default class JtQueryResults extends LightningElement {
       });
 
       // Collect all children from all relationships
+      // Support both formats: direct arrays and wrapped format
       const children = [];
       Object.keys(record).forEach((key) => {
         const value = record[key];
-        if (
+        let childRecords = null;
+
+        // Check for direct array format
+        if (Array.isArray(value) && value.length > 0 && value[0] && typeof value[0] === "object") {
+          childRecords = value;
+        }
+        // Check for wrapped format
+        else if (
           value &&
           typeof value === "object" &&
           value.records &&
           Array.isArray(value.records) &&
           value.records.length > 0
         ) {
-          value.records.forEach((childRecord) => {
+          childRecords = value.records;
+        }
+
+        if (childRecords) {
+          childRecords.forEach((childRecord) => {
             children.push({
               type: key,
               data: childRecord

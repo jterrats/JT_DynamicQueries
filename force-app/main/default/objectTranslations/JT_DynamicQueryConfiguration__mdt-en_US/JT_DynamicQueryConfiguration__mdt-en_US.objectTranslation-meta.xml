@@ -1,23 +1,5 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fields>
-        <name>JT_BaseQuery__c</name>
-        <label>Base Query (SOQL)</label>
-        <help
-    >The SOQL query to execute. Use bind variables with colon syntax (e.g., :accountName) for dynamic parameters.</help>
-    </fields>
-    <fields>
-        <name>JT_Binding__c</name>
-        <label>Bindings (JSON)</label>
-        <help
-    >Optional JSON object with predefined bind variable values. Example: {"accountName":"ACME Corp","status":"Active"}</help>
-    </fields>
-    <fields>
-        <name>JT_ObjectName__c</name>
-        <label>Object Name</label>
-        <help
-    >The Salesforce object being queried (e.g., Account, Contact, Opportunity).</help>
-    </fields>
     <caseValues>
         <plural>false</plural>
         <value>Dynamic Query Configuration</value>
@@ -26,6 +8,10 @@
         <plural>true</plural>
         <value>Dynamic Query Configurations</value>
     </caseValues>
-    <startsWith>Consonant</startsWith>
     <nameFieldLabel>Configuration Name</nameFieldLabel>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- A query is required to create the configuration. --></errorMessage>
+        <name>Require_Base_Query</name>
+    </validationRules>
 </CustomObjectTranslation>

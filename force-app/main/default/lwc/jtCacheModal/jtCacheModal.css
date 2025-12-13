@@ -1,9 +1,15 @@
-.slds-modal__container {
-  max-width: 600px;
+/* Cache Modal Styles - Optimized with SLDS + CSS Hooks */
+
+:host {
+  /* CSS Hooks for modal customization */
+  --slds-c-modal-size-width: 600px;
 }
 
+.slds-modal__container {
+  max-width: var(--slds-c-modal-size-width, 600px);
+}
+
+/* Warning theme - Border accent only (spacing handled by SLDS classes) */
 .slds-theme_warning {
-  background-color: #fef7e8;
-  border-left: 4px solid #fe9339;
-  padding: 1rem;
+  border-left: 4px solid var(--lwc-colorBorderWarning, #fe9339);
 }

@@ -193,11 +193,18 @@ Flow        | Account_Update_Flow     | N/A
 ```
 ✓ Apex Search: Complete
 ⚠️ Flow Search: Failed
-Error: Named Credential not configured
+Error: Tooling API not accessible
 
 Found 2 references (Apex only):
 ...
 ```
+
+**Performance Optimizations:**
+
+- ✅ **Multi-level caching**: Session ID cached at transaction and Platform Cache levels
+- ✅ **Smart filtering**: Pre-filters Flows by name before checking metadata
+- ✅ **Batch limiting**: Checks maximum 20 Flows to avoid timeout
+- ✅ **Callout reduction**: From 20+ callouts → 1 callout per transaction
 
 ---
 
@@ -340,35 +347,42 @@ and field-level security.
 
 ## 🔒 Security & Compliance
 
-### Named Credentials (v2.0)
+### Tooling API Authentication (v2.0)
 
-**Why Named Credentials?**
+**Architecture:**
 
-1. ✅ **AppExchange Requirement**: Security Review compliant
-2. ✅ **Credential Encryption**: Client secrets encrypted by Salesforce
-3. ✅ **No Code Changes**: Admin can update credentials without redeployment
-4. ✅ **OAuth 2.0**: Industry-standard authentication
-5. ✅ **Audit Trail**: All callouts logged
+1. ✅ **Visualforce Page-based**: Uses `JT_SessionIdPage` to obtain API-enabled session ID
+2. ✅ **Multi-level Caching**: Static variable (transaction) + Platform Cache (cross-request)
+3. ✅ **Zero Configuration**: Works out-of-the-box after installation
+4. ✅ **Production Optimized**: Minimizes callouts with intelligent caching
+5. ✅ **Secure**: Session IDs are user-specific and expire automatically
+
+**Why Visualforce Page Instead of Named Credentials?**
+
+- **Reliability**: Same-org Tooling API calls via OAuth Named Credentials fail with 500 proxy errors (known Salesforce limitation)
+- **Simplicity**: No OAuth configuration required
+- **Performance**: Multi-level caching reduces callouts significantly
 
 **Setup Required:**
 
-1. Create Connected App
-2. Configure External Credential (OAuth 2.0)
-3. Link Named Credential to External Credential
-4. Test configuration
+✅ **None!** The application works automatically after installation.
 
-**See:** [TOOLING_API_SETUP.md](./TOOLING_API_SETUP.md) for complete guide
+**Optional:** Configure Platform Cache for optimal performance (see [Tooling API Setup Guide](./TOOLING_API_OAUTH_SETUP.md))
+
+**See:** [TOOLING_API_OAUTH_SETUP.md](./TOOLING_API_OAUTH_SETUP.md) for complete architecture details
 
 ### API Consumption Monitoring
 
 **Features That Consume API Calls:**
 
-| Feature                       | API Calls | Can Disable?                 |
+| Feature                       | API Calls | Optimizations                |
 | ----------------------------- | --------- | ---------------------------- |
-| "Where is this used?" (Apex)  | 0         | N/A (always available)       |
-| "Where is this used?" (Flows) | 1-5       | ✅ Yes (checkbox toggle)     |
-| Create Configuration          | 2-3       | ✅ Yes (hide button in prod) |
-| Edit Configuration            | 2-3       | ✅ Yes (hide button in prod) |
+| "Where is this used?" (Apex)  | 0         | Direct SOQL (no callouts)    |
+| "Where is this used?" (Flows) | 1-2       | ✅ Cached session ID + smart filtering |
+| Create Configuration          | 1-2       | ✅ Cached session ID         |
+| Edit Configuration            | 1-2       | ✅ Cached session ID         |
+
+**Note**: With caching optimizations, session ID retrieval is reduced from N callouts to 1 callout per transaction.
 
 **Daily Limits:**
 

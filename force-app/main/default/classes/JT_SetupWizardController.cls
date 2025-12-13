@@ -1,9 +1,9 @@
 /**
- * @description Controller for Setup Wizard LWC - Verifies OAuth 2.0 Named Credentials configuration
+ * @description Controller for Setup Wizard LWC - Verifies Tooling API accessibility
  * @author Jaime Terrats
  * @group Setup
  */
-public with sharing class JT_SetupWizardController {
+public without sharing class JT_SetupWizardController {
   /**
    * @description Result wrapper for setup operations
    */
@@ -49,178 +49,77 @@ public with sharing class JT_SetupWizardController {
   }
 
   /**
-   * @description Checks complete OAuth 2.0 setup status
-   * @return CompleteSetupStatus Status of all setup steps
+   * @description Checks Tooling API setup status
+   * Uses UserInfo.getSessionId() directly for same-org Tooling API calls
+   * @return CompleteSetupStatus Status of setup
    */
   @AuraEnabled
   public static CompleteSetupStatus checkCompleteSetup() {
     final CompleteSetupStatus status = new CompleteSetupStatus();
-    status.orgUrl = URL.getOrgDomainUrl().toExternalForm();
+    status.orgUrl = JT_ToolingApiUtil.getOrgDomainUrl();
     status.documentationUrl = '/lightning/n/JT_Project_Docs';
     status.steps = new List<SetupStepStatus>();
 
-    // Step 1: Authentication Provider
-    final SetupStepStatus authProviderStep = new SetupStepStatus();
-    authProviderStep.stepName = 'Authentication Provider';
-    authProviderStep.isRequired = true;
-    authProviderStep.setupUrl = '/lightning/setup/AuthProvider/home';
-    authProviderStep.statusMessage = 'Create Authentication Provider: JT_Tooling_API_Auth_Provider';
-    authProviderStep.isComplete = checkAuthProviderExists();
-    status.steps.add(authProviderStep);
-
-    // Step 2: Connected App
-    final SetupStepStatus connectedAppStep = new SetupStepStatus();
-    connectedAppStep.stepName = 'Connected App';
-    connectedAppStep.isRequired = true;
-    connectedAppStep.setupUrl = '/lightning/setup/ConnectedApplication/home';
-    connectedAppStep.statusMessage = 'Create Connected App: JT Tooling API';
-    connectedAppStep.isComplete = checkConnectedAppExists();
-    status.steps.add(connectedAppStep);
-
-    // Step 3: External Credential
-    final SetupStepStatus externalCredStep = new SetupStepStatus();
-    externalCredStep.stepName = 'External Credential';
-    externalCredStep.isRequired = true;
-    externalCredStep.setupUrl = '/lightning/setup/ExternalCredential/home';
-    externalCredStep.statusMessage = 'Create External Credential: JT_Tooling_API_External';
-    externalCredStep.isComplete = checkExternalCredentialExists();
-    status.steps.add(externalCredStep);
-
-    // Step 4: Named Credential
-    final SetupStepStatus namedCredStep = new SetupStepStatus();
-    namedCredStep.stepName = 'Named Credential';
-    namedCredStep.isRequired = true;
-    namedCredStep.setupUrl = '/lightning/setup/NamedCredential/home';
-    namedCredStep.statusMessage = 'Link Named Credential: JT_Tooling_API';
-    final Boolean namedCredConfigured = checkNamedCredentialConfigured();
-    namedCredStep.isComplete = namedCredConfigured;
-    if (!namedCredConfigured) {
-      namedCredStep.statusMessage += ' (Update URL and link External Credential)';
-    }
-    status.steps.add(namedCredStep);
-
-    // Step 5: Test Connection
+    // Step 1: Test Tooling API Connection
     final SetupStepStatus testStep = new SetupStepStatus();
-    testStep.stepName = 'Test Connection';
-    testStep.isRequired = false;
+    testStep.stepName = 'Tooling API Connection';
+    testStep.isRequired = true;
     testStep.setupUrl = null;
     final Boolean connectionWorks = testToolingAPIConnection();
     testStep.isComplete = connectionWorks;
     testStep.statusMessage = connectionWorks
-      ? 'Tooling API is accessible'
-      : 'Tooling API connection failed - check authentication';
+      ? 'Tooling API is accessible and working'
+      : 'Tooling API connection failed - check user permissions';
     status.steps.add(testStep);
 
     // Calculate overall status
-    status.allStepsComplete =
-      authProviderStep.isComplete &&
-      connectedAppStep.isComplete &&
-      externalCredStep.isComplete &&
-      namedCredStep.isComplete &&
-      testStep.isComplete;
+    status.allStepsComplete = testStep.isComplete;
 
     return status;
   }
 
-  /**
-   * @description Checks if Authentication Provider exists (via SOQL)
-   * @return Boolean True if Auth Provider exists
-   */
-  private static Boolean checkAuthProviderExists() {
-    try {
-      final String queryString = 'SELECT Id, DeveloperName FROM AuthProvider WHERE DeveloperName = \'JT_Tooling_API_Auth_Provider\' LIMIT 1';
-      final List<SObject> providers = Database.query(queryString);
-      return !providers.isEmpty();
-    } catch (Exception e) {
-      return false;
-    }
-  }
 
   /**
-   * @description Checks if Connected App exists (via SOQL)
-   * @return Boolean True if Connected App exists
-   */
-  private static Boolean checkConnectedAppExists() {
-    try {
-      final String queryString = 'SELECT Id, Name FROM ConnectedApplication WHERE Name = \'JT Tooling API\' LIMIT 1';
-      final List<SObject> apps = Database.query(queryString);
-      return !apps.isEmpty();
-    } catch (Exception e) {
-      return false;
-    }
-  }
-
-  /**
-   * @description Checks if External Credential exists (via Tooling API query)
-   * @return Boolean True if External Credential exists
-   */
-  private static Boolean checkExternalCredentialExists() {
-    try {
-      final HttpRequest request = new HttpRequest();
-      final String toolingQuery = 'SELECT Id, DeveloperName FROM ExternalCredential WHERE DeveloperName = \'JT_Tooling_API_External\' LIMIT 1';
-      request.setEndpoint(
-        'callout:JT_Tooling_API/services/data/v65.0/tooling/query/?q=' +
-        EncodingUtil.urlEncode(toolingQuery, 'UTF-8')
-      );
-      request.setMethod('GET');
-      request.setTimeout(5000);
-
-      final Http httpClient = new Http();
-      final HttpResponse response = httpClient.send(request);
-
-      if (response.getStatusCode() == 200) {
-        final Map<String, Object> result = (Map<String, Object>) JSON.deserializeUntyped(
-          response.getBody()
-        );
-        final List<Object> records = (List<Object>) result.get('records');
-        return records != null && !records.isEmpty();
-      }
-      return false;
-    } catch (Exception e) {
-      // If Named Credential not configured, this will fail - that's OK
-      return false;
-    }
-  }
-
-  /**
-   * @description Checks if Named Credential is properly configured
-   * @return Boolean True if Named Credential exists and is linked
-   */
-  private static Boolean checkNamedCredentialConfigured() {
-    try {
-      final String queryString = 'SELECT Id, DeveloperName, Endpoint FROM NamedCredential WHERE DeveloperName = \'JT_Tooling_API\' LIMIT 1';
-      final List<SObject> creds = Database.query(queryString);
-      if (creds.isEmpty()) {
-        return false;
-      }
-      // Check if URL is set (Endpoint field)
-      final SObject cred = creds[0];
-      final String endpoint = (String) cred.get('Endpoint');
-      // For Next-Gen, we verify by testing the connection instead of checking ExternalCredentialId
-      return String.isNotBlank(endpoint);
-    } catch (Exception e) {
-      return false;
-    }
-  }
-
-  /**
-   * @description Tests Tooling API connection via Named Credential
+   * @description Tests Tooling API connection using API-enabled session ID from VFP
+   * This method uses Visualforce page to get API-enabled session ID
+   * because UserInfo.getSessionId() doesn't work from LWC context
    * @return Boolean True if connection works
    */
   @AuraEnabled
   @SuppressWarnings('PMD.ApexSuggestUsingNamedCred')
+  // Manual Authorization header is necessary here to bypass Named Credential proxy for same-org calls
   public static Boolean testToolingAPIConnection() {
     try {
-      final HttpRequest request = new HttpRequest();
-      request.setEndpoint('callout:JT_Tooling_API/services/data/v65.0/');
-      request.setMethod('HEAD');
-      request.setTimeout(5000);
+      final String query = 'SELECT Id FROM ApexClass LIMIT 1';
+      final String orgUrl = JT_ToolingApiUtil.getOrgDomainUrl();
+
+      System.debug(LoggingLevel.INFO, 'Testing Tooling API connection');
+      System.debug(LoggingLevel.INFO, 'Org URL: ' + orgUrl);
+
+      final HttpRequest request = JT_ToolingApiUtil.createToolingApiQueryRequest(
+        query,
+        10000
+      );
 
       final Http httpClient = new Http();
       final HttpResponse response = httpClient.send(request);
 
-      return response.getStatusCode() == 200 || response.getStatusCode() == 404;
+      System.debug(LoggingLevel.INFO, 'Response Status Code: ' + response.getStatusCode());
+      System.debug(LoggingLevel.INFO, 'Response Status: ' + response.getStatus());
+
+      if (response.getStatusCode() != 200) {
+        System.debug(LoggingLevel.WARN, 'Response Body: ' + response.getBody());
+      }
+
+      return response.getStatusCode() == 200;
+    } catch (System.CalloutException e) {
+      System.debug(LoggingLevel.ERROR, 'Tooling API callout exception: ' + e.getMessage());
+      System.debug(LoggingLevel.ERROR, 'Stack trace: ' + e.getStackTraceString());
+      return false;
     } catch (Exception e) {
+      System.debug(LoggingLevel.ERROR, 'Tooling API test failed: ' + e.getMessage());
+      System.debug(LoggingLevel.ERROR, 'Exception type: ' + e.getTypeName());
+      System.debug(LoggingLevel.ERROR, 'Stack trace: ' + e.getStackTraceString());
       return false;
     }
   }
@@ -231,6 +130,6 @@ public with sharing class JT_SetupWizardController {
    */
   @AuraEnabled
   public static String getOrgUrl() {
-    return URL.getOrgDomainUrl().toExternalForm();
+    return JT_ToolingApiUtil.getOrgDomainUrl();
   }
 }

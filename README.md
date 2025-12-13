@@ -207,39 +207,20 @@ The app includes five tabs:
 - **🆘 Support** - GitHub issues and community support links
 - **📈 Reports** - (Future) Access standard reporting functionality
 
-### 4. (Optional) Configure Tooling API
+### 4. Tooling API (Automatic)
 
-To enable advanced features like **"Where is this used?"** (search in Flows), configure Named Credentials for Tooling API access.
+**✅ No configuration required!** The Tooling API setup is **automatic** and works out-of-the-box.
 
-**🚀 Quick Setup (Automated - Recommended):**
+The application uses Visualforce Page-based session ID retrieval with multi-level caching for optimal performance. No Named Credentials or OAuth setup needed.
 
-```bash
-# Auto-detect org URL and deploy Named Credential
-./scripts/smart-deploy.sh
-```
+**📚 Architecture Details:**
 
-**💡 Multi-Org Support:**
+- [Tooling API Setup Guide](./docs/TOOLING_API_OAUTH_SETUP.md) - Complete architecture and troubleshooting
 
-```bash
-# Switch to different org
-sf config set target-org my-sandbox
+**Note:** The framework works automatically. Tooling API is used for:
 
-# Smart deploy auto-detects change!
-./scripts/smart-deploy.sh
-# ⚠️ Org URL mismatch detected!
-# 🔄 Updating environment...
-# ✅ Named Credential deployed with new org URL!
-```
-
-**📚 Detailed Guides:**
-
-- [Named Credential Setup](./scripts/SETUP_NAMED_CREDENTIAL.md) - Automation guide
-- [Multi-Org Workflow](./scripts/WORKFLOW_EXAMPLE.md) - Dev/Sandbox/Production examples
-- [Scripts README](./scripts/README.md) - All available scripts and aliases
-
-**Note:** The framework works WITHOUT Tooling API (core query execution features remain fully functional). Tooling API is only required for:
-
-- Searching configuration references in Flows
+- Searching configuration references in Flows (via "Where is this used?" feature)
+- Creating/updating Custom Metadata records (in sandbox/dev orgs)
 
 ## 🔄 Configuration Migration
 
@@ -340,7 +321,7 @@ Documentation automatically displays in your browser's language (English or Span
 
 ### External Documentation
 
-- [**Named Credential Setup**](./scripts/SETUP_NAMED_CREDENTIAL.md) - Auto-config for Tooling API with smart-deploy
+- [**Tooling API Setup**](./docs/TOOLING_API_OAUTH_SETUP.md) - Architecture and troubleshooting guide
 - [**CI/CD Setup**](./.github/CI_SETUP.md) - GitHub Actions for automated E2E testing
 - [**Bug Fixes Summary**](./.github/BUG_FIXES_SUMMARY.md) - 6 critical bugs fixed with test validation
 - [Run As User Feature](./RUN_AS_USER_FEATURE.md) - Detailed explanation of Run As modes

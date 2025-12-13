@@ -1,38 +1,14 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fields>
-        <name>JT_Action__c</name>
-        <label>Action</label>
-    </fields>
-    <fields>
-        <name>JT_ChangedBy__c</name>
-        <label>Modifié Par</label>
-    </fields>
-    <fields>
-        <name>JT_ChangedByUsername__c</name>
-        <label>Nom d'Utilisateur</label>
-    </fields>
-    <fields>
-        <name>JT_IPAddress__c</name>
-        <label>Adresse IP</label>
-    </fields>
-    <fields>
-        <name>JT_OrgType__c</name>
-        <label>Type d'Organisation</label>
-    </fields>
-    <fields>
-        <name>JT_Timestamp__c</name>
-        <label>Horodatage</label>
-    </fields>
     <caseValues>
         <plural>false</plural>
-        <value>Journal d'Audit des Paramètres</value>
+        <value>Journal d&apos;Audit des Paramètres</value>
     </caseValues>
     <caseValues>
         <plural>true</plural>
-        <value>Journaux d'Audit des Paramètres</value>
+        <value>Journaux d&apos;Audit des Paramètres</value>
     </caseValues>
     <gender>Masculine</gender>
-    <startsWith>Consonant</startsWith>
     <nameFieldLabel>Nom du Journal</nameFieldLabel>
+    <startsWith>Consonant</startsWith>
 </CustomObjectTranslation>

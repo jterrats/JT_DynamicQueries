@@ -1,5 +1,5 @@
 <template>
-  <div class={buttonClass} role="region" aria-label="Query execution controls">
+  <div class={buttonClass} role="region" aria-label={labels.queryExecutionControls}>
     <lightning-button
       label={label}
       variant={variant}
@@ -16,7 +16,7 @@
 
     <template if:true={showSpinner}>
       <lightning-spinner
-        alternative-text="Executing query, please wait"
+        alternative-text={labels.executingQueryPleaseWait}
         size="small"
         class="slds-m-left_small"
       ></lightning-spinner>
@@ -30,10 +30,10 @@
       aria-live="polite"
       aria-atomic="true"
     >
-      <template if:true={isLoading}> Query is executing, please wait </template>
+      <template if:true={isLoading}> {labels.queryIsExecuting} </template>
       <template if:true={isDisabled}>
         <template if:false={selectedConfig}>
-          Please select a configuration to enable query execution
+          {labels.selectConfigurationToEnable}
         </template>
       </template>
     </div>

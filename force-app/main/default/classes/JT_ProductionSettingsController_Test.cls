@@ -10,7 +10,7 @@ private class JT_ProductionSettingsController_Test {
    * @description Test getting production editing setting (default false)
    */
   @IsTest
-  @SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
   static void testGetProductionEditingSettingDefault() {
     Test.startTest();
     Boolean result = JT_ProductionSettingsController.getProductionEditingSetting();
@@ -23,7 +23,7 @@ private class JT_ProductionSettingsController_Test {
    * @description Test updating production editing setting
    */
   @IsTest
-  @SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
   static void testUpdateProductionEditingSetting() {
     Test.startTest();
     Boolean updateResult = JT_ProductionSettingsController.updateProductionEditingSetting(
@@ -57,7 +57,7 @@ private class JT_ProductionSettingsController_Test {
    * @description Test disabling production editing
    */
   @IsTest
-  @SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
   static void testDisableProductionEditing() {
     // First enable it
     JT_ProductionSettingsController.updateProductionEditingSetting(true);
@@ -78,7 +78,7 @@ private class JT_ProductionSettingsController_Test {
    * @description Test audit log creation directly
    */
   @IsTest
-  @SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
   static void testAuditLogCreationViaQuery() {
     // Create some audit entries
     JT_ProductionSettingsController.updateProductionEditingSetting(true);
@@ -101,7 +101,7 @@ private class JT_ProductionSettingsController_Test {
    * @description Test Starter/Free Edition detection
    */
   @IsTest
-  @SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
   static void testIsStarterOrFreeEdition() {
     Test.startTest();
     Boolean isStarter = JT_ProductionSettingsController.isStarterOrFreeEdition();
@@ -117,7 +117,7 @@ private class JT_ProductionSettingsController_Test {
    * Verifies that audit logs can be created even without explicit permissions
    */
   @IsTest
-  @SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
   static void testAuditLogCreationWithoutSharing() {
     // This test verifies the @SuppressWarnings('PMD.ApexCRUDViolation')
     // annotation is correctly applied for AppExchange security review
@@ -143,7 +143,7 @@ private class JT_ProductionSettingsController_Test {
    * @description Test error handling in get setting
    */
   @IsTest
-  @SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
   static void testGetSettingErrorHandling() {
     // This test verifies graceful error handling
     Test.startTest();
@@ -158,7 +158,7 @@ private class JT_ProductionSettingsController_Test {
    * @description Test getting usage tracking setting
    */
   @IsTest
-  @SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
   static void testGetUsageTrackingSetting() {
     Test.startTest();
     Boolean result = JT_ProductionSettingsController.getUsageTrackingSetting();
@@ -175,7 +175,7 @@ private class JT_ProductionSettingsController_Test {
    * @description Test updating usage tracking setting
    */
   @IsTest
-  @SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
   static void testUpdateUsageTrackingSetting() {
     Test.startTest();
     Boolean updateResult = JT_ProductionSettingsController.updateUsageTrackingSetting(
@@ -196,7 +196,7 @@ private class JT_ProductionSettingsController_Test {
    * to prevent failures from breaking the main functionality.
    */
   @IsTest
-  @SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
   static void testLogUsageSearch() {
     Test.startTest();
     // Call the method - it should not throw any exceptions

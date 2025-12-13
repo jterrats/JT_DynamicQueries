@@ -1,160 +1,271 @@
-# Tooling API Named Credential Setup (OAuth 2.0 - Next-Gen)
+# Tooling API Setup Guide
 
-This guide walks you through setting up a Named Credential for the Salesforce Tooling API using the modern Next-Gen approach with External Credentials and OAuth 2.0 authentication. This is required for the "Where is this used?" feature to search Flows and other metadata.
+This guide explains how the Tooling API is used in JT Dynamic Queries for the "Where is this used?" feature and metadata operations.
 
-## Prerequisites
+## Overview
 
-- Admin access to your Salesforce org
-- Salesforce org with External Credentials enabled (available in most orgs)
+The application uses **Visualforce Page-based session ID retrieval** for Tooling API calls instead of Named Credentials. This approach:
 
-## Step-by-Step Setup
+- ✅ **Simpler**: No OAuth setup required
+- ✅ **More Reliable**: Works consistently in same-org scenarios
+- ✅ **Production-Ready**: Optimized with multi-level caching to minimize callouts
+- ✅ **No Configuration**: Works out-of-the-box after installation
 
-### Step 1: Create an Authentication Provider
+## How It Works
 
-1. From **Setup**, in the Quick Find box, enter **Auth. Providers** and select **Auth. Providers**.
-2. Click **New**.
-3. Select **Salesforce** as the provider type.
-4. Configure the provider:
-   - **Name**: `JT_Tooling_API_Auth_Provider`
-   - **URL Suffix**: `jt_tooling_api` (auto-generated, can be customized)
-   - **Consumer Key**: Leave blank for now (will be filled in Step 2)
-   - **Consumer Secret**: Leave blank for now (will be filled in Step 2)
-   - **Default Scopes**: `full refresh_token`
-5. Click **Save**.
-6. **Important**: Copy the **Callback URL** that is generated. You will need this in Step 2.
+### Architecture
 
-### Step 2: Create a Connected App (for Auth Provider)
+The application uses a **3-level caching strategy** to optimize Tooling API callouts:
 
-1. From **Setup**, in the Quick Find box, enter **App Manager** and select **App Manager**.
-2. Click **New Connected App**.
-3. Fill in the basic information:
-   - **Connected App Name**: `JT Tooling API`
-   - **API Name**: `JT_Tooling_API` (auto-generated)
-   - **Contact Email**: Your email address
-4. Under **API (Enable OAuth Settings)**, check **Enable OAuth Settings**.
-5. Configure OAuth settings:
-   - **Callback URL**: Paste the Callback URL from Step 1
-   - **Selected OAuth Scopes**:
-     - Add `Full access (full)`
-     - Add `Perform requests on your behalf at any time (refresh_token, offline_access)`
-6. Click **Save**.
-7. **Important**: After saving, copy:
-   - **Consumer Key** (also called Client ID)
-   - **Consumer Secret** (also called Client Secret)
+1. **Static Variable Cache** (Transaction-level)
+   - Session ID cached in memory for the duration of a single transaction
+   - Eliminates redundant VFP calls within the same request
+   - **Benefit**: Multiple Tooling API calls in one transaction = 1 VFP callout
 
-### Step 3: Update the Authentication Provider
+2. **Platform Cache** (Cross-request, 5-minute TTL)
+   - Session ID cached in Platform Cache with user-specific key
+   - Shared across requests for the same user
+   - **Benefit**: Subsequent requests within 5 minutes = 0 VFP callouts
 
-1. Go back to **Setup → Auth. Providers**.
-2. Click on the Authentication Provider you created in Step 1 (`JT_Tooling_API_Auth_Provider`).
-3. Click **Edit**.
-4. Fill in:
-   - **Consumer Key**: Paste the Consumer Key from Step 2
-   - **Consumer Secret**: Paste the Consumer Secret from Step 2
-5. Click **Save**.
+3. **Visualforce Page** (Fallback)
+   - `JT_SessionIdPage` exposes API-enabled session ID via `{!$Api.Session_ID}`
+   - Only called when cache is empty or expired
+   - **Benefit**: Provides API-enabled session ID that works from LWC context
 
-### Step 4: Create External Credential (Next-Gen)
+### Why Not Named Credentials?
 
-1. From **Setup**, in the Quick Find box, enter **External Credentials** and select **External Credentials**.
-2. Click **New**.
-3. Configure the External Credential:
-   - **Label**: `JT Tooling API External`
-   - **Name**: `JT_Tooling_API_External` (auto-generated)
-   - **Authentication Protocol**: `OAuth 2.0`
-   - **Authentication Provider**: Select `JT_Tooling_API_Auth_Provider` (created in Step 1)
-   - **Principal Type**: `Per User` (recommended) or `Named Principal`
-   - **Scope**: `refresh_token full`
-4. Click **Save**.
-5. **Important**: After saving, you will be prompted to authenticate:
-   - Click **Start Authentication Flow** or **Authenticate**.
-   - Log in with your Salesforce credentials if prompted.
-   - Grant access to the Connected App.
-   - The credential status should change to **Authenticated as [Your Name]**.
+We initially attempted to use Named Credentials with OAuth 2.0, but encountered a **known Salesforce limitation**:
 
-### Step 5: Link Named Credential to External Credential
+- **Issue**: Same-org Tooling API callouts via OAuth Named Credentials fail with 500 proxy errors
+- **Root Cause**: Salesforce's internal proxy (Squid) cannot handle same-org OAuth callouts
+- **Solution**: Use Visualforce Page to obtain API-enabled session ID directly
 
-**Note**: The Named Credential (`JT_Tooling_API`) is deployed with the package, but it needs to be linked to the External Credential.
+This approach is:
+- ✅ More reliable for same-org scenarios
+- ✅ Simpler (no OAuth configuration needed)
+- ✅ Production-ready with caching optimizations
 
-1. From **Setup**, in the Quick Find box, enter **Named Credentials** and select **Named Credentials**.
-2. Find `JT_Tooling_API` (deployed with the package).
-3. Click **Edit**.
-4. Configure the Named Credential:
-   - **URL**: Update to your org's instance URL (e.g., `https://yourdomain.my.salesforce.com`)
-     - You can find this in **Setup → Company Information → Instance URL**
-     - Or use: `https://` + your org domain (e.g., `https://therionpolux-dev-ed.my.salesforce.com`)
-   - **External Credential**: Select `JT_Tooling_API_External` (created in Step 4)
-5. Click **Save**.
+## Setup Requirements
 
-### Step 6: Verify the Setup
+### ✅ Automatic Setup
 
-1. Go to **Setup → Named Credentials**.
-2. Find `JT_Tooling_API`.
-3. Verify:
-   - Status shows **Authenticated** (via External Credential)
-   - URL is correct (your org's instance URL)
-   - External Credential is linked (`JT_Tooling_API_External`)
+**No manual configuration required!** The application works out-of-the-box:
 
-## Usage in Apex Code
+1. **Visualforce Page**: `JT_SessionIdPage` is deployed automatically
+2. **Permission Set**: `JT_Dynamic_Queries` includes necessary permissions
+3. **Platform Cache**: Optional but recommended (gracefully degrades if unavailable)
 
-Once configured, the Named Credential handles authentication automatically via OAuth 2.0. The code uses it like this:
+### Optional: Platform Cache Configuration
+
+For optimal performance, configure Platform Cache (optional):
+
+1. Go to **Setup → Platform Cache**
+2. Create a **Cache Partition** (if not exists):
+   - **Name**: `JTDynamicQueries`
+   - **Namespace**: `local` (or your org's namespace)
+   - **Type**: Org Cache
+   - **Size**: 1 MB (minimum)
+3. Assign to users via Permission Set or Profile
+
+**Note**: If Platform Cache is not configured, the application still works using static variable caching (transaction-level only).
+
+## Usage in Code
+
+### Session ID Retrieval
+
+The application uses a centralized `getApiSessionId()` method in multiple classes:
+
+- `JT_UsageFinder.cls` - For "Where is this used?" searches
+- `JT_MetadataCreator.cls` - For creating/updating Custom Metadata
+- `JT_SetupWizardController.cls` - For Tooling API verification
+
+**Implementation Pattern**:
 
 ```apex
+// Cache session ID in static variable for transaction reuse
+private static String cachedSessionId = null;
+private static final String CACHE_KEY_SESSION_ID = 'JT_ApiSessionId_' + UserInfo.getUserId();
+private static final Integer SESSION_CACHE_TTL = 300; // 5 minutes
+
+private static String getApiSessionId() {
+    // Level 1: Check static cache (same transaction)
+    if (cachedSessionId != null) {
+        return cachedSessionId;
+    }
+
+    // Level 2: Check Platform Cache (cross-request)
+    try {
+        Object cached = Cache.Org.get(CACHE_KEY_SESSION_ID);
+        if (cached != null) {
+            cachedSessionId = (String) cached;
+            return cachedSessionId;
+        }
+    } catch (Exception e) {
+        // Platform Cache not available - continue to VFP
+    }
+
+    // Level 3: Fetch from Visualforce Page
+    PageReference sessionPage = Page.JT_SessionIdPage;
+    String sessionId = sessionPage.getContent().toString().trim();
+
+    // Cache for future use
+    cachedSessionId = sessionId;
+    try {
+        Cache.Org.put(CACHE_KEY_SESSION_ID, sessionId, SESSION_CACHE_TTL);
+    } catch (Exception e) {
+        // Platform Cache not available - that's okay
+    }
+
+    return sessionId;
+}
+```
+
+### Tooling API Callouts
+
+Once the session ID is obtained, Tooling API calls are made directly:
+
+```apex
+String orgUrl = URL.getOrgDomainUrl().toExternalForm();
+String sessionId = getApiSessionId();
+String endpoint = orgUrl + '/services/data/v65.0/tooling/query?q=' +
+                  EncodingUtil.urlEncode(query, 'UTF-8');
+
 HttpRequest request = new HttpRequest();
-request.setEndpoint('callout:JT_Tooling_API/services/data/v65.0/tooling/query/?q=SELECT+Id+FROM+Flow');
+request.setEndpoint(endpoint);
 request.setMethod('GET');
-// No need to set Authorization header - Named Credential handles it automatically via OAuth 2.0
+request.setHeader('Authorization', 'Bearer ' + sessionId);
+request.setHeader('Accept', 'application/json');
+request.setTimeout(30000);
+
 HttpResponse response = new Http().send(request);
 ```
 
+## Performance Optimizations
+
+### Callout Reduction
+
+**Before Optimization**:
+- Each `getApiSessionId()` call = 1 VFP callout
+- Example: "Where is this used?" with 20 Flows = 20+ VFP callouts
+
+**After Optimization**:
+- First call = 1 VFP callout + cache
+- Subsequent calls in same transaction = 0 callouts (static cache)
+- Requests within 5 minutes = 0 callouts (Platform Cache)
+
+**Result**: From 20+ callouts → 1 callout per transaction
+
+### Flow Search Optimization
+
+The Flow search feature includes additional optimizations:
+
+1. **Name-based Pre-filtering**: Filters Flows by name before checking metadata
+2. **Limited Batch Size**: Checks maximum 20 Flows to avoid timeout
+3. **Individual Metadata Queries**: Fetches metadata one Flow at a time (Tooling API limitation)
+
+## Setup Wizard
+
+The **Setup Wizard** (`jtSetupWizard` component) verifies Tooling API accessibility:
+
+1. **Purpose**: Confirms Tooling API is accessible and working
+2. **Method**: Performs a lightweight test query (`SELECT Id FROM ApexClass LIMIT 1`)
+3. **Status**: Shows green checkmark if Tooling API is accessible
+
+**No configuration needed** - the wizard uses the same session ID retrieval method as the rest of the application.
+
 ## Troubleshooting
 
-### Error: 401 Unauthorized
+### Error: "Failed to get API session ID"
 
-- **Cause**: External Credential not authenticated or OAuth token expired
-- **Solution**:
-  1. Go to **Setup → External Credentials → JT_Tooling_API_External**
-  2. Click **Authenticate** or **Start Authentication Flow** to re-authenticate
-  3. Ensure the Authentication Provider is correctly linked to the Connected App
+**Symptoms**:
+- Error message: "Failed to get API session ID: [error message]"
+- "Where is this used?" feature doesn't work
 
-### Error: External Credential Not Found
+**Causes & Solutions**:
 
-- **Cause**: Named Credential not linked to External Credential
-- **Solution**:
-  1. Go to **Setup → Named Credentials → JT_Tooling_API**
-  2. Edit and ensure **External Credential** field is set to `JT_Tooling_API_External`
+1. **Visualforce Page Missing**:
+   - Verify `JT_SessionIdPage` exists: **Setup → Visualforce Pages**
+   - If missing, redeploy the package
 
-### Error: Invalid Consumer Key/Secret
+2. **Permission Issues**:
+   - User needs access to Visualforce Page
+   - Ensure Permission Set `JT_Dynamic_Queries` is assigned
+   - Verify Profile has access to Visualforce Page
 
-- **Cause**: Authentication Provider not linked to Connected App correctly
-- **Solution**:
-  1. Verify Consumer Key and Consumer Secret match between Auth Provider and Connected App
-  2. Ensure Callback URL in Connected App matches the one from Auth Provider
+3. **Platform Cache Issues** (Non-blocking):
+   - If Platform Cache fails, the app falls back to VFP
+   - Check debug logs for cache warnings (they're informational only)
 
-## Security Notes
+### Error: "Tooling API connection failed"
 
-- The External Credential uses OAuth 2.0 refresh tokens for long-term access
-- Tokens are stored securely by Salesforce
-- Each user authenticates separately (if using Per User principal type)
-- The Connected App has `full` scope - ensure this is appropriate for your security requirements
+**Symptoms**:
+- Setup Wizard shows red X
+- Tooling API calls return 401 or 403 errors
 
-## Alternative: Named Principal (System-Level)
+**Causes & Solutions**:
 
-If you prefer system-level authentication instead of per-user:
+1. **Session ID Not API-Enabled**:
+   - Verify Visualforce Page is accessible
+   - Check that `{!$Api.Session_ID}` is working
+   - Test by navigating to `/apex/JT_SessionIdPage` (should show session ID)
 
-1. In Step 4, select **Principal Type**: `Named Principal`
-2. After saving, authenticate once as an admin user
-3. The credential will work for all users (system-level access)
-4. **Note**: This requires careful security consideration
+2. **User Permissions**:
+   - User needs API access enabled
+   - Check Profile → **API Enabled** checkbox
+   - Or assign Permission Set with API access
 
-## Benefits of Next-Gen Approach
+3. **Org Limitations**:
+   - Some Developer Orgs have Tooling API restrictions
+   - Verify Tooling API is available: **Setup → Company Information → Instance**
 
-✅ **Modern**: Uses External Credentials (recommended by Salesforce)
-✅ **Secure**: OAuth 2.0 with refresh tokens
-✅ **Maintainable**: Centralized credential management
-✅ **Flexible**: Can be reused across multiple Named Credentials
-✅ **Future-proof**: Aligned with Salesforce's direction
+### Performance Issues
+
+**Symptoms**:
+- Slow "Where is this used?" searches
+- Multiple VFP callouts in debug logs
+
+**Solutions**:
+
+1. **Enable Platform Cache**:
+   - Configure Platform Cache partition (see Setup Requirements above)
+   - Reduces cross-request callouts significantly
+
+2. **Check Cache Hit Rate**:
+   - Review debug logs for cache hits/misses
+   - High cache hit rate = better performance
+
+3. **Reduce Flow Count**:
+   - The app limits to 20 Flows by default
+   - If you have many Flows, consider archiving obsolete ones
+
+## Security Considerations
+
+### Session ID Security
+
+- ✅ Session IDs are **user-specific** (cannot be shared across users)
+- ✅ Session IDs expire automatically (Salesforce security)
+- ✅ Platform Cache is **org-scoped** (not accessible cross-org)
+- ✅ Visualforce Page access is controlled by Profile/Permission Set
+
+### Best Practices
+
+1. **Permission Sets**: Use Permission Sets instead of Profiles for access control
+2. **Platform Cache**: Configure Platform Cache for production orgs (better performance)
+3. **Monitoring**: Monitor debug logs for cache hit rates and performance metrics
+
+## Comparison: VFP vs Named Credentials
+
+| Aspect | Visualforce Page (Current) | Named Credentials (Previous) |
+|--------|---------------------------|------------------------------|
+| **Setup Complexity** | ✅ None (automatic) | ❌ OAuth 2.0 configuration required |
+| **Same-Org Reliability** | ✅ Works reliably | ❌ 500 proxy errors |
+| **Cross-Org Support** | ❌ Same-org only | ✅ Supports cross-org |
+| **Performance** | ✅ Optimized with caching | ⚠️ No caching (each call = OAuth) |
+| **Configuration** | ✅ Zero configuration | ❌ Multiple setup steps |
+| **Production Ready** | ✅ Yes | ⚠️ Limited by proxy issues |
 
 ## References
 
-- [Salesforce Named Credentials Documentation](https://help.salesforce.com/s/articleView?id=sf.named_credentials_about.htm)
-- [External Credentials Documentation](https://help.salesforce.com/s/articleView?id=sf.external_credentials.htm)
-- [OAuth 2.0 Authentication Flow](https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_flows.htm)
+- [Salesforce Tooling API Documentation](https://developer.salesforce.com/docs/atlas.en-us.api_tooling.meta/api_tooling/)
+- [Visualforce Page Reference](https://developer.salesforce.com/docs/atlas.en-us.pages.meta/pages/)
+- [Platform Cache Documentation](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_cache_namespace_overview.htm)

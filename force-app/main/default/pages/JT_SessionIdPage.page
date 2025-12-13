@@ -1,0 +1,2 @@
+<apex:page contentType="text/plain">{!$Api.Session_ID}</apex:page>
+

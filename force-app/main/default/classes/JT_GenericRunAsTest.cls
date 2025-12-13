@@ -5,57 +5,271 @@
  * @last modified on 11-29-2025
  * @last modified by Jaime Terrats
  **/
-@IsTest
+@IsTest(SeeAllData=true)
 @SuppressWarnings(
   'PMD.AvoidDebugStatements, PMD.ApexDoc, PMD.AvoidBooleanMethodParameters, PMD.ApexUnitTestClassShouldHaveRunAs'
 )
 public class JT_GenericRunAsTest {
+  // Custom Labels for error messages (multilanguage support)
+  private static final String LABEL_QUERY_EXECUTION_FAILED_GENERIC = Label.JT_GenericRunAsTest_queryExecutionFailedGeneric;
+  private static final String LABEL_USER_PREFIX = Label.JT_GenericRunAsTest_userPrefix;
+  private static final String LABEL_ZERO_RECORDS_MESSAGE = Label.JT_GenericRunAsTest_zeroRecordsMessage;
+  private static final String LABEL_OBJECT_ACCESS_DENIED = Label.JT_GenericRunAsTest_objectAccessDenied;
+  private static final String LABEL_FIELD_ACCESS_DENIED = Label.JT_GenericRunAsTest_fieldAccessDenied;
+  private static final String LABEL_INSUFFICIENT_ACCESS_RIGHTS = Label.JT_GenericRunAsTest_insufficientAccessRights;
+  private static final String LABEL_LICENSE_RESTRICTION = Label.JT_GenericRunAsTest_licenseRestriction;
+  private static final String LABEL_QUERY_EXECUTION_FAILED_WITH_ERROR = Label.JT_GenericRunAsTest_queryExecutionFailedWithError;
+  private static final String LABEL_SECURITY_RESTRICTION_WITH_MESSAGE = Label.JT_GenericRunAsTest_securityRestrictionWithMessage;
+  private static final String LABEL_SECURITY_EXCEPTION_GENERIC = Label.JT_GenericRunAsTest_securityExceptionGeneric;
+  private static final String LABEL_ACCESS_DENIED_WITH_LICENSE = Label.JT_GenericRunAsTest_accessDeniedWithLicense;
+  private static final String LABEL_ACCESS_DENIED_GENERIC = Label.JT_GenericRunAsTest_accessDeniedGeneric;
+  private static final String LABEL_PERMISSION_ERROR = Label.JT_GenericRunAsTest_permissionError;
+  private static final String LABEL_LICENSE_RESTRICTION_GENERIC = Label.JT_GenericRunAsTest_licenseRestrictionGeneric;
+  private static final String LABEL_OBJECT_ACCESS_DENIED_GENERIC = Label.JT_GenericRunAsTest_objectAccessDeniedGeneric;
+  private static final String LABEL_QUERY_EXECUTION_FAILED_UNKNOWN = Label.JT_GenericRunAsTest_queryExecutionFailedUnknown;
+
   // Functional composition of test execution
   @IsTest
   static void executeRunAsTest() {
+    System.debug('🧪 executeRunAsTest - Starting test execution');
+
     // Get parameters functionally from cache/custom setting
     TestParameters params = getTestParameters();
 
     if (params == null) {
+      System.debug('❌ executeRunAsTest - No test parameters found, attempting to find execution record...');
+
+      // Try to find execution record directly to write error status
+      // This handles cases where getTestParameters() fails but record exists
+      try {
+        List<JT_RunAsTest_Execution__c> executions = [
+          SELECT Id, Test_Status__c, Error_Message__c, Log_Messages__c
+          FROM JT_RunAsTest_Execution__c
+          WHERE Test_Status__c IN ('Queued', 'Running')
+            AND Initiated_By__c = :UserInfo.getUserId()
+            AND CreatedDate >= :Datetime.now().addMinutes(-5)
+          ORDER BY CreatedDate DESC
+          LIMIT 1
+        ];
+
+        if (!executions.isEmpty()) {
+          executions[0].Test_Status__c = 'Failed';
+          executions[0].Error_Message__c = 'Test class could not find execution parameters. This may indicate a timing issue or missing execution record.';
+          executions[0].Log_Messages__c = (String.isNotBlank(executions[0].Log_Messages__c) ? executions[0].Log_Messages__c + '\n' : '') +
+            'Test execution failed: No parameters found at ' + System.now();
+          update executions[0];
+          System.debug('✅ Error status written to execution record: ' + executions[0].Id);
+        } else {
+          System.debug('⚠️ No execution record found to write error status');
+        }
+      } catch (Exception e) {
+        System.debug(LoggingLevel.ERROR, '❌ Failed to write error status: ' + e.getMessage());
+      }
+
       System.assert(true, 'No test parameters found - skipping');
       return;
     }
 
+    System.debug('✅ executeRunAsTest - Parameters found:');
+    System.debug('  executionId: ' + params.executionId);
+    System.debug('  userId: ' + params.userId);
+    System.debug('  configName: ' + params.configName);
+
     // Execute with functional composition (simplified for Apex limitations)
     User targetUser = validateUser(params);
+    System.debug('✅ executeRunAsTest - Target user validated: ' + targetUser.Name);
+
     QueryResult queryResult = executeInUserContext(targetUser, params);
-    TestResult result = storeResults(params.userId, queryResult);
+    System.debug('✅ executeRunAsTest - Query executed:');
+    System.debug('  success: ' + queryResult.success);
+    System.debug('  recordCount: ' + queryResult.recordCount);
+    System.debug('  errorMessage: ' + queryResult.errorMessage);
+
+    // Assert: Validate query execution completed successfully
+    // Include user-friendly error message if execution failed
+    if (!queryResult.success) {
+      String assertionMessage = String.isNotBlank(queryResult.errorMessage)
+        ? queryResult.errorMessage
+        : LABEL_QUERY_EXECUTION_FAILED_GENERIC;
+
+      // Include user name in the error message for better context
+      if (String.isNotBlank(queryResult.runAsUser)) {
+        assertionMessage = String.format(LABEL_USER_PREFIX, new List<String>{ queryResult.runAsUser, assertionMessage });
+      }
+
+      System.assert(false, assertionMessage);
+    }
+
+    // Assert: Document when no records are found (0 records is a valid result)
+    if (queryResult.recordCount == 0) {
+      System.assert(true, LABEL_ZERO_RECORDS_MESSAGE);
+    }
+
+    TestResult result = storeResults(params.executionId, queryResult);
+    System.debug('✅ executeRunAsTest - Results stored:');
+    System.debug('  success: ' + result.success);
+    System.debug('  message: ' + result.message);
 
     System.assertEquals(true, result != null, 'Test execution should complete');
   }
 
   /**
-   * @description Gets test parameters functionally
-   * @author Jaime Terrats | 11-29-2025
+   * @description Gets test parameters from Custom Object (replaces Platform Cache)
+   * Finds the most recent Queued execution record that has an Apex_Test_Queue_Item_Id__c
+   * This matches the test execution to the Custom Object record
+   * @author Jaime Terrats | 12-13-2025
    * @return TestParameters
    **/
   private static TestParameters getTestParameters() {
     try {
-      // Keys must be alphanumeric - try to get params for current user
-      String userId = UserInfo.getUserId();
-      String cachedJson = (String) Cache.Org.get('RunAsTest' + userId);
+      System.debug('🔍 getTestParameters - Starting parameter retrieval');
+      System.debug('  Current User ID: ' + UserInfo.getUserId());
+      System.debug('  Current User Name: ' + UserInfo.getName());
 
-      if (String.isNotBlank(cachedJson)) {
-        Map<String, Object> paramsMap = (Map<String, Object>) JSON.deserializeUntyped(
-          cachedJson
-        );
+      // Strategy: Search for execution records that are NOT completed/failed
+      // This handles race conditions where the Queueable updates status before test reads it
+      // Filter by Initiated_By__c to ensure we get the correct user's execution
+
+      // First, try to find execution record with Queue Item ID (asynchronous execution)
+      // Note: We don't filter by Initiated_By__c because test may execute with different user context
+      List<JT_RunAsTest_Execution__c> executions = [
+        SELECT
+          Id,
+          User_To_Impersonate__c,
+          Config_Name__c,
+          Bindings_Json__c,
+          Test_Status__c,
+          Apex_Test_Queue_Item_Id__c,
+          Apex_Queueable_Job_Id__c,
+          Initiated_By__c,
+          CreatedDate
+        FROM JT_RunAsTest_Execution__c
+        WHERE Test_Status__c IN ('Queued', 'Running')
+          AND Apex_Test_Queue_Item_Id__c != null
+          // Removed Initiated_By__c filter - test may execute with different user context
+          AND CreatedDate >= :Datetime.now().addMinutes(-10)
+        ORDER BY CreatedDate DESC
+        LIMIT 1
+      ];
+
+      System.debug('  First query (async pattern) found ' + executions.size() + ' records');
+
+      // If not found, try without Queue Item ID (synchronous execution)
+      // When executing synchronously, the execution record has Apex_Queueable_Job_Id__c but not Apex_Test_Queue_Item_Id__c
+      // CRITICAL: When test executes via Tooling API, the user context is the Queueable's user, not the initiating user
+      // We must search WITHOUT Initiated_By__c filter to find the record
+      if (executions.isEmpty()) {
+        System.debug('⚠️ No execution record with Queue Item ID found, trying synchronous execution pattern...');
+        System.debug('  Current User ID: ' + UserInfo.getUserId());
+        System.debug('  Searching for records with:');
+        System.debug('    - Test_Status__c IN (Queued, Running, Completed)');
+        System.debug('    - Apex_Test_Queue_Item_Id__c = null');
+        System.debug('    - Apex_Queueable_Job_Id__c != null');
+        System.debug('    - CreatedDate >= ' + Datetime.now().addMinutes(-5));
+        System.debug('  NOTE: Not filtering by Initiated_By__c because test executes with Queueable user context');
+
+        executions = [
+          SELECT
+            Id,
+            User_To_Impersonate__c,
+            Config_Name__c,
+            Bindings_Json__c,
+            Test_Status__c,
+            Apex_Test_Queue_Item_Id__c,
+            Apex_Queueable_Job_Id__c,
+            Initiated_By__c,
+            CreatedDate
+          FROM JT_RunAsTest_Execution__c
+          WHERE Test_Status__c IN ('Queued', 'Running', 'Completed')
+            AND (Apex_Test_Queue_Item_Id__c = null OR Apex_Test_Queue_Item_Id__c = '')
+            AND Apex_Queueable_Job_Id__c != null // Synchronous execution has Queueable Job ID
+            // CRITICAL: Removed Initiated_By__c filter - test executes with Queueable user, not initiating user
+            AND CreatedDate >= :Datetime.now().addMinutes(-5) // Wider window to account for timing differences
+          ORDER BY CreatedDate DESC
+          LIMIT 1
+        ];
+
+        System.debug('  Second query (sync pattern) found ' + executions.size() + ' records');
+
+        if (!executions.isEmpty()) {
+          System.debug('  Found execution record:');
+          System.debug('    - ID: ' + executions[0].Id);
+          System.debug('    - Status: ' + executions[0].Test_Status__c);
+          System.debug('    - Initiated_By: ' + executions[0].Initiated_By__c);
+          System.debug('    - Queueable Job ID: ' + executions[0].Apex_Queueable_Job_Id__c);
+        } else {
+          // Debug: Show recent records to understand why search failed
+          System.debug('⚠️ Still no records found, checking recent execution records...');
+          List<JT_RunAsTest_Execution__c> allRecentExecutions = [
+            SELECT
+              Id,
+              Test_Status__c,
+              Apex_Test_Queue_Item_Id__c,
+              Apex_Queueable_Job_Id__c,
+              Initiated_By__c,
+              CreatedDate
+            FROM JT_RunAsTest_Execution__c
+            WHERE Test_Status__c IN ('Queued', 'Running', 'Completed')
+              AND (Apex_Test_Queue_Item_Id__c = null OR Apex_Test_Queue_Item_Id__c = '')
+              AND CreatedDate >= :Datetime.now().addMinutes(-5) // Wider window for debugging
+            ORDER BY CreatedDate DESC
+            LIMIT 5
+          ];
+
+          System.debug('  Found ' + allRecentExecutions.size() + ' recent execution records:');
+          for (JT_RunAsTest_Execution__c exec : allRecentExecutions) {
+            System.debug('    - ID: ' + exec.Id + ', Status: ' + exec.Test_Status__c +
+                        ', Initiated_By: ' + exec.Initiated_By__c +
+                        ', Queueable Job ID: ' + exec.Apex_Queueable_Job_Id__c +
+                        ', Created: ' + exec.CreatedDate);
+          }
+        }
+      }
+
+      if (!executions.isEmpty()) {
+        JT_RunAsTest_Execution__c execution = executions[0];
+        System.debug('✅ Found execution record: ' + execution.Id);
+        System.debug('  User to impersonate: ' + execution.User_To_Impersonate__c);
+        System.debug('  Config: ' + execution.Config_Name__c);
+        System.debug('  Current Status: ' + execution.Test_Status__c);
+        System.debug('  Queue Item ID: ' + execution.Apex_Test_Queue_Item_Id__c);
+        System.debug('  Queueable Job ID: ' + execution.Apex_Queueable_Job_Id__c);
+        System.debug('  Execution mode: ' + (execution.Apex_Test_Queue_Item_Id__c != null ? 'Asynchronous' : 'Synchronous'));
+
+        // If already Completed, check if results are stored (race condition handling)
+        if (execution.Test_Status__c == 'Completed') {
+          System.debug('⚠️ Execution record already marked as Completed (race condition detected)');
+          System.debug('  Proceeding to execute and store results anyway...');
+        }
+
+        // Update status to Running (if not already Running or Completed)
+        if (execution.Test_Status__c != 'Running' && execution.Test_Status__c != 'Completed') {
+          execution.Test_Status__c = 'Running';
+          execution.Log_Messages__c = (String.isNotBlank(execution.Log_Messages__c) ? execution.Log_Messages__c + '\n' : '') +
+            'Test execution started at ' + System.now() +
+            (execution.Apex_Test_Queue_Item_Id__c != null ? ' (Asynchronous)' : ' (Synchronous)');
+          update execution;
+        }
+
         return new TestParameters(
-          (String) paramsMap.get('userId'),
-          (String) paramsMap.get('configName'),
-          (String) paramsMap.get('bindingsJson')
+          execution.User_To_Impersonate__c,
+          execution.Config_Name__c,
+          execution.Bindings_Json__c,
+          execution.Id // Pass execution ID for storing results
         );
+      } else {
+        System.debug('❌ No Queued execution record found');
+        System.debug('  This usually means:');
+        System.debug('    1. The execution record was already processed');
+        System.debug('    2. The execution record is older than the time window');
+        System.debug('    3. No execution record exists for this test run');
       }
     } catch (Exception e) {
-      // Log error (use LoggingLevel.ERROR for production monitoring)
       System.debug(
         LoggingLevel.ERROR,
-        'Error getting test parameters: ' + e.getMessage()
+        '❌ Error getting test parameters: ' + e.getMessage()
       );
+      System.debug('Stack trace: ' + e.getStackTraceString());
     }
     return null;
   }
@@ -113,10 +327,71 @@ public class JT_GenericRunAsTest {
         result.recordCount = records.size();
         result.executionTime = (Integer) (endTime - startTime);
         result.runAsUser = user.Name;
-      } catch (Exception e) {
+      } catch (QueryException qe) {
+        // Handle SOQL query exceptions (object/field access, syntax errors)
         result.success = false;
-        result.errorMessage = e.getMessage();
+        String errorMsg = qe.getMessage();
+
+        // Provide user-friendly error messages based on error type
+        if (errorMsg.contains('sObject type') && errorMsg.contains('does not exist')) {
+          result.errorMessage = LABEL_OBJECT_ACCESS_DENIED;
+        } else if (errorMsg.contains('no such column') || errorMsg.contains('invalid field')) {
+          result.errorMessage = LABEL_FIELD_ACCESS_DENIED;
+        } else if (errorMsg.contains('insufficient access rights') || errorMsg.contains('insufficient privileges')) {
+          result.errorMessage = LABEL_INSUFFICIENT_ACCESS_RIGHTS;
+        } else if (errorMsg.contains('license') || errorMsg.contains('not available')) {
+          result.errorMessage = LABEL_LICENSE_RESTRICTION;
+        } else {
+          // Try to extract meaningful information from the error message
+          result.errorMessage = String.format(LABEL_QUERY_EXECUTION_FAILED_WITH_ERROR, new List<String>{ errorMsg });
+        }
+
+        result.stackTrace = qe.getStackTraceString();
+        System.debug(LoggingLevel.ERROR, '❌ QueryException in Run As User test: ' + result.errorMessage);
+      } catch (SecurityException se) {
+        // Handle security/permission exceptions
+        result.success = false;
+        String seMsg = se.getMessage();
+        if (String.isNotBlank(seMsg) && (seMsg.contains('license') || seMsg.contains('privilege') || seMsg.contains('permission'))) {
+          result.errorMessage = String.format(LABEL_SECURITY_RESTRICTION_WITH_MESSAGE, new List<String>{ seMsg });
+        } else {
+          result.errorMessage = LABEL_SECURITY_EXCEPTION_GENERIC;
+        }
+        result.stackTrace = se.getStackTraceString();
+        System.debug(LoggingLevel.ERROR, '❌ SecurityException in Run As User test: ' + result.errorMessage);
+      } catch (AuraHandledException ahe) {
+        // Handle AuraHandledException (e.g., Custom Metadata access issues)
+        result.success = false;
+        String aheMsg = ahe.getMessage();
+        if (String.isNotBlank(aheMsg) && (aheMsg.contains('license') || aheMsg.contains('privilege') || aheMsg.contains('permission'))) {
+          result.errorMessage = String.format(LABEL_ACCESS_DENIED_WITH_LICENSE, new List<String>{ aheMsg });
+        } else {
+          result.errorMessage = String.format(LABEL_ACCESS_DENIED_GENERIC, new List<String>{ aheMsg });
+        }
+        result.stackTrace = ahe.getStackTraceString();
+        System.debug(LoggingLevel.ERROR, '❌ AuraHandledException in Run As User test: ' + result.errorMessage);
+      } catch (Exception e) {
+        // Generic exception handler
+        result.success = false;
+        String errorMsg = e.getMessage();
+        String exceptionType = e.getTypeName();
+
+        // Check for common license/permission related errors
+        if (errorMsg.contains('insufficient') || errorMsg.contains('privilege') || errorMsg.contains('permission')) {
+          result.errorMessage = LABEL_PERMISSION_ERROR;
+        } else if (errorMsg.contains('license') || errorMsg.contains('not available') || errorMsg.contains('not licensed')) {
+          result.errorMessage = LABEL_LICENSE_RESTRICTION_GENERIC;
+        } else if (errorMsg.contains('sObject') && errorMsg.contains('not accessible')) {
+          result.errorMessage = LABEL_OBJECT_ACCESS_DENIED_GENERIC;
+        } else {
+          // Provide a user-friendly generic error message
+          String finalErrorMsg = String.isNotBlank(errorMsg) ? errorMsg : 'Unknown error occurred';
+          result.errorMessage = String.format(LABEL_QUERY_EXECUTION_FAILED_UNKNOWN, new List<String>{ finalErrorMsg });
+        }
+
         result.stackTrace = e.getStackTraceString();
+        System.debug(LoggingLevel.ERROR, '❌ Exception in Run As User test: ' + result.errorMessage);
+        System.debug(LoggingLevel.ERROR, 'Exception type: ' + exceptionType);
       }
       Test.stopTest();
     }
@@ -125,55 +400,195 @@ public class JT_GenericRunAsTest {
   }
 
   /**
-   * @description Stores results functionally in cache as parseable JSON
-   * @author Jaime Terrats | 11-29-2025
-   * @param userId User ID
+   * @description Stores test results in Custom Object (replaces Platform Cache)
+   * @author Jaime Terrats | 12-13-2025
+   * @param executionId The ID of the JT_RunAsTest_Execution__c record
    * @param queryResult Query result
    * @return TestResult
    **/
   private static TestResult storeResults(
-    String userId,
+    String executionId,
     QueryResult queryResult
   ) {
     try {
+      System.debug('💾 storeResults - executionId: ' + executionId);
+      System.debug('💾 storeResults - queryResult.success: ' + queryResult.success);
+      System.debug('💾 storeResults - queryResult.recordCount: ' + queryResult.recordCount);
+      System.debug('💾 storeResults - queryResult.runAsUser: ' + queryResult.runAsUser);
+
+      // Query the execution record
+      // CRITICAL: Include all fields that will be updated to avoid "SObject row was retrieved via SOQL without querying the requested field" error
+      List<JT_RunAsTest_Execution__c> executions = [
+        SELECT
+          Id,
+          Test_Status__c,
+          Log_Messages__c,
+          Run_As_User_Name__c,
+          Results_Json__c,
+          Record_Count__c,
+          Execution_Time__c,
+          Error_Message__c
+        FROM JT_RunAsTest_Execution__c
+        WHERE Id = :executionId
+        LIMIT 1
+      ];
+
+      if (executions.isEmpty()) {
+        System.debug('❌ Execution record not found: ' + executionId);
+        return new TestResult(false, 'Execution record not found');
+      }
+
+      JT_RunAsTest_Execution__c execution = executions[0];
+
       // Build parseable result structure for LWC
       Map<String, Object> resultData = new Map<String, Object>{
         'success' => queryResult.success,
         'recordCount' => queryResult.recordCount,
         'errorMessage' => queryResult.errorMessage,
         'executionTime' => queryResult.executionTime,
-        'runAsUser' => queryResult.runAsUser,
+        'runAsUserName' => queryResult.runAsUser,
         'timestamp' => System.now().getTime()
       };
 
       // Serialize records with field information for LWC
+      // ✅ Use the same serialization method as the controller to ensure consistent format
+      // This ensures child relationships are in standard Salesforce format: { records: [...] }
       if (queryResult.success && !queryResult.records.isEmpty()) {
-        resultData.put('records', serializeRecordsForLWC(queryResult.records));
-        resultData.put('fields', extractFieldNames(queryResult.records[0]));
+        List<Object> serializedRecords = JT_QueryViewerController.serializeRecordsForLWC(queryResult.records);
+        List<String> fieldNames = extractFieldNames(queryResult.records[0]);
+
+        resultData.put('records', serializedRecords);
+        resultData.put('fields', fieldNames);
+
+        System.debug('💾 storeResults - serialized records count: ' + serializedRecords.size());
+        System.debug('💾 storeResults - fields count: ' + fieldNames.size());
       } else {
         resultData.put('records', new List<Object>());
         resultData.put('fields', new List<String>());
+        System.debug('💾 storeResults - no records to serialize');
       }
 
-      // Store as JSON string for easy parsing (keys must be alphanumeric)
-      Cache.Org.put(
-        'RunAsTestResult' + userId,
-        JSON.serialize(resultData),
-        300
-      );
+      // CRITICAL: DML in @IsTest methods executed via Tooling API gets rolled back.
+      // Instead of persisting results via DML (which will be reverted), we write the results
+      // to the Debug Log with unique markers. The Queueable will extract these results
+      // from the Debug Log and persist them.
+      //
+      // IMPORTANT NOTES ABOUT DEBUG LOG LIMITS:
+      // 1. Developer Console UI truncates strings to ~512 characters for display, but the
+      //    full log content is available when retrieved via Tooling API (which we do).
+      // 2. Debug Logs have a 2MB total size limit. If exceeded, Salesforce may truncate
+      //    older log lines. For very large queries (>1000 records with many fields), this
+      //    could be a concern, but is unlikely for typical use cases.
+      // 3. The Tooling API retrieves the FULL log content (not truncated), so our extraction
+      //    will work correctly even if the UI shows truncation.
+      String serializedData = JSON.serialize(resultData);
 
-      // Also store assertion result
-      String assertMessage = queryResult.success
-        ? 'SUCCESS: Found ' +
-          queryResult.recordCount +
-          ' record(s) as ' +
-          queryResult.runAsUser
-        : 'FAILURE: ' + queryResult.errorMessage;
+      // Write results to Debug Log with unique markers
+      // The Debug Log survives the test transaction and can be retrieved by the Queueable
+      String startMarker = '***QUERY_RESULT_START_' + executionId + '***';
+      String endMarker = ' ***QUERY_RESULT_END***';
+      System.debug(startMarker + ' ' + serializedData + endMarker);
+      System.debug('✅ Results written to Debug Log marker for execution: ' + executionId);
+      System.debug('  Results JSON length: ' + serializedData.length());
+      System.debug('  Record Count: ' + queryResult.recordCount);
+      System.debug('  Run As User: ' + queryResult.runAsUser);
 
-      Cache.Org.put('RunAsTestAssert' + userId, assertMessage, 300);
+      // Update execution record with status only (this DML will be reverted, but helps with error handling)
+      // The actual results persistence will be done by the Queueable from the Debug Log
+      String logMessages = String.isNotBlank(execution.Log_Messages__c)
+        ? execution.Log_Messages__c + '\n'
+        : '';
+
+      logMessages += 'Test completed at ' + System.now() + '\n';
+      logMessages += 'Success: ' + queryResult.success + '\n';
+      logMessages += 'Record Count: ' + queryResult.recordCount + '\n';
+      logMessages += 'Results written to Debug Log marker (will be extracted by Queueable)';
+
+      execution.Test_Status__c = queryResult.success ? 'Completed' : 'Failed';
+      // NOTE: We do NOT set Results_Json__c, Record_Count__c, etc. here because DML will be reverted
+      // The Queueable will extract these from the Debug Log and persist them
+      execution.Log_Messages__c = logMessages;
+
+      // Ensure Run_As_User_Name__c is set if it wasn't set during creation (for reference, will be reverted)
+      if (String.isBlank(execution.Run_As_User_Name__c) && String.isNotBlank(queryResult.runAsUser)) {
+        execution.Run_As_User_Name__c = queryResult.runAsUser;
+      }
+
+      // Attempt to update status (this will be reverted, but helps with error handling)
+      // The Queueable will handle the final persistence
+      try {
+        update execution;
+        System.debug('✅ Execution record status updated (will be reverted, but Queueable will persist final status)');
+      } catch (DmlException dmlEx) {
+        // DML failure is expected in @IsTest context - that's okay, Queueable will handle it
+        System.debug(LoggingLevel.WARN, '⚠️ DML update will be reverted (expected in @IsTest). Queueable will persist final status.');
+        System.debug(LoggingLevel.WARN, 'DML Status Code: ' + dmlEx.getDmlStatusCode(0));
+      } catch (Exception updateEx) {
+        // Exception is expected in @IsTest context - that's okay, Queueable will handle it
+        System.debug(LoggingLevel.WARN, '⚠️ Update exception (expected in @IsTest). Queueable will persist final status.');
+      }
 
       return new TestResult(true, 'Results stored successfully');
     } catch (Exception e) {
+      System.debug(LoggingLevel.ERROR, '❌ Failed to store results: ' + e.getMessage());
+      System.debug(LoggingLevel.ERROR, 'Stack trace: ' + e.getStackTraceString());
+
+      // CRITICAL: Try to update execution record with error using robust fallback strategy
+      // This ensures the record is never left in an inconsistent state
+      try {
+        List<JT_RunAsTest_Execution__c> executions = [
+          SELECT Id, Test_Status__c, Error_Message__c, Log_Messages__c
+          FROM JT_RunAsTest_Execution__c
+          WHERE Id = :executionId
+          LIMIT 1
+        ];
+        if (!executions.isEmpty()) {
+          String errorMessage = 'Failed to store results: ' + e.getMessage();
+          // Truncate error message if too long
+          String truncatedError = errorMessage.length() > 255 ? errorMessage.substring(0, 252) + '...' : errorMessage;
+
+          executions[0].Test_Status__c = 'Failed';
+          executions[0].Error_Message__c = truncatedError;
+          executions[0].Log_Messages__c = (String.isNotBlank(executions[0].Log_Messages__c)
+            ? executions[0].Log_Messages__c + '\n'
+            : '') + 'Error storing results: ' + e.getMessage();
+          update executions[0];
+          System.debug('✅ Error status updated successfully');
+        }
+      } catch (DmlException dmlEx) {
+        System.debug(LoggingLevel.ERROR, '❌ DML error updating execution record with error (Strategy 1): ' + dmlEx.getMessage());
+        System.debug(LoggingLevel.ERROR, 'DML Status Code: ' + dmlEx.getDmlStatusCode(0));
+
+        // Strategy 2: Try with minimal update (only status)
+        try {
+          JT_RunAsTest_Execution__c minimalUpdate = new JT_RunAsTest_Execution__c(
+            Id = executionId,
+            Test_Status__c = 'Failed'
+          );
+          update minimalUpdate;
+          System.debug('✅ Minimal error status updated (Strategy 2)');
+        } catch (Exception minimalEx) {
+          System.debug(LoggingLevel.ERROR, '❌ Minimal update also failed (Strategy 2): ' + minimalEx.getMessage());
+          System.debug(LoggingLevel.ERROR, 'CRITICAL: Record may remain in inconsistent state. Manual intervention required.');
+        }
+      } catch (Exception updateEx) {
+        System.debug(LoggingLevel.ERROR, '❌ General error updating execution record with error (Strategy 1): ' + updateEx.getMessage());
+        System.debug(LoggingLevel.ERROR, 'Stack trace: ' + updateEx.getStackTraceString());
+
+        // Strategy 2: Try with minimal update (only status)
+        try {
+          JT_RunAsTest_Execution__c minimalUpdate = new JT_RunAsTest_Execution__c(
+            Id = executionId,
+            Test_Status__c = 'Failed'
+          );
+          update minimalUpdate;
+          System.debug('✅ Minimal error status updated (Strategy 2 fallback)');
+        } catch (Exception minimalEx) {
+          System.debug(LoggingLevel.ERROR, '❌ Minimal update also failed (Strategy 2 fallback): ' + minimalEx.getMessage());
+          System.debug(LoggingLevel.ERROR, 'CRITICAL: Record may remain in inconsistent state. Manual intervention required.');
+        }
+      }
+
       return new TestResult(
         false,
         'Failed to store results: ' + e.getMessage()
@@ -181,86 +596,61 @@ public class JT_GenericRunAsTest {
     }
   }
 
-  /**
-   * @description Serializes records in LWC-friendly format
-   * @author Jaime Terrats | 11-29-2025
-   * @param records List of SObject records
-   * @return List<Map<String, Object>> Serialized records
-   **/
-  private static List<Map<String, Object>> serializeRecordsForLWC(
-    List<SObject> records
-  ) {
-    List<Map<String, Object>> serializedRecords = new List<Map<String, Object>>();
+  // ✅ REMOVED: serializeRecordsForLWC method
+  // Now using JT_QueryViewerController.serializeRecordsForLWC() for consistent serialization
+  // This ensures child relationships are in standard Salesforce format: { records: [...] }
 
-    for (SObject record : records) {
-      Map<String, Object> recordMap = new Map<String, Object>();
-      Map<String, Object> populatedFields = record.getPopulatedFieldsAsMap();
-
-      for (String fieldName : populatedFields.keySet()) {
-        Object fieldValue = populatedFields.get(fieldName);
-
-        // Handle relationship fields
-        if (fieldValue instanceof SObject) {
-          SObject relatedRecord = (SObject) fieldValue;
-          recordMap.put(fieldName, flattenSObject(relatedRecord));
-        } else {
-          recordMap.put(fieldName, fieldValue);
-        }
-      }
-
-      serializedRecords.add(recordMap);
-    }
-
-    return serializedRecords;
-  }
+  // ✅ REMOVED: flattenSObject method
+  // Now using JT_QueryViewerController.serializeRecordsForLWC() which uses standard Salesforce JSON serialization
+  // This ensures consistent format with the controller and preserves child relationships in standard format
 
   /**
-   * @description Flattens SObject relationships for JSON serialization
-   * @author Jaime Terrats | 11-29-2025
-   * @param obj SObject to flatten
-   * @return Map<String, Object> Flattened object
-   **/
-  private static Map<String, Object> flattenSObject(SObject obj) {
-    Map<String, Object> flatMap = new Map<String, Object>();
-    Map<String, Object> fields = obj.getPopulatedFieldsAsMap();
-
-    for (String fieldName : fields.keySet()) {
-      flatMap.put(fieldName, fields.get(fieldName));
-    }
-
-    return flatMap;
-  }
-
-  /**
-   * @description Extracts field names from record
-   * @author Jaime Terrats | 11-29-2025
-   * @param record SObject record
-   * @return List<String> Field names
+   * @description Extracts field names from an SObject record
+   * Excludes child relationships (arrays) and attributes to match controller behavior
+   * @author Jaime Terrats | 12-13-2025
+   * @param record SObject record to extract fields from
+   * @return List<String> Field names (excluding child relationships)
    **/
   private static List<String> extractFieldNames(SObject record) {
     Map<String, Object> fieldMap = record.getPopulatedFieldsAsMap();
-    List<String> fields = new List<String>(fieldMap.keySet());
-    fields.sort();
+    List<String> fields = new List<String>();
+
+    // Extract only scalar fields (exclude child relationships)
+    // This matches the behavior of JT_QueryViewerController.getFieldNames()
+    for (String key : fieldMap.keySet()) {
+      Object value = fieldMap.get(key);
+      // Exclude 'attributes' and child relationships (which are lists)
+      if (key != 'attributes' && !(value instanceof List<SObject>)) {
+        fields.add(key);
+      }
+    }
+
+    // ❌ DON'T sort - this loses SELECT order (matching controller behavior)
+    // fields.sort();
+
     return fields;
   }
 
   /**
    * @description Test parameters (immutable data class)
-   * @author Jaime Terrats | 11-29-2025
+   * @author Jaime Terrats | 12-13-2025
    **/
   private class TestParameters {
     public final String userId;
     public final String configName;
     public final String bindingsJson;
+    public final String executionId; // ID of JT_RunAsTest_Execution__c record
 
     public TestParameters(
       String userId,
       String configName,
-      String bindingsJson
+      String bindingsJson,
+      String executionId
     ) {
       this.userId = userId;
       this.configName = configName;
       this.bindingsJson = bindingsJson;
+      this.executionId = executionId;
     }
   }
 

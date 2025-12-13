@@ -1,9 +1,5 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<CustomMetadata
-  xmlns="http://soap.sforce.com/2006/04/metadata"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
->
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
     <label>LIKE Patterns Mixed</label>
     <protected>false</protected>
     <values>
@@ -16,6 +12,10 @@ WHERE (Name LIKE :startsWith OR Name LIKE :endsWith)
   AND Description LIKE :descriptionKeyword
 ORDER BY Name
 LIMIT 50</value>
+    </values>
+    <values>
+        <field>JT_Binding__c</field>
+        <value xsi:nil="true"/>
     </values>
     <values>
         <field>JT_ObjectName__c</field>

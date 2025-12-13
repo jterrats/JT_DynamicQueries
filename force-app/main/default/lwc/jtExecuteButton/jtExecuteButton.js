@@ -7,13 +7,33 @@
  * @fires execute - When button is clicked and validations pass
  */
 import { LightningElement, api, track } from "lwc";
+// Import Custom Labels
+import executeQueryLabel from "@salesforce/label/c.JT_jtExecuteButton_executeQuery";
+import queryExecutionControlsLabel from "@salesforce/label/c.JT_jtExecuteButton_queryExecutionControls";
+import executingQueryPleaseWaitLabel from "@salesforce/label/c.JT_jtExecuteButton_executingQueryPleaseWait";
+import disabledSelectConfigurationLabel from "@salesforce/label/c.JT_jtExecuteButton_disabledSelectConfiguration";
+import disabledEnterParameterLabel from "@salesforce/label/c.JT_jtExecuteButton_disabledEnterParameter";
+import queryIsExecutingLabel from "@salesforce/label/c.JT_jtExecuteButton_queryIsExecuting";
+import selectConfigurationToEnableLabel from "@salesforce/label/c.JT_jtExecuteButton_selectConfigurationToEnable";
 
 export default class JtExecuteButton extends LightningElement {
-  @api label = "Execute Query";
+  @api label = executeQueryLabel;
+
+  // Custom Labels
+  labels = {
+    executeQuery: executeQueryLabel,
+    queryExecutionControls: queryExecutionControlsLabel,
+    executingQueryPleaseWait: executingQueryPleaseWaitLabel,
+    disabledSelectConfiguration: disabledSelectConfigurationLabel,
+    disabledEnterParameter: disabledEnterParameterLabel,
+    queryIsExecuting: queryIsExecutingLabel,
+    selectConfigurationToEnable: selectConfigurationToEnableLabel
+  };
   @api variant = "brand";
   @api iconName = "utility:play";
   @api disabled = false;
   @api isLoading = false;
+  @api isRunningTest = false; // Block button when Run As User test is executing
 
   // ✅ Local state for immediate UI feedback (reactive)
   @track _isExecuting = false;
@@ -37,12 +57,14 @@ export default class JtExecuteButton extends LightningElement {
     // 1. Explicitly disabled
     // 2. Loading (from parent)
     // 3. Executing (local state - immediate)
-    // 4. No config selected (always required)
-    // 5. Has parameters but all are empty (avoid 50k+ records query)
+    // 4. Running test (Run As User execution in progress)
+    // 5. No config selected (always required)
+    // 6. Has parameters but all are empty (avoid 50k+ records query)
     if (
       this.disabled ||
       this.isLoading ||
       this._isExecuting ||
+      this.isRunningTest ||
       !this.selectedConfig
     ) {
       return true;
@@ -70,17 +92,17 @@ export default class JtExecuteButton extends LightningElement {
   // Accessibility attributes
   get ariaLabel() {
     if (this.isLoading) {
-      return `${this.label} - Executing query, please wait`;
+      return `${this.label} - ${this.labels.executingQueryPleaseWait}`;
     }
     if (!this.selectedConfig) {
-      return `${this.label} - Disabled: Select a configuration first`;
+      return `${this.label} - ${this.labels.disabledSelectConfiguration}`;
     }
     if (this.hasParameters && this.parameterValues) {
       const hasAnyValue = Object.values(this.parameterValues).some(
         (val) => val !== "" && val !== null && val !== undefined
       );
       if (!hasAnyValue) {
-        return `${this.label} - Disabled: Enter at least one parameter value to avoid returning too many records`;
+        return `${this.label} - ${this.labels.disabledEnterParameter}`;
       }
     }
     return this.label;

@@ -1,11 +1,9 @@
 <template>
-  <lightning-card title="OAuth 2.0 Setup Wizard" icon-name="utility:settings">
+  <lightning-card title={labels.toolingApiSetupWizard} icon-name="utility:settings">
     <div class="slds-p-around_medium">
       <!-- Loading State -->
       <template if:true={isLoading}>
-        <lightning-spinner
-          alternative-text="Checking setup status..."
-        ></lightning-spinner>
+        <lightning-spinner alternative-text={labels.checkingSetupStatus}></lightning-spinner>
       </template>
 
       <!-- Setup Status -->
@@ -23,9 +21,9 @@
                   ></lightning-icon>
                 </div>
                 <div class="slds-media__body">
-                  <h2 class="slds-text-heading_small">Setup Complete!</h2>
+                  <h2 class="slds-text-heading_small">{labels.setupComplete}</h2>
                   <p class="slds-text-body_regular">
-                    All OAuth 2.0 components are configured and working.
+                    {labels.toolingApiAccessible}
                   </p>
                 </div>
               </div>
@@ -42,10 +40,9 @@
                   ></lightning-icon>
                 </div>
                 <div class="slds-media__body">
-                  <h2 class="slds-text-heading_small">Setup Required</h2>
+                  <h2 class="slds-text-heading_small">{labels.setupRequired}</h2>
                   <p class="slds-text-body_regular">
-                    Complete the steps below to configure OAuth 2.0 for Tooling
-                    API access.
+                    {labels.completeStepsBelow}
                   </p>
                 </div>
               </div>
@@ -55,14 +52,10 @@
 
         <!-- Setup Steps -->
         <div class="slds-m-bottom_medium">
-          <h3 class="slds-text-heading_small slds-m-bottom_small">
-            Setup Steps
-          </h3>
+          <h3 class="slds-text-heading_small slds-m-bottom_small">{labels.setupSteps}</h3>
           <template for:each={setupSteps} for:item="step">
             <div key={step.stepName} class="slds-box slds-m-bottom_small">
-              <div
-                class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center"
-              >
+              <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
                 <div class="slds-col slds-grow">
                   <div class="slds-media">
                     <div class="slds-media__figure">
@@ -92,7 +85,7 @@
                 <div class="slds-col slds-no-flex">
                   <template if:true={step.setupUrl}>
                     <lightning-button
-                      label="Configure"
+                      label={labels.configure}
                       variant="brand"
                       onclick={handleNavigateToSetup}
                       data-url={step.setupUrl}
@@ -108,13 +101,13 @@
         <!-- Actions -->
         <div class="slds-grid slds-grid_align-spread">
           <lightning-button
-            label="Refresh Status"
+            label={labels.refreshStatus}
             variant="neutral"
             onclick={handleRefresh}
             icon-name="utility:refresh"
           ></lightning-button>
           <lightning-button
-            label="View Documentation"
+            label={labels.viewDocumentation}
             variant="neutral"
             onclick={handleViewDocs}
             icon-name="utility:bookmark"

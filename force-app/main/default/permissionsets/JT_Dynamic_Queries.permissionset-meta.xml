@@ -1,5 +1,9 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <applicationVisibilities>
+        <application>JT_Dynamic_Queries</application>
+        <visible>true</visible>
+    </applicationVisibilities>
     <classAccesses>
         <apexClass>JT_AuditLogDomain</apexClass>
         <enabled>true</enabled>
@@ -52,13 +56,62 @@
         <enabled>true</enabled>
         <name>JT_DynamicQueryConfiguration__mdt</name>
     </customMetadataTypeAccesses>
+    <description>Grants full access to JT Dynamic Queries framework: all Apex classes, Custom Objects, Tabs, and Lightning Application.</description>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>JT_RunAsTest_Execution__c.Apex_Queueable_Job_Id__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>JT_RunAsTest_Execution__c.Apex_Test_Queue_Item_Id__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>JT_RunAsTest_Execution__c.Bindings_Json__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>JT_RunAsTest_Execution__c.Error_Message__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>JT_RunAsTest_Execution__c.Execution_Time__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>JT_RunAsTest_Execution__c.Log_Messages__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>JT_RunAsTest_Execution__c.Record_Count__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>JT_RunAsTest_Execution__c.Results_Json__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>JT_RunAsTest_Execution__c.Run_As_User_Name__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>JT Dynamic Queries</label>
     <objectPermissions>
         <allowCreate>true</allowCreate>
         <allowDelete>true</allowDelete>
         <allowEdit>true</allowEdit>
         <allowRead>true</allowRead>
         <modifyAllRecords>true</modifyAllRecords>
-        <object>JT_DynamicQuerySettings__c</object>
+        <object>JT_RunAsTest_Execution__c</object>
+        <viewAllFields>false</viewAllFields>
         <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
     <objectPermissions>
@@ -68,6 +121,7 @@
         <allowRead>true</allowRead>
         <modifyAllRecords>true</modifyAllRecords>
         <object>JT_SettingsAuditLog__c</object>
+        <viewAllFields>false</viewAllFields>
         <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
     <tabSettings>
@@ -90,12 +144,4 @@
         <tab>standard-report</tab>
         <visibility>Visible</visibility>
     </tabSettings>
-    <applicationVisibilities>
-        <application>JT_Dynamic_Queries</application>
-        <visible>true</visible>
-    </applicationVisibilities>
-    <description
-  >Grants full access to JT Dynamic Queries framework: all Apex classes, Custom Objects, Tabs, and Lightning Application.</description>
-    <hasActivationRequired>false</hasActivationRequired>
-    <label>JT Dynamic Queries</label>
 </PermissionSet>

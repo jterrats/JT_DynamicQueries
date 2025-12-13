@@ -1,9 +1,5 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<CustomMetadata
-  xmlns="http://soap.sforce.com/2006/04/metadata"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
->
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
     <label>NOT Operators Test</label>
     <protected>false</protected>
     <values>
@@ -16,6 +12,10 @@ WHERE Industry NOT IN :excludedIndustries
   AND Name NOT LIKE :excludedPattern
   AND BillingCountry &lt;&gt; :excludedCountry
 ORDER BY Name</value>
+    </values>
+    <values>
+        <field>JT_Binding__c</field>
+        <value xsi:nil="true"/>
     </values>
     <values>
         <field>JT_ObjectName__c</field>

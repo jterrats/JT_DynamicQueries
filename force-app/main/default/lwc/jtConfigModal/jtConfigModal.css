@@ -1,55 +1,55 @@
-/* Config Modal Styles */
+/* Config Modal Styles - Optimized with SLDS + CSS Hooks */
 
-.modal-close-button {
-  background-color: white !important;
+:host {
+  /* CSS Hooks for modal customization */
+  --slds-c-modal-close-button-color-background: var(--lwc-colorBackgroundAlt, #ffffff);
 }
 
+.modal-close-button {
+  background-color: var(--slds-c-modal-close-button-color-background, #ffffff);
+}
+
+/* Query Preview Text - Monospace font only (spacing handled by SLDS classes in HTML) */
 .query-preview-text {
   white-space: pre-wrap;
   word-wrap: break-word;
   font-family: "Courier New", Courier, monospace;
-  font-size: 0.8125rem;
-  color: #3e3e3c;
-  margin: 0;
-  padding: 0.75rem;
-  background-color: #f3f3f3;
-  border: 1px solid #dddbda;
-  border-radius: 0.25rem;
-  line-height: 1.5;
 }
 
-/* Preview results component - remove borders and spacing */
+/* Preview results component - Remove borders and spacing for modal context */
 .preview-results {
-  margin-top: 0 !important;
-  margin-bottom: 0 !important;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
-/* Remove top border from results container */
 .preview-results .results-container {
-  border-top: none !important;
-  padding-top: 0 !important;
-  margin-top: 0 !important;
+  border-top: none;
+  padding-top: 0;
+  margin-top: 0;
 }
 
-/* Hide header section (Results count and view toggle buttons) */
+/* Hide header section (Results count and view toggle buttons) in preview */
 .preview-results .results-container > div:first-child {
-  display: none !important;
+  display: none;
 }
 
 /* Remove top border/margin from Data Preview section */
 .preview-datatable-container {
-  margin-top: 0 !important;
-  padding-top: 0 !important;
-  border-top: none !important;
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
 }
 
-/* Toggle button styles for preview icons */
+/* Toggle button styles for preview icons - Use CSS hooks */
+:host {
+  --slds-c-button-icon-bare-color-background-hover: var(--lwc-colorBackgroundRowHover, #f3f3f3);
+}
+
 .slds-button_icon-bare:hover {
-  background-color: #f3f3f3;
-  border-radius: 0.25rem;
+  background-color: var(--slds-c-button-icon-bare-color-background-hover, #f3f3f3);
 }
 
 .slds-button_icon-bare:focus {
-  outline: 0.125rem solid #0176d3;
+  outline: 0.125rem solid var(--lwc-colorBorderBrand, #0176d3);
   outline-offset: 0.125rem;
 }

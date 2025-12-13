@@ -14,15 +14,26 @@
  * ></c-jt-parameter-inputs>
  */
 import { LightningElement, api, track } from "lwc";
+// Import Custom Labels
+import queryParametersLabel from "@salesforce/label/c.JT_jtParameterInputs_queryParameters";
+import noParametersRequiredLabel from "@salesforce/label/c.JT_jtParameterInputs_noParametersRequired";
+import helpTextLabel from "@salesforce/label/c.JT_jtParameterInputs_helpText";
+import queryParameterLabel from "@salesforce/label/c.JT_jtParameterInputs_queryParameter";
+import pleaseFillInLabel from "@salesforce/label/c.JT_jtParameterInputs_pleaseFillIn";
 
 export default class JtParameterInputs extends LightningElement {
   // Public API - Parameters from parent
   @track _parameters = [];
   @track _values = {};
 
-  // Translatable labels
-  @api title = "Query Parameters";
-  @api noParametersText = "No parameters required for this query";
+  // Custom Labels
+  labels = {
+    queryParameters: queryParametersLabel,
+    noParametersRequired: noParametersRequiredLabel,
+    helpText: helpTextLabel,
+    queryParameter: queryParameterLabel,
+    pleaseFillIn: pleaseFillInLabel
+  };
 
   @api
   get parameters() {
@@ -48,11 +59,11 @@ export default class JtParameterInputs extends LightningElement {
     return this._parameters.map((param) => ({
       ...param,
       value: this._values[param.name] || "",
-      helpText: `This value replaces ':${param.name}' in your SOQL query. Example: WHERE Field__c = :${param.name}`,
+      helpText: this.labels.helpText.replace("{0}", param.name),
       // Semantic HTML attributes for E2E testing
       testId: `query-parameter-${param.name}`,
       inputName: `query-parameter-${param.name}`,
-      ariaLabel: `Query parameter: ${param.label || param.name}`
+      ariaLabel: `${this.labels.queryParameter} ${param.label || param.name}`
     }));
   }
 
@@ -101,7 +112,7 @@ export default class JtParameterInputs extends LightningElement {
     if (missingParams.length > 0) {
       return {
         valid: false,
-        message: `Please fill in: ${missingParams.join(", ")}`,
+        message: this.labels.pleaseFillIn.replace("{0}", missingParams.join(", ")),
         missingParams
       };
     }

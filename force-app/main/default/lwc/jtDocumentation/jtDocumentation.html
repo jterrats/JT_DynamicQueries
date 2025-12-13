@@ -209,10 +209,10 @@ sf org assign permset --name JT_Dynamic_Queries_User
             </div>
 
             <h3 class="slds-text-heading_medium slds-m-bottom_small">
-              {labels.namedCredentialTitle}
+              3. Tooling API Access (Required)
             </h3>
             <p class="slds-text-body_regular slds-m-bottom_small">
-              {labels.namedCredentialIntro}
+              The framework uses Salesforce Tooling API for the "Where is this used?" feature and for creating/editing query configurations dynamically.
             </p>
             <div class="slds-box slds-theme_warning slds-m-bottom_small">
               <p class="slds-text-body_small">
@@ -221,40 +221,31 @@ sf org assign permset --name JT_Dynamic_Queries_User
                   size="xx-small"
                   class="slds-m-right_xx-small"
                 ></lightning-icon>
-                <strong>{labels.namedCredentialWhyRequired}</strong>
-                {labels.namedCredentialWhyText}
+                <strong>Why is this required?</strong>
+                The framework uses the Tooling API to search for configuration usage in Flows and Apex classes, and to create Custom Metadata records programmatically. Without Tooling API access, you can only create configurations manually via Setup → Custom Metadata Types.
               </p>
             </div>
             <div class="slds-box slds-theme_shade slds-m-bottom_medium">
               <p class="slds-text-body_small slds-m-bottom_x-small">
-                <strong>{labels.namedCredentialSetupSteps}</strong>
+                <strong>Requirements:</strong>
               </p>
-              <ol class="slds-list_ordered slds-text-body_small">
-                <li>{labels.namedCredentialStep1}</li>
-                <li>{labels.namedCredentialStep2}</li>
-                <li>{labels.namedCredentialStep3}</li>
-                <li>{labels.namedCredentialStep4}</li>
-                <li>{labels.namedCredentialStep5}</li>
-              </ol>
+              <ul class="slds-list_dotted slds-text-body_small">
+                <li>Users must have appropriate permissions to access Tooling API</li>
+                <li>Tooling API is automatically accessible in same-org scenarios using the current user's session</li>
+                <li>No additional configuration (Named Credentials, OAuth) is required for same-org Tooling API calls</li>
+              </ul>
               <p class="slds-text-body_small slds-m-top_small">
-                📖
-                <a
-                  href="https://help.salesforce.com/s/articleView?id=sf.named_credentials_about.htm"
-                  target="_blank"
-                  class="slds-text-link"
-                  >{labels.namedCredentialDocsLink}</a
-                >
+                📖 Use the <strong>Tooling API Setup Wizard</strong> below to verify Tooling API accessibility.
               </p>
             </div>
 
             <!-- Setup Wizard Component -->
             <div class="slds-m-top_large slds-m-bottom_medium">
               <h3 class="slds-text-heading_medium slds-m-bottom_small">
-                OAuth 2.0 Setup Wizard
+                Tooling API Setup Wizard
               </h3>
               <p class="slds-text-body_regular slds-m-bottom_small">
-                Use the interactive wizard below to verify and complete your
-                OAuth 2.0 setup step by step.
+                Use the interactive wizard below to verify Tooling API accessibility for the "Where is this used?" feature.
               </p>
               <c-jt-setup-wizard></c-jt-setup-wizard>
             </div>

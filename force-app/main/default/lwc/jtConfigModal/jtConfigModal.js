@@ -19,6 +19,45 @@ import developerNameMustStartWithLetter from "@salesforce/label/c.JT_jtConfigMod
 import developerNameCannotEndWithUnderscore from "@salesforce/label/c.JT_jtConfigModal_developerNameCannotEndWithUnderscore";
 import developerNameNoConsecutiveUnderscores from "@salesforce/label/c.JT_jtConfigModal_developerNameNoConsecutiveUnderscores";
 import developerNameChangeWarning from "@salesforce/label/c.JT_jtConfigModal_developerNameChangeWarning";
+import createTitleLabel from "@salesforce/label/c.JT_jtConfigModal_createTitle";
+import editTitleLabel from "@salesforce/label/c.JT_jtConfigModal_editTitle";
+import saveLabelLabel from "@salesforce/label/c.JT_jtConfigModal_saveLabel";
+import updateLabelLabel from "@salesforce/label/c.JT_jtConfigModal_updateLabel";
+import cancelLabelLabel from "@salesforce/label/c.JT_jtConfigModal_cancelLabel";
+import closeLabel from "@salesforce/label/c.JT_jtConfigModal_close";
+import labelFieldLabel from "@salesforce/label/c.JT_jtConfigModal_labelField";
+import developerNameFieldLabel from "@salesforce/label/c.JT_jtConfigModal_developerNameField";
+import baseQueryFieldLabel from "@salesforce/label/c.JT_jtConfigModal_baseQueryField";
+import objectNameFieldLabel from "@salesforce/label/c.JT_jtConfigModal_objectNameField";
+import bindingsFieldLabel from "@salesforce/label/c.JT_jtConfigModal_bindingsField";
+import validSyntaxLabel from "@salesforce/label/c.JT_jtConfigModal_validSyntax";
+import objectLabelLabel from "@salesforce/label/c.JT_jtConfigModal_objectLabel";
+import queryPreviewLabelLabel from "@salesforce/label/c.JT_jtConfigModal_queryPreviewLabel";
+import autoDetectedPlaceholderLabel from "@salesforce/label/c.JT_jtConfigModal_autoDetectedPlaceholder";
+import toolingNoteLabel from "@salesforce/label/c.JT_jtConfigModal_toolingNote";
+import sandboxWarningLabel from "@salesforce/label/c.JT_jtConfigModal_sandboxWarning";
+import labelPlaceholderLabel from "@salesforce/label/c.JT_jtConfigModal_labelPlaceholder";
+import developerNamePlaceholderLabel from "@salesforce/label/c.JT_jtConfigModal_developerNamePlaceholder";
+import baseQueryPlaceholderLabel from "@salesforce/label/c.JT_jtConfigModal_baseQueryPlaceholder";
+import developerNameHelpTextLabel from "@salesforce/label/c.JT_jtConfigModal_developerNameHelpText";
+import warningLabel from "@salesforce/label/c.JT_jtConfigModal_warning";
+import dataPreviewTitleLabel from "@salesforce/label/c.JT_jtConfigModal_dataPreviewTitle";
+import toggleDataPreviewLabel from "@salesforce/label/c.JT_jtConfigModal_toggleDataPreview";
+import loadingPreviewLabel from "@salesforce/label/c.JT_jtConfigModal_loadingPreview";
+import loadingPreviewDataLabel from "@salesforce/label/c.JT_jtConfigModal_loadingPreviewData";
+import noPreviewDataLabel from "@salesforce/label/c.JT_jtConfigModal_noPreviewData";
+import bindingsPlaceholderLabel from "@salesforce/label/c.JT_jtConfigModal_bindingsPlaceholder";
+import bindingsHelpTextLabel from "@salesforce/label/c.JT_jtConfigModal_bindingsHelpText";
+import noteLabel from "@salesforce/label/c.JT_jtConfigModal_note";
+import savingLabel from "@salesforce/label/c.JT_jtConfigModal_saving";
+import toolingNoteUpdateLabel from "@salesforce/label/c.JT_jtConfigModal_toolingNoteUpdate";
+import hideQueryPreviewLabel from "@salesforce/label/c.JT_jtConfigModal_hideQueryPreview";
+import showQueryPreviewLabel from "@salesforce/label/c.JT_jtConfigModal_showQueryPreview";
+import hideDataPreviewLabel from "@salesforce/label/c.JT_jtConfigModal_hideDataPreview";
+import showDataPreviewLabel from "@salesforce/label/c.JT_jtConfigModal_showDataPreview";
+import queryMustStartWithSelectLabel from "@salesforce/label/c.JT_jtConfigModal_queryMustStartWithSelect";
+import queryValidationFailedLabel from "@salesforce/label/c.JT_jtConfigModal_queryValidationFailed";
+import errorValidatingQueryLabel from "@salesforce/label/c.JT_jtConfigModal_errorValidatingQuery";
 
 export default class JtConfigModal extends LightningElement {
   // Custom Labels (imported from Translation Workbench)
@@ -31,7 +70,46 @@ export default class JtConfigModal extends LightningElement {
     developerNameMustStartWithLetter,
     developerNameCannotEndWithUnderscore,
     developerNameNoConsecutiveUnderscores,
-    developerNameChangeWarning
+    developerNameChangeWarning,
+    createTitle: createTitleLabel,
+    editTitle: editTitleLabel,
+    saveLabel: saveLabelLabel,
+    updateLabel: updateLabelLabel,
+    cancelLabel: cancelLabelLabel,
+    close: closeLabel,
+    labelField: labelFieldLabel,
+    developerNameField: developerNameFieldLabel,
+    baseQueryField: baseQueryFieldLabel,
+    objectNameField: objectNameFieldLabel,
+    bindingsField: bindingsFieldLabel,
+    validSyntax: validSyntaxLabel,
+    objectLabel: objectLabelLabel,
+    queryPreviewLabel: queryPreviewLabelLabel,
+    autoDetectedPlaceholder: autoDetectedPlaceholderLabel,
+    toolingNote: toolingNoteLabel,
+    sandboxWarning: sandboxWarningLabel,
+    labelPlaceholder: labelPlaceholderLabel,
+    developerNamePlaceholder: developerNamePlaceholderLabel,
+    baseQueryPlaceholder: baseQueryPlaceholderLabel,
+    developerNameHelpText: developerNameHelpTextLabel,
+    warning: warningLabel,
+    dataPreviewTitle: dataPreviewTitleLabel,
+    toggleDataPreview: toggleDataPreviewLabel,
+    loadingPreview: loadingPreviewLabel,
+    loadingPreviewData: loadingPreviewDataLabel,
+    noPreviewData: noPreviewDataLabel,
+    bindingsPlaceholder: bindingsPlaceholderLabel,
+    bindingsHelpText: bindingsHelpTextLabel,
+    note: noteLabel,
+    saving: savingLabel,
+    toolingNoteUpdate: toolingNoteUpdateLabel,
+    hideQueryPreview: hideQueryPreviewLabel,
+    showQueryPreview: showQueryPreviewLabel,
+    hideDataPreview: hideDataPreviewLabel,
+    showDataPreview: showDataPreviewLabel,
+    queryMustStartWithSelect: queryMustStartWithSelectLabel,
+    queryValidationFailed: queryValidationFailedLabel,
+    errorValidatingQuery: errorValidatingQueryLabel
   };
 
   // Public API
@@ -43,26 +121,6 @@ export default class JtConfigModal extends LightningElement {
   @api queryPreviewColumns = [];
   @api queryPreviewPageSize = 5; // Page size for preview (max 5 records)
 
-  // Translatable labels
-  @api createTitle = "Create New Configuration";
-  @api editTitle = "Edit Configuration";
-  @api saveLabel = "Save Configuration";
-  @api updateLabel = "Update Configuration";
-  @api cancelLabel = "Cancel";
-  @api labelField = "Label";
-  @api developerNameField = "Developer Name";
-  @api baseQueryField = "Base Query (SOQL)";
-  @api objectNameField = "Object Name";
-  @api bindingsField = "Bindings (JSON)";
-  @api validSyntax = "Valid SOQL syntax";
-  @api objectLabel = "Object";
-  @api queryPreviewLabel = "Query Preview";
-  @api autoDetectedPlaceholder = "Auto-detected from query";
-  @api toolingNote =
-    "This creates a Custom Metadata record via Tooling API. The configuration will be immediately available for use.";
-  @api sandboxWarning =
-    "Only available in Sandbox/Scratch/Developer Orgs. Use Setup UI in Production.";
-
   // Config data
   @track _config = {
     label: "",
@@ -71,6 +129,10 @@ export default class JtConfigModal extends LightningElement {
     bindings: "",
     objectName: ""
   };
+
+  // Debounce timeout for query validation
+  _queryValidationTimeout = null;
+  _isValidatingQuery = false;
 
   @track queryValidation = {
     isValid: false,
@@ -118,18 +180,15 @@ export default class JtConfigModal extends LightningElement {
 
   // Computed
   get title() {
-    return this.mode === "edit" ? this.editTitle : this.createTitle;
+    return this.mode === "edit" ? this.labels.editTitle : this.labels.createTitle;
   }
 
   get saveButtonLabel() {
-    return this.mode === "edit" ? this.updateLabel : this.saveLabel;
+    return this.mode === "edit" ? this.labels.updateLabel : this.labels.saveLabel;
   }
 
   get dynamicToolingNote() {
-    if (this.mode === "edit") {
-      return "This updates a Custom Metadata record via Tooling API. The configuration will be immediately available for use.";
-    }
-    return "This creates a Custom Metadata record via Tooling API. The configuration will be immediately available for use.";
+    return this.mode === "edit" ? this.labels.toolingNoteUpdate : this.labels.toolingNote;
   }
 
   get isEditMode() {
@@ -159,32 +218,14 @@ export default class JtConfigModal extends LightningElement {
   }
 
   get saveDisabled() {
-    // DEBUG TEMPORAL
-    console.log("=== DEBUG saveDisabled ===");
-    console.log("isSaving:", this.isSaving);
-    console.log("_config:", JSON.stringify(this._config, null, 2));
-    console.log(
-      "labelValidation:",
-      JSON.stringify(this.labelValidation, null, 2)
-    );
-    console.log(
-      "developerNameValidation:",
-      JSON.stringify(this.developerNameValidation, null, 2)
-    );
-    console.log(
-      "queryValidation:",
-      JSON.stringify(this.queryValidation, null, 2)
-    );
-    const disabled =
+    return (
       this.isSaving ||
       !this._config.label ||
       !this._config.developerName ||
       !this._config.baseQuery ||
       !this.labelValidation.isValid ||
-      !this.developerNameValidation.isValid;
-    console.log("saveDisabled result:", disabled);
-    console.log("=========================");
-    return disabled;
+      !this.developerNameValidation.isValid
+    );
   }
 
   // Event Handlers
@@ -192,20 +233,7 @@ export default class JtConfigModal extends LightningElement {
     const field = event.target.dataset.field;
     const value = event.target.value;
 
-    // DEBUG TEMPORAL
-    console.log("=== DEBUG handleFieldChange ===");
-    console.log("field:", field);
-    console.log("value:", value);
-    console.log("value type:", typeof value);
-    console.log("value length:", value ? value.length : 0);
-    console.log("value trimmed:", value ? value.trim() : "");
-    console.log("value trimmed length:", value ? value.trim().length : 0);
-    console.log("_config before:", JSON.stringify(this._config, null, 2));
-
     this._config[field] = value;
-
-    console.log("_config after:", JSON.stringify(this._config, null, 2));
-    console.log("==============================");
 
     // Auto-generate developer name from label
     if (field === "label" && this.mode === "create") {
@@ -223,33 +251,20 @@ export default class JtConfigModal extends LightningElement {
       this.validateDeveloperName(value);
     }
 
-    // Validate query when it changes
+    // Validate query when it changes (with debounce to prevent excessive calls)
     if (field === "baseQuery") {
-      this.validateQuery(value);
+      // Clear any pending timeout
+      if (this._queryValidationTimeout) {
+        clearTimeout(this._queryValidationTimeout);
+      }
+      // Debounce query validation to prevent excessive API calls
+      this._queryValidationTimeout = setTimeout(() => {
+        this.validateQuery(value);
+      }, 500);
     }
   }
 
   handleSave() {
-    // DEBUG TEMPORAL
-    console.log("=== DEBUG handleSave ===");
-    console.log("mode:", this.mode);
-    console.log("_config:", JSON.stringify(this._config, null, 2));
-    console.log("getConfig():", JSON.stringify(this.getConfig(), null, 2));
-    console.log(
-      "labelValidation:",
-      JSON.stringify(this.labelValidation, null, 2)
-    );
-    console.log(
-      "developerNameValidation:",
-      JSON.stringify(this.developerNameValidation, null, 2)
-    );
-    console.log(
-      "queryValidation:",
-      JSON.stringify(this.queryValidation, null, 2)
-    );
-    console.log("saveDisabled:", this.saveDisabled);
-    console.log("========================");
-
     // Emit save event with config data
     this.dispatchEvent(
       new CustomEvent("save", {
@@ -370,6 +385,11 @@ export default class JtConfigModal extends LightningElement {
   }
 
   async validateQuery(query) {
+    // Prevent multiple simultaneous validations
+    if (this._isValidatingQuery) {
+      return;
+    }
+
     // Simple client-side validation
     if (!query || query.trim().length === 0) {
       this.queryValidation = { isValid: false, message: "", objectName: "" };
@@ -380,7 +400,7 @@ export default class JtConfigModal extends LightningElement {
     if (!query.trim().toUpperCase().startsWith("SELECT")) {
       this.queryValidation = {
         isValid: false,
-        message: "Query must start with SELECT",
+        message: this.labels.queryMustStartWithSelect,
         objectName: ""
       };
       return;
@@ -389,6 +409,25 @@ export default class JtConfigModal extends LightningElement {
     // Extract object name for display
     const fromMatch = query.match(/FROM\s+(\w+)/i);
     const objectName = fromMatch ? fromMatch[1] : "";
+
+    // Check if query has bind variables (e.g., :searchName, :accountType)
+    const hasBindings = /:\w+/.test(query);
+    const bindingsProvided = this._config.bindings && this._config.bindings.trim().length > 0;
+
+    // If query has bindings but no bindings JSON is provided, mark as valid
+    // (bindings will be required at execution time, not at configuration time)
+    if (hasBindings && !bindingsProvided) {
+      this.queryValidation = {
+        isValid: true,
+        message: this.labels.validSyntax + " (bindings will be required at execution time)",
+        objectName: objectName
+      };
+      this._config.objectName = objectName;
+      return;
+    }
+
+    // Set validation flag
+    this._isValidatingQuery = true;
 
     // Call Apex to validate against real Salesforce metadata
     try {
@@ -401,7 +440,7 @@ export default class JtConfigModal extends LightningElement {
       if (result.success) {
         this.queryValidation = {
           isValid: true,
-          message: "Valid SOQL syntax",
+          message: this.labels.validSyntax,
           objectName: objectName
         };
         this._config.objectName = objectName;
@@ -420,7 +459,7 @@ export default class JtConfigModal extends LightningElement {
         // Apex validation failed - show specific error
         this.queryValidation = {
           isValid: false,
-          message: result.errorMessage || "Query validation failed",
+          message: result.errorMessage || this.labels.queryValidationFailed,
           objectName: ""
         };
         this._config.objectName = "";
@@ -430,10 +469,13 @@ export default class JtConfigModal extends LightningElement {
       this.queryValidation = {
         isValid: false,
         message:
-          error.body?.message || "Error validating query. Please check syntax.",
+          error.body?.message || this.labels.errorValidatingQuery,
         objectName: ""
       };
       this._config.objectName = "";
+    } finally {
+      // Clear validation flag
+      this._isValidatingQuery = false;
     }
   }
 
@@ -443,9 +485,7 @@ export default class JtConfigModal extends LightningElement {
   }
 
   get queryPreviewIconAlt() {
-    return this.showQueryPreviewContent
-      ? "Hide Query Preview"
-      : "Show Query Preview";
+    return this.showQueryPreviewContent ? this.labels.hideQueryPreview : this.labels.showQueryPreview;
   }
 
   get dataPreviewIconName() {
@@ -453,9 +493,7 @@ export default class JtConfigModal extends LightningElement {
   }
 
   get dataPreviewIconAlt() {
-    return this.showDataPreviewContent
-      ? "Hide Data Preview"
-      : "Show Data Preview";
+    return this.showDataPreviewContent ? this.labels.hideDataPreview : this.labels.showDataPreview;
   }
 
   // Toggle handlers for preview sections

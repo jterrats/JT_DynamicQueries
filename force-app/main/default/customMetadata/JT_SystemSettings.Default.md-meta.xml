@@ -1,23 +1,25 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<CustomMetadata
-  xmlns="http://soap.sforce.com/2006/04/metadata"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
->
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
     <label>Default System Settings</label>
     <protected>true</protected>
     <values>
+        <field>JT_ApexClassQueryFilter__c</field>
+        <value xsi:type="xsd:string">NamespacePrefix = NULL AND Name != &apos;JT_UsageFinder&apos;</value>
+    </values>
+    <values>
         <field>JT_ApiVersion__c</field>
         <value xsi:type="xsd:string">v65.0</value>
+    </values>
+    <values>
+        <field>JT_FlowQuery__c</field>
+        <value xsi:type="xsd:string">SELECT Id, MasterLabel, Metadata, Status FROM Flow</value>
     </values>
     <values>
         <field>JT_ToolingApiPath__c</field>
         <value xsi:type="xsd:string">/services/data/v65.0/tooling/query/</value>
     </values>
     <values>
-        <field>JT_ApexClassQueryFilter__c</field>
-        <value
-      xsi:type="xsd:string"
-    >NamespacePrefix = NULL AND Name != 'JT_UsageFinder'</value>
+        <field>JT_ToolingApiTestQuery__c</field>
+        <value xsi:type="xsd:string">SELECT Id FROM ApexClass LIMIT 1</value>
     </values>
 </CustomMetadata>

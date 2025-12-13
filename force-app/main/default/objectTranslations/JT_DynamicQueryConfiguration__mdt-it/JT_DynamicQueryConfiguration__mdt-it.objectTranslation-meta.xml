@@ -1,23 +1,5 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fields>
-        <name>JT_BaseQuery__c</name>
-        <label>Query Base (SOQL)</label>
-        <help
-    >La query SOQL da eseguire. Usare variabili di binding con sintassi due punti (es: :nomeAccount) per parametri dinamici.</help>
-    </fields>
-    <fields>
-        <name>JT_Binding__c</name>
-        <label>Binding (JSON)</label>
-        <help
-    >Oggetto JSON opzionale con valori predefiniti di variabili di binding. Esempio: {"nomeAccount":"ACME Corp","stato":"Attivo"}</help>
-    </fields>
-    <fields>
-        <name>JT_ObjectName__c</name>
-        <label>Nome Oggetto</label>
-        <help
-    >L'oggetto Salesforce interrogato (es: Account, Contact, Opportunity).</help>
-    </fields>
     <caseValues>
         <plural>false</plural>
         <value>Configurazione Query Dinamica</value>
@@ -27,6 +9,10 @@
         <value>Configurazioni Query Dinamica</value>
     </caseValues>
     <gender>Feminine</gender>
-    <startsWith>Consonant</startsWith>
     <nameFieldLabel>Nome Configurazione</nameFieldLabel>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- A query is required to create the configuration. --></errorMessage>
+        <name>Require_Base_Query</name>
+    </validationRules>
 </CustomObjectTranslation>

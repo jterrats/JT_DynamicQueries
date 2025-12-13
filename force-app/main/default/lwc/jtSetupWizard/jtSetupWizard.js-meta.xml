@@ -9,6 +9,5 @@
         <target>lightning__Tab</target>
     </targets>
     <masterLabel>JT Setup Wizard</masterLabel>
-    <description
-  >OAuth 2.0 Setup Wizard for Tooling API Named Credentials</description>
+    <description>Tooling API Setup Wizard - Verifies Tooling API accessibility</description>
 </LightningComponentBundle>

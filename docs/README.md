@@ -19,9 +19,10 @@ Start here for an overview and quick links.
 
 ### Setup & Configuration
 
-- **[🔧 Tooling API Setup](TOOLING_API_SETUP.html)** - English setup guide
-- **[🌐 Configuración en Español](TOOLING_API_SETUP_ES.html)** - Guía en español
+- **[🔧 Tooling API Setup](TOOLING_API_OAUTH_SETUP.html)** - Tooling API configuration and architecture
 - **[📊 Report Type Setup](REPORT_TYPE_SETUP.html)** - Reports configuration
+
+> **Note**: Tooling API setup is now **automatic** - no manual configuration required! The application uses Visualforce Page-based session ID retrieval with multi-level caching for optimal performance.
 
 ---
 

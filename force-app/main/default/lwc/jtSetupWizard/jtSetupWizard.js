@@ -3,12 +3,37 @@ import { NavigationMixin } from "lightning/navigation";
 import checkCompleteSetup from "@salesforce/apex/JT_SetupWizardController.checkCompleteSetup";
 import testToolingAPIConnection from "@salesforce/apex/JT_SetupWizardController.testToolingAPIConnection";
 import getOrgUrl from "@salesforce/apex/JT_SetupWizardController.getOrgUrl";
+// Import Custom Labels
+import toolingApiSetupWizardLabel from "@salesforce/label/c.JT_jtSetupWizard_toolingApiSetupWizard";
+import checkingSetupStatusLabel from "@salesforce/label/c.JT_jtSetupWizard_checkingSetupStatus";
+import setupCompleteLabel from "@salesforce/label/c.JT_jtSetupWizard_setupComplete";
+import toolingApiAccessibleLabel from "@salesforce/label/c.JT_jtSetupWizard_toolingApiAccessible";
+import setupRequiredLabel from "@salesforce/label/c.JT_jtSetupWizard_setupRequired";
+import completeStepsBelowLabel from "@salesforce/label/c.JT_jtSetupWizard_completeStepsBelow";
+import setupStepsLabel from "@salesforce/label/c.JT_jtSetupWizard_setupSteps";
+import configureLabel from "@salesforce/label/c.JT_jtSetupWizard_configure";
+import refreshStatusLabel from "@salesforce/label/c.JT_jtSetupWizard_refreshStatus";
+import viewDocumentationLabel from "@salesforce/label/c.JT_jtSetupWizard_viewDocumentation";
 
 export default class JtSetupWizard extends NavigationMixin(LightningElement) {
   @track setupSteps = [];
   @track allStepsComplete = false;
   @track isLoading = true;
   @track orgUrl = "";
+
+  // Custom Labels
+  labels = {
+    toolingApiSetupWizard: toolingApiSetupWizardLabel,
+    checkingSetupStatus: checkingSetupStatusLabel,
+    setupComplete: setupCompleteLabel,
+    toolingApiAccessible: toolingApiAccessibleLabel,
+    setupRequired: setupRequiredLabel,
+    completeStepsBelow: completeStepsBelowLabel,
+    setupSteps: setupStepsLabel,
+    configure: configureLabel,
+    refreshStatus: refreshStatusLabel,
+    viewDocumentation: viewDocumentationLabel
+  };
 
   connectedCallback() {
     this.loadSetupStatus();

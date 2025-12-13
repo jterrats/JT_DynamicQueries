@@ -10,6 +10,7 @@
   'PMD.AvoidDebugStatements, PMD.UnusedLocalVariable, PMD.CyclomaticComplexity, PMD.StdCyclomaticComplexity'
 )
 public with sharing class JT_MetadataCreator {
+
   /**
    * @description Input wrapper for configuration data
    */
@@ -115,14 +116,18 @@ public with sharing class JT_MetadataCreator {
         throw new AuraHandledException('Developer Name is required.');
       }
 
-      // Delete via Tooling API
-      final HttpRequest request = new HttpRequest();
-      request.setEndpoint(
-        'callout:Tooling_API/sobjects/CustomMetadata/JT_DynamicQueryConfiguration.' +
-        developerName
+      // Delete via Tooling API using API-enabled session ID
+      final String endpointPath =
+        '/services/data/' +
+        JT_ToolingApiUtil.getApiVersion() +
+        '/tooling/sobjects/CustomMetadata/JT_DynamicQueryConfiguration.' +
+        EncodingUtil.urlEncode(developerName, 'UTF-8');
+
+      final HttpRequest request = JT_ToolingApiUtil.createToolingApiRestRequest(
+        endpointPath,
+        'DELETE',
+        30000
       );
-      request.setMethod('DELETE');
-      request.setHeader('Content-Type', 'application/json');
 
       final Http httpClient = new Http();
       final HttpResponse response = httpClient.send(request);
@@ -158,11 +163,18 @@ public with sharing class JT_MetadataCreator {
     MetadataCreationResult result = new MetadataCreationResult();
 
     try {
+      System.debug('updateConfiguration called with input: ' + JSON.serialize(input));
+
       // CRITICAL: Only allow in sandbox/scratch
       if (!isSandboxOrScratch()) {
         throw new AuraHandledException(
           'Configuration editing is only allowed in development/test environments (Sandbox, Scratch Org, Developer Edition, or Trial). For production orgs (including Starter/Free Editions), use Setup > Custom Metadata Types.'
         );
+      }
+
+      // Validate input is not null
+      if (input == null) {
+        throw new AuraHandledException('Configuration input cannot be null');
       }
 
       // Validate required fields
@@ -172,7 +184,12 @@ public with sharing class JT_MetadataCreator {
         String.isBlank(input.baseQuery)
       ) {
         throw new AuraHandledException(
-          'Developer Name, Label, and Base Query are required.'
+          'Original Developer Name, Label, and Base Query are required for update. Received: originalDevName=' +
+          input.originalDevName +
+          ', label=' +
+          input.label +
+          ', baseQuery length=' +
+          (String.isBlank(input.baseQuery) ? '0' : String.valueOf(input.baseQuery.length()))
         );
       }
 
@@ -417,18 +434,22 @@ public with sharing class JT_MetadataCreator {
     // Build deployment package
     String zipBase64 = buildDeploymentZip(metadataXml, devName);
 
-    // Deploy via Metadata API (simplified - in real implementation use MetadataService)
-    // For now, use Tooling API as workaround
-    final HttpRequest request = new HttpRequest();
-    request.setEndpoint('callout:Tooling_API/sobjects/CustomMetadata');
-    request.setMethod('POST');
-    request.setHeader('Content-Type', 'application/json');
+    // Deploy via Tooling API using API-enabled session ID
+    final String endpointPath =
+      '/services/data/' +
+      JT_ToolingApiUtil.getApiVersion() +
+      '/tooling/sobjects/CustomMetadata';
 
     final Map<String, Object> metadata = new Map<String, Object>{
       'FullName' => 'JT_DynamicQueryConfiguration.' + devName,
       'Metadata' => parseMetadataXmlToJson(metadataXml)
     };
 
+    final HttpRequest request = JT_ToolingApiUtil.createToolingApiRestRequest(
+      endpointPath,
+      'POST',
+      30000
+    );
     request.setBody(JSON.serialize(metadata));
 
     final Http httpClient = new Http();
@@ -530,9 +551,7 @@ public with sharing class JT_MetadataCreator {
       }
 
       // Extract bind variables
-      final Pattern bindVariablePattern = Pattern.compile(
-        ':([a-zA-Z_][a-zA-Z0-9_]*)'
-      );
+      final Pattern bindVariablePattern = Pattern.compile(':([a-zA-Z_][a-zA-Z0-9_]*)');
       final Matcher bindVariableMatcher = bindVariablePattern.matcher(query);
 
       final Set<String> bindings = new Set<String>();

@@ -5,15 +5,15 @@
       <header class="slds-modal__header">
         <button
           class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse modal-close-button"
-          title="Close"
+          title={labels.close}
           onclick={handleCancel}
         >
           <lightning-icon
             icon-name="utility:close"
-            alternative-text="close"
+            alternative-text={labels.close}
             size="small"
           ></lightning-icon>
-          <span class="slds-assistive-text">Close</span>
+          <span class="slds-assistive-text">{labels.close}</span>
         </button>
         <h2 class="slds-text-heading_medium slds-hyphenate">{title}</h2>
 
@@ -30,7 +30,7 @@
                 class="slds-m-right_xx-small"
               ></lightning-icon>
               <span class="slds-text-body_small" style="color: #080707">
-                <strong>{sandboxWarning}</strong>
+                <strong>{labels.sandboxWarning}</strong>
               </span>
             </p>
           </div>
@@ -44,13 +44,13 @@
           <lightning-layout-item size="12" class="slds-p-bottom_small">
             <lightning-input
               type="text"
-              label={labelField}
+              label={labels.labelField}
               value={_config.label}
               data-field="label"
               onchange={handleFieldChange}
               required
               maxlength="40"
-              placeholder="e.g., Get Active Accounts"
+              placeholder={labels.labelPlaceholder}
             ></lightning-input>
           </lightning-layout-item>
 
@@ -58,14 +58,14 @@
           <lightning-layout-item size="12" class="slds-p-bottom_small">
             <lightning-input
               type="text"
-              label={developerNameField}
+              label={labels.developerNameField}
               value={_config.developerName}
               data-field="developerName"
               onchange={handleFieldChange}
               required
               maxlength="40"
-              placeholder="e.g., Get_Active_Accounts"
-              field-level-help="API name (auto-generated from label, editable for manual adjustment or renaming, max 40 characters)"
+              placeholder={labels.developerNamePlaceholder}
+              field-level-help={labels.developerNameHelpText}
             ></lightning-input>
 
             <!-- Warning when Developer Name changes in edit mode -->
@@ -75,7 +75,7 @@
                   class="slds-notify slds-notify_alert slds-alert_warning"
                   role="alert"
                 >
-                  <span class="slds-assistive-text">Warning</span>
+                  <span class="slds-assistive-text">{labels.warning}</span>
                   <span
                     class="slds-icon_container slds-icon-utility-warning slds-m-right_x-small"
                   >
@@ -83,7 +83,7 @@
                       icon-name="utility:warning"
                       size="xx-small"
                       variant="warning"
-                      alternative-text="Warning"
+                      alternative-text={labels.warning}
                     ></lightning-icon>
                   </span>
                   <div class="slds-text-body_small">
@@ -97,13 +97,13 @@
           <!-- Base Query -->
           <lightning-layout-item size="12" class="slds-p-bottom_small">
             <lightning-textarea
-              label={baseQueryField}
+              label={labels.baseQueryField}
               value={_config.baseQuery}
               data-field="baseQuery"
               onchange={handleFieldChange}
               required
               rows="4"
-              placeholder="SELECT Id, Name FROM Account WHERE IsActive__c = true"
+              placeholder={labels.baseQueryPlaceholder}
             ></lightning-textarea>
 
             <!-- Query Validation -->
@@ -121,7 +121,7 @@
                     {queryValidation.message}
                     <template if:true={showObjectName}>
                       <span class="slds-m-left_small">
-                        <strong>{objectLabel}:</strong>
+                        <strong>{labels.objectLabel}:</strong>
                         {queryValidation.objectName}
                       </span>
                     </template>
@@ -137,8 +137,8 @@
                           type="button"
                           class="slds-button slds-button_icon slds-button_icon-x-small slds-button_icon-bare slds-m-right_xx-small"
                           onclick={handleToggleQueryPreview}
-                          title={queryPreviewLabel}
-                          aria-label={queryPreviewLabel}
+                          title={labels.queryPreviewLabel}
+                          aria-label={labels.queryPreviewLabel}
                         >
                           <lightning-icon
                             icon-name={queryPreviewIconName}
@@ -146,12 +146,10 @@
                             alternative-text={queryPreviewIconAlt}
                           ></lightning-icon>
                         </button>
-                        {queryPreviewLabel}
+                        {labels.queryPreviewLabel}
                       </div>
                       <template if:true={showQueryPreviewContent}>
-                        <pre class="query-preview-text">
-{_config.baseQuery}</pre
-                        >
+                        <pre class="query-preview-text slds-box slds-box_x-small slds-theme_shade slds-p-around_small slds-m-around_none">{_config.baseQuery}</pre>
                       </template>
                     </div>
                   </template>
@@ -176,27 +174,25 @@
                     <template if:true={isLoadingQueryPreview}>
                       <div class="slds-text-align_center slds-p-around_medium">
                         <lightning-spinner
-                          alternative-text="Loading preview..."
+                          alternative-text={labels.loadingPreview}
                           size="small"
                         ></lightning-spinner>
                         <p
                           class="slds-text-body_small slds-text-color_weak slds-m-top_small"
                         >
-                          Loading preview data...
+                          {labels.loadingPreviewData}
                         </p>
                       </div>
                     </template>
 
                     <template if:true={hasPreviewData}>
-                      <div
-                        class="slds-text-heading_small slds-m-top_small slds-m-bottom_x-small"
-                      >
+                      <div class="slds-text-heading_small slds-m-top_small slds-m-bottom_x-small">
                         <button
                           type="button"
                           class="slds-button slds-button_icon slds-button_icon-x-small slds-button_icon-bare slds-m-right_xx-small"
                           onclick={handleToggleDataPreview}
-                          title="Data Preview (Sample Records)"
-                          aria-label="Toggle Data Preview"
+                          title={labels.dataPreviewTitle}
+                          aria-label={labels.toggleDataPreview}
                         >
                           <lightning-icon
                             icon-name={dataPreviewIconName}
@@ -204,7 +200,7 @@
                             alternative-text={dataPreviewIconAlt}
                           ></lightning-icon>
                         </button>
-                        Data Preview (Sample Records)
+                        {labels.dataPreviewTitle}
                       </div>
                       <template if:true={showDataPreviewContent}>
                         <c-jt-query-results
@@ -227,7 +223,7 @@
                             size="xx-small"
                             class="slds-m-right_xx-small"
                           ></lightning-icon>
-                          No data returned from query preview
+                          {labels.noPreviewData}
                         </div>
                       </template>
                     </template>
@@ -241,23 +237,23 @@
           <lightning-layout-item size="12" class="slds-p-bottom_small">
             <lightning-input
               type="text"
-              label={objectNameField}
+              label={labels.objectNameField}
               value={_config.objectName}
               readonly
-              placeholder={autoDetectedPlaceholder}
+              placeholder={labels.autoDetectedPlaceholder}
             ></lightning-input>
           </lightning-layout-item>
 
           <!-- Bindings -->
           <lightning-layout-item size="12" class="slds-p-bottom_small">
             <lightning-textarea
-              label={bindingsField}
+              label={labels.bindingsField}
               value={_config.bindings}
               data-field="bindings"
               onchange={handleFieldChange}
               rows="3"
-              placeholder='Example: {"accountName": "ACME Corp", "status": "Active"}'
-              field-level-help="Default bind variables in JSON format (optional)"
+              placeholder={labels.bindingsPlaceholder}
+              field-level-help={labels.bindingsHelpText}
             ></lightning-textarea>
           </lightning-layout-item>
 
@@ -273,7 +269,7 @@
                   ></lightning-icon>
                 </div>
                 <div class="slds-media__body">
-                  <strong>Note:</strong> {dynamicToolingNote}
+                  <strong>{labels.note}</strong> {dynamicToolingNote}
                 </div>
               </div>
             </div>
@@ -284,7 +280,7 @@
       <!-- Modal Footer -->
       <footer class="slds-modal__footer">
         <lightning-button
-          label={cancelLabel}
+          label={labels.cancelLabel}
           onclick={handleCancel}
           class="slds-m-right_small"
         ></lightning-button>
@@ -297,7 +293,7 @@
         ></lightning-button>
         <template if:true={isSaving}>
           <lightning-spinner
-            alternative-text="Saving..."
+            alternative-text={labels.saving}
             size="small"
             class="slds-m-left_small"
           ></lightning-spinner>

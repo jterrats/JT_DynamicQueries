@@ -5,9 +5,12 @@
  * @last modified on 11-29-2025
  * @last modified by Jaime Terrats
  **/
+// PMD Suppression: SeeAllData=true is required for Run As User feature
+// This test class executes queries in different user contexts and needs access to real data
+// to properly test user-specific permissions and license restrictions
 @IsTest(SeeAllData=true)
 @SuppressWarnings(
-  'PMD.AvoidDebugStatements, PMD.ApexDoc, PMD.AvoidBooleanMethodParameters, PMD.ApexUnitTestClassShouldHaveRunAs'
+  'PMD.AvoidDebugStatements, PMD.ApexDoc, PMD.AvoidBooleanMethodParameters, PMD.ApexUnitTestClassShouldHaveRunAs, PMD.ApexUnitTestShouldNotUseSeeAllDataTrue'
 )
 public class JT_GenericRunAsTest {
   // Custom Labels for error messages (multilanguage support)
@@ -543,10 +546,14 @@ public class JT_GenericRunAsTest {
         update execution;
       } catch (DmlException dmlEx) {
         // DML failure is expected in @IsTest context - that's okay, Queueable will handle it
-        // No need to log - this is expected behavior
+        // Expected behavior: DML operations in @IsTest methods executed via Tooling API are rolled back
+        // The Queueable will persist the final status after extracting results from Debug Log
+        System.debug(LoggingLevel.FINE, 'DML update reverted (expected in @IsTest context)');
       } catch (Exception updateEx) {
         // Exception is expected in @IsTest context - that's okay, Queueable will handle it
-        // No need to log - this is expected behavior
+        // Expected behavior: Exceptions in @IsTest methods executed via Tooling API are expected
+        // The Queueable will persist the final status after extracting results from Debug Log
+        System.debug(LoggingLevel.FINE, 'Update exception (expected in @IsTest context)');
       }
 
       return new TestResult(true, 'Results stored successfully');

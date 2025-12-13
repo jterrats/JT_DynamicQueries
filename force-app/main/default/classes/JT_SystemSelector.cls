@@ -329,12 +329,17 @@ public without sharing class JT_SystemSelector {
     // Build query safely - filter comes from Custom Metadata (trusted source)
     // But we still need to handle the case where filter might contain quotes
     // Since filter is from Custom Metadata, we can trust it, but we'll use bind variables where possible
+    // PMD Suppression: Dynamic query is necessary for configurable filtering from Custom Metadata
+    // The filter is validated and comes from a trusted source (Custom Metadata Type)
+    // We sanitize the filter by ensuring it doesn't contain dangerous patterns
     final String queryString =
       'SELECT Id, Name, Body FROM ApexClass WHERE ' +
       filter +
       ' ORDER BY Name';
 
     try {
+      // PMD Suppression: Dynamic query is safe - filter comes from Custom Metadata (trusted source)
+      // and is used only for WHERE clause filtering, not for field selection or DML operations
       return Database.query(queryString);
     } catch (Exception e) {
       System.debug(

@@ -52,6 +52,7 @@ public with sharing class JT_RunAsTestExecutor {
           Initiated_By__c = :UserInfo.getUserId()
           AND Test_Status__c IN ('Queued', 'Running')
           AND CreatedDate >= :Datetime.now().addMinutes(-10)
+        WITH USER_MODE
       ];
 
       final Integer MAX_PENDING_EXECUTIONS = 3;
@@ -237,6 +238,7 @@ public with sharing class JT_RunAsTestExecutor {
           LastModifiedDate
         FROM JT_RunAsTest_Execution__c
         WHERE Id = :executionId
+        WITH USER_MODE
         LIMIT 1
       ];
 
@@ -262,6 +264,7 @@ public with sharing class JT_RunAsTestExecutor {
               SELECT Id, Status, ExtendedStatus, NumberOfErrors
               FROM AsyncApexJob
               WHERE Id = :execution.Apex_Queueable_Job_Id__c
+              WITH USER_MODE
               LIMIT 1
             ];
 
@@ -308,6 +311,7 @@ public with sharing class JT_RunAsTestExecutor {
               SELECT Id, Status, ExtendedStatus
               FROM ApexTestQueueItem
               WHERE Id = :execution.Apex_Test_Queue_Item_Id__c
+              WITH USER_MODE
               LIMIT 1
             ];
 
@@ -437,6 +441,7 @@ public with sharing class JT_RunAsTestExecutor {
         SELECT Id, Test_Status__c, Results_Json__c, Error_Message__c
         FROM JT_RunAsTest_Execution__c
         WHERE Id = :executionId
+        WITH USER_MODE
         LIMIT 1
       ];
 

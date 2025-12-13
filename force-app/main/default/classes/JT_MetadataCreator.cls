@@ -457,20 +457,30 @@ public with sharing class JT_MetadataCreator {
       JT_ToolingApiUtil.getApiVersion() +
       '/tooling/sobjects/CustomMetadata';
 
+    // Parse XML to JSON format required by Tooling API
+    Map<String, Object> metadataJson = parseMetadataXmlToJson(metadataXml);
+
     final Map<String, Object> metadata = new Map<String, Object>{
       'FullName' => 'JT_DynamicQueryConfiguration.' + devName,
-      'Metadata' => parseMetadataXmlToJson(metadataXml)
+      'Metadata' => metadataJson
     };
+
+    String requestBody = JSON.serialize(metadata);
+    System.debug(LoggingLevel.FINE, 'Deploying Custom Metadata for: ' + devName);
+    System.debug(LoggingLevel.FINE, 'Request body: ' + requestBody);
 
     final HttpRequest request = JT_ToolingApiUtil.createToolingApiRestRequest(
       endpointPath,
       'POST',
       30000
     );
-    request.setBody(JSON.serialize(metadata));
+    request.setBody(requestBody);
 
     final Http httpClient = new Http();
     final HttpResponse response = httpClient.send(request);
+
+    System.debug(LoggingLevel.FINE, 'Response status: ' + response.getStatusCode());
+    System.debug(LoggingLevel.FINE, 'Response body: ' + response.getBody());
 
     if (response.getStatusCode() == 201) {
       final Map<String, Object> responseMap = (Map<String, Object>) JSON.deserializeUntyped(
@@ -478,9 +488,24 @@ public with sharing class JT_MetadataCreator {
       );
       return (String) responseMap.get('id');
     } else {
-      throw new AuraHandledException(
-        'Failed to deploy metadata: ' + response.getBody()
-      );
+      // Parse error response for better error message
+      String errorMessage = 'Failed to deploy metadata (Status: ' + response.getStatusCode() + ')';
+      try {
+        Map<String, Object> errorMap = (Map<String, Object>) JSON.deserializeUntyped(response.getBody());
+        List<Object> errors = (List<Object>) errorMap.get('errors');
+        if (errors != null && !errors.isEmpty()) {
+          Map<String, Object> firstError = (Map<String, Object>) errors[0];
+          String message = (String) firstError.get('message');
+          if (String.isNotBlank(message)) {
+            errorMessage += ': ' + message;
+          }
+        } else {
+          errorMessage += ': ' + response.getBody();
+        }
+      } catch (Exception e) {
+        errorMessage += ': ' + response.getBody();
+      }
+      throw new AuraHandledException(errorMessage);
     }
   }
 
@@ -520,9 +545,9 @@ public with sharing class JT_MetadataCreator {
 
     // Extract all field values
     // Pattern matches: <field>FieldName__c</field><value xsi:type="xsd:string">Value</value>
+    // Using (?i) flag for case-insensitive matching
     final Pattern valuePattern = Pattern.compile(
-      '<field>(.*?)</field>\\s*<value[^>]*>(.*?)</value>',
-      Pattern.CASE_INSENSITIVE
+      '(?i)<field>(.*?)</field>\\s*<value[^>]*>(.*?)</value>'
     );
     final Matcher valueMatcher = valuePattern.matcher(xml);
 

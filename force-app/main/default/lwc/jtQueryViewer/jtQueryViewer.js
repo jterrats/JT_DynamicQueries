@@ -1731,6 +1731,7 @@ export default class JtQueryViewer extends LightningElement {
 
     saveMethod
       .then((result) => {
+        console.log("Save result:", JSON.stringify(result, null, 2));
         if (result.success) {
           this.showSuccessToast(`Configuration ${actionLabel}`, result.message);
           this.handleCloseCreateModal();
@@ -1743,16 +1744,25 @@ export default class JtQueryViewer extends LightningElement {
               "Configuration list has been refreshed."
             );
           });
-          return Promise.resolve();
         }
         // Show error toast and don't refresh
-        this.showErrorToast(`${actionLabel} Failed`, result.errorMessage);
+        console.error("Save failed:", result);
+        console.error("Error message:", result.errorMessage);
+        console.error("Stack trace:", result.stackTrace);
+        this.showErrorToast(
+          `${actionLabel} Failed`,
+          result.errorMessage || "Unknown error occurred"
+        );
         return Promise.resolve();
       })
       .catch((error) => {
+        console.error("Save error:", error);
+        console.error("Error body:", error.body);
         this.showErrorToast(
           "Error",
           error.body?.message ||
+            error.body?.exceptionType ||
+            error.message ||
             `Failed to ${this.configModalMode} configuration`
         );
       })

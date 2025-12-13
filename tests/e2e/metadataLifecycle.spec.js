@@ -250,13 +250,13 @@ test.describe("Metadata Lifecycle Tests", () => {
 
     // Step 3: Get current query to modify
     const queryInput = modal.locator(
-      'lightning-textarea[data-id="config-query"]'
+      'lightning-textarea[data-field="baseQuery"]'
     );
     const currentQuery = await queryInput.locator("textarea").inputValue();
     console.log(`Current query: ${currentQuery}`);
 
     // Step 4: Modify Label (add test suffix)
-    const labelInput = modal.locator('lightning-input[data-id="config-label"]');
+    const labelInput = modal.locator('lightning-input[data-field="label"]');
     const originalLabel = await labelInput.locator("input").inputValue();
     const updatedLabel = `${originalLabel} (Updated ${Date.now()})`;
     await labelInput.locator("input").fill(updatedLabel);

@@ -464,7 +464,7 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     await expect(modalTitle).toContainText(/Edit/i);
 
     // Verify fields are pre-filled (Label should have content)
-    const labelInput = modal.locator('lightning-input[data-id="config-label"]');
+    const labelInput = modal.locator('lightning-input[data-field="label"]');
     const labelValue = await labelInput.locator("input").inputValue();
     expect(labelValue.length).toBeGreaterThan(0);
 
@@ -510,7 +510,7 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
 
     // Verify Developer Name input is disabled
     const devNameInput = modal.locator(
-      'lightning-input[data-id="config-developer-name"]'
+      'lightning-input[data-field="developerName"]'
     );
     const isDisabled = await devNameInput.locator("input").isDisabled();
 
@@ -552,7 +552,7 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     const modal = page.locator('section[role="dialog"]');
 
     // Get current label
-    const labelInput = modal.locator('lightning-input[data-id="config-label"]');
+    const labelInput = modal.locator('lightning-input[data-field="label"]');
     const originalLabel = await labelInput.locator("input").inputValue();
 
     // Modify label (add timestamp to make it unique)

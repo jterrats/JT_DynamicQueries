@@ -41,6 +41,13 @@ public with sharing class JT_MetadataCreator {
     MetadataCreationResult result = new MetadataCreationResult();
 
     try {
+      // Validate input is not null
+      if (input == null) {
+        throw new AuraHandledException(
+          'Configuration input is required.'
+        );
+      }
+
       // CRITICAL: Only allow in development/test environments
       if (!isSandboxOrScratch()) {
         throw new AuraHandledException(
@@ -62,13 +69,13 @@ public with sharing class JT_MetadataCreator {
       // Sanitize developer name
       String sanitizedDevName = sanitizeDeveloperName(input.developerName);
 
-      // Build metadata XML
+      // Build metadata XML (handle null values for optional fields)
       String metadataXml = buildMetadataXml(
         input.label,
         sanitizedDevName,
         input.baseQuery,
-        input.bindings,
-        input.objectName
+        String.isBlank(input.bindings) ? null : input.bindings,
+        String.isBlank(input.objectName) ? null : input.objectName
       );
 
       // Deploy via Metadata API
@@ -385,6 +392,13 @@ public with sharing class JT_MetadataCreator {
     String bindings,
     String objectName
   ) {
+    // Validate required parameters
+    if (String.isBlank(label) || String.isBlank(devName) || String.isBlank(baseQuery)) {
+      throw new IllegalArgumentException(
+        'Label, Developer Name, and Base Query are required for metadata XML generation.'
+      );
+    }
+
     String xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
     xml += '<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata">\n';
     xml += '    <label>' + escapeXml(label) + '</label>\n';
@@ -488,13 +502,14 @@ public with sharing class JT_MetadataCreator {
 
   /**
    * @description Parses XML to JSON for Tooling API
+   * Tooling API expects: { "label": "...", "values": [{ "field": "...", "value": "..." }] }
    * @author Jaime Terrats | 11-29-2025
    * @param xml XML string
    * @return Map<String, Object> JSON representation
    **/
   private static Map<String, Object> parseMetadataXmlToJson(String xml) {
-    // Simplified parser - in production use proper XML parser
     Map<String, Object> metadata = new Map<String, Object>();
+    List<Map<String, Object>> values = new List<Map<String, Object>>();
 
     // Extract label
     final Pattern labelPattern = Pattern.compile('<label>(.*?)</label>');
@@ -502,6 +517,28 @@ public with sharing class JT_MetadataCreator {
     if (labelMatcher.find()) {
       metadata.put('label', labelMatcher.group(1));
     }
+
+    // Extract all field values
+    // Pattern matches: <field>FieldName__c</field><value xsi:type="xsd:string">Value</value>
+    final Pattern valuePattern = Pattern.compile(
+      '<field>(.*?)</field>\\s*<value[^>]*>(.*?)</value>',
+      Pattern.CASE_INSENSITIVE
+    );
+    final Matcher valueMatcher = valuePattern.matcher(xml);
+
+    while (valueMatcher.find()) {
+      String fieldName = valueMatcher.group(1);
+      String fieldValue = valueMatcher.group(2);
+      
+      Map<String, Object> valueEntry = new Map<String, Object>{
+        'field' => fieldName,
+        'value' => fieldValue
+      };
+      values.add(valueEntry);
+    }
+
+    // Add values array to metadata (required by Tooling API)
+    metadata.put('values', values);
 
     return metadata;
   }

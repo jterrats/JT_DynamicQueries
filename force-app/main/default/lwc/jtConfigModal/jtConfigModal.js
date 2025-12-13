@@ -262,11 +262,18 @@ export default class JtConfigModal extends LightningElement {
       // Clear any pending timeout
       if (this._queryValidationTimeout) {
         clearTimeout(this._queryValidationTimeout);
+        this._queryValidationTimeout = null;
+      }
+      // Prevent validation if already validating (avoid race conditions)
+      if (this._isValidatingQuery) {
+        return;
       }
       // Debounce query validation to prevent excessive API calls
+      // Increased timeout to 800ms to prevent UI blocking during fast typing
       this._queryValidationTimeout = setTimeout(() => {
         this.validateQuery(value);
-      }, 500);
+        this._queryValidationTimeout = null;
+      }, 800);
     }
   }
 
@@ -447,12 +454,24 @@ export default class JtConfigModal extends LightningElement {
       });
 
       if (result.success) {
+        // Only update objectName if it changed to prevent unnecessary re-renders
+        // Use a flag to prevent re-triggering validation during update
+        const objectNameChanged = this._config.objectName !== objectName;
+        if (objectNameChanged && objectName) {
+          // Defer update to next frame to prevent UI blocking
+          // eslint-disable-next-line @lwc/lwc/no-async-operation
+          setTimeout(() => {
+            if (!this._isValidatingQuery) {
+              this._config.objectName = objectName;
+            }
+          }, 0);
+        }
+        
         this.queryValidation = {
           isValid: true,
           message: this.labels.validSyntax,
           objectName: objectName
         };
-        this._config.objectName = objectName;
 
         // Dispatch preview results to parent
         this.dispatchEvent(
@@ -466,12 +485,15 @@ export default class JtConfigModal extends LightningElement {
         );
       } else {
         // Apex validation failed - show specific error
+        // Only clear objectName if it was set
+        if (this._config.objectName) {
+          this._config.objectName = "";
+        }
         this.queryValidation = {
           isValid: false,
           message: result.errorMessage || this.labels.queryValidationFailed,
           objectName: ""
         };
-        this._config.objectName = "";
       }
     } catch (error) {
       // Network or other error

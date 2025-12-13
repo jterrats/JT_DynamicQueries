@@ -286,7 +286,20 @@ export default class JtConfigModal extends LightningElement {
     );
   }
 
+  disconnectedCallback() {
+    // Clean up timeout when component is destroyed
+    if (this._queryValidationTimeout) {
+      clearTimeout(this._queryValidationTimeout);
+      this._queryValidationTimeout = null;
+    }
+  }
+
   handleCancel() {
+    // Clear any pending validation timeout
+    if (this._queryValidationTimeout) {
+      clearTimeout(this._queryValidationTimeout);
+      this._queryValidationTimeout = null;
+    }
     this.dispatchEvent(new CustomEvent("cancel"));
   }
 

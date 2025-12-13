@@ -64,7 +64,7 @@ public with sharing class JT_RunAsTestExecutor {
           'Too many test executions in queue (' +
             pendingExecutions +
             '). Please wait for pending executions to complete before starting a new one. Maximum allowed: ' +
-            MAX_PENDING_EXECUTIONS +
+            maxPendingExecutions +
             '.'
         );
       }

@@ -529,7 +529,7 @@ public with sharing class JT_MetadataCreator {
     while (valueMatcher.find()) {
       String fieldName = valueMatcher.group(1);
       String fieldValue = valueMatcher.group(2);
-      
+
       Map<String, Object> valueEntry = new Map<String, Object>{
         'field' => fieldName,
         'value' => fieldValue

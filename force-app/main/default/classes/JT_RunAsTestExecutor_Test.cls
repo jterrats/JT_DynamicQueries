@@ -115,91 +115,87 @@ private class JT_RunAsTestExecutor_Test {
   }
 
   /**
-   * @description Test getTestResults with no cached results
+   * @description Test getTestResults with no execution record (invalid executionId)
    * @author Jaime Terrats | 11-29-2025
+   * Updated: 12-13-2025 - getTestResults now takes executionId instead of userId
    **/
   @IsTest
   static void testGetTestResultsNoCachedResults() {
-    User currentUser = [SELECT Id FROM User WHERE Id = :UserInfo.getUserId()];
+    // Use a fake execution ID (non-existent record)
+    String fakeExecutionId = 'a0S' + '0'.repeat(15);
 
     Test.startTest();
     JT_RunAsTestExecutor.TestExecutionResult result = JT_RunAsTestExecutor.getTestResults(
-      currentUser.Id
+      fakeExecutionId
     );
     Test.stopTest();
 
     System.assertEquals(
       false,
       result.success,
-      'Should return false when no results'
+      'Should return false when execution record not found'
     );
     System.assertNotEquals(null, result.message, 'Should have a message');
   }
 
   /**
-   * @description Test getTestResults path when cache would be used
+   * @description Test getTestResults with valid execution record
    * @author Jaime Terrats | 11-29-2025
-   * Note: Platform Cache may not be available in all test orgs
+   * Updated: 12-13-2025 - getTestResults now takes executionId from executeAsUser
    **/
   @IsTest
   static void testGetTestResultsPath() {
     User currentUser = [SELECT Id FROM User WHERE Id = :UserInfo.getUserId()];
+    Map<String, Object> bindings = new Map<String, Object>{
+      'name' => 'Test Account for Executor'
+    };
 
     Test.startTest();
-    try {
-      // Try to store in cache if available
-      Map<String, Object> mockResult = new Map<String, Object>{
-        'success' => true,
-        'recordCount' => 5,
-        'errorMessage' => null,
-        'executionTime' => 250,
-        'runAsUser' => 'Test User',
-        'fields' => new List<String>{ 'Id', 'Name' },
-        'records' => new List<Object>()
-      };
+    // First, execute a test to get an executionId
+    JT_RunAsTestExecutor.TestExecutionResult executeResult = JT_RunAsTestExecutor.executeAsUser(
+      currentUser.Id,
+      'Test_Record',
+      JSON.serialize(bindings)
+    );
 
-      Cache.Org.put(
-        'RunAsTestResult_' + currentUser.Id,
-        JSON.serialize(mockResult),
-        300
-      );
-      Cache.Org.put(
-        'RunAsTestAssert_' + currentUser.Id,
-        'SUCCESS: Found 5 records',
-        300
-      );
-
+    // If execution was initiated successfully, try to get results
+    if (executeResult.success && String.isNotBlank(executeResult.jobId)) {
+      String executionId = executeResult.jobId;
+      
+      // Try to get results (may not be ready yet, but tests the method)
       JT_RunAsTestExecutor.TestExecutionResult result = JT_RunAsTestExecutor.getTestResults(
-        currentUser.Id
+        executionId
       );
 
-      // If cache works, verify result
-      if (result.success) {
-        System.assertEquals(5, result.recordCount, 'Should have 5 records');
-      }
-    } catch (Exception e) {
-      // Platform Cache not available - that's okay, just test the method exists
-      System.assert(true, 'Method executed even without cache');
+      // Result may be pending or completed depending on timing
+      System.assertNotEquals(null, result, 'Result should not be null');
+      System.assert(result.success != null, 'Should have success flag');
+    } else {
+      // Execution failed (e.g., permissions), but method still works
+      System.assert(true, 'Method executed even if execution failed');
     }
     Test.stopTest();
   }
 
   /**
-   * @description Test getTestStatus with no results
+   * @description Test getTestStatus with no execution record (invalid executionId)
    * @author Jaime Terrats | 11-29-2025
+   * Updated: 12-13-2025 - getTestStatus now takes executionId instead of userId
    **/
   @IsTest
   static void testGetTestStatusNotFound() {
-    User currentUser = [SELECT Id FROM User WHERE Id = :UserInfo.getUserId()];
+    // Use a fake execution ID (non-existent record)
+    String fakeExecutionId = 'a0S' + '0'.repeat(15);
 
     Test.startTest();
     Map<String, Object> status = JT_RunAsTestExecutor.getTestStatus(
-      currentUser.Id
+      fakeExecutionId
     );
     Test.stopTest();
 
     System.assertNotEquals(null, status, 'Status should not be null');
     System.assert(status.containsKey('status'), 'Should have status key');
+    System.assertEquals('NOT_FOUND', status.get('status'), 'Should return NOT_FOUND for invalid executionId');
   }
 
   /**
@@ -332,180 +328,135 @@ private class JT_RunAsTestExecutor_Test {
   }
 
   /**
-   * @description Test getTestResults with populated cache and assertMessage
+   * @description Test getTestResults with execution record
    * @author Jaime Terrats | 11-29-2025
+   * Updated: 12-13-2025 - Now uses executionId from executeAsUser instead of Platform Cache
    **/
   @IsTest
   static void testGetTestResultsWithAssertMessage() {
     User currentUser = [SELECT Id FROM User WHERE Id = :UserInfo.getUserId()];
+    Map<String, Object> bindings = new Map<String, Object>{
+      'name' => 'Test Account for Executor'
+    };
 
     Test.startTest();
-    try {
-      // Store complete mock result in cache
-      Map<String, Object> mockResult = new Map<String, Object>{
-        'success' => true,
-        'recordCount' => 3,
-        'errorMessage' => null,
-        'executionTime' => 150,
-        'runAsUser' => 'Admin User',
-        'fields' => new List<String>{ 'Id', 'Name', 'CreatedDate' },
-        'records' => new List<Map<String, Object>>{
-          new Map<String, Object>{ 'Id' => '001xxx', 'Name' => 'Test 1' },
-          new Map<String, Object>{ 'Id' => '001yyy', 'Name' => 'Test 2' },
-          new Map<String, Object>{ 'Id' => '001zzz', 'Name' => 'Test 3' }
-        }
-      };
+    // Execute a test to get an executionId
+    JT_RunAsTestExecutor.TestExecutionResult executeResult = JT_RunAsTestExecutor.executeAsUser(
+      currentUser.Id,
+      'Test_Record',
+      JSON.serialize(bindings)
+    );
 
-      String cacheKey = 'RunAsTestResult' + currentUser.Id;
-      String assertKey = 'RunAsTestAssert' + currentUser.Id;
-
-      Cache.Org.put(cacheKey, JSON.serialize(mockResult), 300);
-      Cache.Org.put(assertKey, 'SUCCESS: Found 3 matching records', 300);
-
+    // If execution was initiated, try to get results
+    if (executeResult.success && String.isNotBlank(executeResult.jobId)) {
+      String executionId = executeResult.jobId;
+      
       JT_RunAsTestExecutor.TestExecutionResult result = JT_RunAsTestExecutor.getTestResults(
-        currentUser.Id
+        executionId
       );
 
-      // If cache works, verify detailed result
-      if (result.success) {
-        System.assertEquals(3, result.recordCount, 'Should have 3 records');
-        System.assertEquals(
-          'Admin User',
-          result.runAsUserName,
-          'Should have runAsUser name'
-        );
-        System.assertNotEquals(null, result.fields, 'Should have fields array');
-        System.assertNotEquals(
-          null,
-          result.records,
-          'Should have records array'
-        );
-      }
-    } catch (Exception e) {
-      // Platform Cache not available - still covers code path
-      System.assert(true, 'Method executed even without cache');
+      // Result may be pending or completed depending on timing
+      System.assertNotEquals(null, result, 'Result should not be null');
+      System.assert(result.success != null, 'Should have success flag');
+    } else {
+      // Execution failed, but method still works
+      System.assert(true, 'Method executed even if execution failed');
     }
     Test.stopTest();
   }
 
   /**
-   * @description Test getTestResults with error result in cache
+   * @description Test getTestResults with invalid executionId (error handling)
    * @author Jaime Terrats | 11-29-2025
+   * Updated: 12-13-2025 - Now uses executionId instead of Platform Cache
    **/
   @IsTest
   static void testGetTestResultsWithError() {
-    User currentUser = [SELECT Id FROM User WHERE Id = :UserInfo.getUserId()];
+    // Use invalid executionId to test error handling
+    String invalidExecutionId = 'a0S' + '0'.repeat(15);
 
     Test.startTest();
-    try {
-      // Store error result in cache
-      Map<String, Object> errorResult = new Map<String, Object>{
-        'success' => false,
-        'recordCount' => 0,
-        'errorMessage' => 'Invalid query syntax',
-        'executionTime' => 0,
-        'runAsUser' => 'Test User',
-        'fields' => null,
-        'records' => null
-      };
-
-      Cache.Org.put(
-        'RunAsTestResult' + currentUser.Id,
-        JSON.serialize(errorResult),
-        300
-      );
-
-      JT_RunAsTestExecutor.TestExecutionResult result = JT_RunAsTestExecutor.getTestResults(
-        currentUser.Id
-      );
-
-      // Should handle error result
-      System.assertNotEquals(null, result, 'Result should not be null');
-      // If cache works, should have error details
-    } catch (Exception e) {
-      // Platform Cache not available
-      System.assert(true, 'Method executed even without cache');
-    }
+    JT_RunAsTestExecutor.TestExecutionResult result = JT_RunAsTestExecutor.getTestResults(
+      invalidExecutionId
+    );
     Test.stopTest();
+
+    // Should handle error gracefully
+    System.assertNotEquals(null, result, 'Result should not be null');
+    System.assertEquals(false, result.success, 'Should return false for invalid executionId');
   }
 
   /**
-   * @description Test getTestStatus with completed execution
+   * @description Test getTestStatus with execution record
    * @author Jaime Terrats | 11-29-2025
+   * Updated: 12-13-2025 - Now uses executionId from executeAsUser instead of Platform Cache
    **/
   @IsTest
   static void testGetTestStatusCompleted() {
     User currentUser = [SELECT Id FROM User WHERE Id = :UserInfo.getUserId()];
+    Map<String, Object> bindings = new Map<String, Object>{
+      'name' => 'Test Account for Executor'
+    };
 
     Test.startTest();
-    try {
-      // Store completed result
-      Cache.Org.put(
-        'RunAsTestResult' + currentUser.Id,
-        JSON.serialize(
-          new Map<String, Object>{ 'success' => true, 'recordCount' => 1 }
-        ),
-        300
-      );
+    // Execute a test to get an executionId
+    JT_RunAsTestExecutor.TestExecutionResult executeResult = JT_RunAsTestExecutor.executeAsUser(
+      currentUser.Id,
+      'Test_Record',
+      JSON.serialize(bindings)
+    );
 
+    // If execution was initiated, try to get status
+    if (executeResult.success && String.isNotBlank(executeResult.jobId)) {
+      String executionId = executeResult.jobId;
+      
       Map<String, Object> status = JT_RunAsTestExecutor.getTestStatus(
-        currentUser.Id
+        executionId
       );
 
       System.assertNotEquals(null, status, 'Status should not be null');
-      // If cache works, should show COMPLETED status
-      if (status.get('status') == 'COMPLETED') {
-        System.assertEquals(
-          true,
-          status.get('hasResults'),
-          'Should have results'
-        );
-      }
-    } catch (Exception e) {
-      // Platform Cache not available
-      System.assert(true, 'Method executed even without cache');
+      System.assert(status.containsKey('status'), 'Should have status key');
+    } else {
+      // Execution failed, but method still works
+      System.assert(true, 'Method executed even if execution failed');
     }
     Test.stopTest();
   }
 
   /**
-   * @description Test getTestStatus with running execution
+   * @description Test getTestStatus with running execution (Queued/Running status)
    * @author Jaime Terrats | 11-29-2025
+   * Updated: 12-13-2025 - Now uses executionId from executeAsUser instead of Platform Cache
    **/
   @IsTest
   static void testGetTestStatusRunning() {
     User currentUser = [SELECT Id FROM User WHERE Id = :UserInfo.getUserId()];
+    Map<String, Object> bindings = new Map<String, Object>{
+      'name' => 'Test Account for Executor'
+    };
 
     Test.startTest();
-    try {
-      // Store running parameters (no result yet)
-      Cache.Org.put(
-        'RunAsTest' + currentUser.Id,
-        JSON.serialize(
-          new Map<String, Object>{
-            'userId' => currentUser.Id,
-            'configName' => 'Test'
-          }
-        ),
-        300
-      );
+    // Execute a test to get an executionId (status will likely be Queued or Running)
+    JT_RunAsTestExecutor.TestExecutionResult executeResult = JT_RunAsTestExecutor.executeAsUser(
+      currentUser.Id,
+      'Test_Record',
+      JSON.serialize(bindings)
+    );
 
+    // If execution was initiated, check status immediately (should be Queued/Running)
+    if (executeResult.success && String.isNotBlank(executeResult.jobId)) {
+      String executionId = executeResult.jobId;
+      
       Map<String, Object> status = JT_RunAsTestExecutor.getTestStatus(
-        currentUser.Id
+        executionId
       );
 
       System.assertNotEquals(null, status, 'Status should not be null');
-      // If cache works, should show RUNNING status
-      if (status.get('status') == 'RUNNING') {
-        System.assertEquals(
-          false,
-          status.get('hasResults'),
-          'Should not have results yet'
-        );
-      }
-    } catch (Exception e) {
-      // Platform Cache not available
-      System.assert(true, 'Method executed even without cache');
+      System.assert(status.containsKey('status'), 'Should have status key');
+      // Status may be QUEUED, RUNNING, or COMPLETED depending on timing
+    } else {
+      // Execution failed, but method still works
+      System.assert(true, 'Method executed even if execution failed');
     }
     Test.stopTest();
   }
@@ -651,40 +602,44 @@ private class JT_RunAsTestExecutor_Test {
   /**
    * @description Test getTestResults exception handling
    * @author Jaime Terrats | 11-29-2025
+   * Updated: 12-13-2025 - Now uses executionId instead of userId
    **/
   @IsTest
   static void testGetTestResultsExceptionHandling() {
-    // Use invalid user ID format to potentially trigger exception
-    String invalidUserId = 'invalid_id_format';
+    // Use invalid executionId format to potentially trigger exception
+    String invalidExecutionId = 'invalid_id_format';
 
     Test.startTest();
     JT_RunAsTestExecutor.TestExecutionResult result = JT_RunAsTestExecutor.getTestResults(
-      invalidUserId
+      invalidExecutionId
     );
     Test.stopTest();
 
     // Should handle gracefully
     System.assertNotEquals(null, result, 'Result should not be null');
-    // If exception occurs, result.success should be false or result should be empty
+    // If exception occurs, result.success should be false
+    System.assertEquals(false, result.success, 'Should return false for invalid executionId');
   }
 
   /**
    * @description Test getTestStatus exception handling
    * @author Jaime Terrats | 11-29-2025
+   * Updated: 12-13-2025 - Now uses executionId instead of userId
    **/
   @IsTest
   static void testGetTestStatusExceptionHandling() {
-    // Use invalid user ID to potentially trigger exception
-    String invalidUserId = 'invalid_id_format';
+    // Use invalid executionId format to potentially trigger exception
+    String invalidExecutionId = 'invalid_id_format';
 
     Test.startTest();
     Map<String, Object> status = JT_RunAsTestExecutor.getTestStatus(
-      invalidUserId
+      invalidExecutionId
     );
     Test.stopTest();
 
     System.assertNotEquals(null, status, 'Status should not be null');
     // Should have status key even if error occurs
     System.assert(status.containsKey('status'), 'Should have status key');
+    System.assertEquals('NOT_FOUND', status.get('status'), 'Should return NOT_FOUND for invalid executionId');
   }
 }

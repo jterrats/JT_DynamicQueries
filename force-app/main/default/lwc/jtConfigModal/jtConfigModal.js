@@ -479,7 +479,7 @@ export default class JtConfigModal extends LightningElement {
             }
           }, 0);
         }
-        
+
         this.queryValidation = {
           isValid: true,
           message: this.labels.validSyntax,

@@ -512,6 +512,104 @@ private class JT_QueryViewerController_Test {
   }
 
   /**
+   * @description Test serializeRecordsForLWC method
+   * Validates that child relationships are preserved in standard Salesforce format
+   * @author Jaime Terrats | 12-13-2025
+   **/
+  @IsTest
+  static void testSerializeRecordsForLWC() {
+    // Create test data with child relationships
+    Account acc = new Account(
+      Name = 'Test Account for Serialization',
+      Type = 'Customer',
+      Industry = 'Technology'
+    );
+    insert acc;
+
+    // Create child Contacts
+    List<Contact> contacts = new List<Contact>{
+      new Contact(
+        AccountId = acc.Id,
+        FirstName = 'John',
+        LastName = 'Doe',
+        Email = 'john@test.com'
+      ),
+      new Contact(
+        AccountId = acc.Id,
+        FirstName = 'Jane',
+        LastName = 'Smith',
+        Email = 'jane@test.com'
+      )
+    };
+    insert contacts;
+
+    // Query with child relationship
+    List<Account> accounts = [
+      SELECT Id, Name, Type, Industry, (SELECT Id, FirstName, LastName, Email FROM Contacts)
+      FROM Account
+      WHERE Id = :acc.Id
+      LIMIT 1
+    ];
+
+    Test.startTest();
+    List<Object> serialized = JT_QueryViewerController.serializeRecordsForLWC(accounts);
+    Test.stopTest();
+
+    System.assertNotEquals(null, serialized, 'Serialized records should not be null');
+    System.assertEquals(1, serialized.size(), 'Should serialize one account');
+    
+    // Verify child relationships are preserved
+    Map<String, Object> firstRecord = (Map<String, Object>) serialized[0];
+    System.assert(
+      firstRecord.containsKey('Contacts'),
+      'Child relationship Contacts should be preserved'
+    );
+    
+    // Verify Contacts is in standard format: { records: [...] }
+    Object contactsObj = firstRecord.get('Contacts');
+    System.assertNotEquals(null, contactsObj, 'Contacts should not be null');
+    
+    // Contacts should be a Map with 'records' key
+    if (contactsObj instanceof Map<String, Object>) {
+      Map<String, Object> contactsMap = (Map<String, Object>) contactsObj;
+      System.assert(
+        contactsMap.containsKey('records'),
+        'Contacts should have records key in standard format'
+      );
+      List<Object> contactRecords = (List<Object>) contactsMap.get('records');
+      System.assertEquals(2, contactRecords.size(), 'Should have 2 contacts');
+    }
+  }
+
+  /**
+   * @description Test serializeRecordsForLWC with empty list
+   * @author Jaime Terrats | 12-13-2025
+   **/
+  @IsTest
+  static void testSerializeRecordsForLWCEmpty() {
+    Test.startTest();
+    List<Object> serialized = JT_QueryViewerController.serializeRecordsForLWC(new List<Account>());
+    Test.stopTest();
+
+    System.assertNotEquals(null, serialized, 'Should return empty list, not null');
+    System.assertEquals(0, serialized.size(), 'Should return empty list');
+  }
+
+  /**
+   * @description Test serializeRecordsForLWC with null input
+   * @author Jaime Terrats | 12-13-2025
+   **/
+  @IsTest
+  static void testSerializeRecordsForLWCNull() {
+    Test.startTest();
+    List<Object> serialized = JT_QueryViewerController.serializeRecordsForLWC(null);
+    Test.stopTest();
+
+    System.assertNotEquals(null, serialized, 'Should return empty list, not null');
+    System.assertEquals(0, serialized.size(), 'Should return empty list for null input');
+  }
+
+  /**
    * @description Test batch processing with large result set simulation
    * @author Jaime Terrats | 12-02-2025
    **/

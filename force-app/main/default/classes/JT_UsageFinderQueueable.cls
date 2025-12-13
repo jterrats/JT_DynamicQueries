@@ -45,9 +45,12 @@ public with sharing class JT_UsageFinderQueueable implements Queueable {
         configurationDevName
       );
 
-      // Store results in Platform Cache (7 days TTL)
-      String cacheKey = 'UsageSearch_' + configurationDevName + '_' + userId;
-      Cache.Org.put(cacheKey, JSON.serialize(result), 604800); // 7 days in seconds
+      // Store results in Platform Cache (2 days TTL - max allowed)
+      // Use alphanumeric cache key to avoid invalid characters (underscores, etc.)
+      String sanitizedConfigName = configurationDevName.replaceAll('[^a-zA-Z0-9]', '');
+      String sanitizedUserId = userId != null ? userId.replaceAll('[^a-zA-Z0-9]', '') : '';
+      String cacheKey = 'UsageSearch' + sanitizedConfigName + sanitizedUserId;
+      Cache.Org.put(cacheKey, JSON.serialize(result), 172800); // 2 days in seconds (max allowed)
 
       System.debug('Usage search completed. Found:');
       System.debug('- Total Results: ' + result.totalResults);
@@ -202,7 +205,10 @@ public with sharing class JT_UsageFinderQueueable implements Queueable {
     String configurationDevName,
     String userId
   ) {
-    String cacheKey = 'UsageSearch_' + configurationDevName + '_' + userId;
+    // Use alphanumeric cache key to match the key used in execute()
+    String sanitizedConfigName = configurationDevName != null ? configurationDevName.replaceAll('[^a-zA-Z0-9]', '') : '';
+    String sanitizedUserId = userId != null ? userId.replaceAll('[^a-zA-Z0-9]', '') : '';
+    String cacheKey = 'UsageSearch' + sanitizedConfigName + sanitizedUserId;
     String cachedJson = (String) Cache.Org.get(cacheKey);
 
     if (String.isNotBlank(cachedJson)) {

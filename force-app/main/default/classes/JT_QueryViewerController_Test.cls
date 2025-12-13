@@ -557,18 +557,18 @@ private class JT_QueryViewerController_Test {
 
     System.assertNotEquals(null, serialized, 'Serialized records should not be null');
     System.assertEquals(1, serialized.size(), 'Should serialize one account');
-    
+
     // Verify child relationships are preserved
     Map<String, Object> firstRecord = (Map<String, Object>) serialized[0];
     System.assert(
       firstRecord.containsKey('Contacts'),
       'Child relationship Contacts should be preserved'
     );
-    
+
     // Verify Contacts is in standard format: { records: [...] }
     Object contactsObj = firstRecord.get('Contacts');
     System.assertNotEquals(null, contactsObj, 'Contacts should not be null');
-    
+
     // Contacts should be a Map with 'records' key
     if (contactsObj instanceof Map<String, Object>) {
       Map<String, Object> contactsMap = (Map<String, Object>) contactsObj;

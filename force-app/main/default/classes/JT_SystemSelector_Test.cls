@@ -67,7 +67,7 @@ private class JT_SystemSelector_Test {
   @IsTest
   static void testGetFlowByIdQuery() {
     String testFlowId = '301000000000000AAA';
-    
+
     Test.startTest();
     String query = JT_SystemSelector.getFlowByIdQuery(testFlowId);
     Test.stopTest();

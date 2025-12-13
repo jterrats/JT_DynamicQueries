@@ -161,7 +161,7 @@ private class JT_RunAsTestExecutor_Test {
     // If execution was initiated successfully, try to get results
     if (executeResult.success && String.isNotBlank(executeResult.jobId)) {
       String executionId = executeResult.jobId;
-      
+
       // Try to get results (may not be ready yet, but tests the method)
       JT_RunAsTestExecutor.TestExecutionResult result = JT_RunAsTestExecutor.getTestResults(
         executionId
@@ -350,7 +350,7 @@ private class JT_RunAsTestExecutor_Test {
     // If execution was initiated, try to get results
     if (executeResult.success && String.isNotBlank(executeResult.jobId)) {
       String executionId = executeResult.jobId;
-      
+
       JT_RunAsTestExecutor.TestExecutionResult result = JT_RunAsTestExecutor.getTestResults(
         executionId
       );
@@ -409,7 +409,7 @@ private class JT_RunAsTestExecutor_Test {
     // If execution was initiated, try to get status
     if (executeResult.success && String.isNotBlank(executeResult.jobId)) {
       String executionId = executeResult.jobId;
-      
+
       Map<String, Object> status = JT_RunAsTestExecutor.getTestStatus(
         executionId
       );
@@ -446,7 +446,7 @@ private class JT_RunAsTestExecutor_Test {
     // If execution was initiated, check status immediately (should be Queued/Running)
     if (executeResult.success && String.isNotBlank(executeResult.jobId)) {
       String executionId = executeResult.jobId;
-      
+
       Map<String, Object> status = JT_RunAsTestExecutor.getTestStatus(
         executionId
       );

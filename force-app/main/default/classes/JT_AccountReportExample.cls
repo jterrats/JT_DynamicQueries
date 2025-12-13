@@ -120,9 +120,14 @@ public with sharing class JT_AccountReportExample {
   public static List<AccountSummary> searchAccountsForLWC(
     String searchPattern
   ) {
+    Map<String, Object> bindings = new Map<String, Object>{
+      'searchName' => searchPattern
+    };
+
     List<SObject> accounts = JT_DataSelector.getRecords(
       'Account_By_Name', // Simple search configuration
-      true // Enforce security
+      true, // Enforce security
+      bindings
     );
 
     List<AccountSummary> summaries = new List<AccountSummary>();

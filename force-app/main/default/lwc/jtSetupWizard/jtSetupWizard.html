@@ -1,9 +1,14 @@
 <template>
-  <lightning-card title={labels.toolingApiSetupWizard} icon-name="utility:settings">
+  <lightning-card
+    title={labels.toolingApiSetupWizard}
+    icon-name="utility:settings"
+  >
     <div class="slds-p-around_medium">
       <!-- Loading State -->
       <template if:true={isLoading}>
-        <lightning-spinner alternative-text={labels.checkingSetupStatus}></lightning-spinner>
+        <lightning-spinner
+          alternative-text={labels.checkingSetupStatus}
+        ></lightning-spinner>
       </template>
 
       <!-- Setup Status -->
@@ -21,7 +26,9 @@
                   ></lightning-icon>
                 </div>
                 <div class="slds-media__body">
-                  <h2 class="slds-text-heading_small">{labels.setupComplete}</h2>
+                  <h2 class="slds-text-heading_small">
+                    {labels.setupComplete}
+                  </h2>
                   <p class="slds-text-body_regular">
                     {labels.toolingApiAccessible}
                   </p>
@@ -40,7 +47,9 @@
                   ></lightning-icon>
                 </div>
                 <div class="slds-media__body">
-                  <h2 class="slds-text-heading_small">{labels.setupRequired}</h2>
+                  <h2 class="slds-text-heading_small">
+                    {labels.setupRequired}
+                  </h2>
                   <p class="slds-text-body_regular">
                     {labels.completeStepsBelow}
                   </p>
@@ -52,10 +61,14 @@
 
         <!-- Setup Steps -->
         <div class="slds-m-bottom_medium">
-          <h3 class="slds-text-heading_small slds-m-bottom_small">{labels.setupSteps}</h3>
+          <h3 class="slds-text-heading_small slds-m-bottom_small">
+            {labels.setupSteps}
+          </h3>
           <template for:each={setupSteps} for:item="step">
             <div key={step.stepName} class="slds-box slds-m-bottom_small">
-              <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+              <div
+                class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center"
+              >
                 <div class="slds-col slds-grow">
                   <div class="slds-media">
                     <div class="slds-media__figure">

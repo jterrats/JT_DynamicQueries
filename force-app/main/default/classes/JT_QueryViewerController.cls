@@ -156,7 +156,9 @@ public with sharing class JT_QueryViewerController {
    * @param sobjectRecords List of SObject records to serialize
    * @return List<Object> Serialized records compatible with LWC datatable
    **/
-  public static List<Object> serializeRecordsForLWC(List<SObject> sobjectRecords) {
+  public static List<Object> serializeRecordsForLWC(
+    List<SObject> sobjectRecords
+  ) {
     if (sobjectRecords == null || sobjectRecords.isEmpty()) {
       return new List<Object>();
     }
@@ -577,7 +579,10 @@ public with sharing class JT_QueryViewerController {
       );
 
       if (hasChildRelationships) {
-        setLowRiskAssessment(assessment, 'Query contains child relationships. Using standard processing.');
+        setLowRiskAssessment(
+          assessment,
+          'Query contains child relationships. Using standard processing.'
+        );
       } else {
         assessRiskByCount(assessment, estimatedCount);
       }
@@ -856,8 +861,7 @@ public with sharing class JT_QueryViewerController {
 
     if (assessment.isCriticalRisk) {
       assessment.riskLevel = 'CRITICAL';
-      assessment.message =
-        'This query will exceed the 50,000 record limit. Batch processing is required.';
+      assessment.message = 'This query will exceed the 50,000 record limit. Batch processing is required.';
     } else if (assessment.isHighRisk) {
       assessment.riskLevel = 'HIGH';
       assessment.message =
@@ -873,7 +877,9 @@ public with sharing class JT_QueryViewerController {
     } else {
       assessment.riskLevel = 'LOW';
       assessment.message =
-        'Query is safe to execute (' + estimatedCount + ' records).';
+        'Query is safe to execute (' +
+        estimatedCount +
+        ' records).';
     }
   }
 
@@ -882,7 +888,9 @@ public with sharing class JT_QueryViewerController {
    * @param bindings Map of bind parameters
    * @return Boolean True if any parameter is empty string
    */
-  private static Boolean hasEmptyParameters(final Map<String, Object> bindings) {
+  private static Boolean hasEmptyParameters(
+    final Map<String, Object> bindings
+  ) {
     if (bindings == null || bindings.isEmpty()) {
       return false;
     }

@@ -1,6 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <PlatformCachePartition xmlns="http://soap.sforce.com/2006/04/metadata">
-    <description>Platform Cache partition for JT Dynamic Queries - Run As Test feature</description>
+    <description
+  >Platform Cache partition for JT Dynamic Queries - Run As Test feature</description>
     <isDefaultPartition>true</isDefaultPartition>
     <masterLabel>JTDynamicQueriesCache</masterLabel>
     <platformCachePartitionTypes>

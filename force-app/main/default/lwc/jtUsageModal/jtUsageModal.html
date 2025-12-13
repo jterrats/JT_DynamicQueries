@@ -35,7 +35,9 @@
               alternative-text="Searching..."
               size="medium"
             ></lightning-spinner>
-            <p class="slds-m-top_small slds-text-body_small">{labels.searchingText}</p>
+            <p class="slds-m-top_small slds-text-body_small">
+              {labels.searchingText}
+            </p>
           </div>
         </template>
 
@@ -213,7 +215,9 @@
                     <span class="slds-text-body_small">
                       <strong>{labels.apex}</strong>
                       <template if:true={apexSuccess}>
-                        <span class="slds-text-color_success">✓ {labels.searched}</span>
+                        <span class="slds-text-color_success"
+                          >✓ {labels.searched}</span
+                        >
                       </template>
                       <template if:false={apexSuccess}>
                         <span class="slds-text-color_error">
@@ -236,7 +240,9 @@
                     <span class="slds-text-body_small">
                       <strong>{labels.flows}</strong>
                       <template if:true={flowSuccess}>
-                        <span class="slds-text-color_success">✓ {labels.searched}</span>
+                        <span class="slds-text-color_success"
+                          >✓ {labels.searched}</span
+                        >
                       </template>
                       <template if:false={flowSuccess}>
                         <span class="slds-text-color_error">

@@ -245,6 +245,16 @@ export function buildTableColumns(fields) {
 }
 
 /**
+ * Escape CSV values (wraps in quotes and escapes internal quotes)
+ * @param {*} value - Value to escape
+ * @returns {string} Escaped CSV value
+ * @example escapeCSV('test"value') → '"test""value"'
+ */
+export function escapeCSV(value) {
+  return `"${String(value || "").replace(/"/g, '""')}"`;
+}
+
+/**
  * Escape special characters for use in SOQL LIKE clauses
  * @param {string} value - Value to escape
  * @returns {string} Escaped value

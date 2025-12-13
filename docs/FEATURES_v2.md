@@ -375,12 +375,12 @@ and field-level security.
 
 **Features That Consume API Calls:**
 
-| Feature                       | API Calls | Optimizations                |
-| ----------------------------- | --------- | ---------------------------- |
-| "Where is this used?" (Apex)  | 0         | Direct SOQL (no callouts)    |
+| Feature                       | API Calls | Optimizations                          |
+| ----------------------------- | --------- | -------------------------------------- |
+| "Where is this used?" (Apex)  | 0         | Direct SOQL (no callouts)              |
 | "Where is this used?" (Flows) | 1-2       | ✅ Cached session ID + smart filtering |
-| Create Configuration          | 1-2       | ✅ Cached session ID         |
-| Edit Configuration            | 1-2       | ✅ Cached session ID         |
+| Create Configuration          | 1-2       | ✅ Cached session ID                   |
+| Edit Configuration            | 1-2       | ✅ Cached session ID                   |
 
 **Note**: With caching optimizations, session ID retrieval is reduced from N callouts to 1 callout per transaction.
 

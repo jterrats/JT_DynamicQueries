@@ -1,9 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Require_Base_Query</fullName>
     <active>true</active>
-    <description>Since the query is required to create a configuration, this rule will enforce the content on JT_BaseQuery__c</description>
+    <description
+  >Since the query is required to create a configuration, this rule will enforce the content on JT_BaseQuery__c</description>
     <errorConditionFormula>ISBLANK(JT_BaseQuery__c)</errorConditionFormula>
     <errorDisplayField>JT_BaseQuery__c</errorDisplayField>
-    <errorMessage>A query is required to create the configuration.</errorMessage>
+    <errorMessage
+  >A query is required to create the configuration.</errorMessage>
 </ValidationRule>

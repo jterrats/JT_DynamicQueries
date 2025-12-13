@@ -31,7 +31,10 @@ a.slds-assistive-text:focus {
 
 /* Nav Link - Use SLDS box + CSS hooks for hover effects */
 :host {
-  --slds-c-box-color-background-hover: var(--lwc-colorBackgroundRowHover, #f3f2f2);
+  --slds-c-box-color-background-hover: var(
+    --lwc-colorBackgroundRowHover,
+    #f3f2f2
+  );
   --slds-c-box-color-border-hover: var(--lwc-colorBorderBrand, #0176d3);
 }
 

@@ -7,7 +7,7 @@
 @SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
 private class JT_AuditLogDomain_Test {
   @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
+  @SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
   static void testInsertLogSuccess() {
     // Create audit log
     JT_SettingsAuditLog__c log = new JT_SettingsAuditLog__c(
@@ -35,7 +35,7 @@ private class JT_AuditLogDomain_Test {
   }
 
   @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
+  @SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
   static void testInsertLogNullLog() {
     Boolean exceptionThrown = false;
 
@@ -59,7 +59,7 @@ private class JT_AuditLogDomain_Test {
   }
 
   @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
+  @SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
   static void testInsertLogMissingRequiredField() {
     // Create log without required JT_Action__c field
     JT_SettingsAuditLog__c log = new JT_SettingsAuditLog__c(
@@ -88,7 +88,7 @@ private class JT_AuditLogDomain_Test {
   }
 
   @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
+  @SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
   static void testInsertLogsBulk() {
     List<JT_SettingsAuditLog__c> logs = new List<JT_SettingsAuditLog__c>();
 
@@ -120,7 +120,7 @@ private class JT_AuditLogDomain_Test {
   }
 
   @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
+  @SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
   static void testInsertLogsEmptyList() {
     Test.startTest();
     JT_AuditLogDomain.insertLogs(new List<JT_SettingsAuditLog__c>());
@@ -131,7 +131,7 @@ private class JT_AuditLogDomain_Test {
   }
 
   @IsTest
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
+  @SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
   static void testDeleteOldLogs() {
     // Create old logs (simulate 31 days ago)
     List<JT_SettingsAuditLog__c> oldLogs = new List<JT_SettingsAuditLog__c>();

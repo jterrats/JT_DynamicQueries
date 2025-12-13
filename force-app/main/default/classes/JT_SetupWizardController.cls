@@ -78,7 +78,6 @@ public without sharing class JT_SetupWizardController {
     return status;
   }
 
-
   /**
    * @description Tests Tooling API connection using API-enabled session ID from VFP
    * This method uses Visualforce page to get API-enabled session ID
@@ -90,7 +89,7 @@ public without sharing class JT_SetupWizardController {
   // Manual Authorization header is necessary here to bypass Named Credential proxy for same-org calls
   public static Boolean testToolingAPIConnection() {
     try {
-      final String query = 'SELECT Id FROM ApexClass LIMIT 1';
+      final String query = JT_SystemSelector.getToolingApiTestQuery();
       final String orgUrl = JT_ToolingApiUtil.getOrgDomainUrl();
 
       System.debug(LoggingLevel.INFO, 'Testing Tooling API connection');
@@ -104,8 +103,14 @@ public without sharing class JT_SetupWizardController {
       final Http httpClient = new Http();
       final HttpResponse response = httpClient.send(request);
 
-      System.debug(LoggingLevel.INFO, 'Response Status Code: ' + response.getStatusCode());
-      System.debug(LoggingLevel.INFO, 'Response Status: ' + response.getStatus());
+      System.debug(
+        LoggingLevel.INFO,
+        'Response Status Code: ' + response.getStatusCode()
+      );
+      System.debug(
+        LoggingLevel.INFO,
+        'Response Status: ' + response.getStatus()
+      );
 
       if (response.getStatusCode() != 200) {
         System.debug(LoggingLevel.WARN, 'Response Body: ' + response.getBody());
@@ -113,13 +118,25 @@ public without sharing class JT_SetupWizardController {
 
       return response.getStatusCode() == 200;
     } catch (System.CalloutException e) {
-      System.debug(LoggingLevel.ERROR, 'Tooling API callout exception: ' + e.getMessage());
-      System.debug(LoggingLevel.ERROR, 'Stack trace: ' + e.getStackTraceString());
+      System.debug(
+        LoggingLevel.ERROR,
+        'Tooling API callout exception: ' + e.getMessage()
+      );
+      System.debug(
+        LoggingLevel.ERROR,
+        'Stack trace: ' + e.getStackTraceString()
+      );
       return false;
     } catch (Exception e) {
-      System.debug(LoggingLevel.ERROR, 'Tooling API test failed: ' + e.getMessage());
+      System.debug(
+        LoggingLevel.ERROR,
+        'Tooling API test failed: ' + e.getMessage()
+      );
       System.debug(LoggingLevel.ERROR, 'Exception type: ' + e.getTypeName());
-      System.debug(LoggingLevel.ERROR, 'Stack trace: ' + e.getStackTraceString());
+      System.debug(
+        LoggingLevel.ERROR,
+        'Stack trace: ' + e.getStackTraceString()
+      );
       return false;
     }
   }

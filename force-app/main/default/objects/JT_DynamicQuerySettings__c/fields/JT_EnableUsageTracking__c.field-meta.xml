@@ -1,9 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>JT_EnableUsageTracking__c</fullName>
     <defaultValue>false</defaultValue>
-    <description>Enables &quot;Where is this used?&quot; feature. Consumes Tooling API limits when searching Flows.</description>
-    <inlineHelpText>⚠️ API Limits: Searching Apex classes (free) + Flows (consumes Tooling API calls). Enable only if needed. Each search may use 1-5 API calls depending on org size.</inlineHelpText>
+    <description
+  >Enables &quot;Where is this used?&quot; feature. Consumes Tooling API limits when searching Flows.</description>
+    <inlineHelpText
+  >⚠️ API Limits: Searching Apex classes (free) + Flows (consumes Tooling API calls). Enable only if needed. Each search may use 1-5 API calls depending on org size.</inlineHelpText>
     <label>Enable Usage Tracking</label>
     <trackTrending>false</trackTrending>
     <type>Checkbox</type>

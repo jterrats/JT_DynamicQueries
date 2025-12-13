@@ -138,9 +138,7 @@ public without sharing class JT_SystemSelector {
     return [
       SELECT Id, Name, Email, Username, Profile.Name
       FROM User
-      WHERE
-        IsActive = TRUE
-        AND Profile.Id != NULL
+      WHERE IsActive = TRUE AND Profile.Id != NULL
       WITH USER_MODE
       ORDER BY Name ASC
       LIMIT 1000
@@ -253,6 +251,70 @@ public without sharing class JT_SystemSelector {
   // ========================================
 
   /**
+   * @description Gets SOQL query string for Tooling API connection testing
+   * Used by: JT_SetupWizardController, JT_UsageFinder for connection tests
+   * @return String SOQL query string for Tooling API
+   */
+  public static String getToolingApiTestQuery() {
+    return 'SELECT Id FROM ApexClass LIMIT 1';
+  }
+
+  /**
+   * @description Gets SOQL query string for active Flows (non-obsolete)
+   * Used by: JT_UsageFinder for Tooling API queries
+   * @return String SOQL query string for Tooling API
+   */
+  public static String getActiveFlowsQuery() {
+    return 'SELECT Id, MasterLabel, Status FROM Flow WHERE Status != \'Obsolete\'';
+  }
+
+  /**
+   * @description Gets a simple ApexClass record for direct queries (not Tooling API)
+   * Used by: Test classes and direct queries
+   * @return List<ApexClass> Single ApexClass record (or empty list)
+   */
+  public static List<ApexClass> getApexClassForTestQuery() {
+    return [
+      SELECT Id
+      FROM ApexClass
+      WITH SYSTEM_MODE
+      LIMIT 1
+    ];
+  }
+
+  /**
+   * @description Gets active Flows (non-obsolete) for usage search
+   * Used by: JT_UsageFinder for finding configuration usages in Flows
+   * @return List<Flow> List of active Flows
+   */
+  public static List<Flow> getActiveFlows() {
+    return [
+      SELECT Id, MasterLabel, Status
+      FROM Flow
+      WHERE Status != 'Obsolete'
+      WITH SYSTEM_MODE
+      ORDER BY MasterLabel ASC
+    ];
+  }
+
+  /**
+   * @description Gets a Flow by ID (for Tooling API metadata retrieval)
+   * Used by: JT_UsageFinder for checking Flow metadata
+   * @param flowId The Flow ID to retrieve
+   * @return Flow The Flow record, or null if not found
+   */
+  public static Flow getFlowById(Id flowId) {
+    List<Flow> flows = [
+      SELECT Id, MasterLabel, Status
+      FROM Flow
+      WHERE Id = :flowId
+      WITH SYSTEM_MODE
+      LIMIT 1
+    ];
+    return flows.isEmpty() ? null : flows[0];
+  }
+
+  /**
    * @description Gets Apex classes for usage search with configurable filter
    * Used by: JT_UsageFinder for finding configuration usages
    * @return List<ApexClass> List of Apex classes matching the system filter
@@ -267,7 +329,8 @@ public without sharing class JT_SystemSelector {
     // Build query safely - filter comes from Custom Metadata (trusted source)
     // But we still need to handle the case where filter might contain quotes
     // Since filter is from Custom Metadata, we can trust it, but we'll use bind variables where possible
-    final String queryString = 'SELECT Id, Name, Body FROM ApexClass WHERE ' +
+    final String queryString =
+      'SELECT Id, Name, Body FROM ApexClass WHERE ' +
       filter +
       ' ORDER BY Name';
 
@@ -277,9 +340,9 @@ public without sharing class JT_SystemSelector {
       System.debug(
         LoggingLevel.ERROR,
         'Error querying ApexClass with filter: ' +
-        filter +
-        '. Error: ' +
-        e.getMessage()
+          filter +
+          '. Error: ' +
+          e.getMessage()
       );
       // Fallback to a simpler query if the configured filter fails
       return [
@@ -290,5 +353,4 @@ public without sharing class JT_SystemSelector {
       ];
     }
   }
-
 }

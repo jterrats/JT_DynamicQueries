@@ -38,9 +38,7 @@ public with sharing class JT_UsageFinderQueueable implements Queueable {
    */
   public void execute(QueueableContext context) {
     try {
-      System.debug(
-        'Starting async usage search for: ' + configurationDevName
-      );
+      System.debug('Starting async usage search for: ' + configurationDevName);
 
       // Perform comprehensive usage search
       JT_UsageFinder.AggregatedUsageResponse result = JT_UsageFinder.findAllUsagesResilient(
@@ -53,8 +51,12 @@ public with sharing class JT_UsageFinderQueueable implements Queueable {
 
       System.debug('Usage search completed. Found:');
       System.debug('- Total Results: ' + result.totalResults);
-      System.debug('- Apex Service: ' + (result.apexService.success ? 'Success' : 'Failed'));
-      System.debug('- Flow Service: ' + (result.flowService.success ? 'Success' : 'Failed'));
+      System.debug(
+        '- Apex Service: ' + (result.apexService.success ? 'Success' : 'Failed')
+      );
+      System.debug(
+        '- Flow Service: ' + (result.flowService.success ? 'Success' : 'Failed')
+      );
 
       // Send email notification
       if (String.isNotBlank(userEmail)) {
@@ -62,7 +64,10 @@ public with sharing class JT_UsageFinderQueueable implements Queueable {
       }
     } catch (Exception e) {
       System.debug(
-        'Error in async usage search: ' + e.getMessage() + '\n' + e.getStackTraceString()
+        'Error in async usage search: ' +
+          e.getMessage() +
+          '\n' +
+          e.getStackTraceString()
       );
 
       // Send error email
@@ -79,7 +84,9 @@ public with sharing class JT_UsageFinderQueueable implements Queueable {
    * @description Sends completion email with search results
    * @param result Usage search results
    */
-  private void sendCompletionEmail(JT_UsageFinder.AggregatedUsageResponse result) {
+  private void sendCompletionEmail(
+    JT_UsageFinder.AggregatedUsageResponse result
+  ) {
     Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
     email.setToAddresses(new List<String>{ userEmail });
     email.setSubject(
@@ -110,9 +117,16 @@ public with sharing class JT_UsageFinderQueueable implements Queueable {
     body += '<ul>';
     body +=
       '<li><strong>Apex Classes:</strong> ' +
-      (result.apexService.success ? String.valueOf(result.apexService.data.size()) : 'Failed') +
+      (result.apexService.success
+        ? String.valueOf(result.apexService.data.size())
+        : 'Failed') +
       '</li>';
-    body += '<li><strong>Flows:</strong> ' + (result.flowService.success ? String.valueOf(result.flowService.data.size()) : 'Failed') + '</li>';
+    body +=
+      '<li><strong>Flows:</strong> ' +
+      (result.flowService.success
+        ? String.valueOf(result.flowService.data.size())
+        : 'Failed') +
+      '</li>';
     body += '</ul>';
     body += '<p><strong>Total Usages:</strong> ' + totalUsages + '</p>';
 
@@ -122,17 +136,21 @@ public with sharing class JT_UsageFinderQueueable implements Queueable {
 
     if (totalUsages > 0) {
       body += '<h3>Details:</h3>';
-      
+
       for (JT_UsageFinder.UsageResult usage : result.allResults) {
-        body += '<li><strong>' + usage.className + '</strong> (' + usage.metadataType + ')';
+        body +=
+          '<li><strong>' +
+          usage.className +
+          '</strong> (' +
+          usage.metadataType +
+          ')';
         if (usage.lineNumber != null) {
           body += ' - Line ' + usage.lineNumber;
         }
         body += '</li>';
       }
     } else {
-      body +=
-        '<p><em>No usages found for this configuration. It may be unused or only referenced in code comments.</em></p>';
+      body += '<p><em>No usages found for this configuration. It may be unused or only referenced in code comments.</em></p>';
     }
 
     body +=
@@ -165,12 +183,8 @@ public with sharing class JT_UsageFinderQueueable implements Queueable {
     body += '<h3>Error Details:</h3>';
     body += '<p><strong>Type:</strong> ' + e.getTypeName() + '</p>';
     body += '<p><strong>Message:</strong> ' + e.getMessage() + '</p>';
-    body +=
-      '<p><strong>Line Number:</strong> ' +
-      e.getLineNumber() +
-      '</p>';
-    body +=
-      '<p>Please contact your Salesforce administrator for assistance.</p>';
+    body += '<p><strong>Line Number:</strong> ' + e.getLineNumber() + '</p>';
+    body += '<p>Please contact your Salesforce administrator for assistance.</p>';
     body += '</body></html>';
 
     email.setHtmlBody(body);

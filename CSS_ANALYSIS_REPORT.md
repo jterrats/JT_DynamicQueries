@@ -1,6 +1,7 @@
 # Análisis de CSS Custom en componentes LWC
 
 ## Resumen ejecutivo
+
 - **Total de componentes con CSS**: 10
 - **Líneas de CSS custom**: ~163 clases/reglas custom
 - **Oportunidades de mejora**: Alto potencial de reducción mediante SLDS y CSS Hooks
@@ -8,12 +9,16 @@
 ## Componentes analizados
 
 ### 1. jtCacheModal (9 líneas)
+
 **Estado**: ✅ Mínimo - Bien optimizado
+
 - Solo 2 clases custom necesarias
 - Resto usa SLDS correctamente
 
 ### 2. jtConfigModal (55 líneas)
+
 **Oportunidades**:
+
 - `.query-preview-text`: Puede usar SLDS `slds-text-body_small` + `slds-p-around_small` + custom fonts via CSS hooks
 - `.preview-results`: Los `!important` indican acoplamiento fuerte - refactorizar
 - `.modal-close-button`: Puede usar SLDS button variants
@@ -21,19 +26,24 @@
 **Recomendación**: Refactorizar 70% del CSS
 
 ### 3. jtSearchableCombobox (270 líneas) ⚠️
+
 **Estado**: CRÍTICO - Reimplementa casi todo SLDS
 **Problemas**:
+
 - Redefine completamente `.slds-dropdown`, `.slds-listbox`, `.slds-combobox_container`
 - Muchos `!important` indican conflictos con SLDS
 - Estilos redundantes (colores, tamaños ya definidos en SLDS)
 
 **Recomendación**:
+
 - Usar `lightning-combobox` nativo o `lightning-dual-listbox`
 - Si custom, usar CSS Hooks para personalizaciones específicas
 - Potencial de reducción: 85%
 
 ### 4. jtQueryResults (152 líneas)
+
 **Oportunidades**:
+
 - `.results-container`: Usar SLDS spacing classes
 - `.json-content`, `.csv-content`: Consolidar en una clase + modificadores SLDS
 - `.desktop-table`, `.mobile-cards`: Usar `slds-show_medium` / `slds-hide_medium`
@@ -42,19 +52,25 @@
 **Recomendación**: Refactorizar 60% del CSS
 
 ### 5. jtQueryViewer (410 líneas) ⚠️
+
 **Estado**: Ya optimizado parcialmente en sesión actual
 **Pendiente**:
+
 - Eliminar media queries restantes
 - Consolidar clases `.mobile-cards`, `.desktop-table`
 - Usar SLDS spacing tokens
 
 ### 6. jtDocumentation (28 líneas)
+
 **Estado**: ✅ Bueno - Solo estilos de contenido markdown
+
 - Necesario para renderizar markdown
 - Mantener como está
 
 ### 7. jtProjectDocs (202 líneas)
+
 **Oportunidades**:
+
 - `.nav-link`: Puede usar `slds-button` con variant
 - `.alert-info`, `.alert-warning`, `.alert-success`: Usar `lightning-alert` o SLDS `slds-box slds-theme_*`
 - `.toc-grid`: Usar SLDS grid system
@@ -63,14 +79,18 @@
 **Recomendación**: Refactorizar 50% del CSS
 
 ### 8. jtSupport (42 líneas)
+
 **Estado**: ✅ Aceptable
+
 - Animaciones custom necesarias (hover, transform)
 - Mantener estilos de interacción
 
 ### 9. jtParameterInputs (ya optimizado)
+
 **Estado**: ✅ Optimizado en sesión actual
 
 ### 10. jtUsageModal (ya optimizado)
+
 **Estado**: ✅ Optimizado en sesión actual
 
 ---
@@ -80,8 +100,10 @@
 ### 🔴 ALTA PRIORIDAD
 
 #### 1. jtSearchableCombobox - Refactorización completa
+
 **Problema**: Reimplementa SLDS desde cero
 **Solución**:
+
 ```javascript
 // Opción A: Usar componente nativo
 <lightning-combobox
@@ -106,6 +128,7 @@
 **Impacto**: Reducción de ~230 líneas (85%)
 
 #### 2. jtConfigModal - Simplificar con SLDS + Hooks
+
 ```css
 /* Antes: 15 líneas */
 .query-preview-text {
@@ -127,7 +150,12 @@
 
 /* CSS */
 .query-preview-text {
-  font-family: var(--lwc-fontFamilyMonospace, "Courier New", Courier, monospace);
+  font-family: var(
+    --lwc-fontFamilyMonospace,
+    "Courier New",
+    Courier,
+    monospace
+  );
   white-space: pre-wrap;
   word-wrap: break-word;
 }
@@ -138,6 +166,7 @@
 ### 🟡 MEDIA PRIORIDAD
 
 #### 3. jtQueryResults - Responsive con SLDS
+
 ```html
 <!-- Antes: CSS media queries -->
 <div class="desktop-table">...</div>
@@ -151,17 +180,24 @@
 ```css
 /* Eliminar */
 @media (min-width: 48rem) {
-  .desktop-table { display: block; }
-  .mobile-cards { display: none; }
+  .desktop-table {
+    display: block;
+  }
+  .mobile-cards {
+    display: none;
+  }
 }
 
 /* Mantener solo estilos de estructura */
-.desktop-table { overflow-x: auto; }
+.desktop-table {
+  overflow-x: auto;
+}
 ```
 
 **Impacto**: Reducción de ~90 líneas (60%)
 
 #### 4. jtProjectDocs - Alerts con SLDS
+
 ```html
 <!-- Antes: CSS custom -->
 <div class="alert-info">...</div>
@@ -184,9 +220,11 @@
 ## CSS Hooks - Guía de implementación
 
 ### Qué son los CSS Hooks de SLDS
+
 Tokens CSS personalizables para componentes SLDS sin sobrescribir estilos.
 
 ### Ejemplo: Personalizar lightning-button
+
 ```css
 :host {
   --slds-c-button-brand-color-background: #ff6b6b;
@@ -199,6 +237,7 @@ Tokens CSS personalizables para componentes SLDS sin sobrescribir estilos.
 ### Hooks más útiles para el proyecto
 
 #### Spacing
+
 ```css
 :host {
   --slds-c-card-spacing-block: 1rem;
@@ -207,6 +246,7 @@ Tokens CSS personalizables para componentes SLDS sin sobrescribir estilos.
 ```
 
 #### Typography
+
 ```css
 :host {
   --slds-c-heading-font-size: 1.25rem;
@@ -215,6 +255,7 @@ Tokens CSS personalizables para componentes SLDS sin sobrescribir estilos.
 ```
 
 #### Colors
+
 ```css
 :host {
   --slds-c-input-color-border: #dddbda;
@@ -228,6 +269,7 @@ Tokens CSS personalizables para componentes SLDS sin sobrescribir estilos.
 ## Plan de acción recomendado
 
 ### Fase 1: Componentes críticos (Sprint 1)
+
 1. **jtSearchableCombobox**: Reemplazar o refactorizar completamente
    - Evaluar si `lightning-combobox` cubre casos de uso
    - Si no, implementar con CSS Hooks
@@ -239,6 +281,7 @@ Tokens CSS personalizables para componentes SLDS sin sobrescribir estilos.
    - **Ahorro estimado**: 40 líneas
 
 ### Fase 2: Componentes medios (Sprint 2)
+
 3. **jtQueryResults**: Responsive SLDS
    - Reemplazar media queries
    - Usar `slds-show/hide` utilities
@@ -250,6 +293,7 @@ Tokens CSS personalizables para componentes SLDS sin sobrescribir estilos.
    - **Ahorro estimado**: 100 líneas
 
 ### Fase 3: Optimización final (Sprint 3)
+
 5. **jtQueryViewer**: Finalizar optimización
 6. **Linting y validación**: Code Analyzer
 7. **Documentación**: CSS Hooks usados
@@ -258,30 +302,32 @@ Tokens CSS personalizables para componentes SLDS sin sobrescribir estilos.
 
 ## Métricas de éxito
 
-| Métrica | Actual | Meta | Mejora |
-|---------|--------|------|--------|
-| Líneas CSS custom | ~1,100 | ~450 | -60% |
-| Media queries | 15 | 0 | -100% |
-| Clases custom | 163 | ~65 | -60% |
-| Uso de !important | 85 | ~15 | -82% |
-| Componentes optimizados | 3/10 | 10/10 | 100% |
+| Métrica                 | Actual | Meta  | Mejora |
+| ----------------------- | ------ | ----- | ------ |
+| Líneas CSS custom       | ~1,100 | ~450  | -60%   |
+| Media queries           | 15     | 0     | -100%  |
+| Clases custom           | 163    | ~65   | -60%   |
+| Uso de !important       | 85     | ~15   | -82%   |
+| Componentes optimizados | 3/10   | 10/10 | 100%   |
 
 ---
 
 ## Referencias
 
 ### CSS Hooks documentation
+
 - [SLDS Styling Hooks](https://www.lightningdesignsystem.com/platforms/lightning/styling-hooks/)
 - [LWC CSS Best Practices](https://developer.salesforce.com/docs/component-library/documentation/en/lwc/lwc.create_components_css)
 
 ### SLDS Utilities
+
 - [Spacing](https://www.lightningdesignsystem.com/utilities/spacing/)
 - [Sizing](https://www.lightningdesignsystem.com/utilities/sizing/)
 - [Text](https://www.lightningdesignsystem.com/utilities/text/)
 - [Visibility](https://www.lightningdesignsystem.com/utilities/visibility/)
 
 ### Lightning Components
+
 - [lightning-combobox](https://developer.salesforce.com/docs/component-library/bundle/lightning-combobox)
 - [lightning-button](https://developer.salesforce.com/docs/component-library/bundle/lightning-button)
 - [lightning-card](https://developer.salesforce.com/docs/component-library/bundle/lightning-card)
-

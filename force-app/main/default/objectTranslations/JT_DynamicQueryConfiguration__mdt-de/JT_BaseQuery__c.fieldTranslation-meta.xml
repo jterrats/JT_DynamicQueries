@@ -1,6 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
-    <help>Die auszuführende SOQL-Abfrage. Verwenden Sie Bindungsvariablen mit Doppelpunkt-Syntax (z.B.: :kontoName) für dynamische Parameter.</help>
+    <help
+  >Die auszuführende SOQL-Abfrage. Verwenden Sie Bindungsvariablen mit Doppelpunkt-Syntax (z.B.: :kontoName) für dynamische Parameter.</help>
     <label>Basisabfrage (SOQL)</label>
     <name>JT_BaseQuery__c</name>
 </CustomFieldTranslation>

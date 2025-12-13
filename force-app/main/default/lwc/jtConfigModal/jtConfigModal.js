@@ -180,15 +180,21 @@ export default class JtConfigModal extends LightningElement {
 
   // Computed
   get title() {
-    return this.mode === "edit" ? this.labels.editTitle : this.labels.createTitle;
+    return this.mode === "edit"
+      ? this.labels.editTitle
+      : this.labels.createTitle;
   }
 
   get saveButtonLabel() {
-    return this.mode === "edit" ? this.labels.updateLabel : this.labels.saveLabel;
+    return this.mode === "edit"
+      ? this.labels.updateLabel
+      : this.labels.saveLabel;
   }
 
   get dynamicToolingNote() {
-    return this.mode === "edit" ? this.labels.toolingNoteUpdate : this.labels.toolingNote;
+    return this.mode === "edit"
+      ? this.labels.toolingNoteUpdate
+      : this.labels.toolingNote;
   }
 
   get isEditMode() {
@@ -412,14 +418,17 @@ export default class JtConfigModal extends LightningElement {
 
     // Check if query has bind variables (e.g., :searchName, :accountType)
     const hasBindings = /:\w+/.test(query);
-    const bindingsProvided = this._config.bindings && this._config.bindings.trim().length > 0;
+    const bindingsProvided =
+      this._config.bindings && this._config.bindings.trim().length > 0;
 
     // If query has bindings but no bindings JSON is provided, mark as valid
     // (bindings will be required at execution time, not at configuration time)
     if (hasBindings && !bindingsProvided) {
       this.queryValidation = {
         isValid: true,
-        message: this.labels.validSyntax + " (bindings will be required at execution time)",
+        message:
+          this.labels.validSyntax +
+          " (bindings will be required at execution time)",
         objectName: objectName
       };
       this._config.objectName = objectName;
@@ -468,8 +477,7 @@ export default class JtConfigModal extends LightningElement {
       // Network or other error
       this.queryValidation = {
         isValid: false,
-        message:
-          error.body?.message || this.labels.errorValidatingQuery,
+        message: error.body?.message || this.labels.errorValidatingQuery,
         objectName: ""
       };
       this._config.objectName = "";
@@ -485,7 +493,9 @@ export default class JtConfigModal extends LightningElement {
   }
 
   get queryPreviewIconAlt() {
-    return this.showQueryPreviewContent ? this.labels.hideQueryPreview : this.labels.showQueryPreview;
+    return this.showQueryPreviewContent
+      ? this.labels.hideQueryPreview
+      : this.labels.showQueryPreview;
   }
 
   get dataPreviewIconName() {
@@ -493,7 +503,9 @@ export default class JtConfigModal extends LightningElement {
   }
 
   get dataPreviewIconAlt() {
-    return this.showDataPreviewContent ? this.labels.hideDataPreview : this.labels.showDataPreview;
+    return this.showDataPreviewContent
+      ? this.labels.hideDataPreview
+      : this.labels.showDataPreview;
   }
 
   // Toggle handlers for preview sections

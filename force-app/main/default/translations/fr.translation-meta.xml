@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <Translations xmlns="http://soap.sforce.com/2006/04/metadata">
     <customApplications>
         <label><!-- Dynamic Query Framework --></label>
@@ -17,7 +17,8 @@
         <name>JT_Error_UnsupportedOperatorGeneric</name>
     </customLabels>
     <customLabels>
-        <label><!-- jtConfigModal - developerNameCannotEndWithUnderscore --></label>
+        <label
+    ><!-- jtConfigModal - developerNameCannotEndWithUnderscore --></label>
         <name>JT_jtConfigModal_developerNameCannotEndWithUnderscore</name>
     </customLabels>
     <customLabels>
@@ -33,7 +34,8 @@
         <name>JT_jtConfigModal_developerNameMustStartWithLetter</name>
     </customLabels>
     <customLabels>
-        <label><!-- jtConfigModal - developerNameNoConsecutiveUnderscores --></label>
+        <label
+    ><!-- jtConfigModal - developerNameNoConsecutiveUnderscores --></label>
         <name>JT_jtConfigModal_developerNameNoConsecutiveUnderscores</name>
     </customLabels>
     <customLabels>
@@ -153,7 +155,8 @@
         <name>JT_jtDocumentation_namedCredentialWhyText</name>
     </customLabels>
     <customLabels>
-        <label>Un framework puissant pour exécuter des requêtes SOQL dynamiques avec des configurations pilotées par les métadonnées.</label>
+        <label
+    >Un framework puissant pour exécuter des requêtes SOQL dynamiques avec des configurations pilotées par les métadonnées.</label>
         <name>JT_jtDocumentation_overviewDescription</name>
     </customLabels>
     <customLabels>
@@ -165,7 +168,8 @@
         <name>JT_jtDocumentation_overviewTitle</name>
     </customLabels>
     <customLabels>
-        <label>Fournir une infrastructure et des conventions pour les requêtes configurables, pas seulement des utilitaires isolés.</label>
+        <label
+    >Fournir une infrastructure et des conventions pour les requêtes configurables, pas seulement des utilitaires isolés.</label>
         <name>JT_jtDocumentation_philosophyText</name>
     </customLabels>
     <customLabels>
@@ -261,7 +265,8 @@
         <name>JT_jtQueryViewer_clearCacheButton</name>
     </customLabels>
     <customLabels>
-        <label>Select which cached data you want to clear. This will force a refresh from the server.</label>
+        <label
+    >Select which cached data you want to clear. This will force a refresh from the server.</label>
         <name>JT_jtQueryViewer_clearCacheDescription</name>
     </customLabels>
     <customLabels>
@@ -269,11 +274,13 @@
         <name>JT_jtQueryViewer_clearCacheTitle</name>
     </customLabels>
     <customLabels>
-        <label>Selected data will be cleared and refreshed from the server.</label>
+        <label
+    >Selected data will be cleared and refreshed from the server.</label>
         <name>JT_jtQueryViewer_clearCacheWarning</name>
     </customLabels>
     <customLabels>
-        <label>Refresh the list of available query configurations from metadata</label>
+        <label
+    >Refresh the list of available query configurations from metadata</label>
         <name>JT_jtQueryViewer_clearConfigurationsHelp</name>
     </customLabels>
     <customLabels>
@@ -281,7 +288,8 @@
         <name>JT_jtQueryViewer_clearConfigurationsLabel</name>
     </customLabels>
     <customLabels>
-        <label>Clear recently selected configurations and user preferences</label>
+        <label
+    >Clear recently selected configurations and user preferences</label>
         <name>JT_jtQueryViewer_clearRecentHelp</name>
     </customLabels>
     <customLabels>
@@ -313,7 +321,8 @@
         <name>JT_jtQueryViewer_code</name>
     </customLabels>
     <customLabels>
-        <label>Créer une nouvelle configuration de requête avec une requête SOQL (SELECT champs FROM objet WHERE condition), des variables de liaison optionnelles au format JSON et des mappages de champs.</label>
+        <label
+    >Créer une nouvelle configuration de requête avec une requête SOQL (SELECT champs FROM objet WHERE condition), des variables de liaison optionnelles au format JSON et des mappages de champs.</label>
         <name>JT_jtQueryViewer_createConfigTooltip</name>
     </customLabels>
     <customLabels>
@@ -457,7 +466,8 @@
         <name>JT_jtQueryViewer_predefinedBindings</name>
     </customLabels>
     <customLabels>
-        <label>Cette configuration a des liaisons prédéfinies qui seront utilisées automatiquement.</label>
+        <label
+    >Cette configuration a des liaisons prédéfinies qui seront utilisées automatiquement.</label>
         <name>JT_jtQueryViewer_predefinedBindingsDesc</name>
     </customLabels>
     <customLabels>
@@ -497,7 +507,8 @@
         <name>JT_jtQueryViewer_runAsUser</name>
     </customLabels>
     <customLabels>
-        <label>Disponible uniquement dans Sandbox/Scratch/Developer Orgs. Utilisez l</label>
+        <label
+    >Disponible uniquement dans Sandbox/Scratch/Developer Orgs. Utilisez l</label>
         <name>JT_jtQueryViewer_sandboxOnlyWarning</name>
     </customLabels>
     <customLabels>
@@ -509,7 +520,8 @@
         <name>JT_jtQueryViewer_searchConfigsPlaceholder</name>
     </customLabels>
     <customLabels>
-        <label>Tapez pour rechercher des utilisateurs... (laissez vide pour exécuter en tant qu</label>
+        <label
+    >Tapez pour rechercher des utilisateurs... (laissez vide pour exécuter en tant qu</label>
         <name>JT_jtQueryViewer_searchUsersPlaceholder</name>
     </customLabels>
     <customLabels>
@@ -541,7 +553,8 @@
         <name>JT_jtQueryViewer_showing</name>
     </customLabels>
     <customLabels>
-        <label>Ceci crée un enregistrement de métadonnées personnalisées via Tooling API. La configuration sera immédiatement disponible.</label>
+        <label
+    >Ceci crée un enregistrement de métadonnées personnalisées via Tooling API. La configuration sera immédiatement disponible.</label>
         <name>JT_jtQueryViewer_toolingAPINote</name>
     </customLabels>
     <customLabels>
@@ -561,7 +574,8 @@
         <name>JT_jtQueryViewer_updateConfiguration</name>
     </customLabels>
     <customLabels>
-        <label>Recherche de références à cette configuration dans les classes Apex</label>
+        <label
+    >Recherche de références à cette configuration dans les classes Apex</label>
         <name>JT_jtQueryViewer_usageModalSubtitle</name>
     </customLabels>
     <customLabels>
@@ -581,7 +595,8 @@
         <name>JT_jtQueryViewer_whereIsThisUsed</name>
     </customLabels>
     <customLabels>
-        <label>Trouver où cette configuration est utilisée dans le code Apex</label>
+        <label
+    >Trouver où cette configuration est utilisée dans le code Apex</label>
         <name>JT_jtQueryViewer_whereIsThisUsedTooltip</name>
     </customLabels>
     <customLabels>
@@ -621,11 +636,13 @@
         <name>JT_jtSupport_featureRequestButton</name>
     </customLabels>
     <customLabels>
-        <label>Vous avez une idée ? Suggérez une nouvelle fonctionnalité ou amélioration.</label>
+        <label
+    >Vous avez une idée ? Suggérez une nouvelle fonctionnalité ou amélioration.</label>
         <name>JT_jtSupport_featureRequestDescription</name>
     </customLabels>
     <customLabels>
-        <label>Ce projet est open-source et hébergé sur GitHub. Vous pouvez voir le code, signaler des problèmes et contribuer au projet.</label>
+        <label
+    >Ce projet est open-source et hébergé sur GitHub. Vous pouvez voir le code, signaler des problèmes et contribuer au projet.</label>
         <name>JT_jtSupport_githubDescription</name>
     </customLabels>
     <customLabels>
@@ -645,7 +662,8 @@
         <name>JT_jtSupport_reportBugButton</name>
     </customLabels>
     <customLabels>
-        <label>Vous avez trouvé un bug ? Faites-le nous savoir pour que nous puissions le corriger.</label>
+        <label
+    >Vous avez trouvé un bug ? Faites-le nous savoir pour que nous puissions le corriger.</label>
         <name>JT_jtSupport_reportBugDescription</name>
     </customLabels>
     <customLabels>
@@ -673,7 +691,8 @@
         <name>JT_jtSupport_viewIssuesButton</name>
     </customLabels>
     <customLabels>
-        <label>Parcourez les problèmes existants et voyez ce sur quoi nous travaillons.</label>
+        <label
+    >Parcourez les problèmes existants et voyez ce sur quoi nous travaillons.</label>
         <name>JT_jtSupport_viewIssuesDescription</name>
     </customLabels>
     <customLabels>
@@ -685,19 +704,23 @@
         <name>JT_jtSupport_welcomeTitle</name>
     </customLabels>
     <customLabels>
-        <label><!-- LA_PreChat_Base_FieldError_04I0b000000fzoG_7615882 --></label>
+        <label
+    ><!-- LA_PreChat_Base_FieldError_04I0b000000fzoG_7615882 --></label>
         <name>LA_PreChat_Base_FieldError_04I0b000000fzoG_7615882</name>
     </customLabels>
     <customLabels>
-        <label><!-- LA_PreChat_Base_StartChat_04I0b000000fzoG_1065233 --></label>
+        <label
+    ><!-- LA_PreChat_Base_StartChat_04I0b000000fzoG_1065233 --></label>
         <name>LA_PreChat_Base_StartChat_04I0b000000fzoG_1065233</name>
     </customLabels>
     <customLabels>
-        <label><!-- Error when selecting a cross-object fieldsset is not allowed and attempted. --></label>
+        <label
+    ><!-- Error when selecting a cross-object fieldsset is not allowed and attempted. --></label>
         <name>fflib_QueryFactory_crossobject_fieldsets_not_allowed_error</name>
     </customLabels>
     <customLabels>
-        <label><!-- Error when selecting a field set for a different sobject type. --></label>
+        <label
+    ><!-- Error when selecting a field set for a different sobject type. --></label>
         <name>fflib_QueryFactory_fieldset_wrong_sobject_error</name>
     </customLabels>
     <customLabels>
@@ -705,7 +728,8 @@
         <name>fflib_QueryFactory_recursive_subquery_error</name>
     </customLabels>
     <customLabels>
-        <label><!-- Presented when attempting to create a subquery from an invalid relationship. --></label>
+        <label
+    ><!-- Presented when attempting to create a subquery from an invalid relationship. --></label>
         <name>fflib_QueryFactory_subquery_invalid_relationship</name>
     </customLabels>
     <customLabels>
@@ -774,31 +798,31 @@
                 <fields>
                     <inputParameters>
                         <name>columns</name>
-                        <value/>
+                        <value />
                     </inputParameters>
                     <inputParameters>
                         <name>isShowSearchBar</name>
-                        <value/>
+                        <value />
                     </inputParameters>
                     <inputParameters>
                         <name>label</name>
-                        <value/>
+                        <value />
                     </inputParameters>
                     <inputParameters>
                         <name>minRowSelection</name>
-                        <value/>
+                        <value />
                     </inputParameters>
                     <inputParameters>
                         <name>selectionMode</name>
-                        <value/>
+                        <value />
                     </inputParameters>
                     <inputParameters>
                         <name>shouldDisplayLabel</name>
-                        <value/>
+                        <value />
                     </inputParameters>
                     <inputParameters>
                         <name>tableData</name>
-                        <value/>
+                        <value />
                     </inputParameters>
                     <name>display_data</name>
                 </fields>

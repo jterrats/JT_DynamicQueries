@@ -28,7 +28,8 @@ public without sharing class JT_ToolingApiUtil {
    * @return String API version (e.g., v65.0)
    */
   public static String getApiVersion() {
-    return systemSettings != null && String.isNotBlank(systemSettings.JT_ApiVersion__c)
+    return systemSettings != null &&
+      String.isNotBlank(systemSettings.JT_ApiVersion__c)
       ? systemSettings.JT_ApiVersion__c
       : 'v65.0';
   }
@@ -72,7 +73,9 @@ public without sharing class JT_ToolingApiUtil {
    * @return String Alphanumeric key safe for Platform Cache
    */
   public static String getAlphanumericCacheKey(final String userId) {
-    final String targetUserId = String.isBlank(userId) ? UserInfo.getUserId() : userId;
+    final String targetUserId = String.isBlank(userId)
+      ? UserInfo.getUserId()
+      : userId;
     return CACHE_KEY_PREFIX + toAlphanumeric(targetUserId);
   }
 
@@ -106,7 +109,8 @@ public without sharing class JT_ToolingApiUtil {
       // Platform Cache not available - continue to VFP call
       System.debug(
         LoggingLevel.FINE,
-        'Platform Cache not available, fetching from VFP: ' + cacheEx.getMessage()
+        'Platform Cache not available, fetching from VFP: ' +
+        cacheEx.getMessage()
       );
     }
 
@@ -131,7 +135,8 @@ public without sharing class JT_ToolingApiUtil {
         // Platform Cache not available - that's okay, static cache still works
         System.debug(
           LoggingLevel.FINE,
-          'Could not cache session ID in Platform Cache: ' + cacheEx.getMessage()
+          'Could not cache session ID in Platform Cache: ' +
+          cacheEx.getMessage()
         );
       }
 
@@ -258,31 +263,47 @@ public without sharing class JT_ToolingApiUtil {
   @SuppressWarnings('PMD.ApexSuggestUsingNamedCred')
   public static String getApexLogContent(final String apexLogId) {
     if (String.isBlank(apexLogId)) {
-      System.debug(LoggingLevel.WARN, '⚠️ ApexLogId is blank, cannot retrieve log content');
+      System.debug(
+        LoggingLevel.WARN,
+        '⚠️ ApexLogId is blank, cannot retrieve log content'
+      );
       return null;
     }
 
     try {
       final String apiVersion = getApiVersion();
       // REST API endpoint for ApexLog Body field
-      final String endpointPath = '/services/data/' + apiVersion + '/sobjects/ApexLog/' + apexLogId + '/Body';
+      final String endpointPath =
+        '/services/data/' +
+        apiVersion +
+        '/sobjects/ApexLog/' +
+        apexLogId +
+        '/Body';
 
-      final HttpRequest request = createToolingApiRestRequest(endpointPath, 'GET', 30000);
+      final HttpRequest request = createToolingApiRestRequest(
+        endpointPath,
+        'GET',
+        30000
+      );
       // Override Accept header for plain text (log body is text, not JSON)
       request.setHeader('Accept', 'text/plain');
 
       final HttpResponse response = new Http().send(request);
 
       if (response.getStatusCode() == 200) {
-        System.debug('✅ Successfully retrieved Apex Log content (length: ' + response.getBody().length() + ')');
+        System.debug(
+          '✅ Successfully retrieved Apex Log content (length: ' +
+            response.getBody().length() +
+            ')'
+        );
         return response.getBody();
       } else {
         System.debug(
           LoggingLevel.ERROR,
           '❌ Failed to retrieve Apex Log content. Status: ' +
-          response.getStatusCode() +
-          ', Body: ' +
-          response.getBody()
+            response.getStatusCode() +
+            ', Body: ' +
+            response.getBody()
         );
         return null;
       }
@@ -291,9 +312,11 @@ public without sharing class JT_ToolingApiUtil {
         LoggingLevel.ERROR,
         '❌ Error retrieving Apex Log content: ' + e.getMessage()
       );
-      System.debug(LoggingLevel.ERROR, 'Stack trace: ' + e.getStackTraceString());
+      System.debug(
+        LoggingLevel.ERROR,
+        'Stack trace: ' + e.getStackTraceString()
+      );
       return null;
     }
   }
 }
-

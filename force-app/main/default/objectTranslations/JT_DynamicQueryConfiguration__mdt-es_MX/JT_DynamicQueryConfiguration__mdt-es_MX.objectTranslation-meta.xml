@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
     <caseValues>
         <plural>false</plural>
@@ -11,7 +11,8 @@
     <gender>Feminine</gender>
     <nameFieldLabel>Nombre de Configuración</nameFieldLabel>
     <validationRules>
-        <errorMessage><!-- A query is required to create the configuration. --></errorMessage>
+        <errorMessage
+    ><!-- A query is required to create the configuration. --></errorMessage>
         <name>Require_Base_Query</name>
     </validationRules>
 </CustomObjectTranslation>

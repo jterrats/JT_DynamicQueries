@@ -16,7 +16,10 @@ private class JT_ToolingApiUtil_Test {
     Test.stopTest();
 
     System.assertNotEquals(null, apiVersion, 'API version should not be null');
-    System.assert(apiVersion.startsWith('v'), 'API version should start with "v"');
+    System.assert(
+      apiVersion.startsWith('v'),
+      'API version should start with "v"'
+    );
   }
 
   /**
@@ -42,7 +45,10 @@ private class JT_ToolingApiUtil_Test {
     Test.stopTest();
 
     System.assertNotEquals(null, orgUrl, 'Org URL should not be null');
-    System.assert(orgUrl.contains('salesforce'), 'URL should contain salesforce');
+    System.assert(
+      orgUrl.contains('salesforce'),
+      'URL should contain salesforce'
+    );
   }
 
   /**
@@ -61,7 +67,10 @@ private class JT_ToolingApiUtil_Test {
     Test.stopTest();
 
     System.assertNotEquals(null, key1, 'Key should not be null');
-    System.assert(key1.startsWith('ApiSessionId'), 'Key should start with prefix');
+    System.assert(
+      key1.startsWith('ApiSessionId'),
+      'Key should start with prefix'
+    );
     System.assertNotEquals(null, key2, 'Key should not be null');
     System.assertNotEquals(null, key3, 'Key should not be null');
     System.assert(
@@ -79,7 +88,11 @@ private class JT_ToolingApiUtil_Test {
     final String sessionId = JT_ToolingApiUtil.getApiSessionId();
     Test.stopTest();
 
-    System.assertEquals('test_session_id', sessionId, 'Should return test session ID');
+    System.assertEquals(
+      'test_session_id',
+      sessionId,
+      'Should return test session ID'
+    );
   }
 
   /**
@@ -164,7 +177,11 @@ private class JT_ToolingApiUtil_Test {
     Test.stopTest();
 
     System.assertNotEquals(null, request, 'Request should not be null');
-    System.assertEquals('DELETE', request.getMethod(), 'Method should be DELETE');
+    System.assertEquals(
+      'DELETE',
+      request.getMethod(),
+      'Method should be DELETE'
+    );
     System.assert(
       request.getEndpoint().contains('tooling'),
       'Endpoint should contain tooling'
@@ -192,4 +209,3 @@ private class JT_ToolingApiUtil_Test {
     Test.stopTest();
   }
 }
-

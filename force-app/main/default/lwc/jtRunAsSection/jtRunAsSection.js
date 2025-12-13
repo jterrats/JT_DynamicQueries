@@ -120,8 +120,8 @@ export default class JtRunAsSection extends LightningElement {
 
   // Reset the combobox component
   resetCombobox() {
-    const combobox = this.template.querySelector('c-jt-searchable-combobox');
-    if (combobox && typeof combobox.reset === 'function') {
+    const combobox = this.template.querySelector("c-jt-searchable-combobox");
+    if (combobox && typeof combobox.reset === "function") {
       combobox.reset();
     }
   }

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
     <applicationVisibilities>
         <application>JT_Dynamic_Queries</application>
@@ -56,7 +56,8 @@
         <enabled>true</enabled>
         <name>JT_DynamicQueryConfiguration__mdt</name>
     </customMetadataTypeAccesses>
-    <description>Grants full access to JT Dynamic Queries framework: all Apex classes, Custom Objects, Tabs, and Lightning Application.</description>
+    <description
+  >Grants full access to JT Dynamic Queries framework: all Apex classes, Custom Objects, Tabs, and Lightning Application.</description>
     <fieldPermissions>
         <editable>true</editable>
         <field>JT_RunAsTest_Execution__c.Apex_Queueable_Job_Id__c</field>

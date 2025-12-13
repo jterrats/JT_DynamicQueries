@@ -7,7 +7,6 @@
  **/
 @SuppressWarnings('PMD.AvoidDebugStatements')
 public with sharing class JT_RunAsTestExecutor {
-
   /**
    * @description Executes query as specified user using test context
    * @author Jaime Terrats | 11-29-2025
@@ -49,30 +48,40 @@ public with sharing class JT_RunAsTestExecutor {
       Integer pendingExecutions = [
         SELECT COUNT()
         FROM JT_RunAsTest_Execution__c
-        WHERE Initiated_By__c = :UserInfo.getUserId()
+        WHERE
+          Initiated_By__c = :UserInfo.getUserId()
           AND Test_Status__c IN ('Queued', 'Running')
           AND CreatedDate >= :Datetime.now().addMinutes(-10)
       ];
 
       final Integer MAX_PENDING_EXECUTIONS = 3;
       if (pendingExecutions >= MAX_PENDING_EXECUTIONS) {
-        System.debug('⚠️ Rate limit exceeded: ' + pendingExecutions + ' pending executions');
+        System.debug(
+          '⚠️ Rate limit exceeded: ' + pendingExecutions + ' pending executions'
+        );
         throw new AuraHandledException(
           'Too many test executions in queue (' +
-          pendingExecutions +
-          '). Please wait for pending executions to complete before starting a new one. Maximum allowed: ' +
-          MAX_PENDING_EXECUTIONS +
-          '.'
+            pendingExecutions +
+            '). Please wait for pending executions to complete before starting a new one. Maximum allowed: ' +
+            MAX_PENDING_EXECUTIONS +
+            '.'
         );
       }
 
-      System.debug('✅ Rate limit check passed: ' + pendingExecutions + ' pending executions');
+      System.debug(
+        '✅ Rate limit check passed: ' +
+          pendingExecutions +
+          ' pending executions'
+      );
 
       // Create execution record to store parameters and track state
       System.debug('📝 Creating execution record for user: ' + userId);
       System.debug('  Run_As_User_Name__c: ' + result.runAsUserName);
       System.debug('  Config_Name__c: ' + configName);
-      System.debug('  Bindings_Json__c length: ' + (bindingsJson != null ? bindingsJson.length() : 0));
+      System.debug(
+        '  Bindings_Json__c length: ' +
+        (bindingsJson != null ? bindingsJson.length() : 0)
+      );
 
       JT_RunAsTest_Execution__c execution = new JT_RunAsTest_Execution__c(
         Test_Status__c = 'Queued',
@@ -86,24 +95,52 @@ public with sharing class JT_RunAsTestExecutor {
       try {
         insert execution;
         System.debug('✅ Execution record created with ID: ' + execution.Id);
-        System.debug('  Run_As_User_Name__c after insert: ' + execution.Run_As_User_Name__c);
-        System.debug('  Bindings_Json__c after insert: ' + (execution.Bindings_Json__c != null ? execution.Bindings_Json__c.length() + ' chars' : 'NULL'));
+        System.debug(
+          '  Run_As_User_Name__c after insert: ' + execution.Run_As_User_Name__c
+        );
+        System.debug(
+          '  Bindings_Json__c after insert: ' +
+          (execution.Bindings_Json__c != null
+            ? execution.Bindings_Json__c.length() + ' chars'
+            : 'NULL')
+        );
       } catch (DmlException dmlEx) {
-        System.debug(LoggingLevel.ERROR, '❌ DML error inserting execution record: ' + dmlEx.getMessage());
-        System.debug(LoggingLevel.ERROR, 'DML Status Code: ' + dmlEx.getDmlStatusCode(0));
-        System.debug(LoggingLevel.ERROR, 'DML Fields: ' + dmlEx.getDmlFields(0));
-        throw new AuraHandledException('Failed to create execution record: ' + dmlEx.getMessage());
+        System.debug(
+          LoggingLevel.ERROR,
+          '❌ DML error inserting execution record: ' + dmlEx.getMessage()
+        );
+        System.debug(
+          LoggingLevel.ERROR,
+          'DML Status Code: ' + dmlEx.getDmlStatusCode(0)
+        );
+        System.debug(
+          LoggingLevel.ERROR,
+          'DML Fields: ' + dmlEx.getDmlFields(0)
+        );
+        throw new AuraHandledException(
+          'Failed to create execution record: ' + dmlEx.getMessage()
+        );
       } catch (Exception insertEx) {
-        System.debug(LoggingLevel.ERROR, '❌ Error inserting execution record: ' + insertEx.getMessage());
-        System.debug(LoggingLevel.ERROR, 'Stack trace: ' + insertEx.getStackTraceString());
-        throw new AuraHandledException('Failed to create execution record: ' + insertEx.getMessage());
+        System.debug(
+          LoggingLevel.ERROR,
+          '❌ Error inserting execution record: ' + insertEx.getMessage()
+        );
+        System.debug(
+          LoggingLevel.ERROR,
+          'Stack trace: ' + insertEx.getStackTraceString()
+        );
+        throw new AuraHandledException(
+          'Failed to create execution record: ' + insertEx.getMessage()
+        );
       }
 
       // Enqueue test execution via Tooling API using Queueable
       // This separates DML (insert above) from callout to avoid "uncommitted work pending" error
       // Queueable provides Job ID for monitoring and avoids async resource contention
       System.debug('📤 Enqueuing Queueable to enqueue test execution...');
-      Id queueableJobId = System.enqueueJob(new JT_RunAsTestEnqueuer(execution.Id));
+      Id queueableJobId = System.enqueueJob(
+        new JT_RunAsTestEnqueuer(execution.Id)
+      );
 
       // Store Queueable Job ID and update status to "Running" in execution record
       // CRITICAL: All DML must be completed BEFORE the Queueable executes (which makes callout)
@@ -112,19 +149,43 @@ public with sharing class JT_RunAsTestExecutor {
       try {
         execution.Test_Status__c = 'Running';
         execution.Apex_Queueable_Job_Id__c = String.valueOf(queueableJobId);
-        execution.Log_Messages__c = (String.isNotBlank(execution.Log_Messages__c) ? execution.Log_Messages__c + '\n' : '') +
-          'Queueable enqueued at ' + System.now() + '. Job ID: ' + queueableJobId;
+        execution.Log_Messages__c =
+          (String.isNotBlank(execution.Log_Messages__c)
+            ? execution.Log_Messages__c + '\n'
+            : '') +
+          'Queueable enqueued at ' +
+          System.now() +
+          '. Job ID: ' +
+          queueableJobId;
         update execution;
-        System.debug('✅ Execution record updated to Running with Queueable Job ID: ' + queueableJobId);
+        System.debug(
+          '✅ Execution record updated to Running with Queueable Job ID: ' +
+          queueableJobId
+        );
       } catch (DmlException dmlEx) {
-        System.debug(LoggingLevel.ERROR, '❌ Failed to update Apex_Queueable_Job_Id__c: ' + dmlEx.getMessage());
-        System.debug(LoggingLevel.ERROR, 'DML Status Code: ' + dmlEx.getDmlStatusCode(0));
-        System.debug(LoggingLevel.ERROR, 'DML Fields: ' + dmlEx.getDmlFields(0));
+        System.debug(
+          LoggingLevel.ERROR,
+          '❌ Failed to update Apex_Queueable_Job_Id__c: ' + dmlEx.getMessage()
+        );
+        System.debug(
+          LoggingLevel.ERROR,
+          'DML Status Code: ' + dmlEx.getDmlStatusCode(0)
+        );
+        System.debug(
+          LoggingLevel.ERROR,
+          'DML Fields: ' + dmlEx.getDmlFields(0)
+        );
         // Continue execution even if update fails - the Queueable will still run
         // The execution record ID is still returned for polling
       } catch (Exception updateEx) {
-        System.debug(LoggingLevel.ERROR, '❌ Error updating Apex_Queueable_Job_Id__c: ' + updateEx.getMessage());
-        System.debug(LoggingLevel.ERROR, 'Stack trace: ' + updateEx.getStackTraceString());
+        System.debug(
+          LoggingLevel.ERROR,
+          '❌ Error updating Apex_Queueable_Job_Id__c: ' + updateEx.getMessage()
+        );
+        System.debug(
+          LoggingLevel.ERROR,
+          'Stack trace: ' + updateEx.getStackTraceString()
+        );
         // Continue execution even if update fails - the Queueable will still run
       }
 
@@ -137,14 +198,13 @@ public with sharing class JT_RunAsTestExecutor {
       result.success = false;
       result.errorMessage = e.getMessage();
       result.stackTrace = e.getStackTraceString();
-      System.debug(LoggingLevel.ERROR, '❌ Error in executeAsUser: ' + e.getMessage());
+      System.debug(
+        LoggingLevel.ERROR,
+        '❌ Error in executeAsUser: ' + e.getMessage()
+      );
       return result;
     }
   }
-
-
-
-
 
   /**
    * @description Retrieves test results from Custom Object (replaces Platform Cache)
@@ -191,7 +251,10 @@ public with sharing class JT_RunAsTestExecutor {
       System.debug('📊 Execution Status: ' + execution.Test_Status__c);
 
       // Check status
-      if (execution.Test_Status__c == 'Queued' || execution.Test_Status__c == 'Running') {
+      if (
+        execution.Test_Status__c == 'Queued' ||
+        execution.Test_Status__c == 'Running'
+      ) {
         // First, check if Queueable Job is still running (before test is enqueued)
         if (String.isNotBlank(execution.Apex_Queueable_Job_Id__c)) {
           try {
@@ -206,13 +269,23 @@ public with sharing class JT_RunAsTestExecutor {
               AsyncApexJob queueableJob = queueableJobs[0];
               System.debug('📊 Queueable Job Status: ' + queueableJob.Status);
 
-              if (queueableJob.Status == 'Queued' || queueableJob.Status == 'Processing') {
+              if (
+                queueableJob.Status == 'Queued' ||
+                queueableJob.Status == 'Processing'
+              ) {
                 result.success = false;
-                result.message = 'Enqueuing test execution (' + queueableJob.Status.toLowerCase() + '). Please wait...';
+                result.message =
+                  'Enqueuing test execution (' +
+                  queueableJob.Status.toLowerCase() +
+                  '). Please wait...';
                 return result;
               } else if (queueableJob.Status == 'Failed') {
                 result.success = false;
-                result.errorMessage = 'Failed to enqueue test: ' + (String.isNotBlank(queueableJob.ExtendedStatus) ? queueableJob.ExtendedStatus : 'Queueable job failed');
+                result.errorMessage =
+                  'Failed to enqueue test: ' +
+                  (String.isNotBlank(queueableJob.ExtendedStatus)
+                    ? queueableJob.ExtendedStatus
+                    : 'Queueable job failed');
                 result.message = result.errorMessage;
                 execution.Test_Status__c = 'Failed';
                 execution.Error_Message__c = result.errorMessage;
@@ -221,7 +294,10 @@ public with sharing class JT_RunAsTestExecutor {
               }
             }
           } catch (Exception e) {
-            System.debug(LoggingLevel.WARN, 'Could not check Queueable Job status: ' + e.getMessage());
+            System.debug(
+              LoggingLevel.WARN,
+              'Could not check Queueable Job status: ' + e.getMessage()
+            );
           }
         }
 
@@ -240,21 +316,32 @@ public with sharing class JT_RunAsTestExecutor {
               System.debug('📊 Queue Item Status: ' + queueItem.Status);
 
               // If test is still queued after 30 seconds, it might not execute automatically in Developer Orgs
-              Long queuedDuration = System.now().getTime() - execution.CreatedDate.getTime();
+              Long queuedDuration =
+                System.now().getTime() - execution.CreatedDate.getTime();
               if (queueItem.Status == 'Queued' && queuedDuration > 30000) {
                 result.success = false;
                 result.message = 'Test is queued but may not execute automatically in Developer Orgs. Please check Apex Test Execution in Setup or try again later.';
-                System.debug('⚠️ Test has been queued for ' + queuedDuration + 'ms without executing');
+                System.debug(
+                  '⚠️ Test has been queued for ' +
+                    queuedDuration +
+                    'ms without executing'
+                );
                 return result;
               }
             }
           } catch (Exception e) {
-            System.debug(LoggingLevel.WARN, 'Could not check queue item status: ' + e.getMessage());
+            System.debug(
+              LoggingLevel.WARN,
+              'Could not check queue item status: ' + e.getMessage()
+            );
           }
         }
 
         result.success = false;
-        result.message = 'Test is ' + execution.Test_Status__c.toLowerCase() + '. Please wait...';
+        result.message =
+          'Test is ' +
+          execution.Test_Status__c.toLowerCase() +
+          '. Please wait...';
         return result;
       }
 
@@ -267,11 +354,22 @@ public with sharing class JT_RunAsTestExecutor {
           );
 
           result.success = (Boolean) resultMap.get('success');
-          result.recordCount = execution.Record_Count__c != null ? execution.Record_Count__c.intValue() : (Integer) resultMap.get('recordCount');
-          result.errorMessage = String.isNotBlank(execution.Error_Message__c) ? execution.Error_Message__c : (String) resultMap.get('errorMessage');
-          result.executionTime = execution.Execution_Time__c != null ? execution.Execution_Time__c.intValue() : (Integer) resultMap.get('executionTime');
+          result.recordCount = execution.Record_Count__c != null
+            ? execution.Record_Count__c.intValue()
+            : (Integer) resultMap.get('recordCount');
+          result.errorMessage = String.isNotBlank(execution.Error_Message__c)
+            ? execution.Error_Message__c
+            : (String) resultMap.get('errorMessage');
+          result.executionTime = execution.Execution_Time__c != null
+            ? execution.Execution_Time__c.intValue()
+            : (Integer) resultMap.get('executionTime');
           result.runAsUserName = execution.Run_As_User_Name__c;
-          result.assertMessage = execution.Test_Status__c == 'Completed' ? 'SUCCESS: Found ' + result.recordCount + ' record(s) as ' + result.runAsUserName : null;
+          result.assertMessage = execution.Test_Status__c == 'Completed'
+            ? 'SUCCESS: Found ' +
+              result.recordCount +
+              ' record(s) as ' +
+              result.runAsUserName
+            : null;
 
           // Return serialized data for LWC to parse
           result.queryResults = execution.Results_Json__c;
@@ -311,8 +409,14 @@ public with sharing class JT_RunAsTestExecutor {
       result.success = false;
       result.errorMessage = e.getMessage();
       result.message = 'Error retrieving results: ' + e.getMessage();
-      System.debug(LoggingLevel.ERROR, '❌ Error in getTestResults: ' + e.getMessage());
-      System.debug(LoggingLevel.ERROR, 'Stack trace: ' + e.getStackTraceString());
+      System.debug(
+        LoggingLevel.ERROR,
+        '❌ Error in getTestResults: ' + e.getMessage()
+      );
+      System.debug(
+        LoggingLevel.ERROR,
+        'Stack trace: ' + e.getStackTraceString()
+      );
       return result;
     }
   }
@@ -365,7 +469,10 @@ public with sharing class JT_RunAsTestExecutor {
     } catch (Exception e) {
       status.put('status', 'ERROR');
       status.put('error', e.getMessage());
-      System.debug(LoggingLevel.ERROR, '❌ Error in getTestStatus: ' + e.getMessage());
+      System.debug(
+        LoggingLevel.ERROR,
+        '❌ Error in getTestStatus: ' + e.getMessage()
+      );
     }
 
     return status;

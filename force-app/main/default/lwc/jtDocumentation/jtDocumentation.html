@@ -212,7 +212,9 @@ sf org assign permset --name JT_Dynamic_Queries_User
               3. Tooling API Access (Required)
             </h3>
             <p class="slds-text-body_regular slds-m-bottom_small">
-              The framework uses Salesforce Tooling API for the "Where is this used?" feature and for creating/editing query configurations dynamically.
+              The framework uses Salesforce Tooling API for the "Where is this
+              used?" feature and for creating/editing query configurations
+              dynamically.
             </p>
             <div class="slds-box slds-theme_warning slds-m-bottom_small">
               <p class="slds-text-body_small">
@@ -222,7 +224,11 @@ sf org assign permset --name JT_Dynamic_Queries_User
                   class="slds-m-right_xx-small"
                 ></lightning-icon>
                 <strong>Why is this required?</strong>
-                The framework uses the Tooling API to search for configuration usage in Flows and Apex classes, and to create Custom Metadata records programmatically. Without Tooling API access, you can only create configurations manually via Setup → Custom Metadata Types.
+                The framework uses the Tooling API to search for configuration
+                usage in Flows and Apex classes, and to create Custom Metadata
+                records programmatically. Without Tooling API access, you can
+                only create configurations manually via Setup → Custom Metadata
+                Types.
               </p>
             </div>
             <div class="slds-box slds-theme_shade slds-m-bottom_medium">
@@ -230,12 +236,21 @@ sf org assign permset --name JT_Dynamic_Queries_User
                 <strong>Requirements:</strong>
               </p>
               <ul class="slds-list_dotted slds-text-body_small">
-                <li>Users must have appropriate permissions to access Tooling API</li>
-                <li>Tooling API is automatically accessible in same-org scenarios using the current user's session</li>
-                <li>No additional configuration (Named Credentials, OAuth) is required for same-org Tooling API calls</li>
+                <li>
+                  Users must have appropriate permissions to access Tooling API
+                </li>
+                <li>
+                  Tooling API is automatically accessible in same-org scenarios
+                  using the current user's session
+                </li>
+                <li>
+                  No additional configuration (Named Credentials, OAuth) is
+                  required for same-org Tooling API calls
+                </li>
               </ul>
               <p class="slds-text-body_small slds-m-top_small">
-                📖 Use the <strong>Tooling API Setup Wizard</strong> below to verify Tooling API accessibility.
+                📖 Use the <strong>Tooling API Setup Wizard</strong> below to
+                verify Tooling API accessibility.
               </p>
             </div>
 
@@ -245,7 +260,8 @@ sf org assign permset --name JT_Dynamic_Queries_User
                 Tooling API Setup Wizard
               </h3>
               <p class="slds-text-body_regular slds-m-bottom_small">
-                Use the interactive wizard below to verify Tooling API accessibility for the "Where is this used?" feature.
+                Use the interactive wizard below to verify Tooling API
+                accessibility for the "Where is this used?" feature.
               </p>
               <c-jt-setup-wizard></c-jt-setup-wizard>
             </div>

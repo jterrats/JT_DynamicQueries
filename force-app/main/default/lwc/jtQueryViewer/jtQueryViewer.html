@@ -42,7 +42,10 @@
       aria-live="polite"
       aria-label={labels.searchingForUsage}
     >
-      <div class="slds-grid slds-grid_vertical slds-grid_align-center slds-grid_align-space-around slds-text-align_center" style="max-width: 500px;">
+      <div
+        class="slds-grid slds-grid_vertical slds-grid_align-center slds-grid_align-space-around slds-text-align_center"
+        style="max-width: 500px"
+      >
         <p class="slds-text-heading_small slds-m-bottom_medium">
           {labels.searchingFlows}
         </p>
@@ -51,7 +54,9 @@
           size="large"
           variant="brand"
         ></lightning-spinner>
-        <p class="slds-m-top_medium slds-text-body_regular slds-max-medium-text-width">
+        <p
+          class="slds-m-top_medium slds-text-body_regular slds-max-medium-text-width"
+        >
           {searchingUsageMessage}
         </p>
       </div>
@@ -216,9 +221,7 @@
                     ></lightning-icon>
                   </div>
                   <div class="slds-media__body">
-                    <p class="slds-text-body_small">
-                      {labels.securityWarning}
-                    </p>
+                    <p class="slds-text-body_small">{labels.securityWarning}</p>
                   </div>
                 </div>
               </div>
@@ -274,7 +277,8 @@
               </ul>
               <p class="slds-text-body_small slds-m-top_xx-small">
                 <strong>{labels.setupRequired}</strong>
-                Tooling API must be accessible. Users need appropriate permissions to access Tooling API.
+                Tooling API must be accessible. Users need appropriate
+                permissions to access Tooling API.
               </p>
               <p class="slds-text-body_small slds-m-top_xx-small">
                 <a href="#" onclick={handleGoToDocumentation}
@@ -438,12 +442,21 @@
         >
           <!-- Query Preview -->
           <template if:true={baseQuery}>
-            <div class="query-preview-container slds-m-bottom_medium slds-p-left_small">
+            <div
+              class="query-preview-container slds-m-bottom_medium slds-p-left_small"
+            >
               <div class="slds-text-heading_small slds-p-bottom_x-small">
                 Query Preview:
               </div>
-              <div class="query-preview slds-box slds-theme_shade slds-p-around_small slds-medium-p-around_medium slds-scrollable_x" style="max-height: 200px;">
-                <pre class="slds-text-body_small slds-medium-text-body_regular slds-m-around_none">{queryPreview}</pre>
+              <div
+                class="query-preview slds-box slds-theme_shade slds-p-around_small slds-medium-p-around_medium slds-scrollable_x"
+                style="max-height: 200px"
+              >
+                <pre
+                  class="slds-text-body_small slds-medium-text-body_regular slds-m-around_none"
+                >
+{queryPreview}</pre
+                >
               </div>
 
               <!-- Query Data Preview -->
@@ -559,7 +572,9 @@
                   <div
                     class="slds-grid slds-grid_align-spread slds-p-bottom_x-small"
                   >
-                    <div class="slds-text-heading_small">{labels.jsonOutput}</div>
+                    <div class="slds-text-heading_small">
+                      {labels.jsonOutput}
+                    </div>
                     <lightning-button
                       label={labels.copy}
                       icon-name="utility:copy"
@@ -568,7 +583,11 @@
                       class="slds-m-left_x-small"
                     ></lightning-button>
                   </div>
-                  <pre class="json-content slds-p-around_medium slds-text-body_small slds-medium-text-body_regular">{jsonOutput}</pre>
+                  <pre
+                    class="json-content slds-p-around_medium slds-text-body_small slds-medium-text-body_regular"
+                  >
+{jsonOutput}</pre
+                  >
                 </div>
               </template>
 

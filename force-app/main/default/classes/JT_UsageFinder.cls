@@ -12,12 +12,9 @@
   'PMD.CognitiveComplexity, PMD.CyclomaticComplexity, PMD.StdCyclomaticComplexity, PMD.AvoidBooleanMethodParameters, PMD.AvoidDeeplyNestedIfStmts, PMD.AvoidDebugStatements, PMD.ApexDoc, PMD.NcssMethodCount'
 )
 public without sharing class JT_UsageFinder {
-  private static final String FLOW_LIST_QUERY = 'SELECT Id, MasterLabel, Status FROM Flow WHERE Status != \'Obsolete\'';
-  private static final String TOOLING_API_TEST_QUERY = 'SELECT Id FROM ApexClass LIMIT 1';
   private static final Integer INITIAL_FLOWS_TO_CHECK = 30; // Process first 30 Flows in initial search (fast results)
   private static final Integer MAX_FLOWS_PER_BATCH = 30; // Process 30 Flows per batch when loading more
   private static final Integer MAX_FLOWS_WITHOUT_FILTER = 50; // If total Flows <= this, check all regardless of name match
-
 
   /**
    * @description Creates an HTTP request for Tooling API calls using API-enabled session ID
@@ -28,7 +25,6 @@ public without sharing class JT_UsageFinder {
   private static HttpRequest createToolingApiRequest(final String query) {
     return JT_ToolingApiUtil.createToolingApiQueryRequest(query);
   }
-
 
   /**
    * @description Wrapper for usage results
@@ -130,7 +126,9 @@ public without sharing class JT_UsageFinder {
    * @deprecated Use findAllUsagesResilient for fault-isolated searches
    */
   @AuraEnabled(cacheable=false)
-  public static List<UsageResult> findConfigurationUsage(final String configName) {
+  public static List<UsageResult> findConfigurationUsage(
+    final String configName
+  ) {
     final List<UsageResult> results = new List<UsageResult>();
 
     try {
@@ -149,7 +147,9 @@ public without sharing class JT_UsageFinder {
    * @return ServiceResponse Service response with fault isolation
    */
   @AuraEnabled(cacheable=false)
-  public static ServiceResponse findInApexClassesService(final String configName) {
+  public static ServiceResponse findInApexClassesService(
+    final String configName
+  ) {
     final ServiceResponse response = new ServiceResponse();
     response.serviceName = 'Apex Classes';
 
@@ -198,7 +198,9 @@ public without sharing class JT_UsageFinder {
    * @param configName The configuration name to search for
    * @return AggregatedUsageResponse Aggregated results from all services with fault isolation
    */
-  public static AggregatedUsageResponse findAllUsagesResilient(final String configName) {
+  public static AggregatedUsageResponse findAllUsagesResilient(
+    final String configName
+  ) {
     final AggregatedUsageResponse aggregated = new AggregatedUsageResponse();
 
     // Run each service independently - failures in one don't affect others
@@ -238,7 +240,7 @@ public without sharing class JT_UsageFinder {
 
     // Create Tooling API request
     final HttpRequest request = JT_ToolingApiUtil.createToolingApiQueryRequest(
-      FLOW_LIST_QUERY
+      JT_SystemSelector.getActiveFlowsQuery()
     );
 
     // Add request to continuation
@@ -422,8 +424,12 @@ public without sharing class JT_UsageFinder {
 
     if (httpResponse.getStatusCode() != 200) {
       flowService.success = false;
-      flowService.error = 'Tooling API returned status ' + httpResponse.getStatusCode();
-      System.debug(LoggingLevel.ERROR, 'Tooling API error: ' + httpResponse.getBody());
+      flowService.error =
+        'Tooling API returned status ' + httpResponse.getStatusCode();
+      System.debug(
+        LoggingLevel.ERROR,
+        'Tooling API error: ' + httpResponse.getBody()
+      );
       return flowService;
     }
 
@@ -453,7 +459,10 @@ public without sharing class JT_UsageFinder {
       flowService.error = 'Flow search failed: ' + e.getMessage();
       System.debug(
         LoggingLevel.ERROR,
-        'Flow processing error: ' + e.getMessage() + '\n' + e.getStackTraceString()
+        'Flow processing error: ' +
+          e.getMessage() +
+          '\n' +
+          e.getStackTraceString()
       );
     }
 
@@ -496,7 +505,11 @@ public without sharing class JT_UsageFinder {
     if (records.size() <= MAX_FLOWS_WITHOUT_FILTER) {
       System.debug(
         LoggingLevel.INFO,
-        'Small org (' + records.size() + ' Flows): checking all for "' + configName + '"'
+        'Small org (' +
+          records.size() +
+          ' Flows): checking all for "' +
+          configName +
+          '"'
       );
       addAllValidFlows(records, candidates, candidateIds);
       return new FlowCandidateResult(candidates, candidateIds, records.size());
@@ -509,7 +522,12 @@ public without sharing class JT_UsageFinder {
     );
 
     final String normalizedConfigName = configName.toLowerCase();
-    addNameMatchedFlows(records, normalizedConfigName, candidates, candidateIds);
+    addNameMatchedFlows(
+      records,
+      normalizedConfigName,
+      candidates,
+      candidateIds
+    );
 
     // If no name matches, check first N Flows
     if (candidates.isEmpty()) {
@@ -539,7 +557,10 @@ public without sharing class JT_UsageFinder {
         candidateIds.add(flowId);
       }
     }
-    System.debug(LoggingLevel.INFO, 'Added ' + candidates.size() + ' candidate Flows');
+    System.debug(
+      LoggingLevel.INFO,
+      'Added ' + candidates.size() + ' candidate Flows'
+    );
   }
 
   /**
@@ -618,12 +639,12 @@ public without sharing class JT_UsageFinder {
     System.debug(
       LoggingLevel.INFO,
       'Pagination: ' +
-      aggregated.flowsProcessed +
-      '/' +
-      aggregated.totalFlowsFound +
-      ' processed, ' +
-      aggregated.pendingFlowIds.size() +
-      ' pending'
+        aggregated.flowsProcessed +
+        '/' +
+        aggregated.totalFlowsFound +
+        ' processed, ' +
+        aggregated.pendingFlowIds.size() +
+        ' pending'
     );
   }
 
@@ -642,7 +663,10 @@ public without sharing class JT_UsageFinder {
 
     System.debug(
       LoggingLevel.INFO,
-      'Processing ' + candidates.size() + ' candidate Flows for config: ' + configName
+      'Processing ' +
+        candidates.size() +
+        ' candidate Flows for config: ' +
+        configName
     );
 
     Integer flowsChecked = 0;
@@ -655,14 +679,14 @@ public without sharing class JT_UsageFinder {
         System.debug(
           LoggingLevel.FINE,
           'Checking Flow [' +
-          flowsChecked +
-          '/' +
-          candidates.size() +
-          ']: ' +
-          flowName +
-          ' (ID: ' +
-          flowId +
-          ')'
+            flowsChecked +
+            '/' +
+            candidates.size() +
+            ']: ' +
+            flowName +
+            ' (ID: ' +
+            flowId +
+            ')'
         );
 
         if (checkFlowUsesConfig(flowId, configName, sessionId)) {
@@ -675,10 +699,7 @@ public without sharing class JT_UsageFinder {
       } catch (Exception e) {
         System.debug(
           LoggingLevel.WARN,
-          'Error checking Flow ' +
-          flowName +
-          ': ' +
-          e.getMessage()
+          'Error checking Flow ' + flowName + ': ' + e.getMessage()
         );
       }
     }
@@ -694,7 +715,9 @@ public without sharing class JT_UsageFinder {
   /**
    * @description Aggregates results from all services
    */
-  private static void aggregateAllResults(final AggregatedUsageResponse aggregated) {
+  private static void aggregateAllResults(
+    final AggregatedUsageResponse aggregated
+  ) {
     if (aggregated.apexService?.success == true) {
       aggregated.allResults.addAll(aggregated.apexService.data);
     }
@@ -719,9 +742,9 @@ public without sharing class JT_UsageFinder {
     System.debug(
       LoggingLevel.ERROR,
       'Error in continuation callback: ' +
-      e.getMessage() +
-      '\n' +
-      e.getStackTraceString()
+        e.getMessage() +
+        '\n' +
+        e.getStackTraceString()
     );
 
     if (aggregated.flowService == null) {
@@ -739,7 +762,9 @@ public without sharing class JT_UsageFinder {
    */
   private static Boolean isToolingAPIAvailable() {
     try {
-      final HttpRequest request = createToolingApiRequest(TOOLING_API_TEST_QUERY);
+      final HttpRequest request = createToolingApiRequest(
+        JT_SystemSelector.getToolingApiTestQuery()
+      );
       request.setTimeout(5000);
       final HttpResponse response = new Http().send(request);
       return response.getStatusCode() == 200;
@@ -777,7 +802,9 @@ public without sharing class JT_UsageFinder {
       }
 
       // Find specific lines containing the config
-      results.addAll(findConfigInClassLines(apexClass, configName, normalizedConfig));
+      results.addAll(
+        findConfigInClassLines(apexClass, configName, normalizedConfig)
+      );
     }
 
     return results;
@@ -870,7 +897,10 @@ public without sharing class JT_UsageFinder {
 
       return findFlowUsagesInRecords(records, configName);
     } catch (Exception e) {
-      System.debug(LoggingLevel.WARN, 'Could not search Flows: ' + e.getMessage());
+      System.debug(
+        LoggingLevel.WARN,
+        'Could not search Flows: ' + e.getMessage()
+      );
       return new List<UsageResult>();
     }
   }
@@ -886,9 +916,8 @@ public without sharing class JT_UsageFinder {
 
     for (Object record : records) {
       final Map<String, Object> flowData = (Map<String, Object>) record;
-      final Map<String, Object> metadata = (Map<String, Object>) flowData?.get(
-        'Metadata'
-      );
+      final Map<String, Object> metadata = (Map<String, Object>) flowData
+        ?.get('Metadata');
 
       if (metadata != null && searchFlowMetadata(metadata, configName)) {
         results.add(createFlowUsageResult(flowData, configName));
@@ -912,7 +941,11 @@ public without sharing class JT_UsageFinder {
     final String sessionId
   ) {
     try {
-      final String query = 'SELECT Id, Metadata FROM Flow WHERE Id = \'' + flowId + '\'';
+      // Build query using SystemSelector pattern (but Tooling API requires string query)
+      final String query =
+        'SELECT Id, Metadata FROM Flow WHERE Id = \'' +
+        String.escapeSingleQuotes(flowId) +
+        '\'';
       final HttpRequest request = JT_ToolingApiUtil.createToolingApiQueryRequest(
         query,
         5000
@@ -934,9 +967,8 @@ public without sharing class JT_UsageFinder {
       }
 
       final Map<String, Object> flowData = (Map<String, Object>) records[0];
-      final Map<String, Object> metadata = (Map<String, Object>) flowData?.get(
-        'Metadata'
-      );
+      final Map<String, Object> metadata = (Map<String, Object>) flowData
+        ?.get('Metadata');
 
       return metadata != null && searchFlowMetadata(metadata, configName);
     } catch (Exception e) {
@@ -1127,8 +1159,12 @@ public without sharing class JT_UsageFinder {
    * @param metadataJson Flow metadata as JSON string
    * @return String Extracted configuration name or 'Unknown'
    */
-  private static String extractConfigFromFlowMetadata(final String metadataJson) {
-    final Pattern configNamePattern = Pattern.compile('"configName"\\s*:\\s*"([^"]+)"');
+  private static String extractConfigFromFlowMetadata(
+    final String metadataJson
+  ) {
+    final Pattern configNamePattern = Pattern.compile(
+      '"configName"\\s*:\\s*"([^"]+)"'
+    );
     final Matcher configNameMatcher = configNamePattern.matcher(metadataJson);
 
     if (configNameMatcher.find()) {

@@ -1,7 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>JT_ObjectName__c</fullName>
-    <description>This field is designed to indicate end users on which object is a configuration working.</description>
+    <description
+  >This field is designed to indicate end users on which object is a configuration working.</description>
     <externalId>false</externalId>
     <fieldManageability>DeveloperControlled</fieldManageability>
     <inlineHelpText>Example: &quot;Account&quot;</inlineHelpText>

@@ -10,7 +10,6 @@
   'PMD.AvoidDebugStatements, PMD.UnusedLocalVariable, PMD.CyclomaticComplexity, PMD.StdCyclomaticComplexity'
 )
 public with sharing class JT_MetadataCreator {
-
   /**
    * @description Input wrapper for configuration data
    */
@@ -163,7 +162,9 @@ public with sharing class JT_MetadataCreator {
     MetadataCreationResult result = new MetadataCreationResult();
 
     try {
-      System.debug('updateConfiguration called with input: ' + JSON.serialize(input));
+      System.debug(
+        'updateConfiguration called with input: ' + JSON.serialize(input)
+      );
 
       // CRITICAL: Only allow in sandbox/scratch
       if (!isSandboxOrScratch()) {
@@ -185,11 +186,13 @@ public with sharing class JT_MetadataCreator {
       ) {
         throw new AuraHandledException(
           'Original Developer Name, Label, and Base Query are required for update. Received: originalDevName=' +
-          input.originalDevName +
-          ', label=' +
-          input.label +
-          ', baseQuery length=' +
-          (String.isBlank(input.baseQuery) ? '0' : String.valueOf(input.baseQuery.length()))
+            input.originalDevName +
+            ', label=' +
+            input.label +
+            ', baseQuery length=' +
+            (String.isBlank(input.baseQuery)
+              ? '0'
+              : String.valueOf(input.baseQuery.length()))
         );
       }
 
@@ -551,7 +554,9 @@ public with sharing class JT_MetadataCreator {
       }
 
       // Extract bind variables
-      final Pattern bindVariablePattern = Pattern.compile(':([a-zA-Z_][a-zA-Z0-9_]*)');
+      final Pattern bindVariablePattern = Pattern.compile(
+        ':([a-zA-Z_][a-zA-Z0-9_]*)'
+      );
       final Matcher bindVariableMatcher = bindVariablePattern.matcher(query);
 
       final Set<String> bindings = new Set<String>();

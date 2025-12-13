@@ -2,7 +2,10 @@
 
 :host {
   /* CSS Hooks for modal customization */
-  --slds-c-modal-close-button-color-background: var(--lwc-colorBackgroundAlt, #ffffff);
+  --slds-c-modal-close-button-color-background: var(
+    --lwc-colorBackgroundAlt,
+    #ffffff
+  );
 }
 
 .modal-close-button {
@@ -42,11 +45,17 @@
 
 /* Toggle button styles for preview icons - Use CSS hooks */
 :host {
-  --slds-c-button-icon-bare-color-background-hover: var(--lwc-colorBackgroundRowHover, #f3f3f3);
+  --slds-c-button-icon-bare-color-background-hover: var(
+    --lwc-colorBackgroundRowHover,
+    #f3f3f3
+  );
 }
 
 .slds-button_icon-bare:hover {
-  background-color: var(--slds-c-button-icon-bare-color-background-hover, #f3f3f3);
+  background-color: var(
+    --slds-c-button-icon-bare-color-background-hover,
+    #f3f3f3
+  );
 }
 
 .slds-button_icon-bare:focus {

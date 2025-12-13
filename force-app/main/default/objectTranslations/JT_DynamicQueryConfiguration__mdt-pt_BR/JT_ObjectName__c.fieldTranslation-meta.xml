@@ -1,6 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
-    <help>O objeto Salesforce sendo consultado (ex: Account, Contact, Opportunity).</help>
+    <help
+  >O objeto Salesforce sendo consultado (ex: Account, Contact, Opportunity).</help>
     <label>Nome do Objeto</label>
     <name>JT_ObjectName__c</name>
 </CustomFieldTranslation>

@@ -1,6 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
-    <help>要执行的SOQL查询。对于动态参数，请使用冒号语法的绑定变量（例如：:accountName）。</help>
+    <help
+  >要执行的SOQL查询。对于动态参数，请使用冒号语法的绑定变量（例如：:accountName）。</help>
     <label>基础查询 (SOQL)</label>
     <name>JT_BaseQuery__c</name>
 </CustomFieldTranslation>

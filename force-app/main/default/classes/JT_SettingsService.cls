@@ -18,9 +18,6 @@ public with sharing class JT_SettingsService {
    * @throws AuraHandledException if update fails
    */
   public static Boolean updateProductionEditingSetting(Boolean enabled) {
-    System.debug('🔧 JT_SettingsService.updateProductionEditingSetting CALLED');
-    System.debug('🔧 enabled: ' + enabled);
-
     // Verify user has appropriate permissions
     if (
       !Schema.sObjectType.JT_DynamicQuerySettings__c.isCreateable() ||
@@ -40,8 +37,6 @@ public with sharing class JT_SettingsService {
     settings.JT_AllowProductionEditing__c = enabled;
     upsert settings;
 
-    System.debug('✅ Custom Setting updated successfully');
-
     // Create audit log entry
     String action = enabled
       ? 'Production Editing Enabled'
@@ -59,9 +54,6 @@ public with sharing class JT_SettingsService {
    * @throws AuraHandledException if update fails
    */
   public static Boolean updateUsageTrackingSetting(Boolean enabled) {
-    System.debug('🔧 JT_SettingsService.updateUsageTrackingSetting CALLED');
-    System.debug('🔧 enabled: ' + enabled);
-
     // Verify permissions
     if (
       !Schema.sObjectType.JT_DynamicQuerySettings__c.isCreateable() ||
@@ -82,8 +74,6 @@ public with sharing class JT_SettingsService {
     settings.JT_EnableUsageTracking__c = enabled;
     upsert settings;
 
-    System.debug('✅ Custom Setting updated successfully');
-
     // Create audit log entry
     String action = enabled
       ? 'Usage Tracking Enabled'
@@ -100,10 +90,6 @@ public with sharing class JT_SettingsService {
    * @param resultCount Number of results found
    */
   public static void logUsageSearch(String configName, Integer resultCount) {
-    System.debug('🔧 JT_SettingsService.logUsageSearch CALLED');
-    System.debug('🔧 configName: ' + configName);
-    System.debug('🔧 resultCount: ' + resultCount);
-
     String action =
       'Usage Search: ' +
       configName +
@@ -119,20 +105,12 @@ public with sharing class JT_SettingsService {
    */
   private static void createAuditLogSafe(String action) {
     try {
-      System.debug('📝 Creating audit log for action: ' + action);
-
       // Get org info via System Selector (internal)
       Organization org = JT_SystemSelector.getOrganizationType();
 
       if (org == null) {
-        System.debug(
-          LoggingLevel.ERROR,
-          '❌ Could not retrieve Organization info'
-        );
         return;
       }
-
-      System.debug('✅ Organization retrieved: ' + org.OrganizationType);
 
       // Build audit log record
       JT_SettingsAuditLog__c log = new JT_SettingsAuditLog__c(
@@ -142,8 +120,6 @@ public with sharing class JT_SettingsService {
         JT_Timestamp__c = System.now(),
         JT_OrgType__c = org.OrganizationType
       );
-
-      System.debug('📋 Audit log built: ' + log);
 
       // Insert via Domain layer (without sharing)
       JT_AuditLogDomain.insertLog(log);

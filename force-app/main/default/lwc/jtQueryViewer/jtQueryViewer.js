@@ -1,6 +1,7 @@
 import { LightningElement, track, wire } from "lwc";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { refreshApex } from "@salesforce/apex";
+import { formatLabel, getFieldType } from "c/jtUtils";
 // Import Custom Labels from Salesforce Translation Workbench (89 labels)
 import apexClassLabel from "@salesforce/label/c.JT_jtQueryViewer_apexClass";
 import autoDetectedFromQueryLabel from "@salesforce/label/c.JT_jtQueryViewer_autoDetectedFromQuery";
@@ -382,7 +383,8 @@ export default class JtQueryViewer extends LightningElement {
     editSelectedQueryConfigurationAria: editSelectedQueryConfigurationAriaLabel,
     deleteConfiguration: deleteConfigurationLabel,
     deleteSelectedConfiguration: deleteSelectedConfigurationLabel,
-    deleteSelectedQueryConfigurationAria: deleteSelectedQueryConfigurationAriaLabel,
+    deleteSelectedQueryConfigurationAria:
+      deleteSelectedQueryConfigurationAriaLabel,
     production: productionLabel,
     readOnlyModeInProduction: readOnlyModeInProductionLabel,
     queryViewerMainContent: queryViewerMainContentLabel,
@@ -502,7 +504,8 @@ export default class JtQueryViewer extends LightningElement {
 
     if (this.orgInfo.isSandbox) return this.labels.orgTypeSandbox;
     if (this.orgInfo.isScratch) return this.labels.orgTypeScratchOrg;
-    if (orgType === "Developer Edition") return this.labels.orgTypeDeveloperEdition;
+    if (orgType === "Developer Edition")
+      return this.labels.orgTypeDeveloperEdition;
 
     // All other orgs are considered production (including Starter/Free)
     return this.labels.orgTypeProduction;
@@ -512,7 +515,8 @@ export default class JtQueryViewer extends LightningElement {
     const orgType = this.orgInfo?.organizationType || "";
     if (this.orgInfo?.isSandbox) return this.labels.sandboxEnvironmentTitle;
     if (this.orgInfo?.isScratch) return this.labels.scratchOrgTitle;
-    if (orgType === "Developer Edition") return this.labels.developerEditionTitle;
+    if (orgType === "Developer Edition")
+      return this.labels.developerEditionTitle;
     return this.labels.productionEnvironmentTitle;
   }
 
@@ -612,11 +616,17 @@ export default class JtQueryViewer extends LightningElement {
     if (!this.selectedConfig) {
       return this.labels.searchingUsageMessage.replace("{0}", "");
     }
-    return this.labels.searchingUsageMessage.replace("{0}", this.selectedConfig);
+    return this.labels.searchingUsageMessage.replace(
+      "{0}",
+      this.selectedConfig
+    );
   }
 
   get dataPreviewTitleFormatted() {
-    return this.labels.dataPreviewTopRecords.replace("{0}", this.previewRecordCount);
+    return this.labels.dataPreviewTopRecords.replace(
+      "{0}",
+      this.previewRecordCount
+    );
   }
 
   get csvFileGeneratedMessage() {
@@ -831,14 +841,6 @@ export default class JtQueryViewer extends LightningElement {
     }
   }
 
-  // Format parameter name to readable label (still used for table columns)
-  formatLabel(paramName) {
-    return paramName
-      .replace(/([A-Z])/g, " $1")
-      .replace(/_/g, " ")
-      .replace(/^\w/, (c) => c.toUpperCase())
-      .trim();
-  }
 
   // Phase 2 Refactor: Updated to use jtParameterInputs event
   handleParameterChange(event) {
@@ -1007,10 +1009,9 @@ export default class JtQueryViewer extends LightningElement {
       } else if (!hasAnyValues) {
         // No values at all → Empty JSON
         return JSON.stringify({});
-      } else {
-        // Has values → Use them
-        return JSON.stringify(paramValues);
       }
+      // Has values → Use them
+      return JSON.stringify(paramValues);
     }
     return null;
   }
@@ -1024,7 +1025,9 @@ export default class JtQueryViewer extends LightningElement {
     // eslint-disable-next-line @lwc/lwc/no-async-operation
     this.pollInterval = setInterval(() => {
       pollCount++;
-      console.log(`📊 Polling attempt ${pollCount}/${maxPolls} for execution ${this.testJobId}`);
+      console.log(
+        `📊 Polling attempt ${pollCount}/${maxPolls} for execution ${this.testJobId}`
+      );
 
       // Use executionId instead of userId
       getTestResults({ executionId: this.testJobId })
@@ -1037,9 +1040,10 @@ export default class JtQueryViewer extends LightningElement {
           });
 
           // Check if test is still in progress (Queued or Running)
-          const isInProgress = result.message &&
-            (result.message.toLowerCase().includes('queued') ||
-             result.message.toLowerCase().includes('running'));
+          const isInProgress =
+            result.message &&
+            (result.message.toLowerCase().includes("queued") ||
+              result.message.toLowerCase().includes("running"));
 
           if (isInProgress) {
             // Test still executing, continue polling
@@ -1098,7 +1102,10 @@ export default class JtQueryViewer extends LightningElement {
     this.testAssertMessage = result.assertMessage || "";
 
     if (result.success) {
-      console.log("✅ Test passed - Processing results for Run As User:", result.runAsUserName);
+      console.log(
+        "✅ Test passed - Processing results for Run As User:",
+        result.runAsUserName
+      );
 
       // Parse and display results FIRST
       this.processTestQueryResults(result);
@@ -1171,9 +1178,9 @@ export default class JtQueryViewer extends LightningElement {
 
     if (fields.length > 0) {
       this.columns = fields.map((field) => ({
-        label: this.formatLabel(field),
+        label: formatLabel(field),
         fieldName: field,
-        type: this.getFieldType(field)
+        type: getFieldType(field)
       }));
     }
 
@@ -1300,7 +1307,9 @@ export default class JtQueryViewer extends LightningElement {
       return;
     }
 
-    // Confirm deletion
+    // TODO: Replace confirm() with Lightning modal confirmation dialog
+    // For now, proceed with deletion (user can cancel via modal in future)
+    // eslint-disable-next-line no-alert
     if (
       !confirm(
         `Are you sure you want to delete "${currentConfig.label}"?\n\nThis action cannot be undone.`
@@ -1606,9 +1615,9 @@ export default class JtQueryViewer extends LightningElement {
 
     if (fields && fields.length > 0) {
       this.queryPreviewColumns = fields.map((field) => ({
-        label: this.formatLabel(field),
+        label: formatLabel(field),
         fieldName: field,
-        type: this.getFieldType(field)
+        type: getFieldType(field)
       }));
     } else {
       this.queryPreviewColumns = [];
@@ -1625,7 +1634,10 @@ export default class JtQueryViewer extends LightningElement {
     console.log("event.detail:", event?.detail);
     console.log("this.newConfig:", JSON.stringify(this.newConfig, null, 2));
     console.log("this.configModalMode:", this.configModalMode);
-    console.log("this.queryValidation:", JSON.stringify(this.queryValidation, null, 2));
+    console.log(
+      "this.queryValidation:",
+      JSON.stringify(this.queryValidation, null, 2)
+    );
 
     // Get config from modal if available
     const modal = this.refs.configModal;
@@ -1636,11 +1648,15 @@ export default class JtQueryViewer extends LightningElement {
       console.log("configFromModal:", JSON.stringify(configFromModal, null, 2));
       // Get query validation state from modal (it handles its own validation)
       modalQueryValidation = modal.getQueryValidation();
-      console.log("modalQueryValidation:", JSON.stringify(modalQueryValidation, null, 2));
+      console.log(
+        "modalQueryValidation:",
+        JSON.stringify(modalQueryValidation, null, 2)
+      );
     }
 
     // Use config from event detail if available, otherwise use newConfig
-    const configToUse = event?.detail?.config || configFromModal || this.newConfig;
+    const configToUse =
+      event?.detail?.config || configFromModal || this.newConfig;
     console.log("configToUse:", JSON.stringify(configToUse, null, 2));
     console.log("================================");
 
@@ -1727,11 +1743,11 @@ export default class JtQueryViewer extends LightningElement {
               "Configuration list has been refreshed."
             );
           });
-        } else {
-          // Show error toast and don't refresh
-          this.showErrorToast(`${actionLabel} Failed`, result.errorMessage);
           return Promise.resolve();
         }
+        // Show error toast and don't refresh
+        this.showErrorToast(`${actionLabel} Failed`, result.errorMessage);
+        return Promise.resolve();
       })
       .catch((error) => {
         this.showErrorToast(
@@ -1753,7 +1769,7 @@ export default class JtQueryViewer extends LightningElement {
     // This prevents the UI from being blocked indefinitely
     setTimeout(() => {
       if (this.isInitialLoading) {
-        console.warn('Initial loading timeout reached - showing UI anyway');
+        console.warn("Initial loading timeout reached - showing UI anyway");
         this.isInitialLoading = false;
       }
     }, 10000);
@@ -2005,9 +2021,9 @@ export default class JtQueryViewer extends LightningElement {
     // Always build columns (even with 0 records)
     if (result.fields && result.fields.length > 0) {
       this.columns = result.fields.map((field) => ({
-        label: this.formatLabel(field),
+        label: formatLabel(field),
         fieldName: field,
-        type: this.getFieldType(field)
+        type: getFieldType(field)
       }));
     }
 

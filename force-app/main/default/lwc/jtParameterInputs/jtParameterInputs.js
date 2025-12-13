@@ -112,7 +112,10 @@ export default class JtParameterInputs extends LightningElement {
     if (missingParams.length > 0) {
       return {
         valid: false,
-        message: this.labels.pleaseFillIn.replace("{0}", missingParams.join(", ")),
+        message: this.labels.pleaseFillIn.replace(
+          "{0}",
+          missingParams.join(", ")
+        ),
         missingParams
       };
     }

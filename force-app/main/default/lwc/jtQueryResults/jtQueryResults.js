@@ -46,15 +46,18 @@ import noDataLabel from "@salesforce/label/c.JT_jtQueryResults_noData";
 import noRecordsToExportLabel from "@salesforce/label/c.JT_jtQueryResults_noRecordsToExport";
 import jsonErrorLabel from "@salesforce/label/c.JT_jtQueryResults_jsonError";
 import generationFailedLabel from "@salesforce/label/c.JT_jtQueryResults_generationFailed";
+import { escapeCSV, formatLabel } from "c/jtUtils";
 
 // Pure functions for data transformation
 const toggleSetMembership = (set, item) => {
   const newSet = new Set(set);
-  newSet.has(item) ? newSet.delete(item) : newSet.add(item);
+  if (newSet.has(item)) {
+    newSet.delete(item);
+  } else {
+    newSet.add(item);
+  }
   return newSet;
 };
-
-const escapeCSV = (value) => `"${String(value || "").replace(/"/g, '""')}"`;
 
 const createCSVRow = (columns) => (row) =>
   columns.map((col) => escapeCSV(row[col.fieldName])).join(",");
@@ -196,7 +199,9 @@ export default class JtQueryResults extends LightningElement {
   }
 
   get recordCountLabel() {
-    return this.recordCount !== 1 ? this.labels.records : this.labels.recordSingular;
+    return this.recordCount !== 1
+      ? this.labels.records
+      : this.labels.recordSingular;
   }
 
   // Event handlers - Pure intent, side effects isolated
@@ -250,8 +255,13 @@ export default class JtQueryResults extends LightningElement {
       // Support two formats:
       // 1. Direct array (from JT_GenericRunAsTest): value = [record1, record2, ...]
       // 2. Wrapped format (from regular queries): value = { records: [record1, record2, ...] }
-      const isDirectArray = Array.isArray(value) && value.length > 0 && value[0] && typeof value[0] === "object";
-      const isWrappedFormat = value &&
+      const isDirectArray =
+        Array.isArray(value) &&
+        value.length > 0 &&
+        value[0] &&
+        typeof value[0] === "object";
+      const isWrappedFormat =
+        value &&
         typeof value === "object" &&
         value.records &&
         Array.isArray(value.records);
@@ -330,7 +340,7 @@ export default class JtQueryResults extends LightningElement {
 
           childRelationships.push({
             name: key,
-            label: `${this.formatLabel(key)} (${childRecords.length})`,
+            label: `${formatLabel(key)} (${childRecords.length})`,
             records: childRecords,
             columns: childColumns
           });
@@ -365,20 +375,11 @@ export default class JtQueryResults extends LightningElement {
     );
 
     return fields.map((field) => ({
-      label: this.formatLabel(field),
+      label: formatLabel(field),
       fieldName: field,
       type: "text",
       wrapText: false
     }));
-  }
-
-  // Helper: Format field label
-  formatLabel(fieldName) {
-    if (!fieldName) return "";
-    return fieldName
-      .replace(/([A-Z])/g, " $1")
-      .replace(/^./, (str) => str.toUpperCase())
-      .trim();
   }
 
   // Handle row toggle (expand/collapse)
@@ -405,7 +406,9 @@ export default class JtQueryResults extends LightningElement {
     }
 
     this.copyToClipboard(this.jsonOutput)
-      .then(() => this.showToast("success", this.labels.success, this.labels.jsonCopied))
+      .then(() =>
+        this.showToast("success", this.labels.success, this.labels.jsonCopied)
+      )
       .catch((error) => {
         const errorMessage = error.message || "Unknown error";
         this.showToast(
@@ -423,7 +426,9 @@ export default class JtQueryResults extends LightningElement {
     }
 
     this.copyToClipboard(this.csvOutput)
-      .then(() => this.showToast("success", this.labels.success, this.labels.csvCopied))
+      .then(() =>
+        this.showToast("success", this.labels.success, this.labels.csvCopied)
+      )
       .catch((error) => {
         const errorMessage = error?.message || "Unknown error";
         this.showToast(
@@ -436,7 +441,12 @@ export default class JtQueryResults extends LightningElement {
 
   handleDownloadCsv() {
     if (!this._records?.length) {
-      return this.showToast("error", this.labels.noData, this.labels.noRecordsToExport);
+      this.showToast(
+        "error",
+        this.labels.noData,
+        this.labels.noRecordsToExport
+      );
+      return;
     }
 
     const csv = this.generateCSV();
@@ -464,7 +474,11 @@ export default class JtQueryResults extends LightningElement {
         2
       );
     } catch {
-      this.showToast("error", this.labels.jsonError, this.labels.generationFailed);
+      this.showToast(
+        "error",
+        this.labels.jsonError,
+        this.labels.generationFailed
+      );
       return "{}";
     }
   }
@@ -476,9 +490,14 @@ export default class JtQueryResults extends LightningElement {
       return Object.keys(record).some((key) => {
         const value = record[key];
         // Check for direct array format
-        const isDirectArray = Array.isArray(value) && value.length > 0 && value[0] && typeof value[0] === "object";
+        const isDirectArray =
+          Array.isArray(value) &&
+          value.length > 0 &&
+          value[0] &&
+          typeof value[0] === "object";
         // Check for wrapped format
-        const isWrappedFormat = value &&
+        const isWrappedFormat =
+          value &&
           typeof value === "object" &&
           value.records &&
           Array.isArray(value.records) &&
@@ -489,12 +508,11 @@ export default class JtQueryResults extends LightningElement {
 
     if (hasChildren) {
       return this.generateFlattenedCSV();
-    } else {
-      // Simple CSV without children
-      const headers = this.parentColumns.map((col) => col.label).join(",");
-      const rows = this._records.map(createCSVRow(this.parentColumns));
-      return [headers, ...rows].join("\n");
     }
+    // Simple CSV without children
+    const headers = this.parentColumns.map((col) => col.label).join(",");
+    const rows = this._records.map(createCSVRow(this.parentColumns));
+    return [headers, ...rows].join("\n");
   }
 
   // Generate flattened CSV with parent + children (LEFT JOIN style)
@@ -510,7 +528,12 @@ export default class JtQueryResults extends LightningElement {
         let childRecords = null;
 
         // Check for direct array format
-        if (Array.isArray(value) && value.length > 0 && value[0] && typeof value[0] === "object") {
+        if (
+          Array.isArray(value) &&
+          value.length > 0 &&
+          value[0] &&
+          typeof value[0] === "object"
+        ) {
           childRecords = value;
         }
         // Check for wrapped format
@@ -539,9 +562,9 @@ export default class JtQueryResults extends LightningElement {
 
     // Build CSV header
     const allFields = [
-      ...parentFields.map((f) => `Parent_${this.formatLabel(f)}`),
+      ...parentFields.map((f) => `Parent_${formatLabel(f)}`),
       "RelationshipType",
-      ...childFields.map((f) => `Child_${this.formatLabel(f)}`)
+      ...childFields.map((f) => `Child_${formatLabel(f)}`)
     ];
     const header = allFields.join(",");
 
@@ -562,7 +585,12 @@ export default class JtQueryResults extends LightningElement {
         let childRecords = null;
 
         // Check for direct array format
-        if (Array.isArray(value) && value.length > 0 && value[0] && typeof value[0] === "object") {
+        if (
+          Array.isArray(value) &&
+          value.length > 0 &&
+          value[0] &&
+          typeof value[0] === "object"
+        ) {
           childRecords = value;
         }
         // Check for wrapped format

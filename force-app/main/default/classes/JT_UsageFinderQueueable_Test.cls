@@ -9,7 +9,8 @@ private class JT_UsageFinderQueueable_Test {
   @IsTest
   static void testQueueableExecutionSuccess() {
     // Create test configuration
-    String configDevName = 'Test_Config_' + String.valueOf(Math.random()).substring(2, 10);
+    String configDevName =
+      'Test_Config_' + String.valueOf(Math.random()).substring(2, 10);
 
     Test.startTest();
 
@@ -59,7 +60,11 @@ private class JT_UsageFinderQueueable_Test {
       UserInfo.getUserId()
     );
 
-    System.assertEquals(null, result, 'Should return null for non-cached results');
+    System.assertEquals(
+      null,
+      result,
+      'Should return null for non-cached results'
+    );
   }
 
   @IsTest
@@ -73,16 +78,20 @@ private class JT_UsageFinderQueueable_Test {
     JT_UsageFinder.UsageResult usage1 = new JT_UsageFinder.UsageResult();
     usage1.className = 'TestClass1';
     usage1.metadataType = 'Apex Class';
-    
+
     JT_UsageFinder.UsageResult usage2 = new JT_UsageFinder.UsageResult();
     usage2.className = 'TestClass2';
     usage2.metadataType = 'Apex Class';
-    
+
     JT_UsageFinder.UsageResult usage3 = new JT_UsageFinder.UsageResult();
     usage3.className = 'TestFlow1';
     usage3.metadataType = 'Flow';
-    
-    mockResult.allResults = new List<JT_UsageFinder.UsageResult>{ usage1, usage2, usage3 };
+
+    mockResult.allResults = new List<JT_UsageFinder.UsageResult>{
+      usage1,
+      usage2,
+      usage3
+    };
 
     String cacheKey =
       'UsageSearch_' +
@@ -101,7 +110,11 @@ private class JT_UsageFinderQueueable_Test {
 
     Test.stopTest();
 
-    System.assertNotEquals(null, cachedResult, 'Should retrieve cached results');
+    System.assertNotEquals(
+      null,
+      cachedResult,
+      'Should retrieve cached results'
+    );
     System.assertEquals(
       3,
       cachedResult.totalResults,

@@ -41,6 +41,7 @@ We initially attempted to use Named Credentials with OAuth 2.0, but encountered 
 - **Solution**: Use Visualforce Page to obtain API-enabled session ID directly
 
 This approach is:
+
 - ✅ More reliable for same-org scenarios
 - ✅ Simpler (no OAuth configuration needed)
 - ✅ Production-ready with caching optimizations
@@ -145,10 +146,12 @@ HttpResponse response = new Http().send(request);
 ### Callout Reduction
 
 **Before Optimization**:
+
 - Each `getApiSessionId()` call = 1 VFP callout
 - Example: "Where is this used?" with 20 Flows = 20+ VFP callouts
 
 **After Optimization**:
+
 - First call = 1 VFP callout + cache
 - Subsequent calls in same transaction = 0 callouts (static cache)
 - Requests within 5 minutes = 0 callouts (Platform Cache)
@@ -178,6 +181,7 @@ The **Setup Wizard** (`jtSetupWizard` component) verifies Tooling API accessibil
 ### Error: "Failed to get API session ID"
 
 **Symptoms**:
+
 - Error message: "Failed to get API session ID: [error message]"
 - "Where is this used?" feature doesn't work
 
@@ -199,6 +203,7 @@ The **Setup Wizard** (`jtSetupWizard` component) verifies Tooling API accessibil
 ### Error: "Tooling API connection failed"
 
 **Symptoms**:
+
 - Setup Wizard shows red X
 - Tooling API calls return 401 or 403 errors
 
@@ -221,6 +226,7 @@ The **Setup Wizard** (`jtSetupWizard` component) verifies Tooling API accessibil
 ### Performance Issues
 
 **Symptoms**:
+
 - Slow "Where is this used?" searches
 - Multiple VFP callouts in debug logs
 
@@ -255,14 +261,14 @@ The **Setup Wizard** (`jtSetupWizard` component) verifies Tooling API accessibil
 
 ## Comparison: VFP vs Named Credentials
 
-| Aspect | Visualforce Page (Current) | Named Credentials (Previous) |
-|--------|---------------------------|------------------------------|
-| **Setup Complexity** | ✅ None (automatic) | ❌ OAuth 2.0 configuration required |
-| **Same-Org Reliability** | ✅ Works reliably | ❌ 500 proxy errors |
-| **Cross-Org Support** | ❌ Same-org only | ✅ Supports cross-org |
-| **Performance** | ✅ Optimized with caching | ⚠️ No caching (each call = OAuth) |
-| **Configuration** | ✅ Zero configuration | ❌ Multiple setup steps |
-| **Production Ready** | ✅ Yes | ⚠️ Limited by proxy issues |
+| Aspect                   | Visualforce Page (Current) | Named Credentials (Previous)        |
+| ------------------------ | -------------------------- | ----------------------------------- |
+| **Setup Complexity**     | ✅ None (automatic)        | ❌ OAuth 2.0 configuration required |
+| **Same-Org Reliability** | ✅ Works reliably          | ❌ 500 proxy errors                 |
+| **Cross-Org Support**    | ❌ Same-org only           | ✅ Supports cross-org               |
+| **Performance**          | ✅ Optimized with caching  | ⚠️ No caching (each call = OAuth)   |
+| **Configuration**        | ✅ Zero configuration      | ❌ Multiple setup steps             |
+| **Production Ready**     | ✅ Yes                     | ⚠️ Limited by proxy issues          |
 
 ## References
 

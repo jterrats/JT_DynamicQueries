@@ -13,7 +13,10 @@
   --slds-c-dropdown-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16);
   --slds-c-listbox-option-padding-block: var(--lwc-spacingSmall, 0.75rem);
   --slds-c-listbox-option-padding-inline: var(--lwc-spacingMedium, 1rem);
-  --slds-c-listbox-option-color-background-hover: var(--lwc-colorBackgroundRowHover, #f3f3f3);
+  --slds-c-listbox-option-color-background-hover: var(
+    --lwc-colorBackgroundRowHover,
+    #f3f3f3
+  );
 }
 
 /* Form Element - Use SLDS defaults, only override width */
@@ -39,7 +42,9 @@
   display: none;
   visibility: hidden;
   opacity: 0;
-  transition: opacity 0.1s linear, visibility 0.1s linear;
+  transition:
+    opacity 0.1s linear,
+    visibility 0.1s linear;
 }
 
 .slds-dropdown.slds-is-open {
@@ -65,12 +70,18 @@
 }
 
 .slds-listbox__option:hover {
-  background-color: var(--slds-c-listbox-option-color-background-hover, #f3f3f3);
+  background-color: var(
+    --slds-c-listbox-option-color-background-hover,
+    #f3f3f3
+  );
 }
 
 .slds-listbox__option:focus,
 .slds-listbox__option:active {
-  background-color: var(--slds-c-listbox-option-color-background-hover, #f3f3f3);
+  background-color: var(
+    --slds-c-listbox-option-color-background-hover,
+    #f3f3f3
+  );
   outline: 2px solid var(--lwc-colorBorderBrand, #1589ee);
   outline-offset: -2px;
 }

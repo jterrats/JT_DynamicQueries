@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <Translations xmlns="http://soap.sforce.com/2006/04/metadata">
     <customApplications>
         <label><!-- Dynamic Query Framework --></label>
@@ -17,7 +17,8 @@
         <name>JT_Error_UnsupportedOperatorGeneric</name>
     </customLabels>
     <customLabels>
-        <label><!-- jtConfigModal - developerNameCannotEndWithUnderscore --></label>
+        <label
+    ><!-- jtConfigModal - developerNameCannotEndWithUnderscore --></label>
         <name>JT_jtConfigModal_developerNameCannotEndWithUnderscore</name>
     </customLabels>
     <customLabels>
@@ -33,7 +34,8 @@
         <name>JT_jtConfigModal_developerNameMustStartWithLetter</name>
     </customLabels>
     <customLabels>
-        <label><!-- jtConfigModal - developerNameNoConsecutiveUnderscores --></label>
+        <label
+    ><!-- jtConfigModal - developerNameNoConsecutiveUnderscores --></label>
         <name>JT_jtConfigModal_developerNameNoConsecutiveUnderscores</name>
     </customLabels>
     <customLabels>
@@ -153,7 +155,8 @@
         <name>JT_jtDocumentation_namedCredentialWhyText</name>
     </customLabels>
     <customLabels>
-        <label>Un framework potente para ejecutar consultas SOQL dinámicas con configuraciones basadas en metadatos.</label>
+        <label
+    >Un framework potente para ejecutar consultas SOQL dinámicas con configuraciones basadas en metadatos.</label>
         <name>JT_jtDocumentation_overviewDescription</name>
     </customLabels>
     <customLabels>
@@ -165,7 +168,8 @@
         <name>JT_jtDocumentation_overviewTitle</name>
     </customLabels>
     <customLabels>
-        <label>Proporcionar infraestructura y convenciones para consultas configurables, no solo utilidades aisladas.</label>
+        <label
+    >Proporcionar infraestructura y convenciones para consultas configurables, no solo utilidades aisladas.</label>
         <name>JT_jtDocumentation_philosophyText</name>
     </customLabels>
     <customLabels>
@@ -209,7 +213,8 @@
         <name>JT_jtDocumentation_supportTitle</name>
     </customLabels>
     <customLabels>
-        <label>Un framework de ejecución SOQL basado en metadatos con seguridad integrada, procesamiento por lotes y evaluación de riesgos.</label>
+        <label
+    >Un framework de ejecución SOQL basado en metadatos con seguridad integrada, procesamiento por lotes y evaluación de riesgos.</label>
         <name>JT_jtDocumentation_welcomeSubtitle</name>
     </customLabels>
     <customLabels>
@@ -261,7 +266,8 @@
         <name>JT_jtQueryViewer_clearCacheButton</name>
     </customLabels>
     <customLabels>
-        <label>Selecciona qué datos en caché deseas limpiar. Esto forzará una actualización desde el servidor.</label>
+        <label
+    >Selecciona qué datos en caché deseas limpiar. Esto forzará una actualización desde el servidor.</label>
         <name>JT_jtQueryViewer_clearCacheDescription</name>
     </customLabels>
     <customLabels>
@@ -269,11 +275,13 @@
         <name>JT_jtQueryViewer_clearCacheTitle</name>
     </customLabels>
     <customLabels>
-        <label>Los datos seleccionados se limpiarán y actualizarán desde el servidor.</label>
+        <label
+    >Los datos seleccionados se limpiarán y actualizarán desde el servidor.</label>
         <name>JT_jtQueryViewer_clearCacheWarning</name>
     </customLabels>
     <customLabels>
-        <label>Actualizar la lista de configuraciones disponibles desde metadatos</label>
+        <label
+    >Actualizar la lista de configuraciones disponibles desde metadatos</label>
         <name>JT_jtQueryViewer_clearConfigurationsHelp</name>
     </customLabels>
     <customLabels>
@@ -281,7 +289,8 @@
         <name>JT_jtQueryViewer_clearConfigurationsLabel</name>
     </customLabels>
     <customLabels>
-        <label>Limpiar configuraciones seleccionadas recientemente y preferencias</label>
+        <label
+    >Limpiar configuraciones seleccionadas recientemente y preferencias</label>
         <name>JT_jtQueryViewer_clearRecentHelp</name>
     </customLabels>
     <customLabels>
@@ -301,7 +310,8 @@
         <name>JT_jtQueryViewer_clearSelection</name>
     </customLabels>
     <customLabels>
-        <label>Actualizar la lista de usuarios activos para funcionalidad Run As</label>
+        <label
+    >Actualizar la lista de usuarios activos para funcionalidad Run As</label>
         <name>JT_jtQueryViewer_clearUsersHelp</name>
     </customLabels>
     <customLabels>
@@ -313,7 +323,8 @@
         <name>JT_jtQueryViewer_code</name>
     </customLabels>
     <customLabels>
-        <label>Crea una nueva configuración de consulta con una consulta SOQL (SELECT campos FROM objeto WHERE condición), variables de enlace opcionales en formato JSON y mapeos de campos.</label>
+        <label
+    >Crea una nueva configuración de consulta con una consulta SOQL (SELECT campos FROM objeto WHERE condición), variables de enlace opcionales en formato JSON y mapeos de campos.</label>
         <name>JT_jtQueryViewer_createConfigTooltip</name>
     </customLabels>
     <customLabels>
@@ -345,7 +356,8 @@
         <name>JT_jtQueryViewer_developerNameRequired</name>
     </customLabels>
     <customLabels>
-        <label>El nombre de desarrollador debe tener 40 caracteres o menos</label>
+        <label
+    >El nombre de desarrollador debe tener 40 caracteres o menos</label>
         <name>JT_jtQueryViewer_developerNameTooLong</name>
     </customLabels>
     <customLabels>
@@ -417,7 +429,8 @@
         <name>JT_jtQueryViewer_noParametersRequired</name>
     </customLabels>
     <customLabels>
-        <label>Esta configuración no está referenciada en ninguna clase Apex o Flow actualmente.</label>
+        <label
+    >Esta configuración no está referenciada en ninguna clase Apex o Flow actualmente.</label>
         <name>JT_jtQueryViewer_noReferencesFound</name>
     </customLabels>
     <customLabels>
@@ -429,7 +442,8 @@
         <name>JT_jtQueryViewer_noUsageFound</name>
     </customLabels>
     <customLabels>
-        <label>Esta configuración no está referenciada en ninguna clase Apex actualmente</label>
+        <label
+    >Esta configuración no está referenciada en ninguna clase Apex actualmente</label>
         <name>JT_jtQueryViewer_noUsageMessage</name>
     </customLabels>
     <customLabels>
@@ -457,7 +471,8 @@
         <name>JT_jtQueryViewer_predefinedBindings</name>
     </customLabels>
     <customLabels>
-        <label>Esta configuración tiene enlaces predefinidos que se usarán automáticamente.</label>
+        <label
+    >Esta configuración tiene enlaces predefinidos que se usarán automáticamente.</label>
         <name>JT_jtQueryViewer_predefinedBindingsDesc</name>
     </customLabels>
     <customLabels>
@@ -489,7 +504,8 @@
         <name>JT_jtQueryViewer_results</name>
     </customLabels>
     <customLabels>
-        <label>Nota: Esto valida permisos de usuario pero ejecuta con seguridad USER_MODE. Los resultados reflejan reglas de uso compartido y seguridad a nivel de campo.</label>
+        <label
+    >Nota: Esto valida permisos de usuario pero ejecuta con seguridad USER_MODE. Los resultados reflejan reglas de uso compartido y seguridad a nivel de campo.</label>
         <name>JT_jtQueryViewer_runAsNote</name>
     </customLabels>
     <customLabels>
@@ -497,7 +513,8 @@
         <name>JT_jtQueryViewer_runAsUser</name>
     </customLabels>
     <customLabels>
-        <label>Solo disponible en Sandbox/Scratch/Developer Orgs. Use la UI de Configuración en Producción.</label>
+        <label
+    >Solo disponible en Sandbox/Scratch/Developer Orgs. Use la UI de Configuración en Producción.</label>
         <name>JT_jtQueryViewer_sandboxOnlyWarning</name>
     </customLabels>
     <customLabels>
@@ -509,7 +526,8 @@
         <name>JT_jtQueryViewer_searchConfigsPlaceholder</name>
     </customLabels>
     <customLabels>
-        <label>Escribe para buscar usuarios... (deja en blanco para ejecutar como usuario actual)</label>
+        <label
+    >Escribe para buscar usuarios... (deja en blanco para ejecutar como usuario actual)</label>
         <name>JT_jtQueryViewer_searchUsersPlaceholder</name>
     </customLabels>
     <customLabels>
@@ -541,7 +559,8 @@
         <name>JT_jtQueryViewer_showing</name>
     </customLabels>
     <customLabels>
-        <label>Esto crea un registro de Custom Metadata vía Tooling API. La configuración estará disponible de inmediato.</label>
+        <label
+    >Esto crea un registro de Custom Metadata vía Tooling API. La configuración estará disponible de inmediato.</label>
         <name>JT_jtQueryViewer_toolingAPINote</name>
     </customLabels>
     <customLabels>
@@ -593,7 +612,8 @@
         <name>JT_jtSupport_community</name>
     </customLabels>
     <customLabels>
-        <label>Únete a discusiones y conéctate con otros usuarios en GitHub Discussions</label>
+        <label
+    >Únete a discusiones y conéctate con otros usuarios en GitHub Discussions</label>
         <name>JT_jtSupport_communityDescription</name>
     </customLabels>
     <customLabels>
@@ -609,7 +629,8 @@
         <name>JT_jtSupport_documentation</name>
     </customLabels>
     <customLabels>
-        <label>Consulta la pestaña Documentación para guías completas y referencia API</label>
+        <label
+    >Consulta la pestaña Documentación para guías completas y referencia API</label>
         <name>JT_jtSupport_documentationDescription</name>
     </customLabels>
     <customLabels>
@@ -625,7 +646,8 @@
         <name>JT_jtSupport_featureRequestDescription</name>
     </customLabels>
     <customLabels>
-        <label>Este proyecto es de código abierto y está alojado en GitHub. Puedes ver el código, reportar problemas y contribuir al proyecto.</label>
+        <label
+    >Este proyecto es de código abierto y está alojado en GitHub. Puedes ver el código, reportar problemas y contribuir al proyecto.</label>
         <name>JT_jtSupport_githubDescription</name>
     </customLabels>
     <customLabels>
@@ -645,7 +667,8 @@
         <name>JT_jtSupport_reportBugButton</name>
     </customLabels>
     <customLabels>
-        <label>¿Encontraste un error? Háznoslo saber para que podamos solucionarlo.</label>
+        <label
+    >¿Encontraste un error? Háznoslo saber para que podamos solucionarlo.</label>
         <name>JT_jtSupport_reportBugDescription</name>
     </customLabels>
     <customLabels>
@@ -673,11 +696,13 @@
         <name>JT_jtSupport_viewIssuesButton</name>
     </customLabels>
     <customLabels>
-        <label>Explora problemas existentes y ve en qué estamos trabajando.</label>
+        <label
+    >Explora problemas existentes y ve en qué estamos trabajando.</label>
         <name>JT_jtSupport_viewIssuesDescription</name>
     </customLabels>
     <customLabels>
-        <label>¿Necesitas ayuda o quieres reportar un problema? Estamos aquí para asistirte. Todas las solicitudes de soporte se gestionan a través de nuestro repositorio de GitHub para transparencia y colaboración comunitaria.</label>
+        <label
+    >¿Necesitas ayuda o quieres reportar un problema? Estamos aquí para asistirte. Todas las solicitudes de soporte se gestionan a través de nuestro repositorio de GitHub para transparencia y colaboración comunitaria.</label>
         <name>JT_jtSupport_welcomeMessage</name>
     </customLabels>
     <customLabels>
@@ -685,19 +710,23 @@
         <name>JT_jtSupport_welcomeTitle</name>
     </customLabels>
     <customLabels>
-        <label><!-- LA_PreChat_Base_FieldError_04I0b000000fzoG_7615882 --></label>
+        <label
+    ><!-- LA_PreChat_Base_FieldError_04I0b000000fzoG_7615882 --></label>
         <name>LA_PreChat_Base_FieldError_04I0b000000fzoG_7615882</name>
     </customLabels>
     <customLabels>
-        <label><!-- LA_PreChat_Base_StartChat_04I0b000000fzoG_1065233 --></label>
+        <label
+    ><!-- LA_PreChat_Base_StartChat_04I0b000000fzoG_1065233 --></label>
         <name>LA_PreChat_Base_StartChat_04I0b000000fzoG_1065233</name>
     </customLabels>
     <customLabels>
-        <label><!-- Error when selecting a cross-object fieldsset is not allowed and attempted. --></label>
+        <label
+    ><!-- Error when selecting a cross-object fieldsset is not allowed and attempted. --></label>
         <name>fflib_QueryFactory_crossobject_fieldsets_not_allowed_error</name>
     </customLabels>
     <customLabels>
-        <label><!-- Error when selecting a field set for a different sobject type. --></label>
+        <label
+    ><!-- Error when selecting a field set for a different sobject type. --></label>
         <name>fflib_QueryFactory_fieldset_wrong_sobject_error</name>
     </customLabels>
     <customLabels>
@@ -705,7 +734,8 @@
         <name>fflib_QueryFactory_recursive_subquery_error</name>
     </customLabels>
     <customLabels>
-        <label><!-- Presented when attempting to create a subquery from an invalid relationship. --></label>
+        <label
+    ><!-- Presented when attempting to create a subquery from an invalid relationship. --></label>
         <name>fflib_QueryFactory_subquery_invalid_relationship</name>
     </customLabels>
     <customLabels>
@@ -774,31 +804,31 @@
                 <fields>
                     <inputParameters>
                         <name>columns</name>
-                        <value/>
+                        <value />
                     </inputParameters>
                     <inputParameters>
                         <name>isShowSearchBar</name>
-                        <value/>
+                        <value />
                     </inputParameters>
                     <inputParameters>
                         <name>label</name>
-                        <value/>
+                        <value />
                     </inputParameters>
                     <inputParameters>
                         <name>minRowSelection</name>
-                        <value/>
+                        <value />
                     </inputParameters>
                     <inputParameters>
                         <name>selectionMode</name>
-                        <value/>
+                        <value />
                     </inputParameters>
                     <inputParameters>
                         <name>shouldDisplayLabel</name>
-                        <value/>
+                        <value />
                     </inputParameters>
                     <inputParameters>
                         <name>tableData</name>
-                        <value/>
+                        <value />
                     </inputParameters>
                     <name>display_data</name>
                 </fields>

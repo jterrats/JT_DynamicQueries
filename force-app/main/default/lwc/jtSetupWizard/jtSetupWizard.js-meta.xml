@@ -9,5 +9,6 @@
         <target>lightning__Tab</target>
     </targets>
     <masterLabel>JT Setup Wizard</masterLabel>
-    <description>Tooling API Setup Wizard - Verifies Tooling API accessibility</description>
+    <description
+  >Tooling API Setup Wizard - Verifies Tooling API accessibility</description>
 </LightningComponentBundle>

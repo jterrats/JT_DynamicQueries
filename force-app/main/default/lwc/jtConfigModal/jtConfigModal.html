@@ -149,7 +149,11 @@
                         {labels.queryPreviewLabel}
                       </div>
                       <template if:true={showQueryPreviewContent}>
-                        <pre class="query-preview-text slds-box slds-box_x-small slds-theme_shade slds-p-around_small slds-m-around_none">{_config.baseQuery}</pre>
+                        <pre
+                          class="query-preview-text slds-box slds-box_x-small slds-theme_shade slds-p-around_small slds-m-around_none"
+                        >
+{_config.baseQuery}</pre
+                        >
                       </template>
                     </div>
                   </template>
@@ -186,7 +190,9 @@
                     </template>
 
                     <template if:true={hasPreviewData}>
-                      <div class="slds-text-heading_small slds-m-top_small slds-m-bottom_x-small">
+                      <div
+                        class="slds-text-heading_small slds-m-top_small slds-m-bottom_x-small"
+                      >
                         <button
                           type="button"
                           class="slds-button slds-button_icon slds-button_icon-x-small slds-button_icon-bare slds-m-right_xx-small"

@@ -1,6 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
-    <help>Oggetto JSON opzionale con valori predefiniti di variabili di binding. Esempio: {&quot;nomeAccount&quot;:&quot;ACME Corp&quot;,&quot;stato&quot;:&quot;Attivo&quot;}</help>
+    <help
+  >Oggetto JSON opzionale con valori predefiniti di variabili di binding. Esempio: {&quot;nomeAccount&quot;:&quot;ACME Corp&quot;,&quot;stato&quot;:&quot;Attivo&quot;}</help>
     <label>Binding (JSON)</label>
     <name>JT_Binding__c</name>
 </CustomFieldTranslation>

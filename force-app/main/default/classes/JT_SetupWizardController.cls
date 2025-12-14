@@ -62,14 +62,14 @@ public without sharing class JT_SetupWizardController {
 
     // Step 1: Test Tooling API Connection
     final SetupStepStatus testStep = new SetupStepStatus();
-    testStep.stepName = 'Tooling API Connection';
+    testStep.stepName = Label.JT_SetupWizardController_stepNameToolingApi;
     testStep.isRequired = true;
     testStep.setupUrl = null;
     final Boolean connectionWorks = testToolingAPIConnection();
     testStep.isComplete = connectionWorks;
     testStep.statusMessage = connectionWorks
-      ? 'Tooling API is accessible and working'
-      : 'Tooling API connection failed - check user permissions';
+      ? Label.JT_SetupWizardController_toolingApiAccessible
+      : Label.JT_SetupWizardController_toolingApiConnectionFailed;
     status.steps.add(testStep);
 
     // Calculate overall status

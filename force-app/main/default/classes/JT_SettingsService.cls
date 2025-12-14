@@ -24,7 +24,7 @@ public with sharing class JT_SettingsService {
       !Schema.sObjectType.JT_DynamicQuerySettings__c.isUpdateable()
     ) {
       throw new AuraHandledException(
-        'Insufficient permissions to modify settings'
+        Label.JT_SettingsService_insufficientPermissions
       );
     }
 
@@ -39,8 +39,8 @@ public with sharing class JT_SettingsService {
 
     // Create audit log entry
     String action = enabled
-      ? 'Production Editing Enabled'
-      : 'Production Editing Disabled';
+      ? Label.JT_SettingsService_productionEditingEnabled
+      : Label.JT_SettingsService_productionEditingDisabled;
 
     createAuditLogSafe(action);
 
@@ -60,7 +60,7 @@ public with sharing class JT_SettingsService {
       !Schema.sObjectType.JT_DynamicQuerySettings__c.isUpdateable()
     ) {
       throw new AuraHandledException(
-        'Insufficient permissions to modify settings'
+        Label.JT_SettingsService_insufficientPermissions
       );
     }
 
@@ -76,8 +76,8 @@ public with sharing class JT_SettingsService {
 
     // Create audit log entry
     String action = enabled
-      ? 'Usage Tracking Enabled'
-      : 'Usage Tracking Disabled';
+      ? Label.JT_SettingsService_usageTrackingEnabled
+      : Label.JT_SettingsService_usageTrackingDisabled;
 
     createAuditLogSafe(action);
 
@@ -123,19 +123,10 @@ public with sharing class JT_SettingsService {
 
       // Insert via Domain layer (without sharing)
       JT_AuditLogDomain.insertLog(log);
-
-      System.debug('✅ Audit log created successfully via Domain layer');
     } catch (Exception e) {
       // Don't fail the setting update if audit log fails
-      System.debug(
-        LoggingLevel.ERROR,
-        '❌ Failed to create audit log: ' + e.getMessage()
-      );
-      System.debug(
-        LoggingLevel.ERROR,
-        '❌ Stack trace: ' + e.getStackTraceString()
-      );
-      System.debug(LoggingLevel.ERROR, '❌ Exception type: ' + e.getTypeName());
+      // Audit logging is non-critical - settings update should succeed even if logging fails
+      System.debug(LoggingLevel.WARN, 'Audit log insertion failed: ' + e.getMessage());
     }
   }
 

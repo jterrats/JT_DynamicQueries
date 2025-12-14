@@ -61,7 +61,7 @@ public without sharing class JT_ToolingApiUtil {
    */
   public static String toAlphanumeric(final String input) {
     if (String.isBlank(input)) {
-      return 'INVALID';
+      return Label.JT_ToolingApiUtil_invalid;
     }
     return input.replaceAll('[^a-zA-Z0-9]', '');
   }
@@ -135,8 +135,10 @@ public without sharing class JT_ToolingApiUtil {
         // Platform Cache not available - that's okay, static cache still works
         System.debug(
           LoggingLevel.FINE,
-          'Could not cache session ID in Platform Cache: ' +
-          cacheEx.getMessage()
+          String.format(
+            Label.JT_ToolingApiUtil_couldNotCacheSessionId,
+            new List<String>{ cacheEx.getMessage() }
+          )
         );
       }
 
@@ -147,7 +149,7 @@ public without sharing class JT_ToolingApiUtil {
         'Failed to get API session ID: ' + e.getMessage()
       );
       throw new AuraHandledException(
-        'Unable to obtain API session. Please ensure you have proper permissions and the JT_SessionIdPage Visualforce page is deployed and accessible.'
+        Label.JT_ToolingApiUtil_unableToObtainApiSession
       );
     }
   }

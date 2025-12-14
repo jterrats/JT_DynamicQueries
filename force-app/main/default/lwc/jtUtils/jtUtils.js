@@ -297,7 +297,7 @@ export function escapeLikeValue(value) {
  */
 export function getLabels(componentName, importedLabels = {}) {
   if (!componentName) {
-    console.warn('getLabels: componentName is required');
+    console.warn("getLabels: componentName is required");
     return {};
   }
 
@@ -308,7 +308,7 @@ export function getLabels(componentName, importedLabels = {}) {
 
   // Copy all imported labels to the result object
   // Components can use keys like 'data-id-button-save', 'data-name-input-query', etc.
-  Object.keys(importedLabels).forEach(key => {
+  Object.keys(importedLabels).forEach((key) => {
     labels[key] = importedLabels[key];
   });
 
@@ -402,7 +402,10 @@ export function validateLabel(label) {
  * extractErrorMessage(error, 'Unknown error')
  * // Returns error.body?.message || error.body?.pageErrors?.[0]?.message || ...
  */
-export function extractErrorMessage(error, fallback = "An unknown error occurred") {
+export function extractErrorMessage(
+  error,
+  fallback = "An unknown error occurred"
+) {
   if (!error) return fallback;
 
   // Try various locations where error messages might be
@@ -445,7 +448,8 @@ export function validateConfigExists(config) {
   if (!config) {
     return {
       isValid: false,
-      errorMessage: 'Configuration data is missing. Please close and reopen the modal.'
+      errorMessage:
+        "Configuration data is missing. Please close and reopen the modal."
     };
   }
   return { isValid: true };
@@ -457,30 +461,35 @@ export function validateConfigExists(config) {
  * @param {Array<string>} requiredFields - Array of required field names (default: ['label', 'developerName', 'baseQuery'])
  * @returns {Object} { isValid: boolean, errorMessage?: string, missingFields?: Array<string> }
  */
-export function validateRequiredFields(config, requiredFields = ['label', 'developerName', 'baseQuery']) {
+export function validateRequiredFields(
+  config,
+  requiredFields = ["label", "developerName", "baseQuery"]
+) {
   if (!config) {
     return {
       isValid: false,
-      errorMessage: 'Configuration object is required'
+      errorMessage: "Configuration object is required"
     };
   }
 
-  const missingFields = requiredFields.filter(field => {
+  const missingFields = requiredFields.filter((field) => {
     const value = config[field];
-    return !value || (typeof value === 'string' && value.trim().length === 0);
+    return !value || (typeof value === "string" && value.trim().length === 0);
   });
 
   if (missingFields.length > 0) {
     const fieldLabels = {
-      label: 'Label',
-      developerName: 'Developer Name',
-      baseQuery: 'Base Query',
-      originalDevName: 'Original Developer Name'
+      label: "Label",
+      developerName: "Developer Name",
+      baseQuery: "Base Query",
+      originalDevName: "Original Developer Name"
     };
-    const missingLabels = missingFields.map(f => fieldLabels[f] || f).join(', ');
+    const missingLabels = missingFields
+      .map((f) => fieldLabels[f] || f)
+      .join(", ");
     return {
       isValid: false,
-      errorMessage: `${missingLabels} ${missingFields.length === 1 ? 'is' : 'are'} required.`,
+      errorMessage: `${missingLabels} ${missingFields.length === 1 ? "is" : "are"} required.`,
       missingFields
     };
   }
@@ -497,7 +506,7 @@ export function validateQuerySyntax(queryValidation) {
   if (!queryValidation || !queryValidation.isValid) {
     return {
       isValid: false,
-      errorMessage: 'Please fix the query syntax before saving.'
+      errorMessage: "Please fix the query syntax before saving."
     };
   }
   return { isValid: true };
@@ -512,12 +521,12 @@ export function sanitizeConfigData(config) {
   if (!config) return {};
 
   return {
-    label: config.label?.trim() || '',
-    developerName: config.developerName?.trim() || '',
-    baseQuery: config.baseQuery?.trim() || '',
-    bindings: config.bindings?.trim() || '',
-    objectName: config.objectName?.trim() || '',
-    originalDevName: config.originalDevName?.trim() || ''
+    label: config.label?.trim() || "",
+    developerName: config.developerName?.trim() || "",
+    baseQuery: config.baseQuery?.trim() || "",
+    bindings: config.bindings?.trim() || "",
+    objectName: config.objectName?.trim() || "",
+    originalDevName: config.originalDevName?.trim() || ""
   };
 }
 
@@ -528,10 +537,11 @@ export function sanitizeConfigData(config) {
  * @returns {Object} { isValid: boolean, errorMessage?: string }
  */
 export function validateEditMode(mode, originalDevName) {
-  if (mode === 'edit' && !originalDevName) {
+  if (mode === "edit" && !originalDevName) {
     return {
       isValid: false,
-      errorMessage: 'Cannot update configuration: Original developer name is missing. Please close and reopen the modal.'
+      errorMessage:
+        "Cannot update configuration: Original developer name is missing. Please close and reopen the modal."
     };
   }
   return { isValid: true };
@@ -572,11 +582,7 @@ export function pollUntilComplete(
   onTimeout,
   options = {}
 ) {
-  const {
-    interval = 2000,
-    maxPolls = 60,
-    onProgress = null
-  } = options;
+  const { interval = 2000, maxPolls = 60, onProgress = null } = options;
 
   let pollCount = 0;
   let pollInterval = null;
@@ -637,11 +643,16 @@ export function pollUntilComplete(
  * @param {string} actionLabel - Label key for the action (e.g., 'pleaseSelectConfigurationToEdit')
  * @returns {Object} { isValid: boolean, errorMessage?: string }
  */
-export function validateConfigSelected(selectedConfig, labels, actionLabel = 'pleaseSelectConfiguration') {
+export function validateConfigSelected(
+  selectedConfig,
+  labels,
+  actionLabel = "pleaseSelectConfiguration"
+) {
   if (!selectedConfig) {
     return {
       isValid: false,
-      errorMessage: labels[actionLabel] || 'Please select a configuration first.'
+      errorMessage:
+        labels[actionLabel] || "Please select a configuration first."
     };
   }
   return { isValid: true };
@@ -654,10 +665,16 @@ export function validateConfigSelected(selectedConfig, labels, actionLabel = 'pl
  * @returns {Object|null} Found configuration or null
  */
 export function findConfiguration(selectedConfig, configurationOptions) {
-  if (!selectedConfig || !configurationOptions || !Array.isArray(configurationOptions)) {
+  if (
+    !selectedConfig ||
+    !configurationOptions ||
+    !Array.isArray(configurationOptions)
+  ) {
     return null;
   }
-  return configurationOptions.find(cfg => cfg.value === selectedConfig) || null;
+  return (
+    configurationOptions.find((cfg) => cfg.value === selectedConfig) || null
+  );
 }
 
 /**
@@ -668,9 +685,18 @@ export function findConfiguration(selectedConfig, configurationOptions) {
  * @param {string} actionLabel - Label key for the action
  * @returns {Object} { isValid: boolean, config?: Object, errorMessage?: string }
  */
-export function validateAndFindConfig(selectedConfig, configurationOptions, labels, actionLabel = 'pleaseSelectConfiguration') {
+export function validateAndFindConfig(
+  selectedConfig,
+  configurationOptions,
+  labels,
+  actionLabel = "pleaseSelectConfiguration"
+) {
   // Validate config is selected
-  const selectionValidation = validateConfigSelected(selectedConfig, labels, actionLabel);
+  const selectionValidation = validateConfigSelected(
+    selectedConfig,
+    labels,
+    actionLabel
+  );
   if (!selectionValidation.isValid) {
     return {
       isValid: false,
@@ -683,7 +709,8 @@ export function validateAndFindConfig(selectedConfig, configurationOptions, labe
   if (!config) {
     return {
       isValid: false,
-      errorMessage: 'Could not find the selected configuration. Please refresh and try again.'
+      errorMessage:
+        "Could not find the selected configuration. Please refresh and try again."
     };
   }
 

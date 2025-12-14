@@ -24,20 +24,21 @@ public without sharing class JT_AuditLogDomain {
    */
   public static void insertLog(JT_SettingsAuditLog__c log) {
     if (log == null) {
-      throw new IllegalArgumentException('Audit log cannot be null');
+      throw new IllegalArgumentException(
+        Label.JT_AuditLogDomain_auditLogCannotBeNull
+      );
     }
 
     // Validate required fields
     if (String.isBlank(log.JT_Action__c)) {
-      throw new IllegalArgumentException('JT_Action__c is required');
+      throw new IllegalArgumentException(
+        Label.JT_AuditLogDomain_actionRequired
+      );
     }
 
     try {
       insert log; // PMD suppressed: Audit logs must be created regardless of permissions
     } catch (DmlException e) {
-      System.debug(LoggingLevel.ERROR, '❌ DML Exception: ' + e.getMessage());
-      System.debug(LoggingLevel.ERROR, '❌ DML Fields: ' + e.getDmlFields(0));
-      System.debug(LoggingLevel.ERROR, '❌ DML Message: ' + e.getDmlMessage(0));
       throw e; // Re-throw to let caller handle
     }
   }
@@ -55,10 +56,6 @@ public without sharing class JT_AuditLogDomain {
     try {
       insert logs; // PMD suppressed: Audit logs must be created regardless of permissions
     } catch (DmlException e) {
-      System.debug(
-        LoggingLevel.ERROR,
-        '❌ Bulk DML Exception: ' + e.getMessage()
-      );
       throw e;
     }
   }

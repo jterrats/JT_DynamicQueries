@@ -38,7 +38,10 @@ public with sharing class JT_QueryViewerController {
       return options;
     } catch (Exception e) {
       throw new AuraHandledException(
-        'Error retrieving configurations: ' + e.getMessage()
+        String.format(
+          Label.JT_QueryViewerController_errorRetrievingConfigs,
+          new List<String>{ e.getMessage() }
+        )
       );
     }
   }
@@ -82,7 +85,10 @@ public with sharing class JT_QueryViewerController {
       );
 
       // Auto-add wildcards for LIKE queries using centralized utility
-      JT_QueryBindingUtil.addWildcardsForLikeBindings(config.JT_BaseQuery__c, bindings);
+      JT_QueryBindingUtil.addWildcardsForLikeBindings(
+        config.JT_BaseQuery__c,
+        bindings
+      );
 
       System.debug(
         LoggingLevel.FINE,
@@ -241,40 +247,33 @@ public with sharing class JT_QueryViewerController {
       result.records = new List<Object>(); // Changed from List<SObject>
       result.recordCount = 0;
 
-      // Parse error message for specific cases
-      String errorMessage = e.getMessage().toLowerCase();
+      JT_ErrorMessageUtil.ErrorAnalysisResult analysis = JT_ErrorMessageUtil.analyzeError(
+        e.getMessage(),
+        null
+      );
 
-      // Check for object doesn't exist
-      if (
-        errorMessage.contains('sobject type') &&
-        errorMessage.contains('does not exist')
-      ) {
-        result.errorMessage = 'Object does not exist or you do not have access to it. Please verify the object name in your query.';
-      }
-      // Check for field doesn't exist
-      else if (
-        errorMessage.contains('no such column') ||
-        errorMessage.contains('invalid field')
-      ) {
-        result.errorMessage = 'One or more fields in the query do not exist or you do not have access to them. Please verify field names.';
-      }
-      // Check for insufficient privileges
-      else if (
-        errorMessage.contains('insufficient privileges') ||
-        errorMessage.contains('permission')
-      ) {
-        result.errorMessage = 'Insufficient permissions to query this object or fields. Please check your user permissions.';
-      }
-      // Check for invalid SOQL syntax
-      else if (
-        errorMessage.contains('unexpected token') ||
-        errorMessage.contains('expecting')
-      ) {
-        result.errorMessage = 'Invalid SOQL syntax: ' + e.getMessage();
-      }
-      // Generic error
-      else {
-        result.errorMessage = 'Query preview failed: ' + e.getMessage();
+      switch on analysis.errorType {
+        when OBJECT_ACCESS_DENIED {
+          result.errorMessage = Label.JT_QueryViewerController_objectDoesNotExist;
+        }
+        when FIELD_ACCESS_DENIED {
+          result.errorMessage = Label.JT_QueryViewerController_fieldsDoNotExist;
+        }
+        when INSUFFICIENT_PERMISSIONS {
+          result.errorMessage = Label.JT_QueryViewerController_insufficientPermissions;
+        }
+        when INVALID_SOQL_SYNTAX {
+          result.errorMessage = String.format(
+            Label.JT_QueryViewerController_invalidSoqlSyntax,
+            new List<String>{ e.getMessage() }
+          );
+        }
+        when else {
+          result.errorMessage = String.format(
+            Label.JT_QueryViewerController_queryPreviewFailed,
+            new List<String>{ e.getMessage() }
+          );
+        }
       }
 
       return result;
@@ -344,7 +343,9 @@ public with sharing class JT_QueryViewerController {
       // ✅ REFACTORED: Use Selector Layer (2025-12-02)
       Profile userProfile = JT_SystemSelector.getUserProfile();
       return userProfile != null &&
-        userProfile.Name.contains('System Administrator');
+        userProfile.Name.contains(
+          Label.JT_QueryViewerController_systemAdministrator
+        );
     } catch (Exception e) {
       return false;
     }
@@ -360,7 +361,7 @@ public with sharing class JT_QueryViewerController {
     try {
       if (!canUseRunAs()) {
         throw new AuraHandledException(
-          'Insufficient permissions to use Run As feature.'
+          Label.JT_QueryViewerController_insufficientPermissionsRunAs
         );
       }
 
@@ -540,7 +541,10 @@ public with sharing class JT_QueryViewerController {
       Map<String, Object> countBindings = (Map<String, Object>) JSON.deserializeUntyped(
         JSON.serialize(mergedBindings)
       );
-      JT_QueryBindingUtil.addWildcardsForLikeBindings(config.JT_BaseQuery__c, countBindings);
+      JT_QueryBindingUtil.addWildcardsForLikeBindings(
+        config.JT_BaseQuery__c,
+        countBindings
+      );
 
       // Build COUNT query (replace SELECT ... FROM with SELECT COUNT() FROM)
       // Use [\s\S]*? to match across multiple lines (including newlines)
@@ -581,7 +585,7 @@ public with sharing class JT_QueryViewerController {
       if (hasChildRelationships) {
         setLowRiskAssessment(
           assessment,
-          'Query contains child relationships. Using standard processing.'
+          Label.JT_QueryViewerController_queryContainsChildRelationships
         );
       } else {
         assessRiskByCount(assessment, estimatedCount);
@@ -594,8 +598,11 @@ public with sharing class JT_QueryViewerController {
       assessment.isHighRisk = true;
       assessment.isCriticalRisk = false;
       assessment.recommendBatchProcessing = true;
-      assessment.riskLevel = 'UNKNOWN';
-      assessment.message = 'Unable to assess risk: ' + e.getMessage();
+      assessment.riskLevel = Label.JT_QueryViewerController_riskLevelUnknown;
+      assessment.message = String.format(
+        Label.JT_QueryViewerController_unableToAssessRisk,
+        new List<String>{ e.getMessage() }
+      );
       return assessment;
     }
   }
@@ -696,7 +703,10 @@ public with sharing class JT_QueryViewerController {
       ];
 
       // Auto-add wildcards for LIKE queries in batch processing using centralized utility
-      JT_QueryBindingUtil.addWildcardsForLikeBindings(config.JT_BaseQuery__c, bindings);
+      JT_QueryBindingUtil.addWildcardsForLikeBindings(
+        config.JT_BaseQuery__c,
+        bindings
+      );
 
       Integer effectiveBatchSize = batchSize != null &&
         batchSize > 0
@@ -706,12 +716,15 @@ public with sharing class JT_QueryViewerController {
       // Use ResultCollector to accumulate records
       ResultCollector collector = new ResultCollector();
 
-      Integer totalProcessed = JT_DataSelector.processRecordsWithCursor(
+      JT_DataSelector.CursorProcessingParams cursorParams = new JT_DataSelector.CursorProcessingParams(
         devName,
         bindings,
         true, // enforce security
         effectiveBatchSize,
         collector
+      );
+      Integer totalProcessed = JT_DataSelector.processRecordsWithCursor(
+        cursorParams
       );
 
       // Return collected results
@@ -829,26 +842,26 @@ public with sharing class JT_QueryViewerController {
     assessment.recommendBatchProcessing = estimatedCount > 5000;
 
     if (assessment.isCriticalRisk) {
-      assessment.riskLevel = 'CRITICAL';
-      assessment.message = 'This query will exceed the 50,000 record limit. Batch processing is required.';
+      assessment.riskLevel = Label.JT_QueryViewerController_riskLevelCritical;
+      assessment.message = Label.JT_QueryViewerController_queryExceedsLimit;
     } else if (assessment.isHighRisk) {
-      assessment.riskLevel = 'HIGH';
-      assessment.message =
-        'This query may return a large number of records (' +
-        estimatedCount +
-        '). Consider using batch processing.';
+      assessment.riskLevel = Label.JT_QueryViewerController_riskLevelHigh;
+      assessment.message = String.format(
+        Label.JT_QueryViewerController_queryMayReturnLarge,
+        new List<String>{ String.valueOf(estimatedCount) }
+      );
     } else if (assessment.recommendBatchProcessing) {
-      assessment.riskLevel = 'MEDIUM';
-      assessment.message =
-        'Query will return ' +
-        estimatedCount +
-        ' records. Batch processing recommended for better performance.';
+      assessment.riskLevel = Label.JT_QueryViewerController_riskLevelMedium;
+      assessment.message = String.format(
+        Label.JT_QueryViewerController_queryWillReturn,
+        new List<String>{ String.valueOf(estimatedCount) }
+      );
     } else {
       assessment.riskLevel = 'LOW';
-      assessment.message =
-        'Query is safe to execute (' +
-        estimatedCount +
-        ' records).';
+      assessment.message = String.format(
+        Label.JT_QueryViewerController_queryIsSafeToExecute,
+        new List<String>{ String.valueOf(estimatedCount) }
+      );
     }
   }
 

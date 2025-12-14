@@ -243,13 +243,14 @@ private class JT_DataSelector_Test {
     };
 
     Test.startTest();
-    Integer totalProcessed = JT_DataSelector.processRecordsWithCursor(
+    JT_DataSelector.CursorProcessingParams params = new JT_DataSelector.CursorProcessingParams(
       'Test_Record',
       bindings,
       true, // enforces security
       10, // small batch size for testing
       processor
     );
+    Integer totalProcessed = JT_DataSelector.processRecordsWithCursor(params);
     Test.stopTest();
 
     System.assert(totalProcessed >= 0, 'Should process at least 0 records');
@@ -269,13 +270,14 @@ private class JT_DataSelector_Test {
     TestCursorProcessor processor = new TestCursorProcessor();
 
     Test.startTest();
-    Integer totalProcessed = JT_DataSelector.processRecordsWithCursor(
+    JT_DataSelector.CursorProcessingParams params = new JT_DataSelector.CursorProcessingParams(
       'Test_Record',
       null, // null bindings
       true,
       50,
       processor
     );
+    Integer totalProcessed = JT_DataSelector.processRecordsWithCursor(params);
     Test.stopTest();
 
     System.assert(
@@ -293,13 +295,14 @@ private class JT_DataSelector_Test {
     TestCursorProcessor processor = new TestCursorProcessor();
 
     Test.startTest();
-    Integer totalProcessed = JT_DataSelector.processRecordsWithCursor(
+    JT_DataSelector.CursorProcessingParams params = new JT_DataSelector.CursorProcessingParams(
       'Test_Record',
       null,
       true,
       null, // null batch size (should default to 200)
       processor
     );
+    Integer totalProcessed = JT_DataSelector.processRecordsWithCursor(params);
     Test.stopTest();
 
     System.assert(totalProcessed >= 0, 'Should use default batch size');

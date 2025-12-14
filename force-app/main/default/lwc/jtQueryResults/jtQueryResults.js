@@ -445,11 +445,7 @@ export default class JtQueryResults extends LightningElement {
 
   handleDownloadCsv() {
     if (!this._records?.length) {
-      showErrorToast(
-        this,
-        this.labels.noData,
-        this.labels.noRecordsToExport
-      );
+      showErrorToast(this, this.labels.noData, this.labels.noRecordsToExport);
       return;
     }
 
@@ -478,11 +474,7 @@ export default class JtQueryResults extends LightningElement {
         2
       );
     } catch {
-      showErrorToast(
-        this,
-        this.labels.jsonError,
-        this.labels.generationFailed
-      );
+      showErrorToast(this, this.labels.jsonError, this.labels.generationFailed);
       return "{}";
     }
   }
@@ -716,7 +708,6 @@ export default class JtQueryResults extends LightningElement {
 
     URL.revokeObjectURL(url);
   }
-
 
   // Public API
   @api

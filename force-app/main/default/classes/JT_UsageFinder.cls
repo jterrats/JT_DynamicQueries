@@ -151,7 +151,7 @@ public without sharing class JT_UsageFinder {
     final String configName
   ) {
     final ServiceResponse response = new ServiceResponse();
-    response.serviceName = 'Apex Classes';
+    response.serviceName = Label.JT_UsageFinder_serviceNameApexClasses;
 
     try {
       response.data = findInApexClasses(configName);
@@ -175,7 +175,7 @@ public without sharing class JT_UsageFinder {
    */
   public static ServiceResponse findInFlowsService(final String configName) {
     final ServiceResponse response = new ServiceResponse();
-    response.serviceName = 'Flows (Tooling API)';
+    response.serviceName = Label.JT_UsageFinder_serviceNameFlows;
 
     try {
       response.data = findInFlows(configName);
@@ -263,7 +263,7 @@ public without sharing class JT_UsageFinder {
   @AuraEnabled(cacheable=false)
   public static ServiceResponse processFlowSearchCallback(final Object state) {
     final ServiceResponse response = new ServiceResponse();
-    response.serviceName = 'Flows (Tooling API)';
+    response.serviceName = Label.JT_UsageFinder_serviceNameFlows;
 
     try {
       // Parse state
@@ -300,11 +300,13 @@ public without sharing class JT_UsageFinder {
         response.success = true;
       } else {
         response.success = false;
-        response.error =
-          'Tooling API returned status ' +
-          httpResponse.getStatusCode() +
-          ': ' +
-          httpResponse.getStatus();
+        response.error = String.format(
+          Label.JT_UsageFinder_toolingApiStatusError,
+          new List<String>{
+            String.valueOf(httpResponse.getStatusCode()),
+            httpResponse.getStatus()
+          }
+        );
         System.debug(
           LoggingLevel.ERROR,
           'Tooling API error: ' + httpResponse.getBody()
@@ -420,12 +422,14 @@ public without sharing class JT_UsageFinder {
     final AggregatedUsageResponse aggregated
   ) {
     final ServiceResponse flowService = new ServiceResponse();
-    flowService.serviceName = 'Flows (Tooling API)';
+    flowService.serviceName = Label.JT_UsageFinder_serviceNameFlows;
 
     if (httpResponse.getStatusCode() != 200) {
       flowService.success = false;
-      flowService.error =
-        'Tooling API returned status ' + httpResponse.getStatusCode();
+      flowService.error = String.format(
+        Label.JT_UsageFinder_toolingApiStatusErrorShort,
+        new List<String>{ String.valueOf(httpResponse.getStatusCode()) }
+      );
       System.debug(
         LoggingLevel.ERROR,
         'Tooling API error: ' + httpResponse.getBody()
@@ -559,7 +563,10 @@ public without sharing class JT_UsageFinder {
     }
     System.debug(
       LoggingLevel.INFO,
-      'Added ' + candidates.size() + ' candidate Flows'
+      String.format(
+        Label.JT_UsageFinder_addedCandidateFlows,
+        new List<String>{ String.valueOf(candidates.size()) }
+      )
     );
   }
 
@@ -589,7 +596,10 @@ public without sharing class JT_UsageFinder {
     if (!candidates.isEmpty()) {
       System.debug(
         LoggingLevel.INFO,
-        'Found ' + candidates.size() + ' Flows with matching names'
+        String.format(
+          Label.JT_UsageFinder_foundFlowsWithMatchingNames,
+          new List<String>{ String.valueOf(candidates.size()) }
+        )
       );
     }
   }
@@ -699,7 +709,10 @@ public without sharing class JT_UsageFinder {
       } catch (Exception e) {
         System.debug(
           LoggingLevel.WARN,
-          'Error checking Flow ' + flowName + ': ' + e.getMessage()
+          String.format(
+            Label.JT_UsageFinder_errorCheckingFlow,
+            new List<String>{ flowName, e.getMessage() }
+          )
         );
       }
     }
@@ -845,7 +858,7 @@ public without sharing class JT_UsageFinder {
           apexClass,
           configName,
           0,
-          'Configuration referenced in class'
+          Label.JT_UsageFinder_configReferencedInClass
         )
       );
     }
@@ -868,7 +881,7 @@ public without sharing class JT_UsageFinder {
     result.lineNumber = lineNumber;
     result.codeLine = codeLine;
     result.classId = apexClass.Id;
-    result.metadataType = 'Apex Class';
+    result.metadataType = Label.JT_UsageFinder_metadataTypeApexClass;
     return result;
   }
 
@@ -879,7 +892,9 @@ public without sharing class JT_UsageFinder {
    */
   private static List<UsageResult> findInFlows(final String configName) {
     try {
-      final HttpRequest request = createToolingApiRequest(JT_SystemSelector.getActiveFlowsQuery());
+      final HttpRequest request = createToolingApiRequest(
+        JT_SystemSelector.getActiveFlowsQuery()
+      );
       final HttpResponse response = new Http().send(request);
 
       if (response.getStatusCode() != 200) {
@@ -899,7 +914,10 @@ public without sharing class JT_UsageFinder {
     } catch (Exception e) {
       System.debug(
         LoggingLevel.WARN,
-        'Could not search Flows: ' + e.getMessage()
+        String.format(
+          Label.JT_UsageFinder_couldNotSearchFlows,
+          new List<String>{ e.getMessage() }
+        )
       );
       return new List<UsageResult>();
     }
@@ -971,7 +989,10 @@ public without sharing class JT_UsageFinder {
     } catch (Exception e) {
       System.debug(
         LoggingLevel.WARN,
-        'Could not check Flow ' + flowId + ': ' + e.getMessage()
+        String.format(
+          Label.JT_UsageFinder_couldNotCheckFlow,
+          new List<String>{ flowId, e.getMessage() }
+        )
       );
       return false;
     }
@@ -1039,7 +1060,10 @@ public without sharing class JT_UsageFinder {
     } else {
       System.debug(
         LoggingLevel.FINE,
-        'Config "' + configName + '" not found in Flow metadata'
+        String.format(
+          Label.JT_UsageFinder_configNotFoundInFlow,
+          new List<String>{ configName }
+        )
       );
     }
 
@@ -1083,7 +1107,7 @@ public without sharing class JT_UsageFinder {
             result.lineNumber = lineNumber;
             result.codeLine = line.trim();
             result.classId = apexClass.Id;
-            result.metadataType = 'Apex Class';
+            result.metadataType = Label.JT_UsageFinder_metadataTypeApexClass;
             results.add(result);
           }
         }
@@ -1109,7 +1133,9 @@ public without sharing class JT_UsageFinder {
     final List<UsageResult> results = new List<UsageResult>();
 
     try {
-      final HttpRequest request = createToolingApiRequest(JT_SystemSelector.getActiveFlowsQuery());
+      final HttpRequest request = createToolingApiRequest(
+        JT_SystemSelector.getActiveFlowsQuery()
+      );
       final Http httpClient = new Http();
       final HttpResponse response = httpClient.send(request);
 
@@ -1144,7 +1170,10 @@ public without sharing class JT_UsageFinder {
     } catch (Exception e) {
       System.debug(
         LoggingLevel.WARN,
-        'Could not search all Flows: ' + e.getMessage()
+        String.format(
+          Label.JT_UsageFinder_couldNotSearchAllFlows,
+          new List<String>{ e.getMessage() }
+        )
       );
     }
 
@@ -1168,7 +1197,7 @@ public without sharing class JT_UsageFinder {
       return configNameMatcher.group(1);
     }
 
-    return 'Unknown';
+    return Label.JT_UsageFinder_extractedConfigUnknown;
   }
 
   /**
@@ -1186,6 +1215,6 @@ public without sharing class JT_UsageFinder {
       return configNameMatcher.group(1);
     }
 
-    return 'Unknown';
+    return Label.JT_UsageFinder_extractedConfigUnknown;
   }
 }

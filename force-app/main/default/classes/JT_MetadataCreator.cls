@@ -91,8 +91,12 @@ public with sharing class JT_MetadataCreator {
       params.label = config.label;
       params.devName = sanitizedDevName;
       params.baseQuery = config.baseQuery;
-      params.bindings = String.isBlank(config.bindings) ? null : config.bindings;
-      params.objectName = String.isBlank(config.objectName) ? null : config.objectName;
+      params.bindings = String.isBlank(config.bindings)
+        ? null
+        : config.bindings;
+      params.objectName = String.isBlank(config.objectName)
+        ? null
+        : config.objectName;
 
       // Build XML - catch any exceptions here to prevent serialization issues
       String metadataXml;
@@ -101,18 +105,28 @@ public with sharing class JT_MetadataCreator {
       } catch (IllegalArgumentException iae) {
         result.success = false;
         String iaeMsg = iae.getMessage();
-        result.errorMessage = String.isNotBlank(iaeMsg) ? iaeMsg : Label.JT_MetadataCreator_invalidMetadataParams;
+        result.errorMessage = String.isNotBlank(iaeMsg)
+          ? iaeMsg
+          : Label.JT_MetadataCreator_invalidMetadataParams;
         return result;
       } catch (Exception xmlEx) {
         result.success = false;
         String xmlMsg = xmlEx.getMessage();
-        String xmlErrorMsg = String.isNotBlank(xmlMsg) ? xmlMsg : xmlEx.getTypeName();
-        result.errorMessage = String.format(Label.JT_MetadataCreator_errorBuildingXml, new List<String>{ xmlErrorMsg });
+        String xmlErrorMsg = String.isNotBlank(xmlMsg)
+          ? xmlMsg
+          : xmlEx.getTypeName();
+        result.errorMessage = String.format(
+          Label.JT_MetadataCreator_errorBuildingXml,
+          new List<String>{ xmlErrorMsg }
+        );
         return result;
       }
 
       // Deploy via Metadata API
-      DeploymentResult deployResult = deployMetadata(metadataXml, sanitizedDevName);
+      DeploymentResult deployResult = deployMetadata(
+        metadataXml,
+        sanitizedDevName
+      );
 
       if (!deployResult.success) {
         result.success = false;
@@ -121,7 +135,10 @@ public with sharing class JT_MetadataCreator {
       }
 
       result.success = true;
-      result.message = String.format(Label.JT_MetadataCreator_configCreatedSuccess, new List<String>{ config.label });
+      result.message = String.format(
+        Label.JT_MetadataCreator_configCreatedSuccess,
+        new List<String>{ config.label }
+      );
       result.developerName = sanitizedDevName;
       result.deploymentId = deployResult.deploymentId;
 
@@ -133,7 +150,10 @@ public with sharing class JT_MetadataCreator {
       // Ensure errorMessage is never null - use fallback if needed
       String errorMsg = e.getMessage();
       if (String.isBlank(errorMsg)) {
-        errorMsg = String.format(Label.JT_MetadataCreator_unexpectedError, new List<String>{ e.getTypeName() });
+        errorMsg = String.format(
+          Label.JT_MetadataCreator_unexpectedError,
+          new List<String>{ e.getTypeName() }
+        );
       }
       result.errorMessage = errorMsg;
       result.stackTrace = e.getStackTraceString();
@@ -193,19 +213,28 @@ public with sharing class JT_MetadataCreator {
 
       if (response.getStatusCode() == 204 || response.getStatusCode() == 200) {
         result.success = true;
-        result.message = String.format(Label.JT_MetadataCreator_configDeletedSuccess, new List<String>{ developerName });
+        result.message = String.format(
+          Label.JT_MetadataCreator_configDeletedSuccess,
+          new List<String>{ developerName }
+        );
         result.developerName = developerName;
         return result;
       } else {
         result.success = false;
-        result.errorMessage = String.format(Label.JT_MetadataCreator_failedDeleteMetadata, new List<String>{ response.getBody() });
+        result.errorMessage = String.format(
+          Label.JT_MetadataCreator_failedDeleteMetadata,
+          new List<String>{ response.getBody() }
+        );
         return result;
       }
     } catch (Exception e) {
       result.success = false;
       String errorMsg = e.getMessage();
       if (String.isBlank(errorMsg)) {
-        errorMsg = String.format(Label.JT_MetadataCreator_unexpectedError, new List<String>{ e.getTypeName() });
+        errorMsg = String.format(
+          Label.JT_MetadataCreator_unexpectedError,
+          new List<String>{ e.getTypeName() }
+        );
       }
       result.errorMessage = errorMsg;
       result.stackTrace = e.getStackTraceString();
@@ -269,7 +298,10 @@ public with sharing class JT_MetadataCreator {
 
       if (isRenaming) {
         // Rename: Delete old record and create new one
-        MetadataCreationResult renameResult = handleRename(config, sanitizedDevName);
+        MetadataCreationResult renameResult = handleRename(
+          config,
+          sanitizedDevName
+        );
         return renameResult;
       } else {
         // Normal update: Use original dev name
@@ -277,8 +309,12 @@ public with sharing class JT_MetadataCreator {
         params.label = config.label;
         params.devName = config.originalDevName;
         params.baseQuery = config.baseQuery;
-        params.bindings = String.isBlank(config.bindings) ? null : config.bindings;
-        params.objectName = String.isBlank(config.objectName) ? null : config.objectName;
+        params.bindings = String.isBlank(config.bindings)
+          ? null
+          : config.bindings;
+        params.objectName = String.isBlank(config.objectName)
+          ? null
+          : config.objectName;
 
         // Build XML - catch any exceptions here to prevent serialization issues
         String metadataXml;
@@ -287,13 +323,20 @@ public with sharing class JT_MetadataCreator {
         } catch (IllegalArgumentException iae) {
           result.success = false;
           String iaeMsg = iae.getMessage();
-          result.errorMessage = String.isNotBlank(iaeMsg) ? iaeMsg : Label.JT_MetadataCreator_invalidMetadataParams;
+          result.errorMessage = String.isNotBlank(iaeMsg)
+            ? iaeMsg
+            : Label.JT_MetadataCreator_invalidMetadataParams;
           return result;
         } catch (Exception xmlEx) {
           result.success = false;
           String xmlMsg = xmlEx.getMessage();
-          String xmlErrorMsg = String.isNotBlank(xmlMsg) ? xmlMsg : xmlEx.getTypeName();
-          result.errorMessage = String.format(Label.JT_MetadataCreator_errorBuildingXml, new List<String>{ xmlErrorMsg });
+          String xmlErrorMsg = String.isNotBlank(xmlMsg)
+            ? xmlMsg
+            : xmlEx.getTypeName();
+          result.errorMessage = String.format(
+            Label.JT_MetadataCreator_errorBuildingXml,
+            new List<String>{ xmlErrorMsg }
+          );
           return result;
         }
 
@@ -310,7 +353,10 @@ public with sharing class JT_MetadataCreator {
         }
 
         result.success = true;
-        result.message = String.format(Label.JT_MetadataCreator_configUpdatedSuccess, new List<String>{ config.label });
+        result.message = String.format(
+          Label.JT_MetadataCreator_configUpdatedSuccess,
+          new List<String>{ config.label }
+        );
         result.developerName = config.originalDevName;
         result.deploymentId = deployResult.deploymentId;
 
@@ -320,7 +366,10 @@ public with sharing class JT_MetadataCreator {
       result.success = false;
       String errorMsg = e.getMessage();
       if (String.isBlank(errorMsg)) {
-        errorMsg = String.format(Label.JT_MetadataCreator_unexpectedError, new List<String>{ e.getTypeName() });
+        errorMsg = String.format(
+          Label.JT_MetadataCreator_unexpectedError,
+          new List<String>{ e.getTypeName() }
+        );
       }
       result.errorMessage = errorMsg;
       result.stackTrace = e.getStackTraceString();
@@ -397,7 +446,9 @@ public with sharing class JT_MetadataCreator {
       return new Map<String, Object>{
         'name' => org.Name != null ? org.Name : 'Unknown',
         'isSandbox' => org.IsSandbox != null ? org.IsSandbox : false,
-        'organizationType' => org.OrganizationType != null ? org.OrganizationType : 'Unknown',
+        'organizationType' => org.OrganizationType != null
+          ? org.OrganizationType
+          : 'Unknown',
         'isScratch' => org.TrialExpirationDate != null,
         'canCreateMetadata' => canCreate,
         'isProduction' => !isDevelopmentOrg,
@@ -405,7 +456,13 @@ public with sharing class JT_MetadataCreator {
       };
     } catch (Exception e) {
       // Ensure we always return a valid Map, never a String
-      System.debug(LoggingLevel.ERROR, 'Error in getOrgInfo: ' + e.getMessage() + '\n' + e.getStackTraceString());
+      System.debug(
+        LoggingLevel.ERROR,
+        'Error in getOrgInfo: ' +
+          e.getMessage() +
+          '\n' +
+          e.getStackTraceString()
+      );
       // Return default values to maintain consistent Map structure
       return new Map<String, Object>{
         'name' => 'Unknown',
@@ -459,7 +516,9 @@ public with sharing class JT_MetadataCreator {
       String.isBlank(params.devName) ||
       String.isBlank(params.baseQuery)
     ) {
-      throw new IllegalArgumentException(Label.JT_MetadataCreator_xmlGenerationRequiredFields);
+      throw new IllegalArgumentException(
+        Label.JT_MetadataCreator_xmlGenerationRequiredFields
+      );
     }
 
     String xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
@@ -519,7 +578,10 @@ public with sharing class JT_MetadataCreator {
    * @param devName Developer name
    * @return DeploymentResult with success status, deploymentId, and errorMessage
    **/
-  private static DeploymentResult deployMetadata(String metadataXml, String devName) {
+  private static DeploymentResult deployMetadata(
+    String metadataXml,
+    String devName
+  ) {
     DeploymentResult result = new DeploymentResult();
     result.success = false;
 
@@ -590,16 +652,25 @@ public with sharing class JT_MetadataCreator {
         }
         result.errorMessage = String.format(
           Label.JT_MetadataCreator_failedDeployMetadata,
-          new List<String>{ String.valueOf(response.getStatusCode()), errorDetail }
+          new List<String>{
+            String.valueOf(response.getStatusCode()),
+            errorDetail
+          }
         );
         return result;
       }
     } catch (Exception e) {
       String errorMsg = e.getMessage();
       if (String.isBlank(errorMsg)) {
-        errorMsg = String.format(Label.JT_MetadataCreator_unexpectedErrorDeployment, new List<String>{ e.getTypeName() });
+        errorMsg = String.format(
+          Label.JT_MetadataCreator_unexpectedErrorDeployment,
+          new List<String>{ e.getTypeName() }
+        );
       }
-      result.errorMessage = String.format(Label.JT_MetadataCreator_errorDeployingMetadata, new List<String>{ errorMsg });
+      result.errorMessage = String.format(
+        Label.JT_MetadataCreator_errorDeployingMetadata,
+        new List<String>{ errorMsg }
+      );
       return result;
     }
   }
@@ -622,7 +693,10 @@ public with sharing class JT_MetadataCreator {
       if (!(deserialized instanceof Map<String, Object>)) {
         System.debug(
           LoggingLevel.ERROR,
-          String.format(Label.JT_MetadataCreator_invalidJsonFormat, new List<String>{ String.valueOf(deserialized) })
+          String.format(
+            Label.JT_MetadataCreator_invalidJsonFormat,
+            new List<String>{ String.valueOf(deserialized) }
+          )
         );
         return null;
       }
@@ -636,18 +710,33 @@ public with sharing class JT_MetadataCreator {
 
       // Extract values from map (handle null values safely)
       ConfigValues config = new ConfigValues();
-      config.label = configMap.get('label') != null ? String.valueOf(configMap.get('label')) : null;
-      config.developerName = configMap.get('developerName') != null ? String.valueOf(configMap.get('developerName')) : null;
-      config.baseQuery = configMap.get('baseQuery') != null ? String.valueOf(configMap.get('baseQuery')) : null;
-      config.bindings = configMap.get('bindings') != null ? String.valueOf(configMap.get('bindings')) : null;
-      config.objectName = configMap.get('objectName') != null ? String.valueOf(configMap.get('objectName')) : null;
-      config.originalDevName = configMap.get('originalDevName') != null ? String.valueOf(configMap.get('originalDevName')) : null;
+      config.label = configMap.get('label') != null
+        ? String.valueOf(configMap.get('label'))
+        : null;
+      config.developerName = configMap.get('developerName') != null
+        ? String.valueOf(configMap.get('developerName'))
+        : null;
+      config.baseQuery = configMap.get('baseQuery') != null
+        ? String.valueOf(configMap.get('baseQuery'))
+        : null;
+      config.bindings = configMap.get('bindings') != null
+        ? String.valueOf(configMap.get('bindings'))
+        : null;
+      config.objectName = configMap.get('objectName') != null
+        ? String.valueOf(configMap.get('objectName'))
+        : null;
+      config.originalDevName = configMap.get('originalDevName') != null
+        ? String.valueOf(configMap.get('originalDevName'))
+        : null;
 
       return config;
     } catch (Exception e) {
       System.debug(
         LoggingLevel.ERROR,
-        String.format(Label.JT_MetadataCreator_errorDeserializingJson, new List<String>{ e.getMessage() })
+        String.format(
+          Label.JT_MetadataCreator_errorDeserializingJson,
+          new List<String>{ e.getMessage() }
+        )
       );
       return null;
     }
@@ -674,7 +763,9 @@ public with sharing class JT_MetadataCreator {
     result.deploymentId = null;
 
     // Step 1: Delete old record
-    MetadataCreationResult deleteResult = deleteConfiguration(config.originalDevName);
+    MetadataCreationResult deleteResult = deleteConfiguration(
+      config.originalDevName
+    );
 
     if (!deleteResult.success) {
       result.success = false;
@@ -792,11 +883,15 @@ public with sharing class JT_MetadataCreator {
     try {
       // Basic validation
       if (!query.trim().toUpperCase().startsWith('SELECT')) {
-        throw new AuraHandledException(Label.JT_MetadataCreator_queryMustStartWithSelect);
+        throw new AuraHandledException(
+          Label.JT_MetadataCreator_queryMustStartWithSelect
+        );
       }
 
       if (!query.toUpperCase().contains('FROM')) {
-        throw new AuraHandledException(Label.JT_MetadataCreator_queryMustContainFrom);
+        throw new AuraHandledException(
+          Label.JT_MetadataCreator_queryMustContainFrom
+        );
       }
 
       // Try to extract object name (case insensitive)
@@ -825,7 +920,9 @@ public with sharing class JT_MetadataCreator {
       result.isValid = false;
       String errorMsg = e.getMessage();
       // AuraHandledException messages are already user-friendly, use as-is
-      result.message = String.isNotBlank(errorMsg) ? errorMsg : Label.JT_MetadataCreator_queryMustStartWithSelect;
+      result.message = String.isNotBlank(errorMsg)
+        ? errorMsg
+        : Label.JT_MetadataCreator_queryMustStartWithSelect;
     }
 
     return result;

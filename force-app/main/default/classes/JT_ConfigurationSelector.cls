@@ -1,11 +1,7 @@
 /**
  * @description Selector class for JT_DynamicQueryConfiguration__mdt queries
- * This class centralizes all SOQL queries related to query configurations
- * Follows Selector Layer pattern for clean architecture
- *
  * @author Jaime Terrats
  * @date 2025-12-02
- * @group Selector Layer
  */
 public with sharing class JT_ConfigurationSelector {
   /**
@@ -52,7 +48,11 @@ public with sharing class JT_ConfigurationSelector {
     ];
 
     if (configs.isEmpty()) {
-      throw new QueryException('Configuration not found: ' + devName);
+      String errorMessage = String.format(
+        Label.JT_ConfigurationSelector_configurationNotFound,
+        new List<String>{ devName }
+      );
+      throw new QueryException(errorMessage);
     }
 
     return configs[0];

@@ -47,13 +47,10 @@ public with sharing class JT_UsageFinderQueueable implements Queueable {
 
       // Store results in Platform Cache (2 days TTL - max allowed)
       // Use alphanumeric cache key to avoid invalid characters (underscores, etc.)
-      String sanitizedConfigName = configurationDevName.replaceAll(
-        '[^a-zA-Z0-9]',
-        ''
+      String sanitizedConfigName = JT_ToolingApiUtil.toAlphanumeric(
+        configurationDevName
       );
-      String sanitizedUserId = userId != null
-        ? userId.replaceAll('[^a-zA-Z0-9]', '')
-        : '';
+      String sanitizedUserId = JT_ToolingApiUtil.toAlphanumeric(userId);
       String cacheKey = 'UsageSearch' + sanitizedConfigName + sanitizedUserId;
       Cache.Org.put(cacheKey, JSON.serialize(result), 172800); // 2 days in seconds (max allowed)
 
@@ -211,12 +208,10 @@ public with sharing class JT_UsageFinderQueueable implements Queueable {
     String userId
   ) {
     // Use alphanumeric cache key to match the key used in execute()
-    String sanitizedConfigName = configurationDevName != null
-      ? configurationDevName.replaceAll('[^a-zA-Z0-9]', '')
-      : '';
-    String sanitizedUserId = userId != null
-      ? userId.replaceAll('[^a-zA-Z0-9]', '')
-      : '';
+    String sanitizedConfigName = JT_ToolingApiUtil.toAlphanumeric(
+      configurationDevName
+    );
+    String sanitizedUserId = JT_ToolingApiUtil.toAlphanumeric(userId);
     String cacheKey = 'UsageSearch' + sanitizedConfigName + sanitizedUserId;
     String cachedJson = (String) Cache.Org.get(cacheKey);
 

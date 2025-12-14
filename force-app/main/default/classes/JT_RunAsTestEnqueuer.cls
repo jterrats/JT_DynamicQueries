@@ -53,7 +53,7 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
 
       if (testClass == null) {
         throw new AuraHandledException(
-          'Test class JT_GenericRunAsTest not found. Please ensure it is deployed.'
+          Label.JT_RunAsTestEnqueuer_testClassNotFound
         );
       }
 
@@ -188,10 +188,8 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
       }
     } catch (CalloutException e) {
       // Timeout or callout error - fallback to async
-      System.debug('⚠️ Synchronous execution timeout/error: ' + e.getMessage());
       return false;
     } catch (Exception e) {
-      System.debug('⚠️ Synchronous execution error: ' + e.getMessage());
       return false;
     }
   }
@@ -223,13 +221,18 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
       );
 
       if (numFailures > 0 && !failures.isEmpty()) {
-        // Test execution failed (compilation error, etc.)
+        // Test execution failed (compilation error, assertion failure, etc.)
         Map<String, Object> failure = (Map<String, Object>) failures[0];
         String errorMessage = (String) failure.get('message');
-        updateExecutionWithError(
-          'Synchronous test execution failed: ' + errorMessage
+
+        // Extract user-friendly message from Assertion Failed errors
+        // When System.assert(false, message) is called, the message is in the assertion text
+        String friendlyMessage = extractUserFriendlyErrorMessage(
+          errorMessage,
+          failure
         );
-        System.debug('❌ Synchronous test failed: ' + errorMessage);
+
+        updateExecutionWithError(friendlyMessage);
         return;
       }
 
@@ -264,18 +267,12 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
           System.debug(
             LoggingLevel.DEBUG,
             '🔍 Searching for markers in Debug Log. ExecutionId: ' +
-            this.executionId +
-            ', LogContent length: ' +
-            (logContent != null ? logContent.length() : 0)
+              this.executionId +
+              ', LogContent length: ' +
+              (logContent != null ? logContent.length() : 0)
           );
-          System.debug(
-            LoggingLevel.DEBUG,
-            '🔍 StartMarker: ' + startMarker
-          );
-          System.debug(
-            LoggingLevel.DEBUG,
-            '🔍 EndMarker: ' + endMarker
-          );
+          System.debug(LoggingLevel.DEBUG, '🔍 StartMarker: ' + startMarker);
+          System.debug(LoggingLevel.DEBUG, '🔍 EndMarker: ' + endMarker);
 
           Integer startIndex = logContent.indexOf(startMarker);
           System.debug(
@@ -318,10 +315,10 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
               System.debug(
                 LoggingLevel.ERROR,
                 '❌ Invalid indices: jsonStartIndex (' +
-                jsonStartIndex +
-                ') >= endIndex (' +
-                endIndex +
-                ')'
+                  jsonStartIndex +
+                  ') >= endIndex (' +
+                  endIndex +
+                  ')'
               );
               resultJsonFromLog = null;
             }
@@ -334,7 +331,8 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
             System.debug(
               LoggingLevel.FINEST,
               '✅ Extracted JSON (first 500 chars): ' +
-              (resultJsonFromLog != null && resultJsonFromLog.length() > 500
+              (resultJsonFromLog != null &&
+                resultJsonFromLog.length() > 500
                 ? resultJsonFromLog.substring(0, 500) + '...'
                 : resultJsonFromLog)
             );
@@ -343,11 +341,11 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
             System.debug(
               LoggingLevel.WARN,
               '⚠️ Marker not found in Debug Log. StartIndex: ' +
-              startIndex +
-              ', EndIndex: ' +
-              endIndex +
-              ', ApexLogId: ' +
-              apexLogId
+                startIndex +
+                ', EndIndex: ' +
+                endIndex +
+                ', ApexLogId: ' +
+                apexLogId
             );
 
             // Debug: Show sample of log content around where marker should be
@@ -388,7 +386,6 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
         ];
 
         if (executions.isEmpty()) {
-          System.debug('⚠️ Execution record not found: ' + this.executionId);
           return;
         }
 
@@ -444,7 +441,12 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
           // Note: failures variable already declared at method start (line 179)
           if (failures != null && !failures.isEmpty()) {
             Map<String, Object> failure = (Map<String, Object>) failures[0];
-            execution.Error_Message__c = (String) failure.get('message');
+            String errorMessage = (String) failure.get('message');
+            // Extract user-friendly message from Assertion Failed errors
+            execution.Error_Message__c = extractUserFriendlyErrorMessage(
+              errorMessage,
+              failure
+            );
             execution.Results_Json__c = null;
             execution.Record_Count__c = 0;
           }
@@ -584,6 +586,62 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
   }
 
   /**
+   * @description Extracts user-friendly error message from test failure
+   * Uses JT_ErrorMessageUtil for consistent error detection
+   * @param errorMessage Raw error message from Tooling API
+   * @param failure Failure map from Tooling API response
+   * @return String User-friendly error message
+   **/
+  private String extractUserFriendlyErrorMessage(
+    String errorMessage,
+    Map<String, Object> failure
+  ) {
+    if (String.isBlank(errorMessage)) {
+      return Label.JT_RunAsTestEnqueuer_testExecutionFailed;
+    }
+
+    String stackTrace = failure != null
+      ? (String) failure.get('stackTrace')
+      : null;
+    JT_ErrorMessageUtil.ErrorAnalysisResult analysis = JT_ErrorMessageUtil.analyzeError(
+      errorMessage,
+      stackTrace
+    );
+
+    if (String.isNotBlank(analysis.assertionMessage)) {
+      return analysis.assertionMessage;
+    }
+
+    if (
+      analysis.isAssertionFailed &&
+      analysis.errorType == JT_ErrorMessageUtil.ErrorType.UNKNOWN
+    ) {
+      return Label.JT_RunAsTestEnqueuer_assertionFailedGeneric;
+    }
+
+    switch on analysis.errorType {
+      when OBJECT_ACCESS_DENIED {
+        return Label.JT_RunAsTestEnqueuer_objectAccessDenied;
+      }
+      when FIELD_ACCESS_DENIED {
+        return Label.JT_RunAsTestEnqueuer_fieldAccessDenied;
+      }
+      when INSUFFICIENT_PERMISSIONS {
+        return Label.JT_RunAsTestEnqueuer_insufficientAccessRights;
+      }
+      when LICENSE_RESTRICTION {
+        return Label.JT_RunAsTestEnqueuer_licenseRestriction;
+      }
+      when CONFIGURATION_ACCESS_DENIED {
+        return Label.JT_RunAsTestEnqueuer_configurationAccessDenied;
+      }
+      when else {
+        return errorMessage;
+      }
+    }
+  }
+
+  /**
    * @description Updates execution record with error status
    * CRITICAL: This method MUST succeed to prevent records from staying in 'Queued' state
    * Uses minimal DML operations and has multiple fallback strategies
@@ -670,7 +728,7 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
     );
     System.debug(
       LoggingLevel.ERROR,
-      'Record may remain in inconsistent state. Manual intervention required.'
+      Label.JT_RunAsTestEnqueuer_recordInconsistentState
     );
   }
 }

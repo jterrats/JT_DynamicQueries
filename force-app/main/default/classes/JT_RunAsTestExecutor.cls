@@ -36,7 +36,7 @@ public with sharing class JT_RunAsTestExecutor {
       // Validate permissions
       if (!canUseRunAsTest()) {
         throw new AuraHandledException(
-          'Insufficient permissions to use Run As Test feature.'
+          Label.JT_RunAsTestExecutor_insufficientPermissionsRunAsTest
         );
       }
 
@@ -57,9 +57,6 @@ public with sharing class JT_RunAsTestExecutor {
 
       final Integer maxPendingExecutions = 3;
       if (pendingExecutions >= maxPendingExecutions) {
-        System.debug(
-          '⚠️ Rate limit exceeded: ' + pendingExecutions + ' pending executions'
-        );
         throw new AuraHandledException(
           'Too many test executions in queue (' +
             pendingExecutions +
@@ -68,21 +65,6 @@ public with sharing class JT_RunAsTestExecutor {
             '.'
         );
       }
-
-      System.debug(
-        '✅ Rate limit check passed: ' +
-          pendingExecutions +
-          ' pending executions'
-      );
-
-      // Create execution record to store parameters and track state
-      System.debug('📝 Creating execution record for user: ' + userId);
-      System.debug('  Run_As_User_Name__c: ' + result.runAsUserName);
-      System.debug('  Config_Name__c: ' + configName);
-      System.debug(
-        '  Bindings_Json__c length: ' +
-        (bindingsJson != null ? bindingsJson.length() : 0)
-      );
 
       JT_RunAsTest_Execution__c execution = new JT_RunAsTest_Execution__c(
         Test_Status__c = 'Queued',
@@ -96,13 +78,12 @@ public with sharing class JT_RunAsTestExecutor {
       // Validate CRUD permissions before DML
       if (!Schema.sObjectType.JT_RunAsTest_Execution__c.isCreateable()) {
         throw new AuraHandledException(
-          'Insufficient permissions to create execution records.'
+          Label.JT_RunAsTestExecutor_insufficientPermissionsCreate
         );
       }
 
       try {
         insert execution;
-        System.debug('✅ Execution record created with ID: ' + execution.Id);
         System.debug(
           '  Run_As_User_Name__c after insert: ' + execution.Run_As_User_Name__c
         );
@@ -134,7 +115,8 @@ public with sharing class JT_RunAsTestExecutor {
           errorMessage = Label.JT_RunAsTestExecutor_storageLimitExceeded;
         } else {
           // Generic DML error message
-          errorMessage = 'Failed to create execution record: ' + dmlEx.getMessage();
+          errorMessage =
+            'Failed to create execution record: ' + dmlEx.getMessage();
         }
 
         throw new AuraHandledException(errorMessage);
@@ -157,10 +139,12 @@ public with sharing class JT_RunAsTestExecutor {
           if (statusCode == 'STORAGE_LIMIT_EXCEEDED') {
             errorMsg = Label.JT_RunAsTestExecutor_storageLimitExceeded;
           } else {
-            errorMsg = 'Failed to create execution record: ' + dmlEx.getMessage();
+            errorMsg =
+              'Failed to create execution record: ' + dmlEx.getMessage();
           }
         } else {
-          errorMsg = 'Failed to create execution record: ' + insertEx.getMessage();
+          errorMsg =
+            'Failed to create execution record: ' + insertEx.getMessage();
         }
 
         throw new AuraHandledException(errorMsg);
@@ -193,7 +177,7 @@ public with sharing class JT_RunAsTestExecutor {
         // Validate CRUD permissions before DML
         if (!Schema.sObjectType.JT_RunAsTest_Execution__c.isUpdateable()) {
           throw new AuraHandledException(
-            'Insufficient permissions to update execution records.'
+            Label.JT_RunAsTestExecutor_insufficientPermissionsUpdate
           );
         }
         update execution;
@@ -229,7 +213,7 @@ public with sharing class JT_RunAsTestExecutor {
       }
 
       result.jobId = execution.Id; // Return execution record ID for polling
-      result.message = 'Test execution initiated. Use getTestResults() to retrieve results.';
+      result.message = Label.JT_RunAsTestExecutor_testExecutionInitiated;
       result.success = true;
 
       return result;
@@ -245,7 +229,10 @@ public with sharing class JT_RunAsTestExecutor {
       } else {
         // For other exceptions, check if message contains storage limit error
         String exceptionMsg = e.getMessage();
-        if (exceptionMsg != null && exceptionMsg.contains('STORAGE_LIMIT_EXCEEDED')) {
+        if (
+          exceptionMsg != null &&
+          exceptionMsg.contains('STORAGE_LIMIT_EXCEEDED')
+        ) {
           errorMsg = Label.JT_RunAsTestExecutor_storageLimitExceeded;
         } else {
           errorMsg = exceptionMsg;
@@ -254,14 +241,7 @@ public with sharing class JT_RunAsTestExecutor {
 
       result.errorMessage = errorMsg;
       result.stackTrace = e.getStackTraceString();
-      System.debug(
-        LoggingLevel.ERROR,
-        '❌ Error in executeAsUser: ' + errorMsg
-      );
-      System.debug(
-        LoggingLevel.ERROR,
-        'Exception type: ' + e.getTypeName()
-      );
+      System.debug(LoggingLevel.ERROR, 'Exception type: ' + e.getTypeName());
       return result;
     }
   }
@@ -303,18 +283,18 @@ public with sharing class JT_RunAsTestExecutor {
 
       if (executions.isEmpty()) {
         result.success = false;
-        result.errorMessage = 'Execution record not found';
-        result.message = 'Execution record not found. Please try again.';
+        result.errorMessage = Label.JT_RunAsTestExecutor_executionRecordNotFound;
+        result.message = Label.JT_RunAsTestExecutor_executionRecordNotFoundMessage;
         return result;
       }
 
       JT_RunAsTest_Execution__c execution = executions[0];
-      System.debug('📊 Execution Status: ' + execution.Test_Status__c);
 
       // Check status
       if (
-        execution.Test_Status__c == 'Queued' ||
-        execution.Test_Status__c == 'Running'
+        execution.Test_Status__c ==
+        Label.JT_RunAsTestExecutor_testStatusQueued ||
+        execution.Test_Status__c == Label.JT_RunAsTestExecutor_testStatusRunning
       ) {
         // First, check if Queueable Job is still running (before test is enqueued)
         if (String.isNotBlank(execution.Apex_Queueable_Job_Id__c)) {
@@ -329,7 +309,6 @@ public with sharing class JT_RunAsTestExecutor {
 
             if (!queueableJobs.isEmpty()) {
               AsyncApexJob queueableJob = queueableJobs[0];
-              System.debug('📊 Queueable Job Status: ' + queueableJob.Status);
 
               if (
                 queueableJob.Status == 'Queued' ||
@@ -364,7 +343,10 @@ public with sharing class JT_RunAsTestExecutor {
           } catch (Exception e) {
             System.debug(
               LoggingLevel.WARN,
-              'Could not check Queueable Job status: ' + e.getMessage()
+              String.format(
+                Label.JT_RunAsTestExecutor_couldNotCheckQueueableStatus,
+                new List<String>{ e.getMessage() }
+              )
             );
           }
         }
@@ -382,14 +364,13 @@ public with sharing class JT_RunAsTestExecutor {
 
             if (!queueItems.isEmpty()) {
               ApexTestQueueItem queueItem = queueItems[0];
-              System.debug('📊 Queue Item Status: ' + queueItem.Status);
 
               // If test is still queued after 30 seconds, it might not execute automatically in Developer Orgs
               Long queuedDuration =
                 System.now().getTime() - execution.CreatedDate.getTime();
               if (queueItem.Status == 'Queued' && queuedDuration > 30000) {
                 result.success = false;
-                result.message = 'Test is queued but may not execute automatically in Developer Orgs. Please check Apex Test Execution in Setup or try again later.';
+                result.message = Label.JT_RunAsTestExecutor_testQueuedTooLong;
                 System.debug(
                   '⚠️ Test has been queued for ' +
                     queuedDuration +
@@ -401,21 +382,28 @@ public with sharing class JT_RunAsTestExecutor {
           } catch (Exception e) {
             System.debug(
               LoggingLevel.WARN,
-              'Could not check queue item status: ' + e.getMessage()
+              String.format(
+                Label.JT_RunAsTestExecutor_couldNotCheckQueueItemStatus,
+                new List<String>{ e.getMessage() }
+              )
             );
           }
         }
 
         result.success = false;
         result.message =
-          'Test is ' +
-          execution.Test_Status__c.toLowerCase() +
-          '. Please wait...';
+          String.format(
+            Label.JT_RunAsTestExecutor_testIsStatus,
+            new List<String>{ execution.Test_Status__c.toLowerCase() }
+          ) + '. Please wait...';
         return result;
       }
 
       // Test completed - parse results
-      if (execution.Test_Status__c == 'Completed') {
+      if (
+        execution.Test_Status__c ==
+        Label.JT_RunAsTestExecutor_testStatusCompleted
+      ) {
         if (String.isNotBlank(execution.Results_Json__c)) {
           // Parse JSON result
           Map<String, Object> resultMap = (Map<String, Object>) JSON.deserializeUntyped(
@@ -433,7 +421,8 @@ public with sharing class JT_RunAsTestExecutor {
             ? execution.Execution_Time__c.intValue()
             : (Integer) resultMap.get('executionTime');
           result.runAsUserName = execution.Run_As_User_Name__c;
-          result.assertMessage = execution.Test_Status__c == 'Completed'
+          result.assertMessage = execution.Test_Status__c ==
+            Label.JT_RunAsTestExecutor_testStatusCompleted
             ? 'SUCCESS: Found ' +
               result.recordCount +
               ' record(s) as ' +
@@ -445,31 +434,34 @@ public with sharing class JT_RunAsTestExecutor {
           result.fields = (List<Object>) resultMap.get('fields');
           result.records = (List<Object>) resultMap.get('records');
 
-          System.debug('✅ getTestResults - Parsed data from Custom Object:');
           System.debug('  success: ' + result.success);
           System.debug('  recordCount: ' + result.recordCount);
           System.debug('  runAsUserName: ' + result.runAsUserName);
 
           result.message = result.success
-            ? 'Query executed successfully as ' + result.runAsUserName
-            : 'Query failed: ' + result.errorMessage;
+            ? String.format(
+                Label.JT_RunAsTestExecutor_queryExecutedSuccessfully,
+                new List<String>{ result.runAsUserName }
+              )
+            : String.format(
+                Label.JT_RunAsTestExecutor_queryFailed,
+                new List<String>{ result.errorMessage }
+              );
         } else {
           // Test completed but no results stored
           result.success = false;
           result.errorMessage = String.isNotBlank(execution.Error_Message__c)
             ? execution.Error_Message__c
-            : 'Test completed but no results found. Check Log_Messages__c for details.';
+            : Label.JT_RunAsTestExecutor_testCompletedNoResults;
           result.message = result.errorMessage;
-          System.debug('⚠️ Test completed but Results_Json__c is empty');
           System.debug('  Log Messages: ' + execution.Log_Messages__c);
         }
       } else if (execution.Test_Status__c == 'Failed') {
         result.success = false;
         result.errorMessage = String.isNotBlank(execution.Error_Message__c)
           ? execution.Error_Message__c
-          : 'Test execution failed';
+          : Label.JT_RunAsTestExecutor_testExecutionFailed;
         result.message = result.errorMessage;
-        System.debug('❌ Test execution failed');
         System.debug('  Log Messages: ' + execution.Log_Messages__c);
       }
 
@@ -519,7 +511,7 @@ public with sharing class JT_RunAsTestExecutor {
       JT_RunAsTest_Execution__c execution = executions[0];
       String testStatus = execution.Test_Status__c;
 
-      if (testStatus == 'Completed') {
+      if (testStatus == Label.JT_RunAsTestExecutor_testStatusCompleted) {
         status.put('status', 'COMPLETED');
         status.put('hasResults', String.isNotBlank(execution.Results_Json__c));
         if (String.isBlank(execution.Results_Json__c)) {
@@ -539,10 +531,6 @@ public with sharing class JT_RunAsTestExecutor {
     } catch (Exception e) {
       status.put('status', 'ERROR');
       status.put('error', e.getMessage());
-      System.debug(
-        LoggingLevel.ERROR,
-        '❌ Error in getTestStatus: ' + e.getMessage()
-      );
     }
 
     return status;
@@ -564,7 +552,9 @@ public with sharing class JT_RunAsTestExecutor {
     ];
 
     if (users.isEmpty() || !users[0].IsActive) {
-      throw new AuraHandledException('User not found or inactive');
+      throw new AuraHandledException(
+        Label.JT_RunAsTestExecutor_userNotFoundOrInactive
+      );
     }
 
     return users[0];
@@ -712,7 +702,7 @@ public with sharing class JT_RunAsTestExecutor {
         // Log exception for monitoring
         System.debug(
           LoggingLevel.ERROR,
-          'Test execution failed with exception'
+          Label.JT_RunAsTestExecutor_testExecutionFailedException
         );
 
         // Sanitize userId for Platform Cache key
@@ -724,7 +714,7 @@ public with sharing class JT_RunAsTestExecutor {
           JSON.serialize(
             new Map<String, Object>{
               'success' => false,
-              'errorMessage' => 'Test execution failed unexpectedly',
+              'errorMessage' => Label.JT_RunAsTestExecutor_testExecutionFailedUnexpectedly,
               'recordCount' => 0
             }
           ),

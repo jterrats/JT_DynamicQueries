@@ -95,11 +95,11 @@ private class JT_UsageFinderQueueable_Test {
 
     // Use same sanitization logic as production code
     String sanitizedConfigName = configDevName != null
-      ? configDevName.replaceAll('[^a-zA-Z0-9]', '')
+      ? JT_ToolingApiUtil.toAlphanumeric(configDevName)
       : '';
-    String sanitizedUserId = UserInfo.getUserId() != null
-      ? UserInfo.getUserId().replaceAll('[^a-zA-Z0-9]', '')
-      : '';
+    String sanitizedUserId = JT_ToolingApiUtil.toAlphanumeric(
+      UserInfo.getUserId()
+    );
     String cacheKey = 'UsageSearch' + sanitizedConfigName + sanitizedUserId;
     Cache.Org.put(cacheKey, JSON.serialize(mockResult), 172800); // 2 days (max allowed)
 

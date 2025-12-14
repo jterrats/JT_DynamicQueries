@@ -138,7 +138,12 @@ public without sharing class JT_SystemSelector {
     ];
 
     if (users.isEmpty()) {
-      throw new QueryException('User not found: ' + userId);
+      throw new QueryException(
+        String.format(
+          Label.JT_SystemSelector_userNotFound,
+          new List<String>{ userId }
+        )
+      );
     }
 
     return users[0];

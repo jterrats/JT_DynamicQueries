@@ -167,7 +167,9 @@ export default class JtSearchableCombobox extends LightningElement {
   }
 
   get ariaLabel() {
-    return this.label || this.effectivePlaceholder || this.labels.searchableCombobox;
+    return (
+      this.label || this.effectivePlaceholder || this.labels.searchableCombobox
+    );
   }
 
   // Lifecycle

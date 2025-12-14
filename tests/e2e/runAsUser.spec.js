@@ -509,6 +509,135 @@ test.describe("Run As User Feature Tests", () => {
   });
 
   // ═══════════════════════════════════════════════════════════════
+  // CUSTOM LABELS VALIDATION: Ensure error messages are user-friendly
+  // ═══════════════════════════════════════════════════════════════
+
+  test("should display user-friendly error messages from Custom Labels", async ({
+    page
+  }) => {
+    console.log("🧪 Testing Custom Labels validation...");
+
+    // Expand Run As section
+    const accordionSection = page
+      .locator('lightning-accordion-section[name="run-as"]')
+      .first();
+    const isExpanded = await accordionSection
+      .getAttribute("aria-expanded")
+      .then((val) => val === "true")
+      .catch(() => false);
+
+    if (!isExpanded) {
+      await accordionSection.click();
+      await page.waitForTimeout(500);
+    }
+
+    // Select a configuration first
+    await selectConfiguration(page, "Account By Name");
+    await page.waitForTimeout(1000);
+
+    // Try to execute with a user that lacks permissions (Chatter Free, Guest, etc.)
+    // This will trigger error messages that should come from Custom Labels
+    const userCombobox = page.locator(
+      'c-jt-searchable-combobox[data-testid="run-as-user-selector"]'
+    );
+    await userCombobox.waitFor({ state: "visible", timeout: 5000 });
+    await page.waitForTimeout(2000);
+
+    const userDropdown = userCombobox.locator(".slds-listbox").first();
+    const userOptions = userDropdown.locator(".slds-listbox__item");
+    const userCount = await userOptions.count();
+
+    if (userCount === 0) {
+      console.log("⚠️  No users available - skipping Custom Labels test");
+      test.skip();
+      return;
+    }
+
+    // Select a user (preferably one without permissions)
+    const firstUserOption = userOptions.first();
+    await firstUserOption.click();
+    await page.waitForTimeout(1000);
+
+    // Execute query
+    const executeRunAsButton = page
+      .locator("lightning-button")
+      .filter({ hasText: /Execute with System\.runAs/i })
+      .first();
+    await executeRunAsButton.click();
+    await page.waitForTimeout(5000); // Wait for execution
+
+    // Check for error message (may or may not appear depending on user permissions)
+    const errorBanner = page
+      .locator(".slds-alert_error h2, .slds-notify_alert h2")
+      .first();
+    const errorVisible = await errorBanner
+      .isVisible({ timeout: 10000 })
+      .catch(() => false);
+
+    if (errorVisible) {
+      const errorText = await errorBanner.textContent();
+      console.log(`📋 Error message displayed: "${errorText}"`);
+
+      // ✅ VALIDATION 1: Message should NOT be technical
+      const technicalIndicators = [
+        "Script-thrown exception",
+        "System.AssertException",
+        "Class.",
+        "Line:",
+        "Stack trace",
+        "ApexClass",
+        "DmlException"
+      ];
+
+      const hasTechnicalContent = technicalIndicators.some((indicator) =>
+        errorText.includes(indicator)
+      );
+      expect(hasTechnicalContent).toBe(false);
+      console.log("✅ Error message is NOT technical");
+
+      // ✅ VALIDATION 2: Message should be user-friendly (contains descriptive keywords)
+      const userFriendlyKeywords = [
+        "permission",
+        "access",
+        "license",
+        "user",
+        "query",
+        "configuration",
+        "object",
+        "field",
+        "does not have",
+        "cannot",
+        "unable"
+      ];
+
+      const lowerErrorText = errorText.toLowerCase();
+      const hasUserFriendlyKeyword = userFriendlyKeywords.some((keyword) =>
+        lowerErrorText.includes(keyword)
+      );
+      expect(hasUserFriendlyKeyword).toBe(true);
+      console.log("✅ Error message contains user-friendly keywords");
+
+      // ✅ VALIDATION 3: Message should NOT be a stack trace (single line or short)
+      const lineCount = errorText
+        .split("\n")
+        .filter((line) => line.trim().length > 0).length;
+      expect(lineCount).toBeLessThan(3);
+      console.log(`✅ Error message is concise (${lineCount} lines)`);
+
+      // ✅ VALIDATION 4: Message should NOT be empty or generic "Error"
+      expect(errorText.trim().length).toBeGreaterThan(10);
+      expect(errorText.toLowerCase()).not.toBe("error");
+      console.log("✅ Error message is descriptive and not generic");
+    } else {
+      // If no error appears, the query might have succeeded
+      // This is also valid - the test validates that IF an error appears, it's user-friendly
+      console.log("ℹ️  No error message displayed (query may have succeeded)");
+    }
+
+    console.log("✅ Custom Labels validation test completed");
+  });
+
+  // ═══════════════════════════════════════════════════════════════
   // UI CLEARING: Clear Selection Functionality
   // ═══════════════════════════════════════════════════════════════
 

@@ -11,6 +11,7 @@ El error "You have uncommitted work pending. Please commit or rollback before ca
    - Esto ocurre especialmente durante deployments/setup operations
 
 2. **Flujo actual:**
+
    ```
    JT_RunAsTestExecutor.executeAsUser()
    → Crea JT_RunAsTest_Execution__c (DML)
@@ -52,6 +53,7 @@ El error "You have uncommitted work pending. Please commit or rollback before ca
 ### Mensajes Propuestos (User-Friendly):
 
 1. **Para "uncommitted work pending":**
+
    ```
    "The system is currently processing another operation.
    Please wait a moment and try again.
@@ -59,6 +61,7 @@ El error "You have uncommitted work pending. Please commit or rollback before ca
    ```
 
 2. **Para "ORG_ADMIN_LOCKED" (403):**
+
    ```
    "The system is temporarily unavailable due to an ongoing deployment or maintenance operation.
    Please wait a few minutes and try again."
@@ -147,10 +150,10 @@ catch (Exception e) {
 ```javascript
 // En handleTestResults() - Mostrar mensajes user-friendly
 if (!result.success) {
-    // El mensaje ya viene user-friendly desde Apex
-    this.showError = true;
-    this.errorMessage = result.errorMessage;
-    // No mostrar toast adicional si ya hay banner de error
+  // El mensaje ya viene user-friendly desde Apex
+  this.showError = true;
+  this.errorMessage = result.errorMessage;
+  // No mostrar toast adicional si ya hay banner de error
 }
 ```
 
@@ -198,4 +201,3 @@ if (!result.success) {
 3. **Con setup operations:**
    - Durante configuración inicial
    - Durante migraciones
-

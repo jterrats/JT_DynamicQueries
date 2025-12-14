@@ -9,43 +9,45 @@
 @SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs, PMD.ApexDoc')
 private class JT_MetadataCreator_Test {
   /**
-   * @description Helper to create ConfigurationInput for tests
+   * @description Helper to create JSON config string for tests
    */
-  private static JT_MetadataCreator.ConfigurationInput createInput(
+  private static String createInput(
     String label,
     String developerName,
     String baseQuery,
     String bindings,
     String objectName
   ) {
-    JT_MetadataCreator.ConfigurationInput input = new JT_MetadataCreator.ConfigurationInput();
-    input.label = label;
-    input.developerName = developerName;
-    input.baseQuery = baseQuery;
-    input.bindings = bindings;
-    input.objectName = objectName;
-    return input;
+    Map<String, Object> configMap = new Map<String, Object>();
+    configMap.put('label', label != null ? label : '');
+    configMap.put('developerName', developerName != null ? developerName : '');
+    configMap.put('baseQuery', baseQuery != null ? baseQuery : '');
+    configMap.put('bindings', bindings != null ? bindings : '');
+    configMap.put('objectName', objectName != null ? objectName : '');
+    return JSON.serialize(configMap);
   }
 
   /**
-   * @description Helper to create ConfigurationInput for updates
+   * @description Helper to create JSON config string for updates
    */
-  private static JT_MetadataCreator.ConfigurationInput createUpdateInput(
+  private static String createUpdateInput(
     String originalDevName,
     String label,
     String baseQuery,
     String bindings,
     String objectName
   ) {
-    JT_MetadataCreator.ConfigurationInput input = createInput(
-      label,
-      null,
-      baseQuery,
-      bindings,
-      objectName
+    Map<String, Object> configMap = new Map<String, Object>();
+    configMap.put(
+      'originalDevName',
+      originalDevName != null ? originalDevName : ''
     );
-    input.originalDevName = originalDevName;
-    return input;
+    configMap.put('label', label != null ? label : '');
+    configMap.put('developerName', '');
+    configMap.put('baseQuery', baseQuery != null ? baseQuery : '');
+    configMap.put('bindings', bindings != null ? bindings : '');
+    configMap.put('objectName', objectName != null ? objectName : '');
+    return JSON.serialize(configMap);
   }
 
   /**

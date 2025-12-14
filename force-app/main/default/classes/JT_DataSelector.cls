@@ -153,7 +153,7 @@ public inherited sharing class JT_DataSelector {
 
     if (!Schema.SObjectType.JT_DynamicQueryConfiguration__mdt.isAccessible()) {
       throw new AuraHandledException(
-        'Insufficient permissions to access DynamicSOQL__mdt object.'
+        Label.JT_DataSelector_insufficientPermissionsMetadata
       );
     }
 
@@ -166,7 +166,12 @@ public inherited sharing class JT_DataSelector {
     ];
 
     if (configs.isEmpty()) {
-      throw new AuraHandledException('Configuration not found: ' + devName);
+      throw new AuraHandledException(
+        String.format(
+          Label.JT_DataSelector_configurationNotFound,
+          new List<String>{ devName }
+        )
+      );
     }
 
     // Store in cache for future use
@@ -391,62 +396,45 @@ public inherited sharing class JT_DataSelector {
   /**
    * @description Process large query results using Apex Cursors (Beta)
    * Allows efficient processing of >50K records in batches
-   * @param devName Configuration name
-   * @param bindings Custom bindings (merged with config bindings)
-   * @param enforceSecurity Whether to use USER_MODE
-   * @param batchSize Number of records to process per batch (default: 200)
-   * @param processor Instance of CursorProcessor to handle each batch
+   * @param params CursorProcessingParams object containing all parameters
    * @return Integer Total number of records processed
    * @see https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_SOQL_cursors.htm
    */
   public static Integer processRecordsWithCursor(
-    String devName,
-    Map<String, Object> bindings,
-    Boolean enforceSecurity,
-    Integer batchSize,
-    CursorProcessor processor
+    CursorProcessingParams params
   ) {
     final JT_DataSelector selectorInstance = JT_DataSelector.getInstance();
     final JT_DynamicQueryConfiguration__mdt config = selectorInstance.getConfig(
-      devName
+      params.devName
     );
 
-    // Merge config bindings with custom bindings
     Map<String, Object> configBindings = String.isNotBlank(config.JT_Binding__c)
       ? (Map<String, Object>) JSON.deserializeUntyped(config.JT_Binding__c)
       : new Map<String, Object>();
     Map<String, Object> mergedBindings = new Map<String, Object>(
       configBindings
     );
-    if (bindings != null) {
-      mergedBindings.putAll(bindings);
+    if (params.bindings != null) {
+      mergedBindings.putAll(params.bindings);
     }
 
-    // Use appropriate access level
-    AccessLevel accessMode = enforceSecurity
+    AccessLevel accessMode = params.enforceSecurity
       ? AccessLevel.USER_MODE
       : AccessLevel.SYSTEM_MODE;
 
-    // Set batch size (default 200)
-    Integer effectiveBatchSize = batchSize != null &&
-      batchSize > 0
-      ? batchSize
+    Integer effectiveBatchSize = params.batchSize != null &&
+      params.batchSize > 0
+      ? params.batchSize
       : 200;
 
     Integer totalProcessed = 0;
 
-    // NOTE: Apex Cursors (Database.getCursor) are not yet available in API 65.0
-    // When available, this method will automatically use them for better performance
-    // For now, we use batch processing simulation with standard queries
-
-    // Query all records
     List<SObject> allRecords = Database.queryWithBinds(
       config.JT_BaseQuery__c,
       mergedBindings,
       accessMode
     );
 
-    // Process in batches to manage heap size
     for (Integer i = 0; i < allRecords.size(); i += effectiveBatchSize) {
       List<SObject> batch = new List<SObject>();
       for (
@@ -456,7 +444,7 @@ public inherited sharing class JT_DataSelector {
       ) {
         batch.add(allRecords[j]);
       }
-      processor.processBatch(batch);
+      params.processor.processBatch(batch);
       totalProcessed += batch.size();
     }
 
@@ -473,6 +461,78 @@ public inherited sharing class JT_DataSelector {
      * @param batch List of SObjects to process
      */
     void processBatch(List<SObject> batch);
+  }
+
+  /**
+   * @description Parameter object for processRecordsWithCursor method
+   * Follows project rule: no many parameters, always use objects
+   */
+  public class CursorProcessingParams {
+    @AuraEnabled
+    public String devName;
+    @AuraEnabled
+    public Map<String, Object> bindings;
+    @AuraEnabled
+    public Boolean enforceSecurity;
+    @AuraEnabled
+    public Integer batchSize;
+    public CursorProcessor processor; // Not @AuraEnabled - interface cannot be serialized
+
+    /**
+     * @description Constructor with all parameters
+     */
+    public CursorProcessingParams(
+      String devName,
+      Map<String, Object> bindings,
+      Boolean enforceSecurity,
+      Integer batchSize,
+      CursorProcessor processor
+    ) {
+      this.devName = devName;
+      this.bindings = bindings;
+      this.enforceSecurity = enforceSecurity;
+      this.batchSize = batchSize;
+      this.processor = processor;
+    }
+  }
+
+  /**
+   * @description Parameter object for getRecordsWithAutoStrategy method
+   * Follows project rule: no many parameters, always use objects
+   */
+  public class AutoStrategyParams {
+    @AuraEnabled
+    public String devName;
+    @AuraEnabled
+    public Boolean enforceSecurity;
+    @AuraEnabled
+    public Map<String, Object> bindings;
+    @AuraEnabled
+    public Integer threshold;
+    public CursorProcessor processor; // Not @AuraEnabled - interface cannot be serialized
+
+    /**
+     * @description Default constructor
+     */
+    public AutoStrategyParams() {
+    }
+
+    /**
+     * @description Constructor with all parameters
+     */
+    public AutoStrategyParams(
+      String devName,
+      Boolean enforceSecurity,
+      Map<String, Object> bindings,
+      Integer threshold,
+      CursorProcessor processor
+    ) {
+      this.devName = devName;
+      this.enforceSecurity = enforceSecurity;
+      this.bindings = bindings;
+      this.threshold = threshold;
+      this.processor = processor;
+    }
   }
 
   /**
@@ -529,7 +589,8 @@ public inherited sharing class JT_DataSelector {
    *     // Use Batch Apex for async processing
    * } else if (count > 50000) {
    *     // Use cursor processing (sync only)
-   *     JT_DataSelector.processRecordsWithCursor('MyConfig', bindings, true, 200, processor);
+   *     JT_DataSelector.CursorProcessingParams params = new JT_DataSelector.CursorProcessingParams('MyConfig', bindings, true, 200, processor);
+   *     JT_DataSelector.processRecordsWithCursor(params);
    * } else {
    *     // Use standard query
    *     List<SObject> records = JT_DataSelector.getRecords('MyConfig', true, bindings);
@@ -642,21 +703,18 @@ public inherited sharing class JT_DataSelector {
    * WARNING: This method uses cursor processing for large datasets, which can ONLY be used
    * in synchronous contexts (NOT in @Future, Queueable, Batch, or Triggers).
    * For async contexts, use countRecordsForConfig() first, then decide your strategy.
-   * @param devName Configuration name
-   * @param enforceSecurity Whether to use USER_MODE
-   * @param bindings Custom bindings (merged with config bindings)
-   * @param threshold Record count threshold for using cursor processing (default: 50000)
-   * @param processor Optional CursorProcessor for large result sets. If null and count > threshold, throws exception
+   * @param params AutoStrategyParams object containing all parameters
    * @return List<SObject> Records if count <= threshold, empty list if cursor processing was used
    * @see countRecordsForConfig For checking count before deciding strategy in async contexts
    */
   public static List<SObject> getRecordsWithAutoStrategy(
-    String devName,
-    Boolean enforceSecurity,
-    Map<String, Object> bindings,
-    Integer threshold,
-    CursorProcessor processor
+    AutoStrategyParams params
   ) {
+    String devName = params.devName;
+    Boolean enforceSecurity = params.enforceSecurity;
+    Map<String, Object> bindings = params.bindings;
+    Integer threshold = params.threshold;
+    CursorProcessor processor = params.processor;
     final JT_DataSelector selectorInstance = JT_DataSelector.getInstance();
     final JT_DynamicQueryConfiguration__mdt config = selectorInstance.getConfig(
       devName
@@ -697,22 +755,25 @@ public inherited sharing class JT_DataSelector {
       // Large result set - use cursor processing
       if (processor == null) {
         throw new AuraHandledException(
-          'Query would return ' +
-            recordCount +
-            ' records (>' +
-            effectiveThreshold +
-            '). Please provide a CursorProcessor to handle large result sets.'
+          String.format(
+            Label.JT_DataSelector_queryWouldReturnRecords,
+            new List<String>{
+              String.valueOf(recordCount),
+              String.valueOf(effectiveThreshold)
+            }
+          )
         );
       }
 
       // Process with cursor and return empty list (data is handled by processor)
-      processRecordsWithCursor(
+      JT_DataSelector.CursorProcessingParams cursorParams = new JT_DataSelector.CursorProcessingParams(
         devName,
         mergedBindings,
         enforceSecurity,
         200,
         processor
       );
+      processRecordsWithCursor(cursorParams);
       return new List<SObject>();
     } else {
       // Small/medium result set - use standard query
@@ -732,12 +793,12 @@ public inherited sharing class JT_DataSelector {
     Boolean enforceSecurity,
     Map<String, Object> bindings
   ) {
-    return getRecordsWithAutoStrategy(
-      devName,
-      enforceSecurity,
-      bindings,
-      50000,
-      null
-    );
+    AutoStrategyParams params = new AutoStrategyParams();
+    params.devName = devName;
+    params.enforceSecurity = enforceSecurity;
+    params.bindings = bindings;
+    params.threshold = 50000;
+    params.processor = null;
+    return getRecordsWithAutoStrategy(params);
   }
 }

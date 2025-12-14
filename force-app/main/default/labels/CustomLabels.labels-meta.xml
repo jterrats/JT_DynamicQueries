@@ -3039,21 +3039,25 @@ Y bueno...&lt;br /&gt;&lt;br /&gt;</value>
         <fullName>JT_RunAsTestExecutor_storageLimitExceeded</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>JT_RunAsTestExecutor - storageLimitExceeded</shortDescription>
-        <value>Your Salesforce organization has reached its storage limit. Please contact your administrator to increase storage capacity or free up space by deleting unused records. This feature requires available storage to create execution records.</value>
+        <shortDescription
+    >JT_RunAsTestExecutor - storageLimitExceeded</shortDescription>
+        <value
+    >Your Salesforce organization has reached its storage limit. Please contact your administrator to increase storage capacity or free up space by deleting unused records. This feature requires available storage to create execution records.</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_configurationRequired</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - configurationRequired</shortDescription>
+        <shortDescription
+    >jtQueryViewer - configurationRequired</shortDescription>
         <value>Configuration Required</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_pleaseSelectConfiguration</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - pleaseSelectConfiguration</shortDescription>
+        <shortDescription
+    >jtQueryViewer - pleaseSelectConfiguration</shortDescription>
         <value>Please select a configuration first.</value>
     </labels>
     <labels>
@@ -3081,21 +3085,24 @@ Y bueno...&lt;br /&gt;&lt;br /&gt;</value>
         <fullName>JT_jtQueryViewer_noConfigurationSelected</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - noConfigurationSelected</shortDescription>
+        <shortDescription
+    >jtQueryViewer - noConfigurationSelected</shortDescription>
         <value>No Configuration Selected</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_pleaseSelectConfigurationToEdit</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - pleaseSelectConfigurationToEdit</shortDescription>
+        <shortDescription
+    >jtQueryViewer - pleaseSelectConfigurationToEdit</shortDescription>
         <value>Please select a configuration to edit.</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_pleaseSelectConfigurationToDelete</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - pleaseSelectConfigurationToDelete</shortDescription>
+        <shortDescription
+    >jtQueryViewer - pleaseSelectConfigurationToDelete</shortDescription>
         <value>Please select a configuration to delete.</value>
     </labels>
     <labels>
@@ -3109,7 +3116,8 @@ Y bueno...&lt;br /&gt;&lt;br /&gt;</value>
         <fullName>JT_jtQueryViewer_configurationDeleted</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - configurationDeleted</shortDescription>
+        <shortDescription
+    >jtQueryViewer - configurationDeleted</shortDescription>
         <value>Configuration Deleted</value>
     </labels>
     <labels>
@@ -3130,22 +3138,26 @@ Y bueno...&lt;br /&gt;&lt;br /&gt;</value>
         <fullName>JT_jtQueryViewer_errorUpdatingSettings</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - errorUpdatingSettings</shortDescription>
+        <shortDescription
+    >jtQueryViewer - errorUpdatingSettings</shortDescription>
         <value>Error updating settings</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_testExecutionTimeout</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - testExecutionTimeout</shortDescription>
+        <shortDescription
+    >jtQueryViewer - testExecutionTimeout</shortDescription>
         <value>Test Execution Timeout</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_testExecutionTimeoutMessage</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - testExecutionTimeoutMessage</shortDescription>
-        <value>Test execution timed out after 120 seconds. In Developer Orgs, tests may not execute automatically. Please check Apex Test Execution in Setup or try again later.</value>
+        <shortDescription
+    >jtQueryViewer - testExecutionTimeoutMessage</shortDescription>
+        <value
+    >Test execution timed out after 120 seconds. In Developer Orgs, tests may not execute automatically. Please check Apex Test Execution in Setup or try again later.</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_pollingError</fullName>
@@ -3179,14 +3191,16 @@ Y bueno...&lt;br /&gt;&lt;br /&gt;</value>
         <fullName>JT_jtQueryViewer_pleaseWaitForExecution</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - pleaseWaitForExecution</shortDescription>
+        <shortDescription
+    >jtQueryViewer - pleaseWaitForExecution</shortDescription>
         <value>Please wait for the current test execution to complete.</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_errorExtractingParameters</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - errorExtractingParameters</shortDescription>
+        <shortDescription
+    >jtQueryViewer - errorExtractingParameters</shortDescription>
         <value>Error extracting parameters</value>
     </labels>
     <labels>
@@ -3207,35 +3221,41 @@ Y bueno...&lt;br /&gt;&lt;br /&gt;</value>
         <fullName>JT_jtQueryViewer_partialResultsMessage</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - partialResultsMessage</shortDescription>
+        <shortDescription
+    >jtQueryViewer - partialResultsMessage</shortDescription>
         <value>Showing {0} available result(s). Some searches failed.</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_productionEditingEnabled</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - productionEditingEnabled</shortDescription>
-        <value>Production editing enabled. Please refresh the page to see changes.</value>
+        <shortDescription
+    >jtQueryViewer - productionEditingEnabled</shortDescription>
+        <value
+    >Production editing enabled. Please refresh the page to see changes.</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_productionEditingDisabled</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - productionEditingDisabled</shortDescription>
+        <shortDescription
+    >jtQueryViewer - productionEditingDisabled</shortDescription>
         <value>Production editing disabled. Please refresh the page.</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_testPassedFoundRecords</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - testPassedFoundRecords</shortDescription>
+        <shortDescription
+    >jtQueryViewer - testPassedFoundRecords</shortDescription>
         <value>Test Passed: Found {0} record(s)</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_testPassedExecutionTime</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - testPassedExecutionTime</shortDescription>
+        <shortDescription
+    >jtQueryViewer - testPassedExecutionTime</shortDescription>
         <value> in {0}ms</value>
     </labels>
     <labels>
@@ -3249,21 +3269,24 @@ Y bueno...&lt;br /&gt;&lt;br /&gt;</value>
         <fullName>JT_jtSearchableCombobox_noResultsFound</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtSearchableCombobox - noResultsFound</shortDescription>
+        <shortDescription
+    >jtSearchableCombobox - noResultsFound</shortDescription>
         <value>No results found</value>
     </labels>
     <labels>
         <fullName>JT_jtSearchableCombobox_pleaseSelectOption</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtSearchableCombobox - pleaseSelectOption</shortDescription>
+        <shortDescription
+    >jtSearchableCombobox - pleaseSelectOption</shortDescription>
         <value>Please select an option</value>
     </labels>
     <labels>
         <fullName>JT_jtSearchableCombobox_clearSelection</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtSearchableCombobox - clearSelection</shortDescription>
+        <shortDescription
+    >jtSearchableCombobox - clearSelection</shortDescription>
         <value>Clear selection</value>
     </labels>
     <labels>
@@ -3277,196 +3300,1073 @@ Y bueno...&lt;br /&gt;&lt;br /&gt;</value>
         <fullName>JT_jtSearchableCombobox_searchableCombobox</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtSearchableCombobox - searchableCombobox</shortDescription>
+        <shortDescription
+    >jtSearchableCombobox - searchableCombobox</shortDescription>
         <value>Searchable combobox</value>
     </labels>
     <labels>
         <fullName>JT_MetadataCreator_configJsonRequired</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>JT_MetadataCreator - configJsonRequired</shortDescription>
+        <shortDescription
+    >JT_MetadataCreator - configJsonRequired</shortDescription>
         <value>Configuration JSON is required.</value>
     </labels>
     <labels>
         <fullName>JT_MetadataCreator_creationNotAllowed</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>JT_MetadataCreator - creationNotAllowed</shortDescription>
-        <value>Configuration creation is only allowed in development/test environments (Sandbox, Scratch Org, Developer Edition, or Trial). For production orgs (including Starter/Free Editions), use Setup &gt; Custom Metadata Types.</value>
+        <shortDescription
+    >JT_MetadataCreator - creationNotAllowed</shortDescription>
+        <value
+    >Configuration creation is only allowed in development/test environments (Sandbox, Scratch Org, Developer Edition, or Trial). For production orgs (including Starter/Free Editions), use Setup &gt; Custom Metadata Types.</value>
     </labels>
     <labels>
         <fullName>JT_MetadataCreator_requiredFieldsMissing</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>JT_MetadataCreator - requiredFieldsMissing</shortDescription>
-        <value>Label, Developer Name, and Base Query are required fields.</value>
+        <shortDescription
+    >JT_MetadataCreator - requiredFieldsMissing</shortDescription>
+        <value
+    >Label, Developer Name, and Base Query are required fields.</value>
     </labels>
     <labels>
         <fullName>JT_MetadataCreator_developerNameBlank</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>JT_MetadataCreator - developerNameBlank</shortDescription>
+        <shortDescription
+    >JT_MetadataCreator - developerNameBlank</shortDescription>
         <value>Developer Name cannot be blank.</value>
     </labels>
     <labels>
         <fullName>JT_MetadataCreator_invalidMetadataParams</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>JT_MetadataCreator - invalidMetadataParams</shortDescription>
+        <shortDescription
+    >JT_MetadataCreator - invalidMetadataParams</shortDescription>
         <value>Invalid metadata parameters</value>
     </labels>
     <labels>
         <fullName>JT_MetadataCreator_errorBuildingXml</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>JT_MetadataCreator - errorBuildingXml</shortDescription>
+        <shortDescription
+    >JT_MetadataCreator - errorBuildingXml</shortDescription>
         <value>Error building metadata XML: {0}</value>
     </labels>
     <labels>
         <fullName>JT_MetadataCreator_configCreatedSuccess</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>JT_MetadataCreator - configCreatedSuccess</shortDescription>
+        <shortDescription
+    >JT_MetadataCreator - configCreatedSuccess</shortDescription>
         <value>Configuration created successfully: {0}</value>
     </labels>
     <labels>
         <fullName>JT_MetadataCreator_unexpectedError</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>JT_MetadataCreator - unexpectedError</shortDescription>
+        <shortDescription
+    >JT_MetadataCreator - unexpectedError</shortDescription>
         <value>An unexpected error occurred: {0}</value>
     </labels>
     <labels>
         <fullName>JT_MetadataCreator_deletionNotAllowed</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>JT_MetadataCreator - deletionNotAllowed</shortDescription>
-        <value>Configuration deletion is only allowed in development/test environments (Sandbox, Scratch Org, Developer Edition, or Trial). For production orgs (including Starter/Free Editions), use Setup &gt; Custom Metadata Types.</value>
+        <shortDescription
+    >JT_MetadataCreator - deletionNotAllowed</shortDescription>
+        <value
+    >Configuration deletion is only allowed in development/test environments (Sandbox, Scratch Org, Developer Edition, or Trial). For production orgs (including Starter/Free Editions), use Setup &gt; Custom Metadata Types.</value>
     </labels>
     <labels>
         <fullName>JT_MetadataCreator_developerNameRequired</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>JT_MetadataCreator - developerNameRequired</shortDescription>
+        <shortDescription
+    >JT_MetadataCreator - developerNameRequired</shortDescription>
         <value>Developer Name is required.</value>
     </labels>
     <labels>
         <fullName>JT_MetadataCreator_configDeletedSuccess</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>JT_MetadataCreator - configDeletedSuccess</shortDescription>
+        <shortDescription
+    >JT_MetadataCreator - configDeletedSuccess</shortDescription>
         <value>Configuration deleted successfully: {0}</value>
     </labels>
     <labels>
         <fullName>JT_MetadataCreator_failedDeleteMetadata</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>JT_MetadataCreator - failedDeleteMetadata</shortDescription>
+        <shortDescription
+    >JT_MetadataCreator - failedDeleteMetadata</shortDescription>
         <value>Failed to delete metadata: {0}</value>
     </labels>
     <labels>
         <fullName>JT_MetadataCreator_editingNotAllowed</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>JT_MetadataCreator - editingNotAllowed</shortDescription>
-        <value>Configuration editing is only allowed in development/test environments (Sandbox, Scratch Org, Developer Edition, or Trial). For production orgs (including Starter/Free Editions), use Setup &gt; Custom Metadata Types.</value>
+        <shortDescription
+    >JT_MetadataCreator - editingNotAllowed</shortDescription>
+        <value
+    >Configuration editing is only allowed in development/test environments (Sandbox, Scratch Org, Developer Edition, or Trial). For production orgs (including Starter/Free Editions), use Setup &gt; Custom Metadata Types.</value>
     </labels>
     <labels>
         <fullName>JT_MetadataCreator_updateRequiredFieldsMissing</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>JT_MetadataCreator - updateRequiredFieldsMissing</shortDescription>
-        <value>Original Developer Name, Label, and Base Query are required for update.</value>
+        <shortDescription
+    >JT_MetadataCreator - updateRequiredFieldsMissing</shortDescription>
+        <value
+    >Original Developer Name, Label, and Base Query are required for update.</value>
     </labels>
     <labels>
         <fullName>JT_MetadataCreator_configUpdatedSuccess</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>JT_MetadataCreator - configUpdatedSuccess</shortDescription>
+        <shortDescription
+    >JT_MetadataCreator - configUpdatedSuccess</shortDescription>
         <value>Configuration updated successfully: {0}</value>
     </labels>
     <labels>
         <fullName>JT_MetadataCreator_failedDeployMetadata</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>JT_MetadataCreator - failedDeployMetadata</shortDescription>
+        <shortDescription
+    >JT_MetadataCreator - failedDeployMetadata</shortDescription>
         <value>Failed to deploy metadata (Status: {0}){1}</value>
     </labels>
     <labels>
         <fullName>JT_MetadataCreator_errorDeployingMetadata</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>JT_MetadataCreator - errorDeployingMetadata</shortDescription>
+        <shortDescription
+    >JT_MetadataCreator - errorDeployingMetadata</shortDescription>
         <value>Error deploying metadata: {0}</value>
     </labels>
     <labels>
         <fullName>JT_MetadataCreator_unexpectedErrorDeployment</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>JT_MetadataCreator - unexpectedErrorDeployment</shortDescription>
+        <shortDescription
+    >JT_MetadataCreator - unexpectedErrorDeployment</shortDescription>
         <value>An unexpected error occurred during deployment: {0}</value>
     </labels>
     <labels>
         <fullName>JT_MetadataCreator_invalidJsonFormat</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>JT_MetadataCreator - invalidJsonFormat</shortDescription>
-        <value>Invalid JSON format. Expected an object, but received: {0}</value>
+        <shortDescription
+    >JT_MetadataCreator - invalidJsonFormat</shortDescription>
+        <value
+    >Invalid JSON format. Expected an object, but received: {0}</value>
     </labels>
     <labels>
         <fullName>JT_MetadataCreator_errorDeserializingJson</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>JT_MetadataCreator - errorDeserializingJson</shortDescription>
+        <shortDescription
+    >JT_MetadataCreator - errorDeserializingJson</shortDescription>
         <value>Error deserializing config JSON: {0}</value>
     </labels>
     <labels>
         <fullName>JT_MetadataCreator_failedDeleteRename</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>JT_MetadataCreator - failedDeleteRename</shortDescription>
+        <shortDescription
+    >JT_MetadataCreator - failedDeleteRename</shortDescription>
         <value>Failed to delete old configuration during rename: {0}</value>
     </labels>
     <labels>
         <fullName>JT_MetadataCreator_failedCreateRename</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>JT_MetadataCreator - failedCreateRename</shortDescription>
+        <shortDescription
+    >JT_MetadataCreator - failedCreateRename</shortDescription>
         <value>Failed to create renamed configuration: {0}</value>
     </labels>
     <labels>
         <fullName>JT_MetadataCreator_configRenamedSuccess</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>JT_MetadataCreator - configRenamedSuccess</shortDescription>
+        <shortDescription
+    >JT_MetadataCreator - configRenamedSuccess</shortDescription>
         <value>Configuration renamed successfully: {0} → {1}</value>
     </labels>
     <labels>
         <fullName>JT_MetadataCreator_queryMustStartWithSelect</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>JT_MetadataCreator - queryMustStartWithSelect</shortDescription>
+        <shortDescription
+    >JT_MetadataCreator - queryMustStartWithSelect</shortDescription>
         <value>Query must start with SELECT</value>
     </labels>
     <labels>
         <fullName>JT_MetadataCreator_queryMustContainFrom</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>JT_MetadataCreator - queryMustContainFrom</shortDescription>
+        <shortDescription
+    >JT_MetadataCreator - queryMustContainFrom</shortDescription>
         <value>Query must contain FROM clause</value>
     </labels>
     <labels>
         <fullName>JT_MetadataCreator_querySyntaxValid</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>JT_MetadataCreator - querySyntaxValid</shortDescription>
+        <shortDescription
+    >JT_MetadataCreator - querySyntaxValid</shortDescription>
         <value>Query syntax is valid</value>
     </labels>
     <labels>
         <fullName>JT_MetadataCreator_xmlGenerationRequiredFields</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>JT_MetadataCreator - xmlGenerationRequiredFields</shortDescription>
-        <value>Label, Developer Name, and Base Query are required for metadata XML generation.</value>
+        <shortDescription
+    >JT_MetadataCreator - xmlGenerationRequiredFields</shortDescription>
+        <value
+    >Label, Developer Name, and Base Query are required for metadata XML generation.</value>
+    </labels>
+    <labels>
+        <fullName>JT_QueryViewerController_errorRetrievingConfigs</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_QueryViewerController - errorRetrievingConfigs</shortDescription>
+        <value>Error retrieving configurations: {0}</value>
+    </labels>
+    <labels>
+        <fullName>JT_QueryViewerController_systemAdministrator</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_QueryViewerController - systemAdministrator</shortDescription>
+        <value>System Administrator</value>
+    </labels>
+    <labels>
+        <fullName>JT_QueryViewerController_riskLevelUnknown</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_QueryViewerController - riskLevelUnknown</shortDescription>
+        <value>UNKNOWN</value>
+    </labels>
+    <labels>
+        <fullName>JT_QueryViewerController_riskLevelCritical</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_QueryViewerController - riskLevelCritical</shortDescription>
+        <value>CRITICAL</value>
+    </labels>
+    <labels>
+        <fullName>JT_QueryViewerController_riskLevelHigh</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_QueryViewerController - riskLevelHigh</shortDescription>
+        <value>HIGH</value>
+    </labels>
+    <labels>
+        <fullName>JT_QueryViewerController_riskLevelMedium</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_QueryViewerController - riskLevelMedium</shortDescription>
+        <value>MEDIUM</value>
+    </labels>
+    <labels>
+        <fullName>JT_QueryViewerController_unableToAssessRisk</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_QueryViewerController - unableToAssessRisk</shortDescription>
+        <value>Unable to assess risk: {0}</value>
+    </labels>
+    <labels>
+        <fullName>JT_QueryViewerController_queryExceedsLimit</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_QueryViewerController - queryExceedsLimit</shortDescription>
+        <value
+    >This query will exceed the 50,000 record limit. Batch processing is required.</value>
+    </labels>
+    <labels>
+        <fullName>JT_QueryViewerController_queryMayReturnLarge</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_QueryViewerController - queryMayReturnLarge</shortDescription>
+        <value
+    >This query may return a large number of records ({0}). Consider using batch processing.</value>
+    </labels>
+    <labels>
+        <fullName>JT_QueryViewerController_queryWillReturn</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_QueryViewerController - queryWillReturn</shortDescription>
+        <value
+    >Query will return {0} records. Consider using batch processing for better performance.</value>
+    </labels>
+    <labels>
+        <fullName>JT_RunAsTestExecutor_executionRecordNotFound</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_RunAsTestExecutor - executionRecordNotFound</shortDescription>
+        <value>Execution record not found</value>
+    </labels>
+    <labels>
+        <fullName>JT_RunAsTestExecutor_executionRecordNotFoundMessage</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_RunAsTestExecutor - executionRecordNotFoundMessage</shortDescription>
+        <value>Execution record not found. Please try again.</value>
+    </labels>
+    <labels>
+        <fullName>JT_RunAsTestExecutor_testStatusQueued</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_RunAsTestExecutor - testStatusQueued</shortDescription>
+        <value>Queued</value>
+    </labels>
+    <labels>
+        <fullName>JT_RunAsTestExecutor_testStatusRunning</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_RunAsTestExecutor - testStatusRunning</shortDescription>
+        <value>Running</value>
+    </labels>
+    <labels>
+        <fullName>JT_RunAsTestExecutor_testStatusCompleted</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_RunAsTestExecutor - testStatusCompleted</shortDescription>
+        <value>Completed</value>
+    </labels>
+    <labels>
+        <fullName>JT_RunAsTestExecutor_testStatusFailed</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_RunAsTestExecutor - testStatusFailed</shortDescription>
+        <value>Failed</value>
+    </labels>
+    <labels>
+        <fullName>JT_RunAsTestExecutor_queryExecutedSuccessfully</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_RunAsTestExecutor - queryExecutedSuccessfully</shortDescription>
+        <value>Query executed successfully as {0}</value>
+    </labels>
+    <labels>
+        <fullName>JT_RunAsTestExecutor_queryFailed</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_RunAsTestExecutor - queryFailed</shortDescription>
+        <value>Query failed: {0}</value>
+    </labels>
+    <labels>
+        <fullName>JT_RunAsTestExecutor_testCompletedNoResults</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_RunAsTestExecutor - testCompletedNoResults</shortDescription>
+        <value
+    >Test completed but no results found. Check Log_Messages__c for details.</value>
+    </labels>
+    <labels>
+        <fullName>JT_RunAsTestExecutor_testExecutionFailed</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_RunAsTestExecutor - testExecutionFailed</shortDescription>
+        <value>Test execution failed</value>
+    </labels>
+    <labels>
+        <fullName>JT_RunAsTestExecutor_testIsStatus</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_RunAsTestExecutor - testIsStatus</shortDescription>
+        <value>Test is {0}</value>
+    </labels>
+    <labels>
+        <fullName>JT_RunAsTestExecutor_userNotFoundOrInactive</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_RunAsTestExecutor - userNotFoundOrInactive</shortDescription>
+        <value>User not found or inactive</value>
+    </labels>
+    <labels>
+        <fullName>JT_RunAsTestExecutor_testExecutionFailedException</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_RunAsTestExecutor - testExecutionFailedException</shortDescription>
+        <value>Test execution failed with exception</value>
+    </labels>
+    <labels>
+        <fullName
+    >JT_RunAsTestExecutor_testExecutionFailedUnexpectedly</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_RunAsTestExecutor - testExecutionFailedUnexpectedly</shortDescription>
+        <value>Test execution failed unexpectedly</value>
+    </labels>
+    <labels>
+        <fullName>JT_UsageFinder_serviceNameApexClasses</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_UsageFinder - serviceNameApexClasses</shortDescription>
+        <value>Apex Classes</value>
+    </labels>
+    <labels>
+        <fullName>JT_UsageFinder_serviceNameFlows</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_UsageFinder - serviceNameFlows</shortDescription>
+        <value>Flows (Tooling API)</value>
+    </labels>
+    <labels>
+        <fullName>JT_UsageFinder_toolingApiStatusError</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_UsageFinder - toolingApiStatusError</shortDescription>
+        <value>Tooling API returned status {0}: {1}</value>
+    </labels>
+    <labels>
+        <fullName>JT_UsageFinder_toolingApiStatusErrorShort</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_UsageFinder - toolingApiStatusErrorShort</shortDescription>
+        <value>Tooling API returned status {0}</value>
+    </labels>
+    <labels>
+        <fullName>JT_UsageFinder_addedCandidateFlows</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_UsageFinder - addedCandidateFlows</shortDescription>
+        <value>Added {0} candidate Flows</value>
+    </labels>
+    <labels>
+        <fullName>JT_UsageFinder_foundFlowsWithMatchingNames</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_UsageFinder - foundFlowsWithMatchingNames</shortDescription>
+        <value>Found {0} Flows with matching names</value>
+    </labels>
+    <labels>
+        <fullName>JT_UsageFinder_processingFlows</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_UsageFinder - processingFlows</shortDescription>
+        <value>Processing {0} Flows</value>
+    </labels>
+    <labels>
+        <fullName>JT_UsageFinder_errorCheckingFlow</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_UsageFinder - errorCheckingFlow</shortDescription>
+        <value>Error checking Flow {0}: {1}</value>
+    </labels>
+    <labels>
+        <fullName>JT_UsageFinder_configReferencedInClass</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_UsageFinder - configReferencedInClass</shortDescription>
+        <value>Configuration referenced in class</value>
+    </labels>
+    <labels>
+        <fullName>JT_UsageFinder_metadataTypeApexClass</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_UsageFinder - metadataTypeApexClass</shortDescription>
+        <value>Apex Class</value>
+    </labels>
+    <labels>
+        <fullName>JT_UsageFinder_couldNotCheckFlow</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_UsageFinder - couldNotCheckFlow</shortDescription>
+        <value>Could not check Flow {0}: {1}</value>
+    </labels>
+    <labels>
+        <fullName>JT_UsageFinder_configNotFoundInFlow</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_UsageFinder - configNotFoundInFlow</shortDescription>
+        <value>Config "{0}" not found in Flow metadata</value>
+    </labels>
+    <labels>
+        <fullName>JT_UsageFinder_extractedConfigUnknown</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_UsageFinder - extractedConfigUnknown</shortDescription>
+        <value>Unknown</value>
+    </labels>
+    <labels>
+        <fullName>JT_SetupWizardController_stepNameToolingApi</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_SetupWizardController - stepNameToolingApi</shortDescription>
+        <value>Tooling API Connection</value>
+    </labels>
+    <labels>
+        <fullName>JT_SetupWizardController_toolingApiAccessible</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_SetupWizardController - toolingApiAccessible</shortDescription>
+        <value>Tooling API is accessible and working</value>
+    </labels>
+    <labels>
+        <fullName>JT_SetupWizardController_toolingApiConnectionFailed</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_SetupWizardController - toolingApiConnectionFailed</shortDescription>
+        <value>Tooling API connection failed - check user permissions</value>
+    </labels>
+    <labels>
+        <fullName>JT_SettingsService_insufficientPermissions</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_SettingsService - insufficientPermissions</shortDescription>
+        <value>Insufficient permissions to modify settings</value>
+    </labels>
+    <labels>
+        <fullName>JT_SettingsService_productionEditingEnabled</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_SettingsService - productionEditingEnabled</shortDescription>
+        <value>Production Editing Enabled</value>
+    </labels>
+    <labels>
+        <fullName>JT_SettingsService_productionEditingDisabled</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_SettingsService - productionEditingDisabled</shortDescription>
+        <value>Production Editing Disabled</value>
+    </labels>
+    <labels>
+        <fullName>JT_SettingsService_usageTrackingEnabled</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_SettingsService - usageTrackingEnabled</shortDescription>
+        <value>Usage Tracking Enabled</value>
+    </labels>
+    <labels>
+        <fullName>JT_SettingsService_usageTrackingDisabled</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_SettingsService - usageTrackingDisabled</shortDescription>
+        <value>Usage Tracking Disabled</value>
+    </labels>
+    <labels>
+        <fullName>JT_DataSelector_queryWouldReturnRecords</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_DataSelector - queryWouldReturnRecords</shortDescription>
+        <value
+    >Query would return {0} records (>{1}). Please provide a CursorProcessor to handle large result sets.</value>
+    </labels>
+    <labels>
+        <fullName>JT_AuditLogDomain_auditLogCannotBeNull</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_AuditLogDomain - auditLogCannotBeNull</shortDescription>
+        <value>Audit log cannot be null</value>
+    </labels>
+    <labels>
+        <fullName>JT_AuditLogDomain_actionRequired</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_AuditLogDomain - actionRequired</shortDescription>
+        <value>JT_Action__c is required</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_failedToUpdateSettings</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >jtQueryViewer - failedToUpdateSettings</shortDescription>
+        <value>Failed to update settings</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_developerEdition</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - developerEdition</shortDescription>
+        <value>Developer Edition</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_collapse</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - collapse</shortDescription>
+        <value>Collapse</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_expand</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - expand</shortDescription>
+        <value>Expand</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_failedToExtractParameters</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >jtQueryViewer - failedToExtractParameters</shortDescription>
+        <value>Failed to extract parameters</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_failedToPollTestResults</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >jtQueryViewer - failedToPollTestResults</shortDescription>
+        <value>Failed to poll test results</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_testExecutionFailed</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - testExecutionFailed</shortDescription>
+        <value>Test execution failed</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_failedToDeleteConfiguration</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >jtQueryViewer - failedToDeleteConfiguration</shortDescription>
+        <value>Failed to delete configuration</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_failedToExecuteSearchOrchestrator</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >jtQueryViewer - failedToExecuteSearchOrchestrator</shortDescription>
+        <value>Failed to execute search orchestrator</value>
+    </labels>
+    <labels>
+        <fullName>JT_DataCleanupUtil_executionRecordsCleaned</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_DataCleanupUtil - executionRecordsCleaned</shortDescription>
+        <value>Cleaned up {0} execution records older than {1} days</value>
+    </labels>
+    <labels>
+        <fullName>JT_DataCleanupUtil_errorCleaningExecutionRecords</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_DataCleanupUtil - errorCleaningExecutionRecords</shortDescription>
+        <value>Error cleaning up execution records: {0}</value>
+    </labels>
+    <labels>
+        <fullName>JT_DataCleanupUtil_failedToCleanupExecutionRecords</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_DataCleanupUtil - failedToCleanupExecutionRecords</shortDescription>
+        <value>Failed to cleanup execution records: {0}</value>
+    </labels>
+    <labels>
+        <fullName>JT_DataCleanupUtil_auditLogsCleaned</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_DataCleanupUtil - auditLogsCleaned</shortDescription>
+        <value>Cleaned up {0} audit log records older than {1} days</value>
+    </labels>
+    <labels>
+        <fullName>JT_DataCleanupUtil_errorCleaningAuditLogs</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_DataCleanupUtil - errorCleaningAuditLogs</shortDescription>
+        <value>Error cleaning up audit logs: {0}</value>
+    </labels>
+    <labels>
+        <fullName>JT_DataCleanupUtil_failedToCleanupAuditLogs</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_DataCleanupUtil - failedToCleanupAuditLogs</shortDescription>
+        <value>Failed to cleanup audit logs: {0}</value>
+    </labels>
+    <labels>
+        <fullName>JT_DataCleanupUtil_errorGettingStatistics</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_DataCleanupUtil - errorGettingStatistics</shortDescription>
+        <value>Error getting cleanup statistics: {0}</value>
+    </labels>
+    <labels>
+        <fullName>JT_ConfigurationSelector_configurationNotFound</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_ConfigurationSelector - configurationNotFound</shortDescription>
+        <value>Configuration not found: {0}</value>
+    </labels>
+    <labels>
+        <fullName>JT_RunAsTestEnqueuer_testExecutionFailed</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_RunAsTestEnqueuer - testExecutionFailed</shortDescription>
+        <value>Test execution failed</value>
+    </labels>
+    <labels>
+        <fullName>JT_RunAsTestEnqueuer_objectAccessDenied</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_RunAsTestEnqueuer - objectAccessDenied</shortDescription>
+        <value
+    >The user does not have access to the object specified in the query.</value>
+    </labels>
+    <labels>
+        <fullName>JT_RunAsTestEnqueuer_fieldAccessDenied</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_RunAsTestEnqueuer - fieldAccessDenied</shortDescription>
+        <value
+    >The user does not have access to one or more fields in the query.</value>
+    </labels>
+    <labels>
+        <fullName>JT_RunAsTestEnqueuer_insufficientAccessRights</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_RunAsTestEnqueuer - insufficientAccessRights</shortDescription>
+        <value
+    >The user has insufficient access rights to execute this query.</value>
+    </labels>
+    <labels>
+        <fullName>JT_RunAsTestEnqueuer_licenseRestriction</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_RunAsTestEnqueuer - licenseRestriction</shortDescription>
+        <value>The user's license does not allow access to this feature.</value>
+    </labels>
+    <labels>
+        <fullName>JT_RunAsTestEnqueuer_configurationAccessDenied</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_RunAsTestEnqueuer - configurationAccessDenied</shortDescription>
+        <value>The user does not have access to the query configuration.</value>
+    </labels>
+    <labels>
+        <fullName>JT_RunAsTestEnqueuer_assertionFailedGeneric</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_RunAsTestEnqueuer - assertionFailedGeneric</shortDescription>
+        <value
+    >Test assertion failed. The user may not have the required permissions or access.</value>
+    </labels>
+    <labels>
+        <fullName>JT_RunAsTestEnqueuer_testClassNotFound</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_RunAsTestEnqueuer - testClassNotFound</shortDescription>
+        <value
+    >Test class JT_GenericRunAsTest not found. Please ensure it is deployed.</value>
+    </labels>
+    <labels>
+        <fullName>JT_GenericRunAsTest_executionParametersNotFound</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_GenericRunAsTest - executionParametersNotFound</shortDescription>
+        <value
+    >Test class could not find execution parameters. This may indicate a timing issue or missing execution record.</value>
+    </labels>
+    <labels>
+        <fullName>JT_GenericRunAsTest_noTestParametersFound</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_GenericRunAsTest - noTestParametersFound</shortDescription>
+        <value>No test parameters found - skipping</value>
+    </labels>
+    <labels>
+        <fullName>JT_GenericRunAsTest_unknownErrorOccurred</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_GenericRunAsTest - unknownErrorOccurred</shortDescription>
+        <value>Unknown error occurred</value>
+    </labels>
+    <labels>
+        <fullName>JT_QueryViewerController_invalidSoqlSyntax</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_QueryViewerController - invalidSoqlSyntax</shortDescription>
+        <value>Invalid SOQL syntax: {0}</value>
+    </labels>
+    <labels>
+        <fullName>JT_QueryViewerController_queryPreviewFailed</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_QueryViewerController - queryPreviewFailed</shortDescription>
+        <value>Query preview failed: {0}</value>
+    </labels>
+    <labels>
+        <fullName>JT_UsageFinder_couldNotSearchFlows</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_UsageFinder - couldNotSearchFlows</shortDescription>
+        <value>Could not search Flows: {0}</value>
+    </labels>
+    <labels>
+        <fullName>JT_UsageFinder_couldNotSearchAllFlows</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_UsageFinder - couldNotSearchAllFlows</shortDescription>
+        <value>Could not search all Flows: {0}</value>
+    </labels>
+    <labels>
+        <fullName>JT_RunAsTestExecutor_couldNotCheckQueueableStatus</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_RunAsTestExecutor - couldNotCheckQueueableStatus</shortDescription>
+        <value>Could not check Queueable Job status: {0}</value>
+    </labels>
+    <labels>
+        <fullName>JT_RunAsTestExecutor_couldNotCheckQueueItemStatus</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_RunAsTestExecutor - couldNotCheckQueueItemStatus</shortDescription>
+        <value>Could not check queue item status: {0}</value>
+    </labels>
+    <labels>
+        <fullName>JT_RunAsTestExecutor_testQueuedTooLong</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_RunAsTestExecutor - testQueuedTooLong</shortDescription>
+        <value
+    >Test is queued but may not execute automatically in Developer Orgs. Please check Apex Test Execution in Setup or try again later.</value>
+    </labels>
+    <labels>
+        <fullName>JT_ToolingApiUtil_invalid</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_ToolingApiUtil - invalid</shortDescription>
+        <value>INVALID</value>
+    </labels>
+    <labels>
+        <fullName>JT_ToolingApiUtil_couldNotCacheSessionId</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_ToolingApiUtil - couldNotCacheSessionId</shortDescription>
+        <value>Could not cache session ID in Platform Cache: {0}</value>
+    </labels>
+    <labels>
+        <fullName>JT_ToolingApiUtil_unableToObtainApiSession</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_ToolingApiUtil - unableToObtainApiSession</shortDescription>
+        <value
+    >Unable to obtain API session. Please ensure you have proper permissions and the JT_SessionIdPage Visualforce page is deployed and accessible.</value>
+    </labels>
+    <labels>
+        <fullName>JT_QueryViewerController_objectDoesNotExist</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_QueryViewerController - objectDoesNotExist</shortDescription>
+        <value
+    >Object does not exist or you do not have access to it. Please verify the object name in your query.</value>
+    </labels>
+    <labels>
+        <fullName>JT_QueryViewerController_fieldsDoNotExist</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_QueryViewerController - fieldsDoNotExist</shortDescription>
+        <value
+    >One or more fields in the query do not exist or you do not have access to them. Please verify field names.</value>
+    </labels>
+    <labels>
+        <fullName>JT_QueryViewerController_insufficientPermissions</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_QueryViewerController - insufficientPermissions</shortDescription>
+        <value
+    >Insufficient permissions to query this object or fields. Please check your user permissions.</value>
+    </labels>
+    <labels>
+        <fullName
+    >JT_QueryViewerController_insufficientPermissionsRunAs</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_QueryViewerController - insufficientPermissionsRunAs</shortDescription>
+        <value>Insufficient permissions to use Run As feature.</value>
+    </labels>
+    <labels>
+        <fullName
+    >JT_QueryViewerController_queryContainsChildRelationships</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_QueryViewerController - queryContainsChildRelationships</shortDescription>
+        <value
+    >Query contains child relationships. Using standard processing.</value>
+    </labels>
+    <labels>
+        <fullName>JT_QueryViewerController_queryIsSafeToExecute</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_QueryViewerController - queryIsSafeToExecute</shortDescription>
+        <value>Query is safe to execute ({0} records).</value>
+    </labels>
+    <labels>
+        <fullName
+    >JT_RunAsTestExecutor_insufficientPermissionsRunAsTest</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_RunAsTestExecutor - insufficientPermissionsRunAsTest</shortDescription>
+        <value>Insufficient permissions to use Run As Test feature.</value>
+    </labels>
+    <labels>
+        <fullName>JT_RunAsTestExecutor_insufficientPermissionsCreate</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_RunAsTestExecutor - insufficientPermissionsCreate</shortDescription>
+        <value>Insufficient permissions to create execution records.</value>
+    </labels>
+    <labels>
+        <fullName>JT_RunAsTestExecutor_insufficientPermissionsUpdate</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_RunAsTestExecutor - insufficientPermissionsUpdate</shortDescription>
+        <value>Insufficient permissions to update execution records.</value>
+    </labels>
+    <labels>
+        <fullName>JT_RunAsTestExecutor_testExecutionInitiated</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_RunAsTestExecutor - testExecutionInitiated</shortDescription>
+        <value
+    >Test execution initiated. Use getTestResults() to retrieve results.</value>
+    </labels>
+    <labels>
+        <fullName>JT_RunAsTestExecutor_queryExecutedSuccessfully</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_RunAsTestExecutor - queryExecutedSuccessfully</shortDescription>
+        <value>Query executed successfully as {0}</value>
+    </labels>
+    <labels>
+        <fullName>JT_RunAsTestExecutor_queryFailed</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_RunAsTestExecutor - queryFailed</shortDescription>
+        <value>Query failed: {0}</value>
+    </labels>
+    <labels>
+        <fullName>JT_RunAsTestExecutor_testExecutionFailed</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_RunAsTestExecutor - testExecutionFailed</shortDescription>
+        <value>Test execution failed</value>
+    </labels>
+    <labels>
+        <fullName>JT_RunAsTestEnqueuer_recordInconsistentState</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_RunAsTestEnqueuer - recordInconsistentState</shortDescription>
+        <value
+    >Record may remain in inconsistent state. Manual intervention required.</value>
+    </labels>
+    <labels>
+        <fullName>JT_DataSelector_insufficientPermissionsMetadata</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_DataSelector - insufficientPermissionsMetadata</shortDescription>
+        <value
+    >Insufficient permissions to access DynamicSOQL__mdt object.</value>
+    </labels>
+    <labels>
+        <fullName>JT_DataSelector_configurationNotFound</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_DataSelector - configurationNotFound</shortDescription>
+        <value>Configuration not found: {0}</value>
+    </labels>
+    <labels>
+        <fullName>JT_SystemSelector_userNotFound</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_SystemSelector - userNotFound</shortDescription>
+        <value>User not found: {0}</value>
+    </labels>
+    <labels>
+        <fullName>JT_ExecutionStateManager_invalidTransition</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_ExecutionStateManager - invalidTransition</shortDescription>
+        <value>Invalid state transition from {0} to {1}</value>
     </labels>
 </CustomLabels>

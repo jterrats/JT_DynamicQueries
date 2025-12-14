@@ -4,11 +4,11 @@
  * @author Jaime Terrats
  * @group Dynamic Queries
  */
+@SuppressWarnings('PMD.ApexCRUDViolation')
 public with sharing class JT_DataCleanupUtil {
-  // Retention periods (in days)
-  private static final Integer EXECUTION_RETENTION_DAYS = 30; // Keep execution records for 30 days
-  private static final Integer AUDIT_LOG_RETENTION_DAYS = 90; // Keep audit logs for 90 days
-  private static final Integer BATCH_SIZE = 200; // Process in batches to avoid governor limits
+  private static final Integer EXECUTION_RETENTION_DAYS = 30;
+  private static final Integer AUDIT_LOG_RETENTION_DAYS = 90;
+  private static final Integer BATCH_SIZE = 200;
 
   /**
    * @description Cleans up old JT_RunAsTest_Execution__c records
@@ -21,12 +21,13 @@ public with sharing class JT_DataCleanupUtil {
    */
   @AuraEnabled
   public static Integer cleanupExecutionRecords(Integer daysToKeep) {
-    Integer retentionDays = daysToKeep != null && daysToKeep > 0
+    Integer retentionDays = daysToKeep != null &&
+      daysToKeep > 0
       ? daysToKeep
       : EXECUTION_RETENTION_DAYS;
 
     Datetime cutoffDate = Datetime.now().addDays(-retentionDays);
-    Datetime stuckCutoffDate = Datetime.now().addDays(-7); // Clean up stuck executions after 7 days
+    Datetime stuckCutoffDate = Datetime.now().addDays(-7);
 
     Integer deletedCount = 0;
 
@@ -43,9 +44,11 @@ public with sharing class JT_DataCleanupUtil {
       ];
 
       if (!oldCompletedRecords.isEmpty()) {
-        // Delete in batches to avoid governor limits
         for (Integer i = 0; i < oldCompletedRecords.size(); i += BATCH_SIZE) {
-          Integer endIndex = Math.min(i + BATCH_SIZE, oldCompletedRecords.size());
+          Integer endIndex = Math.min(
+            i + BATCH_SIZE,
+            oldCompletedRecords.size()
+          );
           List<JT_RunAsTest_Execution__c> batch = new List<JT_RunAsTest_Execution__c>();
           for (Integer j = i; j < endIndex; j++) {
             batch.add(oldCompletedRecords[j]);
@@ -55,7 +58,6 @@ public with sharing class JT_DataCleanupUtil {
         }
       }
 
-      // Delete stuck Queued/Running records (older than 7 days)
       List<JT_RunAsTest_Execution__c> stuckRecords = [
         SELECT Id
         FROM JT_RunAsTest_Execution__c
@@ -67,7 +69,6 @@ public with sharing class JT_DataCleanupUtil {
       ];
 
       if (!stuckRecords.isEmpty()) {
-        // Delete in batches
         for (Integer i = 0; i < stuckRecords.size(); i += BATCH_SIZE) {
           Integer endIndex = Math.min(i + BATCH_SIZE, stuckRecords.size());
           List<JT_RunAsTest_Execution__c> batch = new List<JT_RunAsTest_Execution__c>();
@@ -78,22 +79,12 @@ public with sharing class JT_DataCleanupUtil {
           deletedCount += batch.size();
         }
       }
-
-      System.debug(
-        '✅ Cleaned up ' +
-        deletedCount +
-        ' execution records older than ' +
-        retentionDays +
-        ' days'
-      );
     } catch (Exception e) {
-      System.debug(
-        LoggingLevel.ERROR,
-        '❌ Error cleaning up execution records: ' + e.getMessage()
+      String errorMessage = String.format(
+        Label.JT_DataCleanupUtil_failedToCleanupExecutionRecords,
+        new List<String>{ e.getMessage() }
       );
-      throw new AuraHandledException(
-        'Failed to cleanup execution records: ' + e.getMessage()
-      );
+      throw new AuraHandledException(errorMessage);
     }
 
     return deletedCount;
@@ -107,7 +98,8 @@ public with sharing class JT_DataCleanupUtil {
    */
   @AuraEnabled
   public static Integer cleanupAuditLogs(Integer daysToKeep) {
-    Integer retentionDays = daysToKeep != null && daysToKeep > 0
+    Integer retentionDays = daysToKeep != null &&
+      daysToKeep > 0
       ? daysToKeep
       : AUDIT_LOG_RETENTION_DAYS;
 
@@ -125,7 +117,6 @@ public with sharing class JT_DataCleanupUtil {
       ];
 
       if (!oldAuditLogs.isEmpty()) {
-        // Delete in batches to avoid governor limits
         for (Integer i = 0; i < oldAuditLogs.size(); i += BATCH_SIZE) {
           Integer endIndex = Math.min(i + BATCH_SIZE, oldAuditLogs.size());
           List<JT_SettingsAuditLog__c> batch = new List<JT_SettingsAuditLog__c>();
@@ -136,22 +127,12 @@ public with sharing class JT_DataCleanupUtil {
           deletedCount += batch.size();
         }
       }
-
-      System.debug(
-        '✅ Cleaned up ' +
-        deletedCount +
-        ' audit log records older than ' +
-        retentionDays +
-        ' days'
-      );
     } catch (Exception e) {
-      System.debug(
-        LoggingLevel.ERROR,
-        '❌ Error cleaning up audit logs: ' + e.getMessage()
+      String errorMessage = String.format(
+        Label.JT_DataCleanupUtil_failedToCleanupAuditLogs,
+        new List<String>{ e.getMessage() }
       );
-      throw new AuraHandledException(
-        'Failed to cleanup audit logs: ' + e.getMessage()
-      );
+      throw new AuraHandledException(errorMessage);
     }
 
     return deletedCount;
@@ -165,12 +146,12 @@ public with sharing class JT_DataCleanupUtil {
   public static Map<String, Object> getCleanupStatistics() {
     Map<String, Object> stats = new Map<String, Object>();
 
-    Datetime executionCutoff = Datetime.now().addDays(-EXECUTION_RETENTION_DAYS);
+    Datetime executionCutoff = Datetime.now()
+      .addDays(-EXECUTION_RETENTION_DAYS);
     Datetime auditCutoff = Datetime.now().addDays(-AUDIT_LOG_RETENTION_DAYS);
     Datetime stuckCutoff = Datetime.now().addDays(-7);
 
     try {
-      // Count old execution records
       Integer oldCompletedExecutions = [
         SELECT COUNT()
         FROM JT_RunAsTest_Execution__c
@@ -189,7 +170,6 @@ public with sharing class JT_DataCleanupUtil {
         WITH USER_MODE
       ];
 
-      // Count old audit logs
       Integer oldAuditLogs = [
         SELECT COUNT()
         FROM JT_SettingsAuditLog__c
@@ -207,11 +187,11 @@ public with sharing class JT_DataCleanupUtil {
       stats.put('executionRetentionDays', EXECUTION_RETENTION_DAYS);
       stats.put('auditLogRetentionDays', AUDIT_LOG_RETENTION_DAYS);
     } catch (Exception e) {
-      System.debug(
-        LoggingLevel.ERROR,
-        '❌ Error getting cleanup statistics: ' + e.getMessage()
+      String errorMessage = String.format(
+        Label.JT_DataCleanupUtil_errorGettingStatistics,
+        new List<String>{ e.getMessage() }
       );
-      stats.put('error', e.getMessage());
+      stats.put('error', errorMessage);
     }
 
     return stats;
@@ -246,4 +226,3 @@ public with sharing class JT_DataCleanupUtil {
     return results;
   }
 }
-

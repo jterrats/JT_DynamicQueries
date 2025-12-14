@@ -194,6 +194,15 @@ import productionEditingEnabledLabel from "@salesforce/label/c.JT_jtQueryViewer_
 import productionEditingDisabledLabel from "@salesforce/label/c.JT_jtQueryViewer_productionEditingDisabled";
 import testPassedFoundRecordsLabel from "@salesforce/label/c.JT_jtQueryViewer_testPassedFoundRecords";
 import testPassedExecutionTimeLabel from "@salesforce/label/c.JT_jtQueryViewer_testPassedExecutionTime";
+import failedToUpdateSettingsLabel from "@salesforce/label/c.JT_jtQueryViewer_failedToUpdateSettings";
+import developerEditionLabel from "@salesforce/label/c.JT_jtQueryViewer_developerEdition";
+import collapseLabel from "@salesforce/label/c.JT_jtQueryViewer_collapse";
+import expandLabel from "@salesforce/label/c.JT_jtQueryViewer_expand";
+import failedToExtractParametersLabel from "@salesforce/label/c.JT_jtQueryViewer_failedToExtractParameters";
+import failedToPollTestResultsLabel from "@salesforce/label/c.JT_jtQueryViewer_failedToPollTestResults";
+import testExecutionFailedLabel from "@salesforce/label/c.JT_jtQueryViewer_testExecutionFailed";
+import failedToDeleteConfigurationLabel from "@salesforce/label/c.JT_jtQueryViewer_failedToDeleteConfiguration";
+import failedToExecuteSearchOrchestratorLabel from "@salesforce/label/c.JT_jtQueryViewer_failedToExecuteSearchOrchestrator";
 
 // Apex imports
 import getConfigurations from "@salesforce/apex/JT_QueryViewerController.getConfigurations";
@@ -313,7 +322,7 @@ export default class JtQueryViewer extends LightningElement {
   pollInterval;
 
   // Custom Labels organized using getLabels() utility
-  labels = getLabels('jtQueryViewer', {
+  labels = getLabels("jtQueryViewer", {
     apexClass: apexClassLabel,
     autoDetectedFromQuery: autoDetectedFromQueryLabel,
     baseQuery: baseQueryLabel,
@@ -491,7 +500,17 @@ export default class JtQueryViewer extends LightningElement {
     productionEditingEnabled: productionEditingEnabledLabel,
     productionEditingDisabled: productionEditingDisabledLabel,
     testPassedFoundRecords: testPassedFoundRecordsLabel,
-    testPassedExecutionTime: testPassedExecutionTimeLabel
+    testPassedExecutionTime: testPassedExecutionTimeLabel,
+    failedToUpdateSettings: failedToUpdateSettingsLabel,
+    developerEdition: developerEditionLabel,
+    collapse: collapseLabel,
+    expand: expandLabel,
+    failedToExtractParameters: failedToExtractParametersLabel,
+    failedToPollTestResults: failedToPollTestResultsLabel,
+    testExecutionFailed: testExecutionFailedLabel,
+    validSoqlSyntax: validSOQLSyntaxLabel,
+    failedToDeleteConfiguration: failedToDeleteConfigurationLabel,
+    failedToExecuteSearchOrchestrator: failedToExecuteSearchOrchestratorLabel
   });
 
   // Wire to get all configurations (cacheable for refreshApex)
@@ -579,7 +598,7 @@ export default class JtQueryViewer extends LightningElement {
 
     if (this.orgInfo.isSandbox) return this.labels.orgTypeSandbox;
     if (this.orgInfo.isScratch) return this.labels.orgTypeScratchOrg;
-    if (orgType === "Developer Edition")
+    if (orgType === this.labels.developerEdition)
       return this.labels.orgTypeDeveloperEdition;
 
     // All other orgs are considered production (including Starter/Free)
@@ -590,7 +609,7 @@ export default class JtQueryViewer extends LightningElement {
     const orgType = this.orgInfo?.organizationType || "";
     if (this.orgInfo?.isSandbox) return this.labels.sandboxEnvironmentTitle;
     if (this.orgInfo?.isScratch) return this.labels.scratchOrgTitle;
-    if (orgType === "Developer Edition")
+    if (orgType === this.labels.developerEdition)
       return this.labels.developerEditionTitle;
     return this.labels.productionEnvironmentTitle;
   }
@@ -810,7 +829,7 @@ export default class JtQueryViewer extends LightningElement {
         _expandIcon: isExpanded
           ? "utility:chevrondown"
           : "utility:chevronright",
-        _expandLabel: isExpanded ? "Collapse" : "Expand",
+        _expandLabel: isExpanded ? this.labels.collapse : this.labels.expand,
         _cells: cells
       };
     });
@@ -912,7 +931,7 @@ export default class JtQueryViewer extends LightningElement {
           showErrorToast(
             this,
             this.labels.errorExtractingParameters,
-            extractErrorMessage(error, "Failed to extract parameters")
+            extractErrorMessage(error, this.labels.failedToExtractParameters)
           );
         });
     }
@@ -980,7 +999,7 @@ export default class JtQueryViewer extends LightningElement {
     // Stop any polling
     if (this.pollInterval) {
       // pollInterval is now a function (stopPolling), not an interval ID
-      if (typeof this.pollInterval === 'function') {
+      if (typeof this.pollInterval === "function") {
         this.pollInterval();
       } else {
         // Fallback for old interval ID format (shouldn't happen, but safe)
@@ -1012,7 +1031,11 @@ export default class JtQueryViewer extends LightningElement {
     }
 
     if (!this.runAsUserId) {
-      showErrorToast(this, this.labels.userRequired, this.labels.pleaseSelectUser);
+      showErrorToast(
+        this,
+        this.labels.userRequired,
+        this.labels.pleaseSelectUser
+      );
       return;
     }
 
@@ -1063,7 +1086,10 @@ export default class JtQueryViewer extends LightningElement {
         let errorMsg = extractErrorMessage(error, this.labels.unknownError);
 
         // If it's a generic "Script-thrown exception", try to get more details
-        if (errorMsg === "Script-thrown exception" && error.body?.output?.errors) {
+        if (
+          errorMsg === "Script-thrown exception" &&
+          error.body?.output?.errors
+        ) {
           const errors = error.body.output.errors;
           if (errors.length > 0 && errors[0].message) {
             errorMsg = errors[0].message;
@@ -1132,7 +1158,7 @@ export default class JtQueryViewer extends LightningElement {
         showErrorToast(
           this,
           this.labels.pollingError,
-          extractErrorMessage(error, "Failed to poll test results")
+          extractErrorMessage(error, this.labels.failedToPollTestResults)
         );
       },
       // On timeout
@@ -1185,7 +1211,7 @@ export default class JtQueryViewer extends LightningElement {
             result.executionTime
           );
         }
-        showSuccessToast(this, successMsg);
+        // Toast removed - results are already displayed in the UI
       }
     } else {
       // Clear any previous results when there's an error
@@ -1198,7 +1224,8 @@ export default class JtQueryViewer extends LightningElement {
 
       this.isLoading = false;
       this.showError = true;
-      this.errorMessage = result.errorMessage || "Test execution failed";
+      this.errorMessage =
+        result.errorMessage || this.labels.testExecutionFailed;
 
       // Error message is already displayed in the banner below Query Preview
       // No need for redundant toast notification
@@ -1269,7 +1296,7 @@ export default class JtQueryViewer extends LightningElement {
       this.selectedConfig,
       this.configurationOptions,
       this.labels,
-      'pleaseSelectConfigurationToEdit'
+      "pleaseSelectConfigurationToEdit"
     );
 
     if (!validation.isValid) {
@@ -1298,7 +1325,7 @@ export default class JtQueryViewer extends LightningElement {
     // Initialize queryValidation for existing query (assume valid)
     this.queryValidation = {
       isValid: true,
-      message: "Valid SOQL syntax",
+      message: this.labels.validSoqlSyntax,
       objectName: currentConfig.objectName || ""
     };
 
@@ -1329,7 +1356,7 @@ export default class JtQueryViewer extends LightningElement {
       this.selectedConfig,
       this.configurationOptions,
       this.labels,
-      'pleaseSelectConfigurationToDelete'
+      "pleaseSelectConfigurationToDelete"
     );
 
     if (!validation.isValid) {
@@ -1359,7 +1386,11 @@ export default class JtQueryViewer extends LightningElement {
     deleteConfiguration({ developerName: currentConfig.developerName })
       .then((result) => {
         if (result.success) {
-          showSuccessToast(this, result.message, this.labels.configurationDeleted);
+          showSuccessToast(
+            this,
+            result.message,
+            this.labels.configurationDeleted
+          );
           // Clear selection
           this.selectedConfig = "";
           // Refresh the configurations list
@@ -1372,7 +1403,7 @@ export default class JtQueryViewer extends LightningElement {
         showErrorToast(
           this,
           "Error",
-          extractErrorMessage(error, "Failed to delete configuration")
+          extractErrorMessage(error, this.labels.failedToDeleteConfiguration)
         );
       });
   }
@@ -1405,7 +1436,7 @@ export default class JtQueryViewer extends LightningElement {
     const selectionValidation = validateConfigSelected(
       this.selectedConfig,
       this.labels,
-      'pleaseSelectConfiguration'
+      "pleaseSelectConfiguration"
     );
     if (!selectionValidation.isValid) {
       showErrorToast(
@@ -1469,13 +1500,15 @@ export default class JtQueryViewer extends LightningElement {
         showErrorToast(
           this,
           this.labels.searchError,
-          extractErrorMessage(error, "Failed to execute search orchestrator")
+          extractErrorMessage(
+            error,
+            this.labels.failedToExecuteSearchOrchestrator
+          )
         );
         this.isLoadingUsage = false;
         // Don't show modal on error - user can try again
       });
   }
-
 
   // Close usage modal
   handleCloseUsageModal() {
@@ -1632,7 +1665,6 @@ export default class JtQueryViewer extends LightningElement {
     } else {
       this.queryPreviewColumns = [];
     }
-
   }
 
   // Save configuration (create or update)
@@ -1654,14 +1686,22 @@ export default class JtQueryViewer extends LightningElement {
     // Validate configToUse exists
     const configExistsValidation = validateConfigExists(configToUse);
     if (!configExistsValidation.isValid) {
-      showErrorToast(this, "Configuration Error", configExistsValidation.errorMessage);
+      showErrorToast(
+        this,
+        "Configuration Error",
+        configExistsValidation.errorMessage
+      );
       return;
     }
 
     // Validate required fields
     const requiredFieldsValidation = validateRequiredFields(configToUse);
     if (!requiredFieldsValidation.isValid) {
-      showErrorToast(this, "Validation Error", requiredFieldsValidation.errorMessage);
+      showErrorToast(
+        this,
+        "Validation Error",
+        requiredFieldsValidation.errorMessage
+      );
       return;
     }
 
@@ -1694,21 +1734,29 @@ export default class JtQueryViewer extends LightningElement {
     const modeFromEvent = event?.detail?.mode || this.configModalMode;
 
     // Validate edit mode requirements
-    const editModeValidation = validateEditMode(modeFromEvent, this.originalDevName);
+    const editModeValidation = validateEditMode(
+      modeFromEvent,
+      this.originalDevName
+    );
     if (!editModeValidation.isValid) {
-      showErrorToast(this, "Configuration Error", editModeValidation.errorMessage);
+      showErrorToast(
+        this,
+        "Configuration Error",
+        editModeValidation.errorMessage
+      );
       this.isSaving = false;
       return;
     }
 
     // Serialize configData to JSON string for Apex deserialization
     // For edit mode, include originalDevName
-    const configDataForApex = modeFromEvent === "edit"
-      ? {
-          originalDevName: this.originalDevName,
-          ...configData
-        }
-      : configData;
+    const configDataForApex =
+      modeFromEvent === "edit"
+        ? {
+            originalDevName: this.originalDevName,
+            ...configData
+          }
+        : configData;
 
     const configJson = JSON.stringify(configDataForApex);
 
@@ -1722,7 +1770,11 @@ export default class JtQueryViewer extends LightningElement {
     saveMethod
       .then((result) => {
         if (result.success) {
-          showSuccessToast(this, result.message, `Configuration ${actionLabel}`);
+          showSuccessToast(
+            this,
+            result.message,
+            `Configuration ${actionLabel}`
+          );
           this.handleCloseCreateModal();
 
           // Refresh the configurations list using refreshApex
@@ -1774,7 +1826,7 @@ export default class JtQueryViewer extends LightningElement {
   disconnectedCallback() {
     if (this.pollInterval) {
       // pollInterval is now a function (stopPolling), not an interval ID
-      if (typeof this.pollInterval === 'function') {
+      if (typeof this.pollInterval === "function") {
         this.pollInterval();
       } else {
         // Fallback for old interval ID format (shouldn't happen, but safe)
@@ -1880,7 +1932,7 @@ export default class JtQueryViewer extends LightningElement {
     const selectionValidation = validateConfigSelected(
       this.selectedConfig,
       this.labels,
-      'pleaseSelectConfiguration'
+      "pleaseSelectConfiguration"
     );
     if (!selectionValidation.isValid) {
       this.isLoading = false; // Re-enable if validation fails
@@ -2025,7 +2077,11 @@ export default class JtQueryViewer extends LightningElement {
   handleCancelExecution() {
     this.showRiskWarningModal = false;
     this.isLoading = false;
-    showInfoToast(this, "Execution Cancelled", "Query execution was cancelled.");
+    showInfoToast(
+      this,
+      "Execution Cancelled",
+      "Query execution was cancelled."
+    );
   }
 
   // Process query results for datatable
@@ -2056,7 +2112,6 @@ export default class JtQueryViewer extends LightningElement {
       showInfoToast(this, "No Results", "Query returned no records.");
     }
   }
-
 
   // Reset results
   resetResults() {
@@ -2177,5 +2232,4 @@ export default class JtQueryViewer extends LightningElement {
       showErrorToast(this, "CSV Error", "Failed to generate CSV file");
     }
   }
-
 }

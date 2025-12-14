@@ -1,5 +1,4 @@
 import { LightningElement, track, wire } from "lwc";
-import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { refreshApex } from "@salesforce/apex";
 import {
   formatLabel,
@@ -486,7 +485,8 @@ export default class JtQueryViewer extends LightningElement {
     updateProductionEditingSetting({ enabled: enabled })
       .then(() => {
         this.productionOverrideEnabled = enabled;
-        this.showSuccessToast(
+        showSuccessToast(
+          this,
           enabled
             ? "Production editing enabled. Please refresh the page to see changes."
             : "Production editing disabled. Please refresh the page."
@@ -496,7 +496,7 @@ export default class JtQueryViewer extends LightningElement {
         return refreshApex(this.wiredConfigurationsResult);
       })
       .catch((error) => {
-        this.showErrorToast("Error updating settings", error.body?.message);
+        showErrorToast(this, "Error updating settings", error.body?.message);
         // Revert checkbox
         this.productionOverrideEnabled = !enabled;
       })
@@ -590,7 +590,8 @@ export default class JtQueryViewer extends LightningElement {
         }));
       })
       .catch((error) => {
-        this.showErrorToast(
+        showErrorToast(
+          this,
           "Error Loading Users",
           error.body?.message || "Failed to load users"
         );
@@ -840,7 +841,8 @@ export default class JtQueryViewer extends LightningElement {
           this.parameterValues = {};
         })
         .catch((error) => {
-          this.showErrorToast(
+          showErrorToast(
+            this,
             "Error extracting parameters",
             error.body?.message
           );
@@ -922,7 +924,8 @@ export default class JtQueryViewer extends LightningElement {
   handleExecuteAsUserTest() {
     // Prevent multiple simultaneous executions
     if (this.isRunningTest) {
-      this.showErrorToast(
+      showErrorToast(
+        this,
         "Execution in Progress",
         "Please wait for the current test execution to complete."
       );
@@ -930,7 +933,8 @@ export default class JtQueryViewer extends LightningElement {
     }
 
     if (!this.selectedConfig) {
-      this.showErrorToast(
+      showErrorToast(
+        this,
         "Configuration Required",
         "Please select a configuration first."
       );
@@ -938,7 +942,7 @@ export default class JtQueryViewer extends LightningElement {
     }
 
     if (!this.runAsUserId) {
-      this.showErrorToast("User Required", "Please select a user to run as.");
+      showErrorToast(this, "User Required", "Please select a user to run as.");
       return;
     }
 
@@ -980,14 +984,14 @@ export default class JtQueryViewer extends LightningElement {
         } else {
           this.showError = true;
           this.errorMessage = result.errorMessage;
-          this.showErrorToast("Test Execution Error", result.errorMessage);
+          showErrorToast(this, "Test Execution Error", result.errorMessage);
           this.isRunningTest = false;
         }
       })
       .catch((error) => {
         this.showError = true;
         this.errorMessage = error.body?.message || "Unknown error occurred";
-        this.showErrorToast("Execution Error", this.errorMessage);
+        showErrorToast(this, "Execution Error", this.errorMessage);
         this.isRunningTest = false;
         console.error("❌ Error in Run As User execution:", error);
       });
@@ -1059,7 +1063,8 @@ export default class JtQueryViewer extends LightningElement {
               console.warn("⏱️ Polling timeout reached");
               clearInterval(this.pollInterval);
               this.isRunningTest = false;
-              this.showErrorToast(
+              showErrorToast(
+                this,
                 "Test Execution Timeout",
                 "Test execution timed out after 120 seconds. In Developer Orgs, tests may not execute automatically. Please check Apex Test Execution in Setup or try again later."
               );
@@ -1075,7 +1080,8 @@ export default class JtQueryViewer extends LightningElement {
             console.warn("⏱️ Polling timeout reached");
             clearInterval(this.pollInterval);
             this.isRunningTest = false;
-            this.showErrorToast(
+            showErrorToast(
+              this,
               "Test Execution Timeout",
               "Test execution timed out after 120 seconds. In Developer Orgs, tests may not execute automatically. Please check Apex Test Execution in Setup or try again later."
             );
@@ -1087,7 +1093,7 @@ export default class JtQueryViewer extends LightningElement {
           console.error("❌ Polling error:", error);
           clearInterval(this.pollInterval);
           this.isRunningTest = false;
-          this.showErrorToast("Polling Error", error.body?.message);
+          showErrorToast(this, "Polling Error", error.body?.message);
         });
     }, 2000); // Poll every 2 seconds
   }
@@ -1137,7 +1143,7 @@ export default class JtQueryViewer extends LightningElement {
         if (result.executionTime) {
           successMsg += ` in ${result.executionTime}ms`;
         }
-        this.showSuccessToast(successMsg);
+        showSuccessToast(this, successMsg);
       }
     } else {
       console.error("❌ Test failed:", result.errorMessage);
@@ -1231,7 +1237,8 @@ export default class JtQueryViewer extends LightningElement {
   // Show edit configuration modal
   handleShowEditModal() {
     if (!this.selectedConfig) {
-      this.showErrorToast(
+      showErrorToast(
+        this,
         "No Configuration Selected",
         "Please select a configuration to edit."
       );
@@ -1244,7 +1251,8 @@ export default class JtQueryViewer extends LightningElement {
     );
 
     if (!currentConfig) {
-      this.showErrorToast(
+      showErrorToast(
+        this,
         "Configuration Not Found",
         "Could not find the selected configuration. Please refresh and try again."
       );
@@ -1293,7 +1301,8 @@ export default class JtQueryViewer extends LightningElement {
   // Handle delete configuration
   handleDeleteConfiguration() {
     if (!this.selectedConfig) {
-      this.showErrorToast(
+      showErrorToast(
+        this,
         "No Configuration Selected",
         "Please select a configuration to delete."
       );
@@ -1306,7 +1315,8 @@ export default class JtQueryViewer extends LightningElement {
     );
 
     if (!currentConfig) {
-      this.showErrorToast(
+      showErrorToast(
+        this,
         "Configuration Not Found",
         "Could not find the selected configuration. Please refresh and try again."
       );
@@ -1328,17 +1338,18 @@ export default class JtQueryViewer extends LightningElement {
     deleteConfiguration({ developerName: currentConfig.developerName })
       .then((result) => {
         if (result.success) {
-          this.showSuccessToast("Configuration Deleted", result.message);
+          showSuccessToast(this, result.message, "Configuration Deleted");
           // Clear selection
           this.selectedConfig = "";
           // Refresh the configurations list
           return refreshApex(this.wiredConfigurationsResult);
         }
-        this.showErrorToast("Delete Failed", result.errorMessage);
+        showErrorToast(this, "Delete Failed", result.errorMessage);
         return Promise.resolve();
       })
       .catch((error) => {
-        this.showErrorToast(
+        showErrorToast(
+          this,
           "Error",
           error.body?.message || "Failed to delete configuration"
         );
@@ -1370,7 +1381,8 @@ export default class JtQueryViewer extends LightningElement {
     }
 
     if (!this.selectedConfig) {
-      this.showErrorToast(
+      showErrorToast(
+        this,
         "No Configuration Selected",
         "Please select a configuration first"
       );
@@ -1408,7 +1420,8 @@ export default class JtQueryViewer extends LightningElement {
 
         // Show single warning only if there are partial results
         if (this.hasPartialUsageResults && this.usageResults.length > 0) {
-          this.showWarningToast(
+          showWarningToast(
+            this,
             "Partial Results",
             `Showing ${this.usageResults.length} available result(s). Some searches failed.`
           );
@@ -1423,7 +1436,8 @@ export default class JtQueryViewer extends LightningElement {
         });
       })
       .catch((error) => {
-        this.showErrorToast(
+        showErrorToast(
+          this,
           "Search Error",
           error.body?.message || "Failed to execute search orchestrator"
         );
@@ -1432,47 +1446,6 @@ export default class JtQueryViewer extends LightningElement {
       });
   }
 
-  // Helper: Show info toast
-  showInfoToast(title, message) {
-    // ✅ Clear previous toast to avoid stacking
-    if (this._toastTimeout) {
-      clearTimeout(this._toastTimeout);
-    }
-
-    this.dispatchEvent(
-      new ShowToastEvent({
-        title: title,
-        message: message,
-        variant: "info",
-        mode: "dismissible"
-      })
-    );
-
-    this._toastTimeout = setTimeout(() => {
-      this._toastTimeout = null;
-    }, 3000);
-  }
-
-  // Helper: Show warning toast
-  showWarningToast(title, message) {
-    // ✅ Clear previous toast to avoid stacking
-    if (this._toastTimeout) {
-      clearTimeout(this._toastTimeout);
-    }
-
-    this.dispatchEvent(
-      new ShowToastEvent({
-        title: title,
-        message: message,
-        variant: "warning",
-        mode: "dismissible"
-      })
-    );
-
-    this._toastTimeout = setTimeout(() => {
-      this._toastTimeout = null;
-    }, 3000);
-  }
 
   // Close usage modal
   handleCloseUsageModal() {
@@ -1546,13 +1519,14 @@ export default class JtQueryViewer extends LightningElement {
       // Show success toast
       if (cleared.length > 0) {
         const message = `${this.labels.cacheCleared}: ${this.labels.cacheClearedDetail.replace("{0}", cleared.join(", "))}`;
-        this.showSuccessToast(message);
+        showSuccessToast(this, message);
       }
 
       // Close modal after clearing
       this.handleCloseCacheModal();
     } catch (error) {
-      this.showErrorToast(
+      showErrorToast(
+        this,
         "Error",
         "Error clearing cache: " +
           (error.body?.message || error.message || "Unknown error")
@@ -1672,7 +1646,8 @@ export default class JtQueryViewer extends LightningElement {
       console.error("event?.detail?.config:", event?.detail?.config);
       console.error("configFromModal:", configFromModal);
       console.error("this.newConfig:", this.newConfig);
-      this.showErrorToast(
+      showErrorToast(
+        this,
         "Configuration Error",
         "Configuration data is missing. Please close and reopen the modal."
       );
@@ -1689,7 +1664,8 @@ export default class JtQueryViewer extends LightningElement {
       console.error("label:", configToUse.label);
       console.error("developerName:", configToUse.developerName);
       console.error("baseQuery:", configToUse.baseQuery);
-      this.showErrorToast(
+      showErrorToast(
+        this,
         "Validation Error",
         "Label, Developer Name, and Base Query are required."
       );
@@ -1703,7 +1679,8 @@ export default class JtQueryViewer extends LightningElement {
       console.error("modalQueryValidation:", modalQueryValidation);
       console.error("this.queryValidation:", this.queryValidation);
       console.error("queryValidationToCheck:", queryValidationToCheck);
-      this.showErrorToast(
+      showErrorToast(
+        this,
         "Invalid Query",
         "Please fix the query syntax before saving."
       );
@@ -1730,7 +1707,8 @@ export default class JtQueryViewer extends LightningElement {
     // Validate originalDevName for edit mode
     if (modeFromEvent === "edit" && !this.originalDevName) {
       console.error("❌ CRITICAL: originalDevName is missing for edit mode!");
-      this.showErrorToast(
+      showErrorToast(
+        this,
         "Configuration Error",
         "Cannot update configuration: Original developer name is missing. Please close and reopen the modal."
       );
@@ -1752,13 +1730,14 @@ export default class JtQueryViewer extends LightningElement {
       .then((result) => {
         console.log("Save result:", JSON.stringify(result, null, 2));
         if (result.success) {
-          this.showSuccessToast(`Configuration ${actionLabel}`, result.message);
+          showSuccessToast(this, result.message, `Configuration ${actionLabel}`);
           this.handleCloseCreateModal();
 
           // Refresh the configurations list using refreshApex
           return refreshApex(this.wiredConfigurationsResult).then(() => {
             // Only show "List Updated" toast if the update was successful
-            this.showInfoToast(
+            showInfoToast(
+              this,
               "List Updated",
               "Configuration list has been refreshed."
             );
@@ -1768,7 +1747,8 @@ export default class JtQueryViewer extends LightningElement {
         console.error("Save failed:", result);
         console.error("Error message:", result.errorMessage);
         console.error("Stack trace:", result.stackTrace);
-        this.showErrorToast(
+        showErrorToast(
+          this,
           `${actionLabel} Failed`,
           result.errorMessage || "Unknown error occurred"
         );
@@ -1777,7 +1757,8 @@ export default class JtQueryViewer extends LightningElement {
       .catch((error) => {
         console.error("Save error:", error);
         console.error("Error body:", error.body);
-        this.showErrorToast(
+        showErrorToast(
+          this,
           "Error",
           error.body?.message ||
             error.body?.exceptionType ||
@@ -1817,7 +1798,8 @@ export default class JtQueryViewer extends LightningElement {
    */
   errorCallback(error) {
     // Show user-friendly error without breaking the entire UI
-    this.showWarningToast(
+    showWarningToast(
+      this,
       "Component Error",
       `A component encountered an error: ${error.message}. Other features remain functional.`
     );
@@ -1841,12 +1823,14 @@ export default class JtQueryViewer extends LightningElement {
       const success = await updateUsageTrackingSetting({ enabled });
       if (success) {
         this.usageTrackingEnabled = enabled;
-        this.showSuccessToast(
+        showSuccessToast(
+          this,
           enabled ? "Usage tracking enabled" : "Usage tracking disabled"
         );
       }
     } catch (error) {
-      this.showErrorToast(
+      showErrorToast(
+        this,
         "Update Failed",
         error.body?.message || "Failed to update usage tracking setting"
       );
@@ -1878,7 +1862,8 @@ export default class JtQueryViewer extends LightningElement {
     // Navigate to Documentation tab in the app
     // This will use the NavigationMixin in a future enhancement
     // For now, show a toast with instructions
-    this.showInfoToast(
+    showInfoToast(
+      this,
       "Tooling API Setup",
       "Please check the Documentation tab for Tooling API configuration instructions."
     );
@@ -1888,7 +1873,8 @@ export default class JtQueryViewer extends LightningElement {
   handleExecuteQuery() {
     // Prevent execution if Run As User test is in progress
     if (this.isRunningTest) {
-      this.showErrorToast(
+      showErrorToast(
+        this,
         "Test Execution in Progress",
         "Please wait for the current Run As User test execution to complete."
       );
@@ -1900,7 +1886,8 @@ export default class JtQueryViewer extends LightningElement {
 
     if (!this.selectedConfig) {
       this.isLoading = false; // Re-enable if validation fails
-      this.showErrorToast(
+      showErrorToast(
+        this,
         "Configuration Required",
         "Please select a configuration first."
       );
@@ -1977,17 +1964,17 @@ export default class JtQueryViewer extends LightningElement {
           if (result.runAsUserName) {
             successMsg += ` (Run As: ${result.runAsUserName})`;
           }
-          this.showSuccessToast(successMsg);
+          showSuccessToast(this, successMsg);
         } else {
           this.showError = true;
           this.errorMessage = result.errorMessage;
-          this.showErrorToast("Query Error", result.errorMessage);
+          showErrorToast(this, "Query Error", result.errorMessage);
         }
       })
       .catch((error) => {
         this.showError = true;
         this.errorMessage = error.body?.message || "Unknown error occurred";
-        this.showErrorToast("Execution Error", this.errorMessage);
+        showErrorToast(this, "Execution Error", this.errorMessage);
       })
       .finally(() => {
         this.isLoading = false;
@@ -2013,13 +2000,13 @@ export default class JtQueryViewer extends LightningElement {
         } else {
           this.showError = true;
           this.errorMessage = result.errorMessage;
-          this.showErrorToast("Query Error", result.errorMessage);
+          showErrorToast(this, "Query Error", result.errorMessage);
         }
       })
       .catch((error) => {
         this.showError = true;
         this.errorMessage = error.body?.message || "Unknown error occurred";
-        this.showErrorToast("Execution Error", this.errorMessage);
+        showErrorToast(this, "Execution Error", this.errorMessage);
       })
       .finally(() => {
         this.isLoading = false;
@@ -2040,7 +2027,7 @@ export default class JtQueryViewer extends LightningElement {
   handleCancelExecution() {
     this.showRiskWarningModal = false;
     this.isLoading = false;
-    this.showInfoToast("Execution Cancelled", "Query execution was cancelled.");
+    showInfoToast(this, "Execution Cancelled", "Query execution was cancelled.");
   }
 
   // Process query results for datatable
@@ -2062,30 +2049,16 @@ export default class JtQueryViewer extends LightningElement {
 
       this.hasResults = true;
       this.resetPagination(); // Initialize pagination
-      this.showSuccessToast(`Found ${result.recordCount} record(s)`);
+      showSuccessToast(this, `Found ${result.recordCount} record(s)`);
     } else {
       // Show empty table with columns
       this.queryResults = [];
       this.hasResults = true; // Changed: show table even with 0 results
       this.resetPagination();
-      this.showInfoToast("No Results", "Query returned no records.");
+      showInfoToast(this, "No Results", "Query returned no records.");
     }
   }
 
-  // Determine field type for datatable
-  getFieldType(fieldName) {
-    const lowerField = fieldName.toLowerCase();
-    if (lowerField === "id" || lowerField.endsWith("id")) return "text";
-    if (lowerField.includes("date") || lowerField.includes("time"))
-      return "date";
-    if (lowerField.includes("email")) return "email";
-    if (lowerField.includes("phone")) return "phone";
-    if (lowerField.includes("url") || lowerField.includes("website"))
-      return "url";
-    if (lowerField.includes("amount") || lowerField.includes("price"))
-      return "currency";
-    return "text";
-  }
 
   // Reset results
   resetResults() {
@@ -2142,7 +2115,7 @@ export default class JtQueryViewer extends LightningElement {
       };
       this.jsonOutput = JSON.stringify(output, null, 2);
     } catch {
-      this.showErrorToast("JSON Error", "Failed to generate JSON output");
+      showErrorToast(this, "JSON Error", "Failed to generate JSON output");
       this.jsonOutput = "{}";
     }
   }
@@ -2153,10 +2126,11 @@ export default class JtQueryViewer extends LightningElement {
       navigator.clipboard
         .writeText(this.jsonOutput)
         .then(() => {
-          this.showSuccessToast("JSON copied to clipboard");
+          showSuccessToast(this, "JSON copied to clipboard");
         })
         .catch(() => {
-          this.showErrorToast(
+          showErrorToast(
+            this,
             "Copy Failed",
             "Could not copy JSON to clipboard"
           );
@@ -2168,7 +2142,7 @@ export default class JtQueryViewer extends LightningElement {
   handleDownloadCsv() {
     try {
       if (!this.queryResults || this.queryResults.length === 0) {
-        this.showErrorToast("No Data", "No records to export");
+        showErrorToast(this, "No Data", "No records to export");
         return;
       }
 
@@ -2200,64 +2174,10 @@ export default class JtQueryViewer extends LightningElement {
       link.click();
       document.body.removeChild(link);
 
-      this.showSuccessToast("CSV downloaded successfully");
+      showSuccessToast(this, "CSV downloaded successfully");
     } catch {
-      this.showErrorToast("CSV Error", "Failed to generate CSV file");
+      showErrorToast(this, "CSV Error", "Failed to generate CSV file");
     }
   }
 
-  // Toast notifications with screen reader announcements
-  showSuccessToast(message) {
-    // ✅ Clear previous toast to avoid stacking
-    if (this._toastTimeout) {
-      clearTimeout(this._toastTimeout);
-    }
-
-    this.dispatchEvent(
-      new ShowToastEvent({
-        title: "Success",
-        message: message,
-        variant: "success",
-        mode: "dismissible"
-      })
-    );
-
-    this._toastTimeout = setTimeout(() => {
-      this._toastTimeout = null;
-    }, 3000);
-
-    this.announceToScreenReader(`Success: ${message}`);
-  }
-
-  showErrorToast(title, message) {
-    // ✅ Clear previous toast to avoid stacking
-    if (this._toastTimeout) {
-      clearTimeout(this._toastTimeout);
-    }
-
-    this.dispatchEvent(
-      new ShowToastEvent({
-        title: title,
-        message: message,
-        variant: "error",
-        mode: "dismissible"
-      })
-    );
-
-    this._toastTimeout = setTimeout(() => {
-      this._toastTimeout = null;
-    }, 3000);
-
-    this.announceToScreenReader(`Error: ${title}. ${message}`, true);
-  }
-
-  // Announce to screen readers
-  announceToScreenReader(message) {
-    this.srAnnouncement = message;
-    // Clear after announcement to allow repeat announcements
-    // eslint-disable-next-line @lwc/lwc/no-async-operation
-    setTimeout(() => {
-      this.srAnnouncement = "";
-    }, 100);
-  }
 }

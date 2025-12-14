@@ -45,7 +45,9 @@ test.describe("Run As User Feature Tests", () => {
     // Verify Run As section is available (skip test if not authorized)
     // The Run As section is inside a lightning-accordion-section that may be collapsed
     // First check if the accordion section exists
-    const accordionSection = page.locator('lightning-accordion-section[name="run-as"]').first();
+    const accordionSection = page
+      .locator('lightning-accordion-section[name="run-as"]')
+      .first();
     const accordionExists = (await accordionSection.count()) > 0;
 
     if (!accordionExists) {
@@ -87,7 +89,9 @@ test.describe("Run As User Feature Tests", () => {
     // Step 2: Select a user from Run As dropdown
     // The combobox is inside c-jt-run-as-section component
     const userCombobox = page
-      .locator('c-jt-run-as-section c-jt-searchable-combobox[data-testid="run-as-user-selector"]')
+      .locator(
+        'c-jt-run-as-section c-jt-searchable-combobox[data-testid="run-as-user-selector"]'
+      )
       .first();
 
     // Click to open user dropdown
@@ -117,7 +121,7 @@ test.describe("Run As User Feature Tests", () => {
     // Step 3: Verify "Execute with System.runAs" button appears
     // This button is shown in jtQueryViewer when a user is selected
     const executeRunAsButton = page
-      .locator('lightning-button')
+      .locator("lightning-button")
       .filter({ hasText: /Execute with System\.runAs/i })
       .or(page.locator('lightning-button[title*="Execute with System.runAs"]'));
     await expect(executeRunAsButton).toBeVisible({ timeout: 5000 });
@@ -126,7 +130,9 @@ test.describe("Run As User Feature Tests", () => {
     // Step 4: Verify "Clear Selection" button appears
     const clearButton = page
       .locator('lightning-button[data-testid="run-as-clear-button"]')
-      .or(page.locator("lightning-button").filter({ hasText: /Clear Selection/i }));
+      .or(
+        page.locator("lightning-button").filter({ hasText: /Clear Selection/i })
+      );
     await expect(clearButton).toBeVisible({ timeout: 5000 });
     console.log("✅ Clear Selection button visible");
 
@@ -310,7 +316,9 @@ test.describe("Run As User Feature Tests", () => {
 
     // Step 2: Try to find a Chatter Free or Guest User (users with limited permissions)
     const userCombobox = page
-      .locator('c-jt-run-as-section c-jt-searchable-combobox[data-testid="run-as-user-selector"]')
+      .locator(
+        'c-jt-run-as-section c-jt-searchable-combobox[data-testid="run-as-user-selector"]'
+      )
       .first();
 
     const userInput = userCombobox.locator("input").first();
@@ -532,7 +540,9 @@ test.describe("Run As User Feature Tests", () => {
     await page.waitForTimeout(2000);
 
     const userCombobox = page
-      .locator('c-jt-run-as-section c-jt-searchable-combobox[data-testid="run-as-user-selector"]')
+      .locator(
+        'c-jt-run-as-section c-jt-searchable-combobox[data-testid="run-as-user-selector"]'
+      )
       .first();
 
     const userInput = userCombobox.locator("input").first();
@@ -683,7 +693,9 @@ test.describe("Run As User Feature Tests", () => {
 
     // Step 2: Select a user
     const userCombobox = page
-      .locator('c-jt-run-as-section c-jt-searchable-combobox[data-testid="run-as-user-selector"]')
+      .locator(
+        'c-jt-run-as-section c-jt-searchable-combobox[data-testid="run-as-user-selector"]'
+      )
       .first();
 
     const userInput = userCombobox.locator("input").first();

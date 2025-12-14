@@ -8,8 +8,8 @@
     <trackTrending>false</trackTrending>
     <type>Picklist</type>
     <valueSet>
-        <restrictedPicklist>true</restrictedPicklist>
         <valueSetDefinition>
+            <restrictedPicklist>true</restrictedPicklist>
             <sorted>false</sorted>
             <value>
                 <fullName>Low</fullName>

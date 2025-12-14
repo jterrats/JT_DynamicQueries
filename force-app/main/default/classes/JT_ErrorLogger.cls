@@ -12,7 +12,7 @@ public class JT_ErrorLogger {
   public class ErrorLogParams {
     public String errorType;
     public String errorMessage;
-    public Exception exception;
+    public Exception ex;
     public String context;
     public String additionalDetails;
     public String severity;
@@ -23,14 +23,14 @@ public class JT_ErrorLogger {
     public ErrorLogParams(
       String errorType,
       String errorMessage,
-      Exception exception,
+      Exception ex,
       String context,
       String additionalDetails,
       String severity
     ) {
       this.errorType = errorType;
       this.errorMessage = errorMessage;
-      this.exception = exception;
+      this.ex = ex;
       this.context = context;
       this.additionalDetails = additionalDetails;
       this.severity = severity;
@@ -42,10 +42,10 @@ public class JT_ErrorLogger {
     public ErrorLogParams(
       String errorType,
       String errorMessage,
-      Exception exception,
+      Exception ex,
       String context
     ) {
-      this(errorType, errorMessage, exception, context, null, 'Medium');
+      this(errorType, errorMessage, ex, context, null, 'Medium');
     }
   }
 
@@ -68,11 +68,11 @@ public class JT_ErrorLogger {
         JT_ErrorMessage__c = String.isNotBlank(params.errorMessage)
           ? params.errorMessage
           : 'Unknown error',
-        JT_ExceptionType__c = params.exception != null
-          ? params.exception.getTypeName()
+        JT_ExceptionType__c = params.ex != null
+          ? params.ex.getTypeName()
           : null,
-        JT_StackTrace__c = params.exception != null
-          ? params.exception.getStackTraceString()
+        JT_StackTrace__c = params.ex != null
+          ? params.ex.getStackTraceString()
           : null,
         JT_Context__c = params.context,
         JT_AdditionalDetails__c = params.additionalDetails,
@@ -103,20 +103,20 @@ public class JT_ErrorLogger {
    * @description Logs an error from JT_ErrorMessageUtil.ErrorType
    * @param errorType Error type enum
    * @param errorMessage User-friendly error message
-   * @param exception The exception that occurred (optional)
+   * @param ex The exception that occurred (optional)
    * @param context Context where error occurred
    * @return String ID of created error log record (null if logging fails)
    */
   public static String logError(
     JT_ErrorMessageUtil.ErrorType errorType,
     String errorMessage,
-    Exception exception,
+    Exception ex,
     String context
   ) {
     ErrorLogParams params = new ErrorLogParams(
       errorType.name(),
       errorMessage,
-      exception,
+      ex,
       context,
       null,
       determineSeverity(errorType)
@@ -152,22 +152,45 @@ public class JT_ErrorLogger {
   }
 
   /**
-   * @description Logs an error with minimal parameters (convenience method)
-   * @param errorMessage User-friendly error message
-   * @param exception The exception that occurred
+   * @description Logs an error with error type and exception (convenience method)
+   * @param errorType Error type/category
+   * @param ex The exception that occurred
    * @param context Context where error occurred
    * @return String ID of created error log record (null if logging fails)
    */
   public static String logError(
-    String errorMessage,
-    Exception exception,
+    String errorType,
+    Exception ex,
     String context
   ) {
-    String errorType = exception != null ? exception.getTypeName() : 'Unknown';
+    String errorMessage = ex != null ? ex.getMessage() : 'Unknown error';
     ErrorLogParams params = new ErrorLogParams(
       errorType,
       errorMessage,
-      exception,
+      ex,
+      context
+    );
+    return logError(params);
+  }
+
+  /**
+   * @description Logs an error with error type and message (convenience method for backward compatibility)
+   * @param errorType Error type/category
+   * @param errorMessage User-friendly error message
+   * @param ex The exception that occurred
+   * @param context Context where error occurred
+   * @return String ID of created error log record (null if logging fails)
+   */
+  public static String logError(
+    String errorType,
+    String errorMessage,
+    Exception ex,
+    String context
+  ) {
+    ErrorLogParams params = new ErrorLogParams(
+      errorType,
+      errorMessage,
+      ex,
       context
     );
     return logError(params);
@@ -177,7 +200,7 @@ public class JT_ErrorLogger {
    * @description Logs an error with full context information (legacy method signature for backward compatibility)
    * @param errorType Error type/category (from JT_ErrorMessageUtil.ErrorType or custom)
    * @param errorMessage User-friendly error message
-   * @param exception The exception that occurred (optional)
+   * @param ex The exception that occurred (optional)
    * @param context Context where error occurred (e.g., 'jtQueryViewer.executeQuery')
    * @param additionalDetails Additional context as JSON string (optional)
    * @param severity Error severity (defaults to Medium)
@@ -186,7 +209,7 @@ public class JT_ErrorLogger {
   public static String logError(
     String errorType,
     String errorMessage,
-    Exception exception,
+    Exception ex,
     String context,
     String additionalDetails,
     String severity
@@ -194,7 +217,7 @@ public class JT_ErrorLogger {
     ErrorLogParams params = new ErrorLogParams(
       errorType,
       errorMessage,
-      exception,
+      ex,
       context,
       additionalDetails,
       severity

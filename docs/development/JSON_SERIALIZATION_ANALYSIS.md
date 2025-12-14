@@ -34,6 +34,7 @@
    - ✅ Usado por: Run As User feature
 
 4. **JT_RunAsTestExecutor.getTestResults** (línea 443)
+
    ```apex
    result.records = (List<Object>) resultMap.get('records');
    ```
@@ -55,6 +56,7 @@
    - **Uso**: Preview de queries en modal de creación
 
 2. **JT_GenericRunAsTest.executeRunAsTest** (línea 303)
+
    ```apex
    result.records = records; // List<SObject> asignado directamente
    ```

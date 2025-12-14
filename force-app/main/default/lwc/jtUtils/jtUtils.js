@@ -9,6 +9,12 @@
  */
 
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
+// Import Custom Labels for default values
+import successTitleLabel from "@salesforce/label/c.JT_jtUtils_successTitle";
+import unknownErrorLabel from "@salesforce/label/c.JT_jtUtils_unknownError";
+import fixQuerySyntaxLabel from "@salesforce/label/c.JT_jtUtils_fixQuerySyntax";
+import cannotUpdateConfigurationLabel from "@salesforce/label/c.JT_jtUtils_cannotUpdateConfiguration";
+import errorTitleLabel from "@salesforce/label/c.JT_jtUtils_errorTitle";
 
 // ========================================================================
 // FORMATTING UTILITIES
@@ -92,10 +98,10 @@ let _toastTimeout = null;
  * Show a success toast notification
  * @param {Object} context - Component context (this)
  * @param {string} message - Success message
- * @param {string} title - Toast title (default: 'Success')
+ * @param {string} title - Toast title (default: uses Custom Label)
  * @example showSuccessToast(this, 'Configuration saved!')
  */
-export function showSuccessToast(context, message, title = "Success") {
+export function showSuccessToast(context, message, title = successTitleLabel) {
   clearPreviousToast();
 
   context.dispatchEvent(
@@ -402,10 +408,7 @@ export function validateLabel(label) {
  * extractErrorMessage(error, 'Unknown error')
  * // Returns error.body?.message || error.body?.pageErrors?.[0]?.message || ...
  */
-export function extractErrorMessage(
-  error,
-  fallback = "An unknown error occurred"
-) {
+export function extractErrorMessage(error, fallback = unknownErrorLabel) {
   if (!error) return fallback;
 
   // Try various locations where error messages might be
@@ -506,7 +509,7 @@ export function validateQuerySyntax(queryValidation) {
   if (!queryValidation || !queryValidation.isValid) {
     return {
       isValid: false,
-      errorMessage: "Please fix the query syntax before saving."
+      errorMessage: fixQuerySyntaxLabel
     };
   }
   return { isValid: true };
@@ -540,8 +543,7 @@ export function validateEditMode(mode, originalDevName) {
   if (mode === "edit" && !originalDevName) {
     return {
       isValid: false,
-      errorMessage:
-        "Cannot update configuration: Original developer name is missing. Please close and reopen the modal."
+      errorMessage: cannotUpdateConfigurationLabel
     };
   }
   return { isValid: true };

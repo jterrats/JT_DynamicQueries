@@ -94,17 +94,20 @@ public with sharing class JT_RunAsTestExecutor {
             : 'NULL')
         );
       } catch (DmlException dmlEx) {
-        System.debug(
-          LoggingLevel.ERROR,
-          '❌ DML error inserting execution record: ' + dmlEx.getMessage()
-        );
-        System.debug(
-          LoggingLevel.ERROR,
-          'DML Status Code: ' + dmlEx.getDmlStatusCode(0)
-        );
-        System.debug(
-          LoggingLevel.ERROR,
-          'DML Fields: ' + dmlEx.getDmlFields(0)
+        // Log DML error for support
+        Map<String, Object> details = new Map<String, Object>{
+          'dmlStatusCode' => dmlEx.getDmlStatusCode(0),
+          'dmlFields' => dmlEx.getDmlFields(0),
+          'userId' => userId,
+          'configName' => configName
+        };
+        JT_ErrorLogger.logError(
+          'DML Insert Failed',
+          dmlEx.getMessage(),
+          dmlEx,
+          'JT_RunAsTestExecutor.executeAsUser',
+          JSON.serialize(details),
+          'Critical'
         );
 
         // Check for specific error codes and provide user-friendly messages
@@ -121,13 +124,18 @@ public with sharing class JT_RunAsTestExecutor {
 
         throw new AuraHandledException(errorMessage);
       } catch (Exception insertEx) {
-        System.debug(
-          LoggingLevel.ERROR,
-          '❌ Error inserting execution record: ' + insertEx.getMessage()
-        );
-        System.debug(
-          LoggingLevel.ERROR,
-          'Stack trace: ' + insertEx.getStackTraceString()
+        // Log general insert error
+        Map<String, Object> details = new Map<String, Object>{
+          'userId' => userId,
+          'configName' => configName
+        };
+        JT_ErrorLogger.logError(
+          'Execution Record Insert Failed',
+          insertEx.getMessage(),
+          insertEx,
+          'JT_RunAsTestExecutor.executeAsUser',
+          JSON.serialize(details),
+          'Critical'
         );
 
         // Check if this is a DmlException that wasn't caught by the DmlException catch block
@@ -186,28 +194,29 @@ public with sharing class JT_RunAsTestExecutor {
           queueableJobId
         );
       } catch (DmlException dmlEx) {
-        System.debug(
-          LoggingLevel.ERROR,
-          '❌ Failed to update Apex_Queueable_Job_Id__c: ' + dmlEx.getMessage()
-        );
-        System.debug(
-          LoggingLevel.ERROR,
-          'DML Status Code: ' + dmlEx.getDmlStatusCode(0)
-        );
-        System.debug(
-          LoggingLevel.ERROR,
-          'DML Fields: ' + dmlEx.getDmlFields(0)
+        // Log DML error for support
+        Map<String, Object> details = new Map<String, Object>{
+          'dmlStatusCode' => dmlEx.getDmlStatusCode(0),
+          'dmlFields' => dmlEx.getDmlFields(0),
+          'executionId' => execution.Id
+        };
+        JT_ErrorLogger.logError(
+          'DML Update Failed',
+          dmlEx.getMessage(),
+          dmlEx,
+          'JT_RunAsTestExecutor.executeAsUser',
+          JSON.serialize(details),
+          'High'
         );
         // Continue execution even if update fails - the Queueable will still run
         // The execution record ID is still returned for polling
       } catch (Exception updateEx) {
-        System.debug(
-          LoggingLevel.ERROR,
-          '❌ Error updating Apex_Queueable_Job_Id__c: ' + updateEx.getMessage()
-        );
-        System.debug(
-          LoggingLevel.ERROR,
-          'Stack trace: ' + updateEx.getStackTraceString()
+        // Log update error for support
+        JT_ErrorLogger.logError(
+          'Execution Update Failed',
+          updateEx.getMessage(),
+          updateEx,
+          'JT_RunAsTestExecutor.executeAsUser'
         );
         // Continue execution even if update fails - the Queueable will still run
       }
@@ -241,7 +250,6 @@ public with sharing class JT_RunAsTestExecutor {
 
       result.errorMessage = errorMsg;
       result.stackTrace = e.getStackTraceString();
-      System.debug(LoggingLevel.ERROR, 'Exception type: ' + e.getTypeName());
       return result;
     }
   }
@@ -470,13 +478,18 @@ public with sharing class JT_RunAsTestExecutor {
       result.success = false;
       result.errorMessage = e.getMessage();
       result.message = 'Error retrieving results: ' + e.getMessage();
-      System.debug(
-        LoggingLevel.ERROR,
-        '❌ Error in getTestResults: ' + e.getMessage()
-      );
-      System.debug(
-        LoggingLevel.ERROR,
-        'Stack trace: ' + e.getStackTraceString()
+
+      // Log error for support
+      Map<String, Object> details = new Map<String, Object>{
+        'executionId' => executionId
+      };
+      JT_ErrorLogger.logError(
+        'Test Results Retrieval Failed',
+        e.getMessage(),
+        e,
+        'JT_RunAsTestExecutor.getTestResults',
+        JSON.serialize(details),
+        'Medium'
       );
       return result;
     }

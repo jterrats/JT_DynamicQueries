@@ -650,13 +650,30 @@ public with sharing class JT_MetadataCreator {
         } catch (Exception e) {
           errorDetail = ': ' + response.getBody();
         }
-        result.errorMessage = String.format(
+        String errorMsg = String.format(
           Label.JT_MetadataCreator_failedDeployMetadata,
           new List<String>{
             String.valueOf(response.getStatusCode()),
             errorDetail
           }
         );
+        result.errorMessage = errorMsg;
+
+        // Log Tooling API deployment error
+        Map<String, Object> details = new Map<String, Object>{
+          'httpStatusCode' => response.getStatusCode(),
+          'devName' => devName,
+          'errorDetail' => errorDetail
+        };
+        JT_ErrorLogger.logError(
+          'Metadata Deployment Failed',
+          errorMsg,
+          null,
+          'JT_MetadataCreator.deployMetadata',
+          JSON.serialize(details),
+          'High'
+        );
+
         return result;
       }
     } catch (Exception e) {
@@ -671,6 +688,21 @@ public with sharing class JT_MetadataCreator {
         Label.JT_MetadataCreator_errorDeployingMetadata,
         new List<String>{ errorMsg }
       );
+
+      // Log deployment exception
+      Map<String, Object> details = new Map<String, Object>{
+        'devName' => devName,
+        'exceptionType' => e.getTypeName()
+      };
+      JT_ErrorLogger.logError(
+        'Metadata Deployment Exception',
+        errorMsg,
+        e,
+        'JT_MetadataCreator.deployMetadata',
+        JSON.serialize(details),
+        'High'
+      );
+
       return result;
     }
   }

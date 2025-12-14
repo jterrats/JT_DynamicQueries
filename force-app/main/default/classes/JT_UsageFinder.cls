@@ -300,34 +300,58 @@ public without sharing class JT_UsageFinder {
         response.success = true;
       } else {
         response.success = false;
-        response.error = String.format(
+        String errorMsg = String.format(
           Label.JT_UsageFinder_toolingApiStatusError,
           new List<String>{
             String.valueOf(httpResponse.getStatusCode()),
             httpResponse.getStatus()
           }
         );
-        System.debug(
-          LoggingLevel.ERROR,
-          'Tooling API error: ' + httpResponse.getBody()
+        response.error = errorMsg;
+
+        // Log Tooling API HTTP error
+        Map<String, Object> details = new Map<String, Object>{
+          'httpStatusCode' => httpResponse.getStatusCode(),
+          'httpStatus' => httpResponse.getStatus(),
+          'serviceName' => 'Flows (Tooling API)'
+        };
+        JT_ErrorLogger.logError(
+          'Tooling API HTTP Error',
+          errorMsg,
+          null,
+          'JT_UsageFinder.searchFlows',
+          JSON.serialize(details),
+          'Medium'
         );
       }
     } catch (System.JSONException e) {
       response.success = false;
-      response.error =
+      String errorMsg =
         'Flow metadata parse error: ' +
         e.getMessage() +
         '. Tooling API response may be malformed.';
-      System.debug(
-        LoggingLevel.ERROR,
-        'Flow service JSON error: ' + e.getMessage()
+      response.error = errorMsg;
+
+      // Log JSON parsing error
+      JT_ErrorLogger.logError(
+        'Tooling API JSON Parse Error',
+        errorMsg,
+        e,
+        'JT_UsageFinder.searchFlows',
+        null,
+        'Medium'
       );
     } catch (Exception e) {
       response.success = false;
-      response.error = 'Flow search failed: ' + e.getMessage();
-      System.debug(
-        LoggingLevel.ERROR,
-        'Flow service error: ' + e.getMessage() + '\n' + e.getStackTraceString()
+      String errorMsg = 'Flow search failed: ' + e.getMessage();
+      response.error = errorMsg;
+
+      // Log general Tooling API error
+      JT_ErrorLogger.logError(
+        'Tooling API Flow Search Failed',
+        errorMsg,
+        e,
+        'JT_UsageFinder.searchFlows'
       );
     }
 
@@ -752,12 +776,12 @@ public without sharing class JT_UsageFinder {
     final Exception e,
     final AggregatedUsageResponse aggregated
   ) {
-    System.debug(
-      LoggingLevel.ERROR,
-      'Error in continuation callback: ' +
-        e.getMessage() +
-        '\n' +
-        e.getStackTraceString()
+    // Log continuation callback error
+    JT_ErrorLogger.logError(
+      'Tooling API Continuation Callback Failed',
+      e.getMessage(),
+      e,
+      'JT_UsageFinder.handleCallbackError'
     );
 
     if (aggregated.flowService == null) {

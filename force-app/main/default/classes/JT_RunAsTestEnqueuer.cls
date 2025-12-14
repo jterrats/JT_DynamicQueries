@@ -70,13 +70,11 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
         enqueueTestAsynchronously(testClass.Id);
       }
     } catch (Exception e) {
-      System.debug(
-        LoggingLevel.ERROR,
-        '❌ Error in JT_RunAsTestEnqueuer: ' + e.getMessage()
-      );
-      System.debug(
-        LoggingLevel.ERROR,
-        'Stack trace: ' + e.getStackTraceString()
+      // Log error for support
+      JT_ErrorLogger.logError(
+        'Test Execution Failed',
+        e,
+        'JT_RunAsTestEnqueuer.execute'
       );
 
       // Try to update execution record with error status
@@ -144,30 +142,43 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
           processSynchronousTestResults(responseBody);
           return true;
         } catch (JSONException jsonEx) {
-          System.debug(
-            LoggingLevel.ERROR,
-            '❌ JSON deserialization error: ' + jsonEx.getMessage()
+          // Log error for support
+          Map<String, Object> details = new Map<String, Object>{
+            'responseStatusCode' => response.getStatusCode(),
+            'responseBodyLength' => response.getBody() != null
+              ? response.getBody().length()
+              : 0,
+            'executionId' => this.executionId
+          };
+          JT_ErrorLogger.logError(
+            'Tooling API JSON Deserialization Failed',
+            jsonEx.getMessage(),
+            jsonEx,
+            'JT_RunAsTestEnqueuer.executeTestSynchronously',
+            JSON.serialize(details),
+            'High'
           );
-          System.debug(
-            LoggingLevel.ERROR,
-            'Response body length: ' +
-            (response.getBody() != null ? response.getBody().length() : 0)
-          );
+
           // CRITICAL: CPU/DML limit error - use specific handler
           updateExecutionWithProcessingError(
             'JSON deserialization failed (CPU limit): ' + jsonEx.getMessage()
           );
           return false;
         } catch (Exception deserializeEx) {
-          System.debug(
-            LoggingLevel.ERROR,
-            '❌ Error deserializing response (possible CPU timeout): ' +
-            deserializeEx.getMessage()
+          // Log error for support
+          Map<String, Object> details = new Map<String, Object>{
+            'responseStatusCode' => response.getStatusCode(),
+            'executionId' => this.executionId
+          };
+          JT_ErrorLogger.logError(
+            'Tooling API Response Deserialization Failed',
+            deserializeEx.getMessage(),
+            deserializeEx,
+            'JT_RunAsTestEnqueuer.executeTestSynchronously',
+            JSON.serialize(details),
+            'High'
           );
-          System.debug(
-            LoggingLevel.ERROR,
-            'Stack trace: ' + deserializeEx.getStackTraceString()
-          );
+
           // CRITICAL: CPU/DML limit error - use specific handler
           updateExecutionWithProcessingError(
             'Error deserializing response (CPU timeout): ' +
@@ -176,10 +187,26 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
           return false;
         }
       } else {
-        System.debug(
-          '⚠️ Synchronous execution failed with status: ' +
-          response.getStatusCode()
+        // Log Tooling API error for support
+        Map<String, Object> details = new Map<String, Object>{
+          'httpStatusCode' => response.getStatusCode(),
+          'httpStatus' => response.getStatus(),
+          'responseBody' => response.getBody() != null &&
+            response.getBody().length() < 1000
+            ? response.getBody()
+            : 'Response too long',
+          'executionId' => this.executionId
+        };
+        JT_ErrorLogger.logError(
+          'Tooling API HTTP Error',
+          'Synchronous execution failed with HTTP status: ' +
+          response.getStatusCode(),
+          null,
+          'JT_RunAsTestEnqueuer.executeTestSynchronously',
+          JSON.serialize(details),
+          'High'
         );
+
         updateExecutionWithError(
           'Synchronous execution failed with HTTP status: ' +
           response.getStatusCode()
@@ -187,9 +214,23 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
         return false;
       }
     } catch (CalloutException e) {
+      // Log callout timeout/error
+      JT_ErrorLogger.logError(
+        'Tooling API Callout Exception',
+        e.getMessage(),
+        e,
+        'JT_RunAsTestEnqueuer.executeTestSynchronously'
+      );
       // Timeout or callout error - fallback to async
       return false;
     } catch (Exception e) {
+      // Log unexpected error
+      JT_ErrorLogger.logError(
+        'Tooling API Unexpected Error',
+        e.getMessage(),
+        e,
+        'JT_RunAsTestEnqueuer.executeTestSynchronously'
+      );
       return false;
     }
   }
@@ -647,6 +688,7 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
    * Uses minimal DML operations and has multiple fallback strategies
    * @param errorMessage Error message to store
    **/
+  @SuppressWarnings('PMD.EmptyCatchBlock')
   private void updateExecutionWithError(String errorMessage) {
     // Strategy 1: Try with fresh query and minimal fields
     try {
@@ -667,14 +709,20 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
         return;
       }
     } catch (DmlException dmlEx) {
-      System.debug(
-        LoggingLevel.ERROR,
-        '❌ DML error in updateExecutionWithError (Strategy 1): ' +
-        dmlEx.getMessage()
-      );
-      System.debug(
-        LoggingLevel.ERROR,
-        'DML Status Code: ' + dmlEx.getDmlStatusCode(0)
+      // Log DML error for support
+      Map<String, Object> details = new Map<String, Object>{
+        'dmlStatusCode' => dmlEx.getDmlStatusCode(0),
+        'dmlFields' => dmlEx.getDmlFields(0),
+        'executionId' => this.executionId,
+        'errorMessage' => errorMessage
+      };
+      JT_ErrorLogger.logError(
+        'DML Update Failed',
+        dmlEx.getMessage(),
+        dmlEx,
+        'JT_RunAsTestEnqueuer.updateExecutionWithError',
+        JSON.serialize(details),
+        'Critical'
       );
 
       // Strategy 2: Try with even more minimal update (only status, no error message)
@@ -686,17 +734,25 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
         update minimalUpdate;
         return;
       } catch (Exception minimalEx) {
-        System.debug(
-          LoggingLevel.ERROR,
-          '❌ Minimal update also failed (Strategy 2): ' +
-          minimalEx.getMessage()
+        // Log critical failure
+        JT_ErrorLogger.logError(
+          'DML Update Failed - All Strategies',
+          minimalEx.getMessage(),
+          minimalEx,
+          'JT_RunAsTestEnqueuer.updateExecutionWithError (Strategy 2)',
+          JSON.serialize(
+            new Map<String, Object>{ 'executionId' => this.executionId }
+          ),
+          'Critical'
         );
       }
     } catch (Exception updateEx) {
-      System.debug(
-        LoggingLevel.ERROR,
-        '❌ General error in updateExecutionWithError (Strategy 1): ' +
-        updateEx.getMessage()
+      // Log general error
+      JT_ErrorLogger.logError(
+        'Execution Update Failed',
+        updateEx.getMessage(),
+        updateEx,
+        'JT_RunAsTestEnqueuer.updateExecutionWithError'
       );
       System.debug(
         LoggingLevel.ERROR,
@@ -712,11 +768,9 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
         update minimalUpdate;
         return;
       } catch (Exception minimalEx) {
-        System.debug(
-          LoggingLevel.ERROR,
-          '❌ Minimal update also failed (Strategy 2 fallback): ' +
-          minimalEx.getMessage()
-        );
+        // Strategy 2 fallback failed - error already logged in Strategy 1 catch block
+        // No additional action needed as this is a fallback strategy
+        // PMD suppressed: Empty catch is intentional for fallback strategy
       }
     }
 

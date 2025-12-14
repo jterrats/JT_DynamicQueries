@@ -144,10 +144,16 @@ public without sharing class JT_ToolingApiUtil {
 
       return sessionId;
     } catch (Exception e) {
-      System.debug(
-        LoggingLevel.ERROR,
-        'Failed to get API session ID: ' + e.getMessage()
+      // Log Tooling API session error for support
+      JT_ErrorLogger.logError(
+        'Tooling API Session Failed',
+        e.getMessage(),
+        e,
+        'JT_ToolingApiUtil.getApiSessionId',
+        null,
+        'High'
       );
+
       throw new AuraHandledException(
         Label.JT_ToolingApiUtil_unableToObtainApiSession
       );

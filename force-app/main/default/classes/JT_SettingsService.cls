@@ -126,7 +126,10 @@ public with sharing class JT_SettingsService {
     } catch (Exception e) {
       // Don't fail the setting update if audit log fails
       // Audit logging is non-critical - settings update should succeed even if logging fails
-      System.debug(LoggingLevel.WARN, 'Audit log insertion failed: ' + e.getMessage());
+      System.debug(
+        LoggingLevel.WARN,
+        'Audit log insertion failed: ' + e.getMessage()
+      );
     }
   }
 

@@ -203,6 +203,9 @@ import failedToPollTestResultsLabel from "@salesforce/label/c.JT_jtQueryViewer_f
 import testExecutionFailedLabel from "@salesforce/label/c.JT_jtQueryViewer_testExecutionFailed";
 import failedToDeleteConfigurationLabel from "@salesforce/label/c.JT_jtQueryViewer_failedToDeleteConfiguration";
 import failedToExecuteSearchOrchestratorLabel from "@salesforce/label/c.JT_jtQueryViewer_failedToExecuteSearchOrchestrator";
+import errorClearingCacheLabel from "@salesforce/label/c.JT_jtQueryViewer_errorClearingCache";
+import toolingApiSetupInstructionsLabel from "@salesforce/label/c.JT_jtQueryViewer_toolingApiSetupInstructions";
+import errorTitleLabel from "@salesforce/label/c.JT_jtUtils_errorTitle";
 
 // Apex imports
 import getConfigurations from "@salesforce/apex/JT_QueryViewerController.getConfigurations";
@@ -479,6 +482,9 @@ export default class JtQueryViewer extends LightningElement {
     pleaseSelectUser: pleaseSelectUserLabel,
     unknownError: unknownErrorLabel,
     noConfigurationSelected: noConfigurationSelectedLabel,
+    errorTitle: errorTitleLabel,
+    errorClearingCache: errorClearingCacheLabel,
+    toolingApiSetupInstructions: toolingApiSetupInstructionsLabel,
     pleaseSelectConfigurationToEdit: pleaseSelectConfigurationToEditLabel,
     pleaseSelectConfigurationToDelete: pleaseSelectConfigurationToDeleteLabel,
     deleteFailed: deleteFailedLabel,
@@ -1039,23 +1045,10 @@ export default class JtQueryViewer extends LightningElement {
       return;
     }
 
-    console.log("🚀 Starting Run As User test:", {
-      config: this.selectedConfig,
-      userId: this.runAsUserId,
-      currentQueryResults: this.queryResults.length,
-      currentRecordCount: this.recordCount
-    });
-
     this.isRunningTest = true;
     this.showError = false;
     this.resetResults();
     this.testAssertMessage = "";
-
-    console.log("🧹 After resetResults():", {
-      queryResults: this.queryResults.length,
-      recordCount: this.recordCount,
-      hasResults: this.hasResults
-    });
 
     // Build bindings JSON
     const bindingsToSend = this.buildBindingsJson();
@@ -1260,25 +1253,12 @@ export default class JtQueryViewer extends LightningElement {
       this.hasResults = true;
       this.showTestResults = true;
       this.resetPagination(); // Initialize pagination
-
-      console.log("DEBUG processTestQueryResults - After assignment:", {
-        queryResultsLength: this.queryResults.length,
-        firstRecord: this.queryResults[0],
-        hasResults: this.hasResults,
-        columnsLength: this.columns.length,
-        firstRecordKeys: Object.keys(this.queryResults[0] || {})
-      });
     } else {
       // Show empty table with columns
       this.queryResults = [];
       this.hasResults = true; // Show table even with 0 results
       this.showTestResults = true; // Show section
       this.resetPagination();
-
-      console.log("DEBUG processTestQueryResults - No records:", {
-        recordCount: this.recordCount,
-        hasResults: this.hasResults
-      });
     }
   }
 
@@ -1402,7 +1382,7 @@ export default class JtQueryViewer extends LightningElement {
       .catch((error) => {
         showErrorToast(
           this,
-          "Error",
+          this.labels.errorTitle,
           extractErrorMessage(error, this.labels.failedToDeleteConfiguration)
         );
       });
@@ -1588,11 +1568,12 @@ export default class JtQueryViewer extends LightningElement {
       // Close modal after clearing
       this.handleCloseCacheModal();
     } catch (error) {
+      const errorMsg =
+        error.body?.message || error.message || this.labels.unknownError;
       showErrorToast(
         this,
-        "Error",
-        "Error clearing cache: " +
-          (error.body?.message || error.message || this.labels.unknownError)
+        this.labels.errorTitle,
+        this.labels.errorClearingCache.replace("{0}", errorMsg)
       );
     }
   }
@@ -1709,7 +1690,11 @@ export default class JtQueryViewer extends LightningElement {
     const queryValidationToCheck = modalQueryValidation || this.queryValidation;
     const querySyntaxValidation = validateQuerySyntax(queryValidationToCheck);
     if (!querySyntaxValidation.isValid) {
-      showErrorToast(this, "Invalid Query", querySyntaxValidation.errorMessage);
+      showErrorToast(
+        this,
+        this.labels.invalidQuery,
+        querySyntaxValidation.errorMessage
+      );
       return;
     }
 
@@ -1798,7 +1783,7 @@ export default class JtQueryViewer extends LightningElement {
       .catch((error) => {
         showErrorToast(
           this,
-          "Error",
+          this.labels.errorTitle,
           extractErrorMessage(
             error,
             `Failed to ${this.configModalMode} configuration`
@@ -1909,7 +1894,7 @@ export default class JtQueryViewer extends LightningElement {
     showInfoToast(
       this,
       "Tooling API Setup",
-      "Please check the Documentation tab for Tooling API configuration instructions."
+      this.labels.toolingApiSetupInstructions
     );
   }
 

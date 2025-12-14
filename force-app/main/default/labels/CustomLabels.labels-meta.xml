@@ -4369,4 +4369,80 @@ Y bueno...&lt;br /&gt;&lt;br /&gt;</value>
     >JT_ExecutionStateManager - invalidTransition</shortDescription>
         <value>Invalid state transition from {0} to {1}</value>
     </labels>
+    <labels>
+        <fullName>JT_ErrorLogDomain_errorLogCannotBeNull</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_ErrorLogDomain - errorLogCannotBeNull</shortDescription>
+        <value>Error log cannot be null</value>
+    </labels>
+    <labels>
+        <fullName>JT_ErrorLogDomain_errorTypeRequired</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_ErrorLogDomain - errorTypeRequired</shortDescription>
+        <value>Error type is required</value>
+    </labels>
+    <labels>
+        <fullName>JT_ErrorLogDomain_errorMessageRequired</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >JT_ErrorLogDomain - errorMessageRequired</shortDescription>
+        <value>Error message is required</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtUtils_successTitle</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtUtils - successTitle</shortDescription>
+        <value>Success</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtUtils_unknownError</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtUtils - unknownError</shortDescription>
+        <value>An unknown error occurred</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtUtils_fixQuerySyntax</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtUtils - fixQuerySyntax</shortDescription>
+        <value>Please fix the query syntax before saving.</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtUtils_cannotUpdateConfiguration</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtUtils - cannotUpdateConfiguration</shortDescription>
+        <value
+    >Cannot update configuration: Original developer name is missing. Please close and reopen the modal.</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtUtils_errorTitle</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtUtils - errorTitle</shortDescription>
+        <value>Error</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_errorClearingCache</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - errorClearingCache</shortDescription>
+        <value>Error clearing cache: {0}</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_toolingApiSetupInstructions</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >jtQueryViewer - toolingApiSetupInstructions</shortDescription>
+        <value
+    >Please check the Documentation tab for Tooling API configuration instructions.</value>
+    </labels>
 </CustomLabels>

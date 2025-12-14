@@ -137,14 +137,6 @@ export default class JtQueryResults extends LightningElement {
   }
 
   set records(value) {
-    // Debug: Log when records are set
-    console.log("jtQueryResults: records setter called", {
-      valueLength: value?.length,
-      value: value,
-      recordCount: this.recordCount,
-      previousRecordCount: this._previousRecordCount
-    });
-
     // Create a new array reference for LWC reactivity
     this._records = value ? [...value] : [];
 
@@ -157,12 +149,6 @@ export default class JtQueryResults extends LightningElement {
       this.currentPage = 1;
       this._previousRecordCount = this.recordCount;
     }
-
-    // Debug: Log after assignment
-    console.log("jtQueryResults: _records after assignment", {
-      _recordsLength: this._records?.length,
-      paginatedResultsLength: this.paginatedResults?.length
-    });
   }
 
   // Computed - View mode
@@ -280,13 +266,7 @@ export default class JtQueryResults extends LightningElement {
 
   // Override paginatedResults to include child relationship metadata
   get paginatedResults() {
-    // Debug: Log when paginatedResults is computed
     if (!this._records || this._records.length === 0) {
-      console.log("jtQueryResults: paginatedResults - no records", {
-        _records: this._records,
-        _recordsLength: this._records?.length,
-        recordCount: this.recordCount
-      });
       return [];
     }
 

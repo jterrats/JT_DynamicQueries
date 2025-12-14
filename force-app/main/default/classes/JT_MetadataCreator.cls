@@ -211,14 +211,7 @@ public with sharing class JT_MetadataCreator {
 
       if (isRenaming) {
         // Rename: Delete old record and create new one
-        MetadataCreationResult renameResult = handleRename(
-          config.originalDevName,
-          config.label,
-          sanitizedDevName,
-          config.baseQuery,
-          config.bindings,
-          config.objectName
-        );
+        MetadataCreationResult renameResult = handleRename(config, sanitizedDevName);
         return renameResult;
       } else {
         // Normal update: Use original dev name
@@ -545,26 +538,19 @@ public with sharing class JT_MetadataCreator {
 
   /**
    * @description Handles renaming scenario (delete old + create new)
-   * @param originalDevName Original developer name
-   * @param label Configuration label
+   * @param config ConfigValues object containing all configuration data
    * @param sanitizedDevName New sanitized developer name
-   * @param baseQuery Base query
-   * @param bindings Bindings
-   * @param objectName Object name
    * @return MetadataCreationResult
    **/
+  @SuppressWarnings('PMD.ExcessiveParameterList')
   private static MetadataCreationResult handleRename(
-    String originalDevName,
-    String label,
-    String sanitizedDevName,
-    String baseQuery,
-    String bindings,
-    String objectName
+    ConfigValues config,
+    String sanitizedDevName
   ) {
     MetadataCreationResult result = new MetadataCreationResult();
 
     // Step 1: Delete old record
-    MetadataCreationResult deleteResult = deleteConfiguration(originalDevName);
+    MetadataCreationResult deleteResult = deleteConfiguration(config.originalDevName);
 
     if (!deleteResult.success) {
       result.success = false;
@@ -575,11 +561,11 @@ public with sharing class JT_MetadataCreator {
 
     // Step 2: Create new record with new Developer Name
     Map<String, Object> createConfigMap = new Map<String, Object>{
-      'label' => label,
+      'label' => config.label,
       'developerName' => sanitizedDevName,
-      'baseQuery' => baseQuery,
-      'bindings' => bindings,
-      'objectName' => objectName
+      'baseQuery' => config.baseQuery,
+      'bindings' => config.bindings,
+      'objectName' => config.objectName
     };
     String createConfigJson = JSON.serialize(createConfigMap);
 
@@ -595,7 +581,7 @@ public with sharing class JT_MetadataCreator {
     result.success = true;
     result.message =
       'Configuration renamed successfully: ' +
-      originalDevName +
+      config.originalDevName +
       ' → ' +
       sanitizedDevName;
     result.developerName = sanitizedDevName;

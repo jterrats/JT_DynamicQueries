@@ -6,7 +6,8 @@ import {
   showSuccessToast,
   showErrorToast,
   showInfoToast,
-  showWarningToast
+  showWarningToast,
+  extractErrorMessage
 } from "c/jtUtils";
 // Import Custom Labels from Salesforce Translation Workbench (89 labels)
 import apexClassLabel from "@salesforce/label/c.JT_jtQueryViewer_apexClass";
@@ -552,7 +553,11 @@ export default class JtQueryViewer extends LightningElement {
         return refreshApex(this.wiredConfigurationsResult);
       })
       .catch((error) => {
-        showErrorToast(this, this.labels.errorUpdatingSettings, error.body?.message);
+        showErrorToast(
+          this,
+          this.labels.errorUpdatingSettings,
+          extractErrorMessage(error, "Failed to update settings")
+        );
         // Revert checkbox
         this.productionOverrideEnabled = !enabled;
       })
@@ -649,7 +654,7 @@ export default class JtQueryViewer extends LightningElement {
         showErrorToast(
           this,
           this.labels.errorLoadingUsers,
-          error.body?.message || this.labels.failedToLoadUsers
+          extractErrorMessage(error, this.labels.failedToLoadUsers)
         );
         this.userOptions = [];
       })
@@ -900,7 +905,7 @@ export default class JtQueryViewer extends LightningElement {
           showErrorToast(
             this,
             this.labels.errorExtractingParameters,
-            error.body?.message
+            extractErrorMessage(error, "Failed to extract parameters")
           );
         });
     }
@@ -1046,14 +1051,8 @@ export default class JtQueryViewer extends LightningElement {
       })
       .catch((error) => {
         this.showError = true;
-        // Extract error message from various possible locations
-        // AuraHandledException messages can be in different places depending on how they're thrown
-        let errorMsg =
-          error.body?.message ||
-          error.body?.pageErrors?.[0]?.message ||
-          error.body?.output?.errors?.[0]?.message ||
-          error.message ||
-          this.labels.unknownError;
+        // Extract error message using utility function
+        let errorMsg = extractErrorMessage(error, this.labels.unknownError);
 
         // If it's a generic "Script-thrown exception", try to get more details
         if (errorMsg === "Script-thrown exception" && error.body?.output?.errors) {
@@ -1164,10 +1163,13 @@ export default class JtQueryViewer extends LightningElement {
           }
         })
         .catch((error) => {
-          console.error("❌ Polling error:", error);
           clearInterval(this.pollInterval);
           this.isRunningTest = false;
-          showErrorToast(this, this.labels.pollingError, error.body?.message);
+          showErrorToast(
+            this,
+            this.labels.pollingError,
+            extractErrorMessage(error, "Failed to poll test results")
+          );
         });
     }, 2000); // Poll every 2 seconds
   }
@@ -1432,7 +1434,7 @@ export default class JtQueryViewer extends LightningElement {
         showErrorToast(
           this,
           "Error",
-          error.body?.message || "Failed to delete configuration"
+          extractErrorMessage(error, "Failed to delete configuration")
         );
       });
   }
@@ -1523,7 +1525,7 @@ export default class JtQueryViewer extends LightningElement {
         showErrorToast(
           this,
           this.labels.searchError,
-          error.body?.message || "Failed to execute search orchestrator"
+          extractErrorMessage(error, "Failed to execute search orchestrator")
         );
         this.isLoadingUsage = false;
         // Don't show modal on error - user can try again
@@ -1821,7 +1823,7 @@ export default class JtQueryViewer extends LightningElement {
           ...configData
         }
       : configData;
-    
+
     const configJson = JSON.stringify(configDataForApex);
     console.log("configJson being sent:", configJson);
 
@@ -1861,15 +1863,13 @@ export default class JtQueryViewer extends LightningElement {
         return Promise.resolve();
       })
       .catch((error) => {
-        console.error("Save error:", error);
-        console.error("Error body:", error.body);
         showErrorToast(
           this,
           "Error",
-          error.body?.message ||
-            error.body?.exceptionType ||
-            error.message ||
+          extractErrorMessage(
+            error,
             `Failed to ${this.configModalMode} configuration`
+          )
         );
       })
       .finally(() => {

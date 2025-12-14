@@ -225,8 +225,8 @@ public with sharing class JT_MetadataCreator {
       }
 
       // Sanitize developer name (with null check)
-      String sanitizedDevName = String.isNotBlank(config.developerName) 
-        ? sanitizeDeveloperName(config.developerName) 
+      String sanitizedDevName = String.isNotBlank(config.developerName)
+        ? sanitizeDeveloperName(config.developerName)
         : config.originalDevName;
 
       // Check if Developer Name changed (renaming scenario)

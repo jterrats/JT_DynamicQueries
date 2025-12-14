@@ -387,3 +387,47 @@ export function validateLabel(label) {
 
   return { isValid: true, message: "" };
 }
+
+// ========================================================================
+// ERROR HANDLING UTILITIES
+// ========================================================================
+
+/**
+ * Extract error message from various possible locations in Apex error objects
+ * Handles different error formats from Aura/LWC framework
+ * @param {Object} error - Error object from Apex call
+ * @param {string} fallback - Fallback message if no error found
+ * @returns {string} Extracted error message
+ * @example
+ * extractErrorMessage(error, 'Unknown error')
+ * // Returns error.body?.message || error.body?.pageErrors?.[0]?.message || ...
+ */
+export function extractErrorMessage(error, fallback = "An unknown error occurred") {
+  if (!error) return fallback;
+
+  // Try various locations where error messages might be
+  return (
+    error.body?.message ||
+    error.body?.pageErrors?.[0]?.message ||
+    error.body?.output?.errors?.[0]?.message ||
+    error.body?.exceptionType ||
+    error.message ||
+    fallback
+  );
+}
+
+/**
+ * Extract detailed error information for debugging
+ * @param {Object} error - Error object from Apex call
+ * @returns {Object} { message: string, details: Object }
+ */
+export function extractErrorDetails(error) {
+  const message = extractErrorMessage(error, "Unknown error");
+  const details = {
+    body: error.body,
+    status: error.status,
+    statusText: error.statusText,
+    stack: error.stack
+  };
+  return { message, details };
+}

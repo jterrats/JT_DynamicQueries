@@ -113,7 +113,10 @@ test.describe("Run As User Feature Tests", () => {
     for (let i = 0; i < userCount; i++) {
       const option = userOptions.nth(i);
       const optionText = await option.textContent();
-      if (optionText.toLowerCase().includes("mariano") && optionText.toLowerCase().includes("arnica")) {
+      if (
+        optionText.toLowerCase().includes("mariano") &&
+        optionText.toLowerCase().includes("arnica")
+      ) {
         marianoOption = option;
         selectedUserName = optionText;
         break;
@@ -143,7 +146,9 @@ test.describe("Run As User Feature Tests", () => {
     await expect(executeRunAsButton).toBeVisible({ timeout: 5000 });
     const executeButtonText = await executeRunAsButton.textContent();
     expect(executeButtonText).toMatch(/Execute with System\.runAs/i);
-    console.log("✅ Execute with System.runAs button visible with correct text");
+    console.log(
+      "✅ Execute with System.runAs button visible with correct text"
+    );
 
     // Step 4: ✅ VALIDATION: Verify "Clear Selection" button appears with correct text
     const clearButton = page
@@ -157,7 +162,9 @@ test.describe("Run As User Feature Tests", () => {
     console.log("✅ Clear Selection button visible with correct text");
 
     // Step 5: ✅ VALIDATION: Verify NO success toast appears before execution
-    const successToastBefore = page.locator('lightning-toast[class*="success"]');
+    const successToastBefore = page.locator(
+      'lightning-toast[class*="success"]'
+    );
     const toastVisibleBefore = await successToastBefore
       .isVisible({ timeout: 1000 })
       .catch(() => false);
@@ -216,7 +223,9 @@ test.describe("Run As User Feature Tests", () => {
       .isVisible({ timeout: 2000 })
       .catch(() => false);
     expect(toastVisibleAfter).toBe(false);
-    console.log("✅ No success toast after execution (results displayed in UI)");
+    console.log(
+      "✅ No success toast after execution (results displayed in UI)"
+    );
 
     // Step 9: Validate results are displayed
     if (resultsVisible) {
@@ -440,7 +449,9 @@ test.describe("Run As User Feature Tests", () => {
     console.log("✅ Restricted user selection confirmed in combobox");
 
     // Step 3: ✅ VALIDATION: Verify NO success toast before execution
-    const successToastBefore = page.locator('lightning-toast[class*="success"]');
+    const successToastBefore = page.locator(
+      'lightning-toast[class*="success"]'
+    );
     const toastVisibleBefore = await successToastBefore
       .isVisible({ timeout: 1000 })
       .catch(() => false);
@@ -586,12 +597,25 @@ test.describe("Run As User Feature Tests", () => {
   test("should display user-friendly error messages from Custom Labels", async ({
     page
   }) => {
-    console.log("🧪 Testing Custom Labels validation with Guest/Chatter User...");
+    console.log(
+      "🧪 Testing Custom Labels validation with Guest/Chatter User..."
+    );
 
-    // Expand Run As section
+    // Verify Run As section is available (skip test if not authorized)
     const accordionSection = page
       .locator('lightning-accordion-section[name="run-as"]')
       .first();
+    const accordionExists = (await accordionSection.count()) > 0;
+
+    if (!accordionExists) {
+      console.log(
+        "⚠️  Run As accordion section not found - user lacks permissions. Skipping test."
+      );
+      test.skip();
+      return;
+    }
+
+    // Expand Run As section if collapsed
     const isExpanded = await accordionSection
       .getAttribute("aria-expanded")
       .then((val) => val === "true")
@@ -664,7 +688,9 @@ test.describe("Run As User Feature Tests", () => {
     }
 
     if (!restrictedUser) {
-      console.log("⚠️  Guest User or Chatter Expert not found - skipping Custom Labels test");
+      console.log(
+        "⚠️  Guest User or Chatter Expert not found - skipping Custom Labels test"
+      );
       test.skip();
       return;
     }
@@ -674,7 +700,9 @@ test.describe("Run As User Feature Tests", () => {
     await page.waitForTimeout(1000);
 
     // ✅ VALIDATION: Verify NO success toast before execution
-    const successToastBefore = page.locator('lightning-toast[class*="success"]');
+    const successToastBefore = page.locator(
+      'lightning-toast[class*="success"]'
+    );
     const toastVisibleBefore = await successToastBefore
       .isVisible({ timeout: 1000 })
       .catch(() => false);
@@ -699,7 +727,9 @@ test.describe("Run As User Feature Tests", () => {
 
     if (errorVisible) {
       const errorText = await errorBanner.textContent();
-      console.log(`📋 Error message displayed: "${errorText.substring(0, 200)}..."`);
+      console.log(
+        `📋 Error message displayed: "${errorText.substring(0, 200)}..."`
+      );
 
       // ✅ VALIDATION 1: Message should NOT be technical
       const technicalIndicators = [
@@ -885,7 +915,9 @@ test.describe("Run As User Feature Tests", () => {
     console.log("✅ Test assertion message hidden");
 
     // Step 7: ✅ VALIDATION: Verify query preview is hidden
-    const queryPreview = page.locator(".query-preview, [data-testid='query-preview']");
+    const queryPreview = page.locator(
+      ".query-preview, [data-testid='query-preview']"
+    );
     const previewVisible = await queryPreview
       .isVisible({ timeout: 1000 })
       .catch(() => false);
@@ -999,7 +1031,10 @@ test.describe("Run As User Feature Tests", () => {
     for (let i = 0; i < userCount; i++) {
       const option = userOptions.nth(i);
       const optionText = await option.textContent();
-      if (optionText.toLowerCase().includes("mariano") && optionText.toLowerCase().includes("arnica")) {
+      if (
+        optionText.toLowerCase().includes("mariano") &&
+        optionText.toLowerCase().includes("arnica")
+      ) {
         marianoOption = option;
         break;
       }

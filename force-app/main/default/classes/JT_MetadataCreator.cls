@@ -44,7 +44,7 @@ public with sharing class JT_MetadataCreator {
       // Debug: Log the input to see what we're receiving
       System.debug(LoggingLevel.ERROR, '🔍 createConfiguration input: ' + JSON.serialize(input));
       System.debug(LoggingLevel.ERROR, '🔍 createConfiguration input == null: ' + (input == null));
-      
+
       // Validate input is not null
       if (input == null) {
         result.success = false;
@@ -52,7 +52,7 @@ public with sharing class JT_MetadataCreator {
         System.debug(LoggingLevel.ERROR, '❌ Input is null - returning error');
         return result;
       }
-      
+
       // Debug: Log individual fields
       System.debug(LoggingLevel.ERROR, '🔍 input.label: ' + input.label);
       System.debug(LoggingLevel.ERROR, '🔍 input.developerName: ' + input.developerName);

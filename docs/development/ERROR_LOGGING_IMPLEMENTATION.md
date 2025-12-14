@@ -2,66 +2,66 @@
 
 ## Overview
 
-Se ha creado un sistema centralizado de logging de errores usando el objeto `JT_ErrorLog__c` para capturar excepciones que se presentan a los usuarios, con información detallada para soporte técnico.
+A centralized error logging system has been created using the `JT_ErrorLog__c` object to capture exceptions encountered by users, with detailed information for technical support.
 
-## Objeto: JT_ErrorLog\_\_c
+## Object: JT_ErrorLog\_\_c
 
-### Campos
+### Fields
 
-- **JT_ErrorType\_\_c** (Text, Required): Tipo/categoría del error
-- **JT_ErrorMessage\_\_c** (Text, Required): Mensaje amigable mostrado al usuario
-- **JT_ExceptionType\_\_c** (Text): Tipo de excepción Apex (AuraHandledException, QueryException, etc.)
-- **JT_StackTrace\_\_c** (LongTextArea): Stack trace completo para debugging
-- **JT_Context\_\_c** (Text): Contexto donde ocurrió el error (componente, método, acción)
-- **JT_Severity\_\_c** (Picklist): Severidad (Low, Medium, High, Critical)
-- **OwnerId** (Standard Owner field): Usuario que encontró el error (campo estándar de Salesforce)
-- **JT_Timestamp\_\_c** (DateTime, Required): Cuándo ocurrió el error
-- **JT_AdditionalDetails\_\_c** (LongTextArea): Información adicional en JSON (opcional)
-- **JT_OrgType\_\_c** (Text): Tipo de organización donde ocurrió
-- **JT_Resolved\_\_c** (Checkbox): Si el error ha sido resuelto
+- **JT_ErrorType\_\_c** (Text, Required): Error type/category
+- **JT_ErrorMessage\_\_c** (Text, Required): User-friendly message displayed to the user
+- **JT_ExceptionType\_\_c** (Text): Apex exception type (AuraHandledException, QueryException, etc.)
+- **JT_StackTrace\_\_c** (LongTextArea): Full stack trace for debugging
+- **JT_Context\_\_c** (Text): Context where the error occurred (component, method, action)
+- **JT_Severity\_\_c** (Picklist): Severity (Low, Medium, High, Critical)
+- **OwnerId** (Standard Owner field): User who encountered the error (standard Salesforce field)
+- **JT_Timestamp\_\_c** (DateTime, Required): When the error occurred
+- **JT_AdditionalDetails\_\_c** (LongTextArea): Additional information in JSON (optional)
+- **JT_OrgType\_\_c** (Text): Organization type where it occurred
+- **JT_Resolved\_\_c** (Checkbox): Whether the error has been resolved
 
-## Clases
+## Classes
 
 ### JT_ErrorLogDomain.cls
 
-Domain layer para operaciones DML en `JT_ErrorLog__c`. Ejecuta `without sharing` para garantizar que los logs siempre se creen.
+Domain layer for DML operations on `JT_ErrorLog__c`. Executes `without sharing` to ensure logs are always created.
 
 ### JT_ErrorLogger.cls
 
-Utility class para facilitar el logging de errores. Proporciona métodos sobrecargados para diferentes escenarios.
+Utility class to facilitate error logging. Provides overloaded methods for different scenarios.
 
-## Ejemplos de Uso
+## Usage Examples
 
-### Ejemplo 1: Logging básico desde Apex
+### Example 1: Basic logging from Apex
 
 ```apex
 try {
-    // Código que puede fallar
+    // Code that may fail
     executeQuery();
 } catch (Exception e) {
-    // Log del error
+    // Log the error
     JT_ErrorLogger.logError(
         'Query Execution Failed',
         e,
         'JT_QueryViewerController.executeQuery'
     );
 
-    // Mostrar mensaje amigable al usuario
+    // Show user-friendly message
     throw new AuraHandledException('Unable to execute query. Please try again.');
 }
 ```
 
-### Ejemplo 2: Logging con ErrorType específico
+### Example 2: Logging with specific ErrorType
 
 ```apex
 try {
-    // Código que puede fallar
+    // Code that may fail
     executeRunAsTest();
 } catch (AuraHandledException ahe) {
     JT_ErrorMessageUtil.ErrorAnalysisResult analysis =
         JT_ErrorMessageUtil.analyzeError(ahe.getMessage(), null);
 
-    // Log con tipo específico
+    // Log with specific type
     JT_ErrorLogger.logError(
         analysis.errorType,
         ahe.getMessage(),
@@ -73,21 +73,21 @@ try {
 }
 ```
 
-### Ejemplo 3: Logging con detalles adicionales
+### Example 3: Logging with additional details
 
 ```apex
 try {
-    // Código que puede fallar
+    // Code that may fail
     createConfiguration(configJson);
 } catch (Exception e) {
-    // Construir detalles adicionales en JSON
+    // Build additional details in JSON
     Map<String, Object> details = new Map<String, Object>{
         'configName' => configName,
         'userId' => UserInfo.getUserId(),
         'orgId' => UserInfo.getOrganizationId()
     };
 
-    // Log con detalles adicionales
+    // Log with additional details
     JT_ErrorLogger.logError(
         'Configuration Creation Failed',
         e.getMessage(),
@@ -101,21 +101,21 @@ try {
 }
 ```
 
-### Ejemplo 4: Integración en JT_RunAsTestEnqueuer
+### Example 4: Integration in JT_RunAsTestEnqueuer
 
 ```apex
 private void updateExecutionWithError(String errorMessage) {
     try {
-        // ... código existente para actualizar execution ...
+        // ... existing code to update execution ...
 
-        // Log del error para soporte
+        // Log error for support
         JT_ErrorLogger.logError(
             'Test Execution Failed',
             new AuraHandledException(errorMessage),
             'JT_RunAsTestEnqueuer.updateExecutionWithError'
         );
     } catch (Exception e) {
-        // Log incluso si el update falla
+        // Log even if update fails
         JT_ErrorLogger.logError(
             'Failed to Update Execution Record',
             e,
@@ -126,20 +126,20 @@ private void updateExecutionWithError(String errorMessage) {
 }
 ```
 
-### Ejemplo 5: Logging desde LWC (vía Apex)
+### Example 5: Logging from LWC (via Apex)
 
-En el componente LWC, cuando se captura un error:
+In the LWC component, when an error is caught:
 
 ```javascript
 .catch((error) => {
-    // Extraer mensaje de error
+    // Extract error message
     const errorMsg = extractErrorMessage(error, this.labels.unknownError);
 
-    // Mostrar al usuario
+    // Show to user
     this.showError = true;
     this.errorMessage = errorMsg;
 
-    // Log en Apex para soporte (opcional, si necesitas más contexto)
+    // Log to Apex for support (optional, if you need more context)
     logErrorToApex({
         errorType: 'LWC Error',
         errorMessage: errorMsg,
@@ -150,12 +150,12 @@ En el componente LWC, cuando se captura un error:
         })
     })
     .catch(() => {
-        // Ignorar errores de logging, no deben afectar UX
+        // Ignore logging errors, should not affect UX
     });
 })
 ```
 
-Y el método Apex correspondiente:
+And the corresponding Apex method:
 
 ```apex
 @AuraEnabled
@@ -168,7 +168,7 @@ public static String logErrorToApex(
     return JT_ErrorLogger.logError(
         errorType,
         errorMessage,
-        null, // No exception desde LWC
+        null, // No exception from LWC
         context,
         additionalDetails,
         'Medium'
@@ -176,26 +176,26 @@ public static String logErrorToApex(
 }
 ```
 
-## Ventajas
+## Advantages
 
-1. **Separación de responsabilidades**: `JT_SettingsAuditLog__c` para audit trail, `JT_ErrorLog__c` para errores
-2. **Información completa**: Stack trace, contexto, detalles adicionales
-3. **No bloquea operaciones**: El logging falla silenciosamente si hay problemas
-4. **Facilita soporte**: Información detallada para debugging
-5. **Reportes**: Permite crear reportes de errores comunes, usuarios afectados, etc.
+1. **Separation of concerns**: `JT_SettingsAuditLog__c` for audit trail, `JT_ErrorLog__c` for errors
+2. **Complete information**: Stack trace, context, additional details
+3. **Non-blocking**: Logging fails silently if there are issues
+4. **Facilitates support**: Detailed information for debugging
+5. **Reporting**: Allows creating reports of common errors, affected users, etc.
 
-## Políticas de Retención
+## Retention Policies
 
-Se recomienda implementar una política de limpieza similar a `JT_SettingsAuditLog__c`:
+It is recommended to implement a cleanup policy similar to `JT_SettingsAuditLog__c`:
 
 ```apex
-// Ejemplo: Limpiar logs de más de 90 días
+// Example: Clean logs older than 90 days
 JT_ErrorLogDomain.deleteOldLogs(90);
 ```
 
-## Próximos Pasos
+## Next Steps
 
-1. Integrar `JT_ErrorLogger.logError()` en puntos clave donde se capturan excepciones
-2. Crear reportes de errores comunes
-3. Implementar política de limpieza automática
-4. Considerar crear un componente LWC para visualizar errores (opcional)
+1. Integrate `JT_ErrorLogger.logError()` at key points where exceptions are caught
+2. Create reports of common errors
+3. Implement automatic cleanup policy
+4. Consider creating an LWC component to visualize errors (optional)

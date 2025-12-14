@@ -1,142 +1,142 @@
-# Análisis de Impacto: Refactorización de Serialización JSON
+# Impact Analysis: JSON Serialization Refactoring
 
-## Estado Actual
+## Current State
 
-### ✅ Ya Usan Serialización JSON Estándar (Correcto)
+### ✅ Already Using Standard JSON Serialization (Correct)
 
-1. **JT_QueryViewerController.executeQuery** (línea 107-108)
-
-   ```apex
-   String recordsJson = JSON.serialize(sobjectRecords);
-   result.records = (List<Object>) JSON.deserializeUntyped(recordsJson);
-   ```
-
-   - ✅ Correcto: Preserva relaciones anidadas
-   - ✅ Usado por: Ejecución principal de queries
-
-2. **JT_QueryViewerController.executeQueryWithBatchProcessing** (línea 736-737)
+1. **JT_QueryViewerController.executeQuery** (line 107-108)
 
    ```apex
    String recordsJson = JSON.serialize(sobjectRecords);
    result.records = (List<Object>) JSON.deserializeUntyped(recordsJson);
    ```
 
-   - ✅ Correcto: Preserva relaciones anidadas
-   - ✅ Usado por: Procesamiento por lotes
+   - ✅ Correct: Preserves nested relationships
+   - ✅ Used by: Main query execution
 
-3. **JT_GenericRunAsTest.storeResults** (línea 481)
+2. **JT_QueryViewerController.executeQueryWithBatchProcessing** (line 736-737)
+
+   ```apex
+   String recordsJson = JSON.serialize(sobjectRecords);
+   result.records = (List<Object>) JSON.deserializeUntyped(recordsJson);
+   ```
+
+   - ✅ Correct: Preserves nested relationships
+   - ✅ Used by: Batch processing
+
+3. **JT_GenericRunAsTest.storeResults** (line 481)
 
    ```apex
    List<Object> serializedRecords = JT_QueryViewerController.serializeRecordsForLWC(queryResult.records);
    ```
 
-   - ✅ Correcto: Usa método helper centralizado
-   - ✅ Usado por: Run As User feature
+   - ✅ Correct: Uses centralized helper method
+   - ✅ Used by: Run As User feature
 
-4. **JT_RunAsTestExecutor.getTestResults** (línea 443)
+4. **JT_RunAsTestExecutor.getTestResults** (line 443)
 
    ```apex
    result.records = (List<Object>) resultMap.get('records');
    ```
 
-   - ✅ Correcto: Deserializa desde JSON almacenado
-   - ✅ Usado por: Recuperación de resultados de tests
+   - ✅ Correct: Deserializes from stored JSON
+   - ✅ Used by: Test results retrieval
 
-### ⚠️ Asignación Directa Sin Serializar (Potencial Problema)
+### ⚠️ Direct Assignment Without Serialization (Potential Issue)
 
-1. **JT_QueryViewerController.executeQueryPreview** (línea 234)
-
-   ```apex
-   result.records = records; // List<SObject> asignado directamente
-   ```
-
-   - ⚠️ **Problema**: Asigna `List<SObject>` directamente sin serializar
-   - **Impacto**: Si hay relaciones anidadas en el preview, podrían no funcionar correctamente
-   - **Riesgo**: Medio - Solo afecta preview (LIMIT 5), no producción
-   - **Uso**: Preview de queries en modal de creación
-
-2. **JT_GenericRunAsTest.executeRunAsTest** (línea 303)
+1. **JT_QueryViewerController.executeQueryPreview** (line 234)
 
    ```apex
-   result.records = records; // List<SObject> asignado directamente
+   result.records = records; // List<SObject> assigned directly
    ```
 
-   - ⚠️ **Problema**: Asigna directamente, pero se corrige en `storeResults`
-   - **Impacto**: Bajo - Se serializa antes de guardar en Debug Log
-   - **Riesgo**: Muy bajo - Solo afecta estructura interna temporal
-   - **Uso**: Estructura interna de test, se serializa antes de persistir
+   - ⚠️ **Issue**: Assigns `List<SObject>` directly without serialization
+   - **Impact**: If there are nested relationships in preview, they might not work correctly
+   - **Risk**: Medium - Only affects preview (LIMIT 5), not production
+   - **Usage**: Query preview in creation modal
 
-## Análisis de Riesgo de Refactorización
+2. **JT_GenericRunAsTest.executeRunAsTest** (line 303)
 
-### Escenario 1: Refactorizar `executeQueryPreview`
+   ```apex
+   result.records = records; // List<SObject> assigned directly
+   ```
 
-**Cambio requerido:**
+   - ⚠️ **Issue**: Direct assignment, but corrected in `storeResults`
+   - **Impact**: Low - Serialized before saving to Debug Log
+   - **Risk**: Very low - Only affects internal temporary structure
+   - **Usage**: Internal test structure, serialized before persisting
+
+## Refactoring Risk Analysis
+
+### Scenario 1: Refactor `executeQueryPreview`
+
+**Required change:**
 
 ```apex
-// Antes:
+// Before:
 result.records = records;
 
-// Después:
+// After:
 result.records = serializeRecordsForLWC(records);
 ```
 
-**Riesgo:**
+**Risk:**
 
-- **Alto**: Este método se usa en el modal de creación para preview en tiempo real
-- **Impacto**: Si hay un bug, afectaría la funcionalidad crítica de preview
-- **Testing**: Requiere probar con queries que tienen relaciones anidadas
-- **Beneficio**: Bajo - El preview normalmente no tiene relaciones anidadas (LIMIT 5)
+- **High**: This method is used in the creation modal for real-time preview
+- **Impact**: If there's a bug, it would affect critical preview functionality
+- **Testing**: Requires testing with queries that have nested relationships
+- **Benefit**: Low - Preview normally doesn't have nested relationships (LIMIT 5)
 
-**Recomendación**: ⚠️ **NO REFACTORIZAR** - El riesgo supera el beneficio
+**Recommendation**: ⚠️ **DO NOT REFACTOR** - Risk outweighs benefit
 
-### Escenario 2: Refactorizar `executeRunAsTest`
+### Scenario 2: Refactor `executeRunAsTest`
 
-**Cambio requerido:**
+**Required change:**
 
 ```apex
-// Antes:
+// Before:
 result.records = records;
 
-// Después:
+// After:
 result.records = serializeRecordsForLWC(records);
 ```
 
-**Riesgo:**
+**Risk:**
 
-- **Bajo**: Los records se serializan correctamente en `storeResults` antes de persistir
-- **Impacto**: Mínimo - Solo afecta estructura temporal interna
-- **Testing**: Ya está probado que funciona correctamente
-- **Beneficio**: Mínimo - Ya se serializa donde importa
+- **Low**: Records are correctly serialized in `storeResults` before persisting
+- **Impact**: Minimal - Only affects internal temporary structure
+- **Testing**: Already tested and working correctly
+- **Benefit**: Minimal - Already serialized where it matters
 
-**Recomendación**: ✅ **OPCIONAL** - Puede hacerse pero no es crítico
+**Recommendation**: ✅ **OPTIONAL** - Can be done but not critical
 
-## Conclusión
+## Conclusion
 
-### Estado Actual: ✅ **SUFICIENTEMENTE BUENO**
+### Current State: ✅ **SUFFICIENTLY GOOD**
 
-1. **Métodos críticos ya usan serialización correcta:**
+1. **Critical methods already use correct serialization:**
    - `executeQuery` ✅
    - `executeQueryWithBatchProcessing` ✅
    - `storeResults` ✅
    - `getTestResults` ✅
 
-2. **Métodos con asignación directa:**
-   - `executeQueryPreview`: Riesgo alto de refactorizar, beneficio bajo
-   - `executeRunAsTest`: Ya se serializa donde importa
+2. **Methods with direct assignment:**
+   - `executeQueryPreview`: High risk to refactor, low benefit
+   - `executeRunAsTest`: Already serialized where it matters
 
-3. **Método helper centralizado existe:**
+3. **Centralized helper method exists:**
    - `JT_QueryViewerController.serializeRecordsForLWC()` ✅
-   - Ya está siendo usado donde es crítico
+   - Already being used where critical
 
-### Recomendación Final
+### Final Recommendation
 
-**NO REFACTORIZAR** - El riesgo de romper funcionalidad crítica (preview) supera el beneficio mínimo.
+**DO NOT REFACTOR** - The risk of breaking critical functionality (preview) outweighs the minimal benefit.
 
-**Razones:**
+**Reasons:**
 
-1. Los métodos críticos ya usan serialización correcta
-2. El preview (`executeQueryPreview`) funciona correctamente para casos normales
-3. El cambio requeriría testing exhaustivo de relaciones anidadas
-4. El beneficio es mínimo (solo afecta preview con relaciones anidadas, caso raro)
+1. Critical methods already use correct serialization
+2. Preview (`executeQueryPreview`) works correctly for normal cases
+3. Change would require exhaustive testing of nested relationships
+4. Benefit is minimal (only affects preview with nested relationships, rare case)
 
-**Alternativa:** Si en el futuro se encuentra un bug específico con relaciones anidadas en preview, entonces sí refactorizar ese método específico.
+**Alternative:** If a specific bug is found in the future with nested relationships in preview, then refactor that specific method.

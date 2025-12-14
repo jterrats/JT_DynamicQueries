@@ -1,56 +1,56 @@
-# Análisis de Lógica Duplicada en Componentes LWC
+# Duplicated Logic Analysis in LWC Components
 
-## Componentes Analizados
+## Components Analyzed
 
-### 1. jtQueryViewer.js (2,290 líneas)
+### 1. jtQueryViewer.js (2,290 lines)
 
-- **Estado**: Parcialmente refactorizado
-- **Lógica duplicada encontrada**:
-  - ✅ **Consolidado**: Manejo de errores (ahora usa `extractErrorMessage` de jtUtils)
-  - ⚠️ **Pendiente**: 60 console.log/error/warn (muchos de debug temporal)
-  - ⚠️ **Pendiente**: 89 imports individuales de Custom Labels
-  - ⚠️ **Pendiente**: Validaciones repetidas que podrían extraerse
+- **Status**: Partially refactored
+- **Duplicated logic found**:
+  - ✅ **Consolidated**: Error handling (now uses `extractErrorMessage` from jtUtils)
+  - ⚠️ **Pending**: 60 console.log/error/warn (many temporary debug statements)
+  - ⚠️ **Pending**: 89 individual Custom Label imports
+  - ⚠️ **Pending**: Repeated validations that could be extracted
 
-### 2. jtConfigModal.js (583 líneas)
+### 2. jtConfigModal.js (583 lines)
 
-- **Lógica duplicada encontrada**:
-  - ⚠️ Manejo de errores (línea 515): `error.body?.message` - debería usar `extractErrorMessage`
-  - ⚠️ Validaciones de developer name similares a jtQueryViewer
-  - ✅ Usa funciones de jtUtils para validación (`validateDeveloperName`, `validateLabel`)
+- **Duplicated logic found**:
+  - ⚠️ Error handling (line 515): `error.body?.message` - should use `extractErrorMessage`
+  - ⚠️ Developer name validations similar to jtQueryViewer
+  - ✅ Uses jtUtils functions for validation (`validateDeveloperName`, `validateLabel`)
 
 ### 3. jtQueryResults.js
 
-- ✅ Ya usa funciones de jtUtils (`formatLabel`, `getFieldType`)
-- ✅ Manejo de errores consolidado
+- ✅ Already uses jtUtils functions (`formatLabel`, `getFieldType`)
+- ✅ Consolidated error handling
 
 ### 4. jtSetupWizard.js
 
-- Manejo de errores básico, no crítico
+- Basic error handling, not critical
 
-## Resumen de Lógica Duplicada
+## Duplicated Logic Summary
 
-### Manejo de Errores
+### Error Handling
 
-- **Antes**: Patrón repetido en múltiples componentes:
+- **Before**: Pattern repeated in multiple components:
   ```javascript
   error.body?.message || error.body?.pageErrors?.[0]?.message || ...
   ```
-- **Ahora**: Consolidado en `extractErrorMessage()` de jtUtils
-- **Pendiente**: Actualizar `jtConfigModal.js` para usar `extractErrorMessage`
+- **Now**: Consolidated in `extractErrorMessage()` from jtUtils
+- **Pending**: Update `jtConfigModal.js` to use `extractErrorMessage`
 
-### Validaciones
+### Validations
 
-- **Duplicado**: Validaciones de campos requeridos en múltiples lugares
-- **Oportunidad**: Extraer funciones helper para validaciones comunes
+- **Duplicated**: Required field validations in multiple places
+- **Opportunity**: Extract helper functions for common validations
 
 ### Console.log Statements
 
 - **jtQueryViewer.js**: 60 console.log/error/warn
-- **Acción**: Eliminar debug temporal, mantener solo logs críticos
+- **Action**: Remove temporary debug statements, keep only critical logs
 
-## Próximos Pasos Recomendados
+## Recommended Next Steps
 
-1. ✅ **Completado**: Consolidar manejo de errores con `extractErrorMessage`
-2. ⚠️ **Pendiente**: Actualizar `jtConfigModal.js` para usar `extractErrorMessage`
-3. ⚠️ **Pendiente**: Eliminar console.log de debug temporal
-4. ⚠️ **Pendiente**: Simplificar imports de Custom Labels (si es posible)
+1. ✅ **Completed**: Consolidate error handling with `extractErrorMessage`
+2. ⚠️ **Pending**: Update `jtConfigModal.js` to use `extractErrorMessage`
+3. ⚠️ **Pending**: Remove temporary debug console.log statements
+4. ⚠️ **Pending**: Simplify Custom Label imports (if possible)

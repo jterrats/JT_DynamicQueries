@@ -431,3 +431,108 @@ export function extractErrorDetails(error) {
   };
   return { message, details };
 }
+
+// ========================================================================
+// CONFIGURATION VALIDATION UTILITIES
+// ========================================================================
+
+/**
+ * Validates that a configuration object exists and is not null/undefined
+ * @param {Object} config - Configuration object to validate
+ * @returns {Object} { isValid: boolean, errorMessage?: string }
+ */
+export function validateConfigExists(config) {
+  if (!config) {
+    return {
+      isValid: false,
+      errorMessage: 'Configuration data is missing. Please close and reopen the modal.'
+    };
+  }
+  return { isValid: true };
+}
+
+/**
+ * Validates required fields in a configuration object
+ * @param {Object} config - Configuration object to validate
+ * @param {Array<string>} requiredFields - Array of required field names (default: ['label', 'developerName', 'baseQuery'])
+ * @returns {Object} { isValid: boolean, errorMessage?: string, missingFields?: Array<string> }
+ */
+export function validateRequiredFields(config, requiredFields = ['label', 'developerName', 'baseQuery']) {
+  if (!config) {
+    return {
+      isValid: false,
+      errorMessage: 'Configuration object is required'
+    };
+  }
+
+  const missingFields = requiredFields.filter(field => {
+    const value = config[field];
+    return !value || (typeof value === 'string' && value.trim().length === 0);
+  });
+
+  if (missingFields.length > 0) {
+    const fieldLabels = {
+      label: 'Label',
+      developerName: 'Developer Name',
+      baseQuery: 'Base Query',
+      originalDevName: 'Original Developer Name'
+    };
+    const missingLabels = missingFields.map(f => fieldLabels[f] || f).join(', ');
+    return {
+      isValid: false,
+      errorMessage: `${missingLabels} ${missingFields.length === 1 ? 'is' : 'are'} required.`,
+      missingFields
+    };
+  }
+
+  return { isValid: true };
+}
+
+/**
+ * Validates query syntax validation object
+ * @param {Object} queryValidation - Query validation object from modal or component
+ * @returns {Object} { isValid: boolean, errorMessage?: string }
+ */
+export function validateQuerySyntax(queryValidation) {
+  if (!queryValidation || !queryValidation.isValid) {
+    return {
+      isValid: false,
+      errorMessage: 'Please fix the query syntax before saving.'
+    };
+  }
+  return { isValid: true };
+}
+
+/**
+ * Sanitizes configuration data by trimming string fields
+ * @param {Object} config - Configuration object to sanitize
+ * @returns {Object} Sanitized configuration object
+ */
+export function sanitizeConfigData(config) {
+  if (!config) return {};
+
+  return {
+    label: config.label?.trim() || '',
+    developerName: config.developerName?.trim() || '',
+    baseQuery: config.baseQuery?.trim() || '',
+    bindings: config.bindings?.trim() || '',
+    objectName: config.objectName?.trim() || '',
+    originalDevName: config.originalDevName?.trim() || ''
+  };
+}
+
+/**
+ * Validates configuration for edit mode (requires originalDevName)
+ * @param {string} mode - Mode ('create' | 'edit')
+ * @param {string} originalDevName - Original developer name for edit mode
+ * @returns {Object} { isValid: boolean, errorMessage?: string }
+ */
+export function validateEditMode(mode, originalDevName) {
+  if (mode === 'edit' && !originalDevName) {
+    return {
+      isValid: false,
+      errorMessage: 'Cannot update configuration: Original developer name is missing. Please close and reopen the modal.'
+    };
+  }
+  return { isValid: true };
+}

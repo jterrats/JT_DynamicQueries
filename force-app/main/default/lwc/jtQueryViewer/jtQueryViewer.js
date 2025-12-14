@@ -8,7 +8,12 @@ import {
   showInfoToast,
   showWarningToast,
   extractErrorMessage,
-  getLabels
+  getLabels,
+  validateConfigExists,
+  validateRequiredFields,
+  validateQuerySyntax,
+  sanitizeConfigData,
+  validateEditMode
 } from "c/jtUtils";
 // Import Custom Labels from Salesforce Translation Workbench
 import apexClassLabel from "@salesforce/label/c.JT_jtQueryViewer_apexClass";
@@ -1648,58 +1653,40 @@ export default class JtQueryViewer extends LightningElement {
     const configToUse =
       event?.detail?.config || configFromModal || this.newConfig;
 
-    // Validate configToUse is not null/undefined
-    if (!configToUse) {
-      showErrorToast(
-        this,
-        "Configuration Error",
-        "Configuration data is missing. Please close and reopen the modal."
-      );
+    // Validate configToUse exists
+    const configExistsValidation = validateConfigExists(configToUse);
+    if (!configExistsValidation.isValid) {
+      showErrorToast(this, "Configuration Error", configExistsValidation.errorMessage);
       return;
     }
 
     // Validate required fields
-    if (
-      !configToUse.label ||
-      !configToUse.developerName ||
-      !configToUse.baseQuery
-    ) {
-      showErrorToast(
-        this,
-        "Validation Error",
-        "Label, Developer Name, and Base Query are required."
-      );
+    const requiredFieldsValidation = validateRequiredFields(configToUse);
+    if (!requiredFieldsValidation.isValid) {
+      showErrorToast(this, "Validation Error", requiredFieldsValidation.errorMessage);
       return;
     }
 
-    // Use modal's query validation if available, otherwise fall back to this.queryValidation
+    // Validate query syntax
     const queryValidationToCheck = modalQueryValidation || this.queryValidation;
-    if (!queryValidationToCheck || !queryValidationToCheck.isValid) {
-      showErrorToast(
-        this,
-        "Invalid Query",
-        "Please fix the query syntax before saving."
-      );
+    const querySyntaxValidation = validateQuerySyntax(queryValidationToCheck);
+    if (!querySyntaxValidation.isValid) {
+      showErrorToast(this, "Invalid Query", querySyntaxValidation.errorMessage);
       return;
     }
 
     this.isSaving = true;
 
-    // Ensure all required fields are present and not null
-    const configData = {
-      label: configToUse.label?.trim() || "",
-      developerName: configToUse.developerName?.trim() || "",
-      baseQuery: configToUse.baseQuery?.trim() || "",
-      bindings: configToUse.bindings?.trim() || "",
-      objectName: configToUse.objectName?.trim() || ""
-    };
+    // Sanitize configuration data
+    const configData = sanitizeConfigData(configToUse);
 
-    // Double-check required fields before sending
-    if (!configData.label || !configData.developerName || !configData.baseQuery) {
+    // Double-check required fields after sanitization
+    const sanitizedValidation = validateRequiredFields(configData);
+    if (!sanitizedValidation.isValid) {
       showErrorToast(
         this,
         "Validation Error",
-        "Label, Developer Name, and Base Query are required. Please check your input."
+        sanitizedValidation.errorMessage + " Please check your input."
       );
       this.isSaving = false;
       return;
@@ -1708,13 +1695,10 @@ export default class JtQueryViewer extends LightningElement {
     // Choose create or update based on mode
     const modeFromEvent = event?.detail?.mode || this.configModalMode;
 
-    // Validate originalDevName for edit mode
-    if (modeFromEvent === "edit" && !this.originalDevName) {
-      showErrorToast(
-        this,
-        "Configuration Error",
-        "Cannot update configuration: Original developer name is missing. Please close and reopen the modal."
-      );
+    // Validate edit mode requirements
+    const editModeValidation = validateEditMode(modeFromEvent, this.originalDevName);
+    if (!editModeValidation.isValid) {
+      showErrorToast(this, "Configuration Error", editModeValidation.errorMessage);
       this.isSaving = false;
       return;
     }

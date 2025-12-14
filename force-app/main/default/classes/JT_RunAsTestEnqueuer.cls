@@ -260,25 +260,109 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
             '***';
           String endMarker = ' ***QUERY_RESULT_END***';
 
-          Integer startIndex = logContent.indexOf(startMarker);
-          Integer endIndex = logContent.indexOf(
-            endMarker,
-            startIndex != -1 ? startIndex : 0
+          // Debug: Log marker search details
+          System.debug(
+            LoggingLevel.DEBUG,
+            '🔍 Searching for markers in Debug Log. ExecutionId: ' +
+            this.executionId +
+            ', LogContent length: ' +
+            (logContent != null ? logContent.length() : 0)
+          );
+          System.debug(
+            LoggingLevel.DEBUG,
+            '🔍 StartMarker: ' + startMarker
+          );
+          System.debug(
+            LoggingLevel.DEBUG,
+            '🔍 EndMarker: ' + endMarker
           );
 
-          if (startIndex != -1 && endIndex != -1) {
+          Integer startIndex = logContent.indexOf(startMarker);
+          System.debug(
+            LoggingLevel.DEBUG,
+            '🔍 StartMarker found at index: ' + startIndex
+          );
+
+          // If startMarker found, search endMarker from that position
+          // Otherwise, search from beginning (shouldn't happen, but handle gracefully)
+          Integer endIndex = -1;
+          if (startIndex != -1) {
+            endIndex = logContent.indexOf(endMarker, startIndex);
+            System.debug(
+              LoggingLevel.DEBUG,
+              '🔍 EndMarker found at index: ' + endIndex
+            );
+          } else {
+            // StartMarker not found - try searching for endMarker anyway (for debugging)
+            System.debug(
+              LoggingLevel.WARN,
+              '⚠️ StartMarker not found. Searching entire log for endMarker...'
+            );
+            endIndex = logContent.indexOf(endMarker);
+            System.debug(
+              LoggingLevel.DEBUG,
+              '🔍 EndMarker found at index (without start): ' + endIndex
+            );
+          }
+
+          if (startIndex != -1 && endIndex != -1 && endIndex > startIndex) {
             // Extract the JSON between markers
             // Note: There's a space between startMarker and JSON, so we skip it with +1
             Integer jsonStartIndex = startIndex + startMarker.length() + 1; // +1 for the space
-            resultJsonFromLog = logContent.substring(jsonStartIndex, endIndex)
-              .trim();
+            
+            // Ensure we don't go beyond endIndex
+            if (jsonStartIndex < endIndex) {
+              resultJsonFromLog = logContent.substring(jsonStartIndex, endIndex)
+                .trim();
+            } else {
+              System.debug(
+                LoggingLevel.ERROR,
+                '❌ Invalid indices: jsonStartIndex (' +
+                jsonStartIndex +
+                ') >= endIndex (' +
+                endIndex +
+                ')'
+              );
+              resultJsonFromLog = null;
+            }
+            
+            System.debug(
+              LoggingLevel.DEBUG,
+              '✅ Successfully extracted JSON from Debug Log. Length: ' +
+              (resultJsonFromLog != null ? resultJsonFromLog.length() : 0)
+            );
+            System.debug(
+              LoggingLevel.FINEST,
+              '✅ Extracted JSON (first 500 chars): ' +
+              (resultJsonFromLog != null && resultJsonFromLog.length() > 500
+                ? resultJsonFromLog.substring(0, 500) + '...'
+                : resultJsonFromLog)
+            );
           } else {
-            // Marker not found - log error for debugging
+            // Marker not found - log detailed error for debugging
             System.debug(
               LoggingLevel.WARN,
-              '⚠️ Marker not found in Debug Log. Test class may not have written results. ApexLogId: ' +
+              '⚠️ Marker not found in Debug Log. StartIndex: ' +
+              startIndex +
+              ', EndIndex: ' +
+              endIndex +
+              ', ApexLogId: ' +
               apexLogId
             );
+            
+            // Debug: Show sample of log content around where marker should be
+            if (logContent.length() > 1000) {
+              System.debug(
+                LoggingLevel.DEBUG,
+                '🔍 Log content sample (last 1000 chars): ' +
+                logContent.substring(logContent.length() - 1000)
+              );
+            } else {
+              System.debug(
+                LoggingLevel.DEBUG,
+                '🔍 Full log content: ' + logContent
+              );
+            }
           }
         } else {
           System.debug(

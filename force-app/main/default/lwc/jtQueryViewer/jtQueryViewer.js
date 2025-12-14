@@ -1773,7 +1773,13 @@ export default class JtQueryViewer extends LightningElement {
 
   disconnectedCallback() {
     if (this.pollInterval) {
-      clearInterval(this.pollInterval);
+      // pollInterval is now a function (stopPolling), not an interval ID
+      if (typeof this.pollInterval === 'function') {
+        this.pollInterval();
+      } else {
+        // Fallback for old interval ID format (shouldn't happen, but safe)
+        clearInterval(this.pollInterval);
+      }
     }
   }
 

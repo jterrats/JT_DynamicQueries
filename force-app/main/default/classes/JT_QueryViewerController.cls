@@ -81,8 +81,8 @@ public with sharing class JT_QueryViewerController {
         '🔍 Execution bindings BEFORE wildcards: ' + JSON.serialize(bindings)
       );
 
-      // Auto-add wildcards for LIKE queries
-      addWildcardsForLikeBindings(config.JT_BaseQuery__c, bindings);
+      // Auto-add wildcards for LIKE queries using centralized utility
+      JT_QueryBindingUtil.addWildcardsForLikeBindings(config.JT_BaseQuery__c, bindings);
 
       System.debug(
         LoggingLevel.FINE,
@@ -205,8 +205,8 @@ public with sharing class JT_QueryViewerController {
         baseQuery = config.JT_BaseQuery__c;
       }
 
-      // Auto-add wildcards for LIKE queries in preview
-      addWildcardsForLikeBindings(baseQuery, bindings);
+      // Auto-add wildcards for LIKE queries in preview using centralized utility
+      JT_QueryBindingUtil.addWildcardsForLikeBindings(baseQuery, bindings);
 
       String previewQuery = baseQuery;
 
@@ -540,7 +540,7 @@ public with sharing class JT_QueryViewerController {
       Map<String, Object> countBindings = (Map<String, Object>) JSON.deserializeUntyped(
         JSON.serialize(mergedBindings)
       );
-      addWildcardsForLikeBindings(config.JT_BaseQuery__c, countBindings);
+      JT_QueryBindingUtil.addWildcardsForLikeBindings(config.JT_BaseQuery__c, countBindings);
 
       // Build COUNT query (replace SELECT ... FROM with SELECT COUNT() FROM)
       // Use [\s\S]*? to match across multiple lines (including newlines)
@@ -695,8 +695,8 @@ public with sharing class JT_QueryViewerController {
         LIMIT 1
       ];
 
-      // Auto-add wildcards for LIKE queries in batch processing
-      addWildcardsForLikeBindings(config.JT_BaseQuery__c, bindings);
+      // Auto-add wildcards for LIKE queries in batch processing using centralized utility
+      JT_QueryBindingUtil.addWildcardsForLikeBindings(config.JT_BaseQuery__c, bindings);
 
       Integer effectiveBatchSize = batchSize != null &&
         batchSize > 0

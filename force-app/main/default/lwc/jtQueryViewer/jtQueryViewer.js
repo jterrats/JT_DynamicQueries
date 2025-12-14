@@ -984,7 +984,7 @@ export default class JtQueryViewer extends LightningElement {
         } else {
           this.showError = true;
           this.errorMessage = result.errorMessage;
-          showErrorToast(this, "Test Execution Error", result.errorMessage);
+          // Error message is displayed in banner below, no need for redundant toast
           this.isRunningTest = false;
         }
       })
@@ -992,13 +992,13 @@ export default class JtQueryViewer extends LightningElement {
         this.showError = true;
         // Extract error message from various possible locations
         // AuraHandledException messages can be in different places depending on how they're thrown
-        let errorMsg = 
-          error.body?.message || 
+        let errorMsg =
+          error.body?.message ||
           error.body?.pageErrors?.[0]?.message ||
           error.body?.output?.errors?.[0]?.message ||
           error.message ||
           "Unknown error occurred";
-        
+
         // If it's a generic "Script-thrown exception", try to get more details
         if (errorMsg === "Script-thrown exception" && error.body?.output?.errors) {
           const errors = error.body.output.errors;
@@ -1006,9 +1006,9 @@ export default class JtQueryViewer extends LightningElement {
             errorMsg = errors[0].message;
           }
         }
-        
+
         this.errorMessage = errorMsg;
-        showErrorToast(this, "Execution Error", this.errorMessage);
+        // Error message is displayed in banner below, no need for redundant toast
         this.isRunningTest = false;
         console.error("❌ Error in Run As User execution:", error);
         console.error("❌ Error body:", JSON.stringify(error.body, null, 2));

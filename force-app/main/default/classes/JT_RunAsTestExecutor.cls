@@ -147,7 +147,7 @@ public with sharing class JT_RunAsTestExecutor {
           LoggingLevel.ERROR,
           'Stack trace: ' + insertEx.getStackTraceString()
         );
-        
+
         // Check if this is a DmlException that wasn't caught by the DmlException catch block
         // (shouldn't happen, but handle gracefully)
         String errorMsg = insertEx.getMessage();
@@ -162,7 +162,7 @@ public with sharing class JT_RunAsTestExecutor {
         } else {
           errorMsg = 'Failed to create execution record: ' + insertEx.getMessage();
         }
-        
+
         throw new AuraHandledException(errorMsg);
       }
 
@@ -235,10 +235,10 @@ public with sharing class JT_RunAsTestExecutor {
       return result;
     } catch (Exception e) {
       result.success = false;
-      
+
       // Extract error message - check if it's an AuraHandledException with user-friendly message
       String errorMsg = e.getMessage();
-      
+
       // If it's an AuraHandledException, use its message directly
       if (e instanceof AuraHandledException) {
         errorMsg = e.getMessage();
@@ -251,7 +251,7 @@ public with sharing class JT_RunAsTestExecutor {
           errorMsg = exceptionMsg;
         }
       }
-      
+
       result.errorMessage = errorMsg;
       result.stackTrace = e.getStackTraceString();
       System.debug(

@@ -14,7 +14,9 @@ import {
   validateQuerySyntax,
   sanitizeConfigData,
   validateEditMode,
-  pollUntilComplete
+  pollUntilComplete,
+  validateConfigSelected,
+  validateAndFindConfig
 } from "c/jtUtils";
 // Import Custom Labels from Salesforce Translation Workbench
 import apexClassLabel from "@salesforce/label/c.JT_jtQueryViewer_apexClass";
@@ -1262,28 +1264,24 @@ export default class JtQueryViewer extends LightningElement {
 
   // Show edit configuration modal
   handleShowEditModal() {
-    if (!this.selectedConfig) {
+    // Validate and find configuration
+    const validation = validateAndFindConfig(
+      this.selectedConfig,
+      this.configurationOptions,
+      this.labels,
+      'pleaseSelectConfigurationToEdit'
+    );
+
+    if (!validation.isValid) {
       showErrorToast(
         this,
         this.labels.noConfigurationSelected,
-        this.labels.pleaseSelectConfigurationToEdit
+        validation.errorMessage
       );
       return;
     }
 
-    // Load current configuration data
-    const currentConfig = this.configurationOptions.find(
-      (cfg) => cfg.value === this.selectedConfig
-    );
-
-    if (!currentConfig) {
-      showErrorToast(
-        this,
-        "Configuration Not Found",
-        "Could not find the selected configuration. Please refresh and try again."
-      );
-      return;
-    }
+    const currentConfig = validation.config;
 
     // Prepare config data
     this.newConfig = {
@@ -1326,28 +1324,24 @@ export default class JtQueryViewer extends LightningElement {
 
   // Handle delete configuration
   handleDeleteConfiguration() {
-    if (!this.selectedConfig) {
+    // Validate and find configuration
+    const validation = validateAndFindConfig(
+      this.selectedConfig,
+      this.configurationOptions,
+      this.labels,
+      'pleaseSelectConfigurationToDelete'
+    );
+
+    if (!validation.isValid) {
       showErrorToast(
         this,
         this.labels.noConfigurationSelected,
-        this.labels.pleaseSelectConfigurationToDelete
+        validation.errorMessage
       );
       return;
     }
 
-    // Get developer name from selected config
-    const currentConfig = this.configurationOptions.find(
-      (cfg) => cfg.value === this.selectedConfig
-    );
-
-    if (!currentConfig) {
-      showErrorToast(
-        this,
-        "Configuration Not Found",
-        "Could not find the selected configuration. Please refresh and try again."
-      );
-      return;
-    }
+    const currentConfig = validation.config;
 
     // TODO: Replace confirm() with Lightning modal confirmation dialog
     // For now, proceed with deletion (user can cancel via modal in future)
@@ -1407,11 +1401,17 @@ export default class JtQueryViewer extends LightningElement {
       event.preventDefault();
     }
 
-    if (!this.selectedConfig) {
+    // Validate config is selected
+    const selectionValidation = validateConfigSelected(
+      this.selectedConfig,
+      this.labels,
+      'pleaseSelectConfiguration'
+    );
+    if (!selectionValidation.isValid) {
       showErrorToast(
         this,
         this.labels.noConfigurationSelected,
-        this.labels.pleaseSelectConfiguration
+        selectionValidation.errorMessage
       );
       return;
     }

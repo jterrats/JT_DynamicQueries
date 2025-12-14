@@ -941,11 +941,8 @@ public without sharing class JT_UsageFinder {
     final String sessionId
   ) {
     try {
-      // Build query using SystemSelector pattern (but Tooling API requires string query)
-      final String query =
-        'SELECT Id, Metadata FROM Flow WHERE Id = \'' +
-        String.escapeSingleQuotes(flowId) +
-        '\'';
+      // ✅ REFACTORED: Use SystemSelector pattern for query string
+      final String query = JT_SystemSelector.getFlowMetadataQuery(flowId);
       final HttpRequest request = JT_ToolingApiUtil.createToolingApiQueryRequest(
         query,
         5000

@@ -146,6 +146,23 @@ public without sharing class JT_SystemSelector {
   }
 
   /**
+   * @description Gets the current user record (helper for test classes)
+   * Used by: Test classes to avoid repeating the same query
+   * @return User The current user record
+   */
+  @TestVisible
+  public static User getCurrentUser() {
+    List<User> users = [
+      SELECT Id
+      FROM User
+      WHERE Id = :UserInfo.getUserId()
+      WITH USER_MODE
+      LIMIT 1
+    ];
+    return users.isEmpty() ? null : users[0];
+  }
+
+  /**
    * @description Retrieves an ApexClass by name.
    * Used by: JT_RunAsTestExecutor for enqueueing test classes
    * @param className Name of the Apex class
@@ -266,6 +283,18 @@ public without sharing class JT_SystemSelector {
    */
   public static String getActiveFlowsQuery() {
     return 'SELECT Id, MasterLabel, Status FROM Flow WHERE Status != \'Obsolete\'';
+  }
+
+  /**
+   * @description Gets SOQL query string for Flow metadata by Flow ID
+   * Used by: JT_UsageFinder for retrieving Flow metadata via Tooling API
+   * @param flowId The Flow ID to query
+   * @return String SOQL query string for Tooling API
+   */
+  public static String getFlowMetadataQuery(String flowId) {
+    return 'SELECT Id, Metadata FROM Flow WHERE Id = \'' +
+      String.escapeSingleQuotes(flowId) +
+      '\'';
   }
 
   /**

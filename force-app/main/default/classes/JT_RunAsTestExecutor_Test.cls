@@ -32,7 +32,7 @@ private class JT_RunAsTestExecutor_Test {
    **/
   @IsTest
   static void testExecuteAsUserValid() {
-    User currentUser = [SELECT Id FROM User WHERE Id = :UserInfo.getUserId()];
+    User currentUser = JT_SystemSelector.getCurrentUser();
     Map<String, Object> bindings = new Map<String, Object>{
       'name' => 'Test Account for Executor'
     };

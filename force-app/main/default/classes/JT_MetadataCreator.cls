@@ -203,7 +203,11 @@ public with sharing class JT_MetadataCreator {
       }
     } catch (Exception e) {
       result.success = false;
-      result.errorMessage = e.getMessage();
+      String errorMsg = e.getMessage();
+      if (String.isBlank(errorMsg)) {
+        errorMsg = String.format(Label.JT_MetadataCreator_unexpectedError, new List<String>{ e.getTypeName() });
+      }
+      result.errorMessage = errorMsg;
       result.stackTrace = e.getStackTraceString();
       return result;
     }

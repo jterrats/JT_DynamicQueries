@@ -1,29 +1,29 @@
-# ✅ Implementación de HTML Semántico - Resumen
+# ✅ Semantic HTML Implementation - Summary
 
-## 📅 Fecha: 1 Diciembre 2024
+## 📅 Date: December 1, 2024
 
-## 👤 Autor: Jaime Terrats
+## 👤 Author: Jaime Terrats
 
-## ✅ Estado: COMPLETADO
-
----
-
-## 🎯 Objetivo Logrado
-
-Todos los componentes LWC ahora tienen IDs, names, y data-attributes **semánticos, no ambiguos y testeables**.
+## ✅ Status: COMPLETED
 
 ---
 
-## 📊 Componentes Actualizados
+## 🎯 Objective Achieved
 
-### ✅ **1. jtSearchableCombobox** (CRÍTICO)
+All LWC components now have **semantic, non-ambiguous, and testable** IDs, names, and data-attributes.
 
-**Propiedades agregadas:**
+---
+
+## 📊 Updated Components
+
+### ✅ **1. jtSearchableCombobox** (CRITICAL)
+
+**Added properties:**
 
 - `@api dataTestId = "searchable-combobox"`
 - `@api name = "searchable-combobox"`
 
-**HTML actualizado:**
+**Updated HTML:**
 
 ```html
 <!-- Input -->
@@ -37,11 +37,11 @@ Todos los componentes LWC ahora tienen IDs, names, y data-attributes **semántic
 <!-- Dropdown -->
 <div id="{dataTestId}-listbox" data-testid="{dataTestId}-dropdown" />
 
-<!-- Opciones -->
+<!-- Options -->
 <li data-testid="{dataTestId}-option-{value}" />
 ```
 
-**Uso en jtQueryViewer:**
+**Usage in jtQueryViewer:**
 
 ```html
 <c-jt-searchable-combobox
@@ -50,26 +50,26 @@ Todos los componentes LWC ahora tienen IDs, names, y data-attributes **semántic
 />
 ```
 
-**Tests E2E pueden usar:**
+**E2E tests can use:**
 
 ```javascript
-// Selector específico y único
+// Specific and unique selector
 page.locator('[data-testid="config-selector-input"]');
 page.locator('[data-testid="config-selector-option-Account_by_Name"]');
 ```
 
 ---
 
-### ✅ **2. jtExecuteButton** (CRÍTICO)
+### ✅ **2. jtExecuteButton** (CRITICAL)
 
-**Propiedades agregadas:**
+**Added properties:**
 
 ```javascript
 @api dataTestId = "execute-query-button";
 @api name = "execute-query";
 ```
 
-**HTML actualizado:**
+**Updated HTML:**
 
 ```html
 <lightning-button
@@ -79,7 +79,7 @@ page.locator('[data-testid="config-selector-option-Account_by_Name"]');
 />
 ```
 
-**Tests E2E pueden usar:**
+**E2E tests can use:**
 
 ```javascript
 page.locator('[data-testid="execute-query-button"]').click();
@@ -87,9 +87,9 @@ page.locator('[data-testid="execute-query-button"]').click();
 
 ---
 
-### ✅ **3. jtParameterInputs** (CRÍTICO)
+### ✅ **3. jtParameterInputs** (CRITICAL)
 
-**Computed properties agregadas:**
+**Added computed properties:**
 
 ```javascript
 get parametersWithValues() {
@@ -102,7 +102,7 @@ get parametersWithValues() {
 }
 ```
 
-**HTML actualizado:**
+**Updated HTML:**
 
 ```html
 <lightning-input
@@ -112,7 +112,7 @@ get parametersWithValues() {
 />
 ```
 
-**Tests E2E pueden usar:**
+**E2E tests can use:**
 
 ```javascript
 page.locator('[data-testid="query-parameter-accountName"]').fill("Acme Corp");
@@ -121,15 +121,15 @@ page.locator('[data-testid="query-parameter-minAmount"]').fill("1000");
 
 ---
 
-### ✅ **4. jtCacheModal** (CRÍTICO)
+### ✅ **4. jtCacheModal** (CRITICAL)
 
-**HTML actualizado:**
+**Updated HTML:**
 
 ```html
 <!-- Select All -->
 <lightning-input data-testid="cache-select-all" name="cache-select-all" />
 
-<!-- Checkboxes individuales -->
+<!-- Individual checkboxes -->
 <lightning-input
   data-testid="cache-option-configurations"
   name="cache-option-configurations"
@@ -141,12 +141,12 @@ page.locator('[data-testid="query-parameter-minAmount"]').fill("1000");
 <lightning-input data-testid="cache-option-users" name="cache-option-users" />
 <lightning-input data-testid="cache-option-recent" name="cache-option-recent" />
 
-<!-- Botones -->
+<!-- Buttons -->
 <button data-testid="cache-cancel-button" name="cache-cancel" />
 <button data-testid="cache-clear-button" name="cache-clear" />
 ```
 
-**Tests E2E pueden usar:**
+**E2E tests can use:**
 
 ```javascript
 page.locator('[data-testid="cache-option-results"]').check();
@@ -155,9 +155,9 @@ page.locator('[data-testid="cache-clear-button"]').click();
 
 ---
 
-### ✅ **5. jtQueryViewer** (Componente Principal)
+### ✅ **5. jtQueryViewer** (Main Component)
 
-**Botones de Header:**
+**Header Buttons:**
 
 ```html
 <lightning-button data-testid="header-clear-cache-button" name="clear-cache" />
@@ -198,7 +198,7 @@ page.locator('[data-testid="cache-clear-button"]').click();
 <lightning-button data-testid="pagination-next" name="pagination-next" />
 ```
 
-**Tests E2E pueden usar:**
+**E2E tests can use:**
 
 ```javascript
 page.locator('[data-testid="results-view-toggle-json"]').click();
@@ -218,14 +218,14 @@ page.locator('[data-testid="pagination-next"]').click();
 />
 ```
 
-**Botones:**
+**Buttons:**
 
 ```html
 <lightning-button data-testid="run-as-clear-button" name="run-as-clear" />
 <lightning-button data-testid="run-as-execute-button" name="run-as-execute" />
 ```
 
-**Tests E2E pueden usar:**
+**E2E tests can use:**
 
 ```javascript
 page.locator('[data-testid="run-as-user-selector-input"]').fill("Admin");
@@ -234,14 +234,14 @@ page.locator('[data-testid="run-as-execute-button"]').click();
 
 ---
 
-## 🎯 Convenciones Establecidas
+## 🎯 Established Conventions
 
-### **Pattern para `data-testid`:**
+### **Pattern for `data-testid`:**
 
 ```
 {componentContext}-{element}-{type}
 
-Ejemplos:
+Examples:
 - config-selector-input
 - query-parameter-accountName
 - execute-query-button
@@ -250,12 +250,12 @@ Ejemplos:
 - results-view-toggle-table
 ```
 
-### **Pattern para `name`:**
+### **Pattern for `name`:**
 
 ```
 {function}-{detail}
 
-Ejemplos:
+Examples:
 - execute-query
 - clear-cache
 - create-configuration
@@ -263,12 +263,12 @@ Ejemplos:
 - query-parameter-accountName
 ```
 
-### **Pattern para `ID` (cuando necesario):**
+### **Pattern for `ID` (when necessary):**
 
 ```
 {componentName}-{element}-{uniqueId}
 
-Ejemplos:
+Examples:
 - searchable-combobox-input
 - searchable-combobox-listbox
 - cache-modal-heading
@@ -277,67 +277,67 @@ Ejemplos:
 
 ---
 
-## ✅ Beneficios Implementados
+## ✅ Implemented Benefits
 
-### 1. **Tests E2E más robustos**
+### 1. **More Robust E2E Tests**
 
-**Antes:**
+**Before:**
 
 ```javascript
-// ❌ Frágil - depende del texto
+// ❌ Fragile - depends on text
 const button = page.locator("lightning-button").filter({ hasText: /Execute/i });
 ```
 
-**Después:**
+**After:**
 
 ```javascript
-// ✅ Robusto - independiente del texto/idioma
+// ✅ Robust - independent of text/language
 const button = page.locator('[data-testid="execute-query-button"]');
 ```
 
-### 2. **Selectores únicos - NO más "strict mode violations"**
+### 2. **Unique Selectors - NO More "Strict Mode Violations"**
 
-**Antes:**
+**Before:**
 
 ```javascript
 // ❌ Error: found 2 elements
 const combobox = page.locator("c-jt-query-viewer lightning-combobox");
 ```
 
-**Después:**
+**After:**
 
 ```javascript
-// ✅ Selector único y específico
+// ✅ Unique and specific selector
 const configSelector = page.locator('[data-testid="config-selector-input"]');
 const userSelector = page.locator('[data-testid="run-as-user-selector-input"]');
 ```
 
-### 3. **Tests independientes de i18n**
+### 3. **i18n-Independent Tests**
 
-Los tests NO se rompen si cambias de inglés a español, francés o alemán.
+Tests do NOT break if you change from English to Spanish, French, or German.
 
-### 4. **Accesibilidad mejorada**
+### 4. **Improved Accessibility**
 
-Todos los elementos tienen `aria-label` descriptivos y contextuales.
+All elements have descriptive and contextual `aria-label` attributes.
 
-### 5. **Debugging más fácil**
+### 5. **Easier Debugging**
 
-Los nombres semánticos hacen obvio qué elemento estás inspeccionando en DevTools.
+Semantic names make it obvious which element you're inspecting in DevTools.
 
 ---
 
-## 📝 Ejemplos de Tests E2E Mejorados
+## 📝 Improved E2E Test Examples
 
-### **Test: Seleccionar configuración**
+### **Test: Select Configuration**
 
-**Antes (frágil):**
+**Before (fragile):**
 
 ```javascript
 const combobox = page.locator("lightning-combobox").first();
 await combobox.locator("button").click();
 ```
 
-**Después (robusto):**
+**After (robust):**
 
 ```javascript
 const input = page.locator('[data-testid="config-selector-input"]');
@@ -347,7 +347,7 @@ await input.fill("Account by Name");
 
 ### **Test: Clear Cache**
 
-**Antes (frágil):**
+**Before (fragile):**
 
 ```javascript
 await page.locator('button:has-text("Clear Cache")').click();
@@ -358,7 +358,7 @@ await page
 await page.locator('button:has-text("Clear")').last().click();
 ```
 
-**Después (robusto):**
+**After (robust):**
 
 ```javascript
 await page.locator('[data-testid="header-clear-cache-button"]').click();
@@ -368,7 +368,7 @@ await page.locator('[data-testid="cache-clear-button"]').click();
 
 ### **Test: Execute Query**
 
-**Antes (frágil):**
+**Before (fragile):**
 
 ```javascript
 await page
@@ -377,7 +377,7 @@ await page
   .click();
 ```
 
-**Después (robusto):**
+**After (robust):**
 
 ```javascript
 await page.locator('[data-testid="execute-query-button"]').click();
@@ -385,7 +385,7 @@ await page.locator('[data-testid="execute-query-button"]').click();
 
 ### **Test: Dynamic Parameters**
 
-**Antes (complejo):**
+**Before (complex):**
 
 ```javascript
 const inputs = page.locator("lightning-input[data-param]");
@@ -394,7 +394,7 @@ for (let i = 0; i < (await inputs.count()); i++) {
 }
 ```
 
-**Después (específico):**
+**After (specific):**
 
 ```javascript
 await page.locator('[data-testid="query-parameter-accountName"]').fill("Acme");
@@ -403,64 +403,64 @@ await page.locator('[data-testid="query-parameter-minAmount"]').fill("1000");
 
 ---
 
-## 🎉 Impacto en Tests E2E
+## 🎉 Impact on E2E Tests
 
-### **Reducción de falsos positivos:**
+### **Reduction of False Positives:**
 
-- ❌ Antes: Tests fallaban por cambios de texto i18n
-- ✅ Ahora: Tests independientes del idioma
+- ❌ Before: Tests failed due to i18n text changes
+- ✅ Now: Language-independent tests
 
-### **Eliminación de "strict mode violations":**
+### **Elimination of "Strict Mode Violations":**
 
-- ❌ Antes: Selectores ambiguos encontraban múltiples elementos
-- ✅ Ahora: Cada selector es único y específico
+- ❌ Before: Ambiguous selectors found multiple elements
+- ✅ Now: Each selector is unique and specific
 
-### **Velocidad de ejecución:**
+### **Execution Speed:**
 
-- ❌ Antes: Filtros de texto son lentos
-- ✅ Ahora: `data-testid` es más rápido
+- ❌ Before: Text filters are slow
+- ✅ Now: `data-testid` is faster
 
-### **Mantenibilidad:**
+### **Maintainability:**
 
-- ❌ Antes: Difícil entender qué elemento se está seleccionando
-- ✅ Ahora: Nombres claros y descriptivos
-
----
-
-## 📊 Métricas
-
-| Métrica                         | Antes | Después | Mejora |
-| ------------------------------- | ----- | ------- | ------ |
-| **Componentes con data-testid** | 0     | 6       | ✅     |
-| **Elementos testeables**        | ~5    | ~40+    | ✅     |
-| **Selectores ambiguos**         | 5+    | 0       | ✅     |
-| **Tests i18n-proof**            | No    | Sí      | ✅     |
-| **Accesibilidad (ARIA)**        | 70%   | 95%     | ✅     |
+- ❌ Before: Difficult to understand which element is being selected
+- ✅ Now: Clear and descriptive names
 
 ---
 
-## 🔄 Próximos Pasos
+## 📊 Metrics
 
-### **1. Actualizar Tests E2E**
+| Metric                         | Before | After | Improvement |
+| ------------------------------ | ------ | ----- | ----------- |
+| **Components with data-testid** | 0      | 6     | ✅          |
+| **Testable elements**          | ~5     | ~40+  | ✅          |
+| **Ambiguous selectors**        | 5+     | 0     | ✅          |
+| **i18n-proof tests**           | No     | Yes   | ✅          |
+| **Accessibility (ARIA)**       | 70%    | 95%   | ✅          |
 
-Reemplazar todos los selectores frágiles por selectores semánticos:
+---
+
+## 🔄 Next Steps
+
+### **1. Update E2E Tests**
+
+Replace all fragile selectors with semantic selectors:
 
 ```bash
-# Ejemplo de actualización
+# Example update
 git diff tests/e2e/queryViewer.spec.js
 ```
 
-### **2. Documentar Convenciones**
+### **2. Document Conventions**
 
-Agregar guía de convenciones en README para futuros componentes.
+Add conventions guide in README for future components.
 
 ### **3. Code Review**
 
-Revisar que todos los componentes sigan las convenciones establecidas.
+Review that all components follow established conventions.
 
 ### **4. Testing**
 
-Ejecutar suite completa de E2E tests para verificar mejoras:
+Run complete E2E test suite to verify improvements:
 
 ```bash
 npm run test:e2e
@@ -468,31 +468,31 @@ npm run test:e2e
 
 ---
 
-## ✅ Checklist Final
+## ✅ Final Checklist
 
-- [x] jtSearchableCombobox - data-testid, name, IDs semánticos
+- [x] jtSearchableCombobox - data-testid, name, semantic IDs
 - [x] jtExecuteButton - data-testid, name
-- [x] jtParameterInputs - data-testid por parámetro
-- [x] jtCacheModal - data-testid en checkboxes y botones
-- [x] jtQueryViewer - data-testid en botones y acciones
-- [x] jtRunAsSection - data-testid en combobox y botones
-- [x] Convenciones documentadas
-- [x] Ejemplos de uso en documentación
-- [ ] Tests E2E actualizados con nuevos selectores
-- [ ] Suite E2E completa ejecutada y pasando
+- [x] jtParameterInputs - data-testid per parameter
+- [x] jtCacheModal - data-testid in checkboxes and buttons
+- [x] jtQueryViewer - data-testid in buttons and actions
+- [x] jtRunAsSection - data-testid in combobox and buttons
+- [x] Conventions documented
+- [x] Usage examples in documentation
+- [ ] E2E tests updated with new selectors
+- [ ] Complete E2E suite executed and passing
 
 ---
 
-## 🎊 Conclusión
+## 🎊 Conclusion
 
-**Todos los componentes LWC ahora tienen HTML semántico, no ambiguo y testeable.**
+**All LWC components now have semantic, non-ambiguous, and testable HTML.**
 
-Los tests E2E serán:
+E2E tests will be:
 
-- ✅ Más robustos (no dependen de texto)
-- ✅ Más rápidos (selectores directos)
-- ✅ Más mantenibles (nombres claros)
-- ✅ Independientes del idioma (i18n-proof)
-- ✅ Sin selectores ambiguos (no más "strict mode violations")
+- ✅ More robust (don't depend on text)
+- ✅ Faster (direct selectors)
+- ✅ More maintainable (clear names)
+- ✅ Language independent (i18n-proof)
+- ✅ No ambiguous selectors (no more "strict mode violations")
 
-**¡Listo para implementar en los tests E2E!** 🚀
+**Ready to implement in E2E tests!** 🚀

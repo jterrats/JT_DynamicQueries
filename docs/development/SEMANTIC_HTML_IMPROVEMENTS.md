@@ -1,36 +1,36 @@
-# 🎯 Mejoras de HTML Semántico - Plan de Implementación
+# 🎯 Semantic HTML Improvements - Implementation Plan
 
-## 📋 Objetivo
+## 📋 Objective
 
-Asegurar que todos los IDs, names, data-attributes y clases CSS en los LWC sean:
+Ensure all IDs, names, data-attributes, and CSS classes in LWCs are:
 
-- **Semánticos**: Describen claramente su propósito
-- **No ambiguos**: Únicos y específicos al contexto
-- **Testeables**: Fáciles de seleccionar en E2E tests
-- **Mantenibles**: Fáciles de entender para desarrolladores
+- **Semantic**: Clearly describe their purpose
+- **Non-ambiguous**: Unique and specific to context
+- **Testable**: Easy to select in E2E tests
+- **Maintainable**: Easy to understand for developers
 
 ---
 
-## 🔍 Análisis de Componentes
+## 🔍 Component Analysis
 
-### ✅ **jtSearchableCombobox** - MEJORAR
+### ✅ **jtSearchableCombobox** - IMPROVE
 
-**Problemas actuales:**
+**Current problems:**
 
 ```html
 <input id="combobox-input" />
-<!-- ❌ Genérico -->
+<!-- ❌ Generic -->
 <div id="listbox-id" />
-<!-- ❌ No descriptivo -->
+<!-- ❌ Not descriptive -->
 ```
 
-**Mejoras propuestas:**
+**Proposed improvements:**
 
 ```html
 <input
   id="searchable-combobox-input"
   data-testid="searchable-combobox-input"
-  name="{contextualName}"            <!-- Pasado como prop -->
+  name="{contextualName}"            <!-- Passed as prop -->
   aria-label="{label}"
 />
 <div
@@ -40,22 +40,22 @@ Asegurar que todos los IDs, names, data-attributes y clases CSS en los LWC sean:
 />
 ```
 
-**Beneficios:**
+**Benefits:**
 
-- Tests E2E pueden usar: `page.locator('[data-testid="config-selector-input"]')`
-- Único en el contexto del componente padre
+- E2E tests can use: `page.locator('[data-testid="config-selector-input"]')`
+- Unique in parent component context
 
 ---
 
-### ✅ **jtParameterInputs** - MEJORAR
+### ✅ **jtParameterInputs** - IMPROVE
 
-**Estado actual:**
+**Current state:**
 
 ```html
 <lightning-input data-param="{param.name}" />
 ```
 
-**Mejoras propuestas:**
+**Proposed improvements:**
 
 ```html
 <lightning-input
@@ -66,19 +66,19 @@ Asegurar que todos los IDs, names, data-attributes y clases CSS en los LWC sean:
 />
 ```
 
-**Beneficios:**
+**Benefits:**
 
-- Tests pueden seleccionar parámetros específicos: `page.locator('[data-testid="query-parameter-accountName"]')`
+- Tests can select specific parameters: `page.locator('[data-testid="query-parameter-accountName"]')`
 
 ---
 
-### ✅ **jtExecuteButton** - MEJORAR
+### ✅ **jtExecuteButton** - IMPROVE
 
-**Problema actual:**
+**Current problem:**
 
-- No hay identificadores específicos más allá del label
+- No specific identifiers beyond label
 
-**Mejoras propuestas:**
+**Proposed improvements:**
 
 ```html
 <lightning-button
@@ -90,18 +90,18 @@ Asegurar que todos los IDs, names, data-attributes y clases CSS en los LWC sean:
 
 ---
 
-### ✅ **jtCacheModal** - MEJORAR
+### ✅ **jtCacheModal** - IMPROVE
 
-**Problemas actuales:**
+**Current problems:**
 
 ```html
 <lightning-input label="Query Configurations" />
-<!-- ❌ Solo label -->
+<!-- ❌ Only label -->
 <button class="slds-button slds-button_brand" />
 <!-- ❌ No ID -->
 ```
 
-**Mejoras propuestas:**
+**Proposed improvements:**
 
 ```html
 <lightning-input
@@ -118,21 +118,21 @@ Asegurar que todos los IDs, names, data-attributes y clases CSS en los LWC sean:
 />
 ```
 
-**Beneficios:**
+**Benefits:**
 
 - Tests: `page.locator('[data-testid="cache-option-configurations"]').check()`
 - Tests: `page.locator('[data-testid="cache-clear-button"]').click()`
 
 ---
 
-### ✅ **jtQueryViewer** - MEJORAR
+### ✅ **jtQueryViewer** - IMPROVE
 
-**Problemas actuales:**
+**Current problems:**
 
 ```html
 <!-- View toggle buttons -->
 <lightning-button data-view="table" />
-<!-- ⚠️  Podría mejorarse -->
+<!-- ⚠️  Could be improved -->
 <lightning-button data-view="json" />
 <lightning-button data-view="csv" />
 
@@ -144,10 +144,10 @@ Asegurar que todos los IDs, names, data-attributes y clases CSS en los LWC sean:
 
 <!-- Mobile cards -->
 <article class="slds-card" data-id="{row.Id}" />
-<!-- ⚠️  Mejora menor -->
+<!-- ⚠️  Minor improvement -->
 ```
 
-**Mejoras propuestas:**
+**Proposed improvements:**
 
 ```html
 <!-- View toggle buttons -->
@@ -190,9 +190,9 @@ Asegurar que todos los IDs, names, data-attributes y clases CSS en los LWC sean:
 
 ---
 
-### ✅ **jtRunAsSection** - MEJORAR
+### ✅ **jtRunAsSection** - IMPROVE
 
-**Mejoras propuestas:**
+**Proposed improvements:**
 
 ```html
 <c-jt-searchable-combobox
@@ -207,9 +207,9 @@ Asegurar que todos los IDs, names, data-attributes y clases CSS en los LWC sean:
 
 ---
 
-### ✅ **jtConfigModal** - MEJORAR
+### ✅ **jtConfigModal** - IMPROVE
 
-**Mejoras propuestas:**
+**Proposed improvements:**
 
 ```html
 <lightning-input
@@ -229,14 +229,14 @@ Asegurar que todos los IDs, names, data-attributes y clases CSS en los LWC sean:
 
 ---
 
-## 🎯 Convención de Nombres
+## 🎯 Naming Conventions
 
 ### **data-testid Pattern:**
 
 ```
 {componentContext}-{element}-{type}
 
-Ejemplos:
+Examples:
 - "config-selector-input"
 - "query-parameter-accountName"
 - "execute-query-button"
@@ -250,7 +250,7 @@ Ejemplos:
 ```
 {function}-{detail}
 
-Ejemplos:
+Examples:
 - "execute-query"
 - "clear-cache"
 - "create-configuration"
@@ -258,12 +258,12 @@ Ejemplos:
 - "query-parameter-accountName"
 ```
 
-### **ID Pattern (si es necesario):**
+### **ID Pattern (if necessary):**
 
 ```
 {componentName}-{element}-{uniqueId}
 
-Ejemplos:
+Examples:
 - "searchable-combobox-input"
 - "cache-modal-heading"
 - "execute-button-status"
@@ -271,55 +271,55 @@ Ejemplos:
 
 ---
 
-## 📊 Prioridad de Implementación
+## 📊 Implementation Priority
 
-### **Alta Prioridad (Crítico para E2E)**
+### **High Priority (Critical for E2E)**
 
-1. ✅ **jtSearchableCombobox** - Usado en múltiples lugares
-2. ✅ **jtExecuteButton** - Acción principal
-3. ✅ **jtParameterInputs** - Entrada de datos crítica
-4. ✅ **jtCacheModal** - Tests de cache management
+1. ✅ **jtSearchableCombobox** - Used in multiple places
+2. ✅ **jtExecuteButton** - Main action
+3. ✅ **jtParameterInputs** - Critical data input
+4. ✅ **jtCacheModal** - Cache management tests
 
-### **Media Prioridad**
+### **Medium Priority**
 
-5. ✅ **jtQueryViewer** - Componente principal
-6. ✅ **jtRunAsSection** - Feature importante
+5. ✅ **jtQueryViewer** - Main component
+6. ✅ **jtRunAsSection** - Important feature
 
-### **Baja Prioridad**
+### **Low Priority**
 
-7. ⚠️ **jtConfigModal** - Menos usado en tests
-8. ⚠️ **jtQueryResults** - Ya tiene estructura clara
+7. ⚠️ **jtConfigModal** - Less used in tests
+8. ⚠️ **jtQueryResults** - Already has clear structure
 9. ⚠️ **jtUsageModal** - Read-only modal
 
 ---
 
-## 🚀 Implementación
+## 🚀 Implementation
 
-### Paso 1: Agregar `data-testid` a componentes reutilizables
+### Step 1: Add `data-testid` to reusable components
 
-Componentes que RECIBEN `data-testid` como prop:
+Components that RECEIVE `data-testid` as prop:
 
 - `c-jt-searchable-combobox`
 - `c-jt-execute-button`
 - `c-jt-parameter-inputs`
 
-### Paso 2: Agregar `data-testid` a elementos en componentes padre
+### Step 2: Add `data-testid` to elements in parent components
 
-Componentes que USAN los reutilizables con `data-testid` específico:
+Components that USE reusables with specific `data-testid`:
 
 - `c-jt-query-viewer`
 - `c-jt-cache-modal`
 - `c-jt-run-as-section`
 
-### Paso 3: Actualizar tests E2E
+### Step 3: Update E2E tests
 
-Cambiar de:
+Change from:
 
 ```javascript
 page.locator("lightning-button").filter({ hasText: /Execute/i });
 ```
 
-A:
+To:
 
 ```javascript
 page.locator('[data-testid="execute-query-button"]');
@@ -327,85 +327,85 @@ page.locator('[data-testid="execute-query-button"]');
 
 ---
 
-## ✅ Beneficios
+## ✅ Benefits
 
-1. **Tests E2E más robustos**: No dependen de texto que puede cambiar con i18n
-2. **Selectores más rápidos**: `data-testid` es más rápido que filtros de texto
-3. **Código más mantenible**: Nombres claros facilitan debugging
-4. **Accesibilidad mejorada**: ARIA labels más específicos
-5. **Menos fallos por ambigüedad**: Selectores únicos evitan "strict mode violations"
+1. **More robust E2E tests**: Don't depend on text that can change with i18n
+2. **Faster selectors**: `data-testid` is faster than text filters
+3. **More maintainable code**: Clear names facilitate debugging
+4. **Improved accessibility**: More specific ARIA labels
+5. **Fewer failures due to ambiguity**: Unique selectors avoid "strict mode violations"
 
 ---
 
-## 📝 Checklist de Implementación
+## 📝 Implementation Checklist
 
 ### jtSearchableCombobox
 
-- [ ] Agregar prop `dataTestId`
-- [ ] Agregar prop `name`
-- [ ] Usar en input: `data-testid="{dataTestId}-input"`
-- [ ] Usar en dropdown: `data-testid="{dataTestId}-dropdown"`
-- [ ] Usar en options: `data-testid="{dataTestId}-option-{value}"`
+- [ ] Add prop `dataTestId`
+- [ ] Add prop `name`
+- [ ] Use in input: `data-testid="{dataTestId}-input"`
+- [ ] Use in dropdown: `data-testid="{dataTestId}-dropdown"`
+- [ ] Use in options: `data-testid="{dataTestId}-option-{value}"`
 
 ### jtExecuteButton
 
-- [ ] Agregar prop `dataTestId`
-- [ ] Agregar prop `name`
+- [ ] Add prop `dataTestId`
+- [ ] Add prop `name`
 - [ ] Default: `data-testid="execute-query-button"`
 
 ### jtParameterInputs
 
-- [ ] Agregar `data-testid` a cada input
+- [ ] Add `data-testid` to each input
 - [ ] Pattern: `query-parameter-{paramName}`
 
 ### jtCacheModal
 
-- [ ] Agregar `data-testid` a cada checkbox
-- [ ] Agregar `data-testid` a botones
-- [ ] Agregar `data-testid` al select all
+- [ ] Add `data-testid` to each checkbox
+- [ ] Add `data-testid` to buttons
+- [ ] Add `data-testid` to select all
 
 ### jtQueryViewer
 
-- [ ] Agregar `data-testid` a view toggle buttons
-- [ ] Agregar `data-testid` a pagination buttons
-- [ ] Agregar `data-testid` a header actions
-- [ ] Pasar `data-testid` a componentes hijos
+- [ ] Add `data-testid` to view toggle buttons
+- [ ] Add `data-testid` to pagination buttons
+- [ ] Add `data-testid` to header actions
+- [ ] Pass `data-testid` to child components
 
 ### jtRunAsSection
 
-- [ ] Pasar `data-testid` a searchable combobox
-- [ ] Agregar `data-testid` a botones
+- [ ] Pass `data-testid` to searchable combobox
+- [ ] Add `data-testid` to buttons
 
 ---
 
-## 🎉 Resultado Esperado
+## 🎉 Expected Result
 
-**Antes:**
+**Before:**
 
 ```javascript
-// Test frágil
+// Fragile test
 const button = page.locator("lightning-button").filter({ hasText: /Execute/i });
 ```
 
-**Después:**
+**After:**
 
 ```javascript
-// Test robusto
+// Robust test
 const button = page.locator('[data-testid="execute-query-button"]');
 ```
 
-**Antes:**
+**Before:**
 
 ```javascript
-// Selector ambiguo
+// Ambiguous selector
 const combobox = page.locator("c-jt-query-viewer lightning-combobox");
 // Error: found 2 elements ❌
 ```
 
-**Después:**
+**After:**
 
 ```javascript
-// Selector específico
+// Specific selector
 const configSelector = page.locator('[data-testid="config-selector-input"]');
 const userSelector = page.locator('[data-testid="run-as-user-selector-input"]');
 // ✅ No ambiguity
@@ -413,5 +413,5 @@ const userSelector = page.locator('[data-testid="run-as-user-selector-input"]');
 
 ---
 
-**Fecha de creación**: 1 Diciembre 2024
-**Status**: 🚧 En Progreso
+**Creation date**: December 1, 2024
+**Status**: 🚧 In Progress

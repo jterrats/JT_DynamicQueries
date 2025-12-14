@@ -50,20 +50,23 @@ public with sharing class JT_MetadataCreator {
 
       // CRITICAL: Only allow in development/test environments
       if (!isSandboxOrScratch()) {
-        throw new AuraHandledException(
-          'Configuration creation is only allowed in development/test environments (Sandbox, Scratch Org, Developer Edition, or Trial). For production orgs (including Starter/Free Editions), use Setup > Custom Metadata Types.'
-        );
+        result.success = false;
+        result.errorMessage = 'Configuration creation is only allowed in development/test environments (Sandbox, Scratch Org, Developer Edition, or Trial). For production orgs (including Starter/Free Editions), use Setup > Custom Metadata Types.';
+        return result;
       }
 
-      // Validate required fields
+      // Validate required fields (handle null values safely)
       if (
+        input.label == null ||
         String.isBlank(input.label) ||
+        input.developerName == null ||
         String.isBlank(input.developerName) ||
+        input.baseQuery == null ||
         String.isBlank(input.baseQuery)
       ) {
-        throw new AuraHandledException(
-          'Label, Developer Name, and Base Query are required.'
-        );
+        result.success = false;
+        result.errorMessage = 'Label, Developer Name, and Base Query are required fields.';
+        return result;
       }
 
       // Sanitize developer name

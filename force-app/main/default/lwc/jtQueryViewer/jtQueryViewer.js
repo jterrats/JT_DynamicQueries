@@ -1773,13 +1773,26 @@ export default class JtQueryViewer extends LightningElement {
 
     this.isSaving = true;
 
+    // Ensure all required fields are present and not null
     const configData = {
-      label: configToUse.label,
-      developerName: configToUse.developerName,
-      baseQuery: configToUse.baseQuery,
-      bindings: configToUse.bindings || "",
-      objectName: configToUse.objectName || ""
+      label: configToUse.label?.trim() || "",
+      developerName: configToUse.developerName?.trim() || "",
+      baseQuery: configToUse.baseQuery?.trim() || "",
+      bindings: configToUse.bindings?.trim() || "",
+      objectName: configToUse.objectName?.trim() || ""
     };
+
+    // Double-check required fields before sending
+    if (!configData.label || !configData.developerName || !configData.baseQuery) {
+      console.error("❌ CRITICAL: Required fields are missing after processing:", configData);
+      showErrorToast(
+        this,
+        "Validation Error",
+        "Label, Developer Name, and Base Query are required. Please check your input."
+      );
+      this.isSaving = false;
+      return;
+    }
 
     console.log("configData being sent:", JSON.stringify(configData, null, 2));
 

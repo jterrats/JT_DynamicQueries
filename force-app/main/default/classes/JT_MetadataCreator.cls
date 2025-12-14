@@ -43,7 +43,9 @@ public with sharing class JT_MetadataCreator {
     try {
       // Validate input is not null
       if (input == null) {
-        throw new AuraHandledException('Configuration input is required.');
+        result.success = false;
+        result.errorMessage = 'Configuration input is required. Please ensure all fields are filled.';
+        return result;
       }
 
       // CRITICAL: Only allow in development/test environments

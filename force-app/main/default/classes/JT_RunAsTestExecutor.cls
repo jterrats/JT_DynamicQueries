@@ -125,18 +125,18 @@ public with sharing class JT_RunAsTestExecutor {
           LoggingLevel.ERROR,
           'DML Fields: ' + dmlEx.getDmlFields(0)
         );
-        
+
         // Check for specific error codes and provide user-friendly messages
         String statusCode = dmlEx.getDmlStatusCode(0);
         String errorMessage;
-        
+
         if (statusCode == 'STORAGE_LIMIT_EXCEEDED') {
           errorMessage = Label.JT_RunAsTestExecutor_storageLimitExceeded;
         } else {
           // Generic DML error message
           errorMessage = 'Failed to create execution record: ' + dmlEx.getMessage();
         }
-        
+
         throw new AuraHandledException(errorMessage);
       } catch (Exception insertEx) {
         System.debug(

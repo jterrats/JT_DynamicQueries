@@ -350,7 +350,7 @@ public without sharing class JT_UsageFinder {
     // Create Tooling API request for Flows with API-enabled session ID
     // Note: Can't query Metadata field with multiple records, so we get basic info first
     final HttpRequest request = JT_ToolingApiUtil.createToolingApiQueryRequest(
-      FLOW_LIST_QUERY
+      JT_SystemSelector.getActiveFlowsQuery()
     );
 
     // Add request to continuation
@@ -879,7 +879,7 @@ public without sharing class JT_UsageFinder {
    */
   private static List<UsageResult> findInFlows(final String configName) {
     try {
-      final HttpRequest request = createToolingApiRequest(FLOW_LIST_QUERY);
+      final HttpRequest request = createToolingApiRequest(JT_SystemSelector.getActiveFlowsQuery());
       final HttpResponse response = new Http().send(request);
 
       if (response.getStatusCode() != 200) {
@@ -1112,7 +1112,7 @@ public without sharing class JT_UsageFinder {
     final List<UsageResult> results = new List<UsageResult>();
 
     try {
-      final HttpRequest request = createToolingApiRequest(FLOW_LIST_QUERY);
+      final HttpRequest request = createToolingApiRequest(JT_SystemSelector.getActiveFlowsQuery());
       final Http httpClient = new Http();
       final HttpResponse response = httpClient.send(request);
 

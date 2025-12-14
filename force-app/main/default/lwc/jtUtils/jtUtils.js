@@ -286,12 +286,12 @@ export function escapeLikeValue(value) {
  * // In component:
  * import label1 from "@salesforce/label/c.JT_jtQueryViewer_label1";
  * import label2 from "@salesforce/label/c.JT_jtQueryViewer_label2";
- * 
+ *
  * const labels = getLabels('jtQueryViewer', {
  *   label1,
  *   label2
  * });
- * 
+ *
  * // Usage in template:
  * // {labels['data-id-button-save']}
  */
@@ -305,7 +305,7 @@ export function getLabels(componentName, importedLabels = {}) {
   // This allows components to organize their labels however they want
   // The function serves as a central point for label management patterns
   const labels = {};
-  
+
   // Copy all imported labels to the result object
   // Components can use keys like 'data-id-button-save', 'data-name-input-query', etc.
   Object.keys(importedLabels).forEach(key => {
@@ -314,7 +314,7 @@ export function getLabels(componentName, importedLabels = {}) {
 
   // Add component name metadata for debugging
   labels._componentName = componentName;
-  
+
   return labels;
 }
 

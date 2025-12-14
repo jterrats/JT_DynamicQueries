@@ -286,7 +286,7 @@ public with sharing class JT_MetadataCreator {
     try {
       // ✅ REFACTORED: Use SystemSelector pattern - single query with Name
       Organization org = JT_SystemSelector.getOrganizationInfoWithName();
-      
+
       if (org == null) {
         return new Map<String, Object>{
           'name' => 'Unknown',
@@ -322,7 +322,8 @@ public with sharing class JT_MetadataCreator {
       };
     } catch (Exception e) {
       // Ensure we always return a valid Map, never a String
-      System.debug(LoggingLevel.ERROR, 'Error in getOrgInfo: ' + e.getMessage());
+      System.debug(LoggingLevel.ERROR, 'Error in getOrgInfo: ' + e.getMessage() + '\n' + e.getStackTraceString());
+      // Return default values to maintain consistent Map structure
       return new Map<String, Object>{
         'name' => 'Unknown',
         'isSandbox' => false,
@@ -330,8 +331,7 @@ public with sharing class JT_MetadataCreator {
         'isScratch' => false,
         'canCreateMetadata' => false,
         'isProduction' => true,
-        'productionOverrideEnabled' => false,
-        'error' => e.getMessage()
+        'productionOverrideEnabled' => false
       };
     }
   }

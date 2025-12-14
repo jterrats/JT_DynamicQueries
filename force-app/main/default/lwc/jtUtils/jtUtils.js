@@ -536,3 +536,159 @@ export function validateEditMode(mode, originalDevName) {
   }
   return { isValid: true };
 }
+
+// ========================================================================
+// POLLING UTILITIES
+// ========================================================================
+
+/**
+ * Generic polling helper function
+ * Polls a function until a condition is met or timeout is reached
+ * @param {Function} pollFunction - Async function to call for polling (should return a Promise)
+ * @param {Function} checkComplete - Function to check if polling is complete (receives result, returns boolean)
+ * @param {Function} onComplete - Callback when polling completes successfully (receives result)
+ * @param {Function} onError - Callback when polling fails (receives error)
+ * @param {Function} onTimeout - Callback when polling times out
+ * @param {Object} options - Polling options
+ * @param {number} options.interval - Polling interval in milliseconds (default: 2000)
+ * @param {number} options.maxPolls - Maximum number of polls before timeout (default: 60)
+ * @param {Function} options.onProgress - Optional callback for progress updates (receives pollCount, result)
+ * @returns {Function} Function to stop polling (clearInterval)
+ * @example
+ * const stopPolling = pollUntilComplete(
+ *   () => getTestResults({ executionId: '123' }),
+ *   (result) => result.success !== undefined,
+ *   (result) => handleResults(result),
+ *   (error) => showError(error),
+ *   () => showTimeout(),
+ *   { interval: 2000, maxPolls: 60 }
+ * );
+ */
+export function pollUntilComplete(
+  pollFunction,
+  checkComplete,
+  onComplete,
+  onError,
+  onTimeout,
+  options = {}
+) {
+  const {
+    interval = 2000,
+    maxPolls = 60,
+    onProgress = null
+  } = options;
+
+  let pollCount = 0;
+  let pollInterval = null;
+
+  const stopPolling = () => {
+    if (pollInterval) {
+      clearInterval(pollInterval);
+      pollInterval = null;
+    }
+  };
+
+  // eslint-disable-next-line @lwc/lwc/no-async-operation
+  pollInterval = setInterval(() => {
+    pollCount++;
+
+    pollFunction()
+      .then((result) => {
+        // Call progress callback if provided
+        if (onProgress) {
+          onProgress(pollCount, result);
+        }
+
+        // Check if polling is complete
+        if (checkComplete(result)) {
+          stopPolling();
+          onComplete(result);
+          return;
+        }
+
+        // Check for timeout
+        if (pollCount >= maxPolls) {
+          stopPolling();
+          if (onTimeout) {
+            onTimeout();
+          }
+          return;
+        }
+      })
+      .catch((error) => {
+        stopPolling();
+        if (onError) {
+          onError(error);
+        }
+      });
+  }, interval);
+
+  return stopPolling;
+}
+
+// ========================================================================
+// EVENT HANDLER UTILITIES
+// ========================================================================
+
+/**
+ * Validates that a configuration is selected
+ * @param {string} selectedConfig - Selected configuration value
+ * @param {Object} labels - Component labels object
+ * @param {string} actionLabel - Label key for the action (e.g., 'pleaseSelectConfigurationToEdit')
+ * @returns {Object} { isValid: boolean, errorMessage?: string }
+ */
+export function validateConfigSelected(selectedConfig, labels, actionLabel = 'pleaseSelectConfiguration') {
+  if (!selectedConfig) {
+    return {
+      isValid: false,
+      errorMessage: labels[actionLabel] || 'Please select a configuration first.'
+    };
+  }
+  return { isValid: true };
+}
+
+/**
+ * Finds a configuration from options array
+ * @param {string} selectedConfig - Selected configuration value
+ * @param {Array} configurationOptions - Array of configuration options
+ * @returns {Object|null} Found configuration or null
+ */
+export function findConfiguration(selectedConfig, configurationOptions) {
+  if (!selectedConfig || !configurationOptions || !Array.isArray(configurationOptions)) {
+    return null;
+  }
+  return configurationOptions.find(cfg => cfg.value === selectedConfig) || null;
+}
+
+/**
+ * Validates and finds configuration with error handling
+ * @param {string} selectedConfig - Selected configuration value
+ * @param {Array} configurationOptions - Array of configuration options
+ * @param {Object} labels - Component labels object
+ * @param {string} actionLabel - Label key for the action
+ * @returns {Object} { isValid: boolean, config?: Object, errorMessage?: string }
+ */
+export function validateAndFindConfig(selectedConfig, configurationOptions, labels, actionLabel = 'pleaseSelectConfiguration') {
+  // Validate config is selected
+  const selectionValidation = validateConfigSelected(selectedConfig, labels, actionLabel);
+  if (!selectionValidation.isValid) {
+    return {
+      isValid: false,
+      errorMessage: selectionValidation.errorMessage
+    };
+  }
+
+  // Find configuration
+  const config = findConfiguration(selectedConfig, configurationOptions);
+  if (!config) {
+    return {
+      isValid: false,
+      errorMessage: 'Could not find the selected configuration. Please refresh and try again.'
+    };
+  }
+
+  return {
+    isValid: true,
+    config
+  };
+}

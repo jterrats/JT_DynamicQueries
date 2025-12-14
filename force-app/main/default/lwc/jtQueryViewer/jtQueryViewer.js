@@ -1876,12 +1876,18 @@ export default class JtQueryViewer extends LightningElement {
     // ✅ FIX: Disable button IMMEDIATELY to prevent multiple clicks
     this.isLoading = true;
 
-    if (!this.selectedConfig) {
+    // Validate config is selected
+    const selectionValidation = validateConfigSelected(
+      this.selectedConfig,
+      this.labels,
+      'pleaseSelectConfiguration'
+    );
+    if (!selectionValidation.isValid) {
       this.isLoading = false; // Re-enable if validation fails
       showErrorToast(
         this,
-        "Configuration Required",
-        "Please select a configuration first."
+        this.labels.configurationRequired,
+        selectionValidation.errorMessage
       );
       return;
     }

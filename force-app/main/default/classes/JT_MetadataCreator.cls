@@ -283,9 +283,46 @@ public with sharing class JT_MetadataCreator {
    **/
   @AuraEnabled(cacheable=true)
   public static Map<String, Object> getOrgInfo() {
-    // ✅ REFACTORED: Use SystemSelector pattern
-    Organization org = JT_SystemSelector.getOrganizationInfo();
-    if (org == null) {
+    try {
+      // ✅ REFACTORED: Use SystemSelector pattern - single query with Name
+      Organization org = JT_SystemSelector.getOrganizationInfoWithName();
+      
+      if (org == null) {
+        return new Map<String, Object>{
+          'name' => 'Unknown',
+          'isSandbox' => false,
+          'organizationType' => 'Unknown',
+          'isScratch' => false,
+          'canCreateMetadata' => false,
+          'isProduction' => true,
+          'productionOverrideEnabled' => false
+        };
+      }
+
+      Boolean isDevelopmentOrg =
+        org.IsSandbox ||
+        org.TrialExpirationDate != null ||
+        org.OrganizationType == 'Developer Edition';
+
+      // Check custom setting override for production orgs
+      JT_DynamicQuerySettings__c settings = JT_DynamicQuerySettings__c.getInstance();
+      Boolean productionOverride = (settings != null &&
+      settings.JT_AllowProductionEditing__c == true);
+
+      Boolean canCreate = isDevelopmentOrg || productionOverride;
+
+      return new Map<String, Object>{
+        'name' => org.Name != null ? org.Name : 'Unknown',
+        'isSandbox' => org.IsSandbox != null ? org.IsSandbox : false,
+        'organizationType' => org.OrganizationType != null ? org.OrganizationType : 'Unknown',
+        'isScratch' => org.TrialExpirationDate != null,
+        'canCreateMetadata' => canCreate,
+        'isProduction' => !isDevelopmentOrg,
+        'productionOverrideEnabled' => productionOverride
+      };
+    } catch (Exception e) {
+      // Ensure we always return a valid Map, never a String
+      System.debug(LoggingLevel.ERROR, 'Error in getOrgInfo: ' + e.getMessage());
       return new Map<String, Object>{
         'name' => 'Unknown',
         'isSandbox' => false,
@@ -293,35 +330,10 @@ public with sharing class JT_MetadataCreator {
         'isScratch' => false,
         'canCreateMetadata' => false,
         'isProduction' => true,
-        'productionOverrideEnabled' => false
+        'productionOverrideEnabled' => false,
+        'error' => e.getMessage()
       };
     }
-
-    Boolean isDevelopmentOrg =
-      org.IsSandbox ||
-      org.TrialExpirationDate != null ||
-      org.OrganizationType == 'Developer Edition';
-
-    // Check custom setting override for production orgs
-    JT_DynamicQuerySettings__c settings = JT_DynamicQuerySettings__c.getInstance();
-    Boolean productionOverride = (settings != null &&
-    settings.JT_AllowProductionEditing__c == true);
-
-    Boolean canCreate = isDevelopmentOrg || productionOverride;
-
-    // ✅ REFACTORED: Use SystemSelector for org name
-    Organization orgWithName = JT_SystemSelector.getOrganizationInfoWithName();
-    String orgName = orgWithName != null ? orgWithName.Name : 'Unknown';
-
-    return new Map<String, Object>{
-      'name' => orgName,
-      'isSandbox' => org.IsSandbox,
-      'organizationType' => org.OrganizationType,
-      'isScratch' => org.TrialExpirationDate != null,
-      'canCreateMetadata' => canCreate,
-      'isProduction' => !isDevelopmentOrg,
-      'productionOverrideEnabled' => productionOverride
-    };
   }
 
   /**

@@ -309,7 +309,7 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
             // Extract the JSON between markers
             // Note: There's a space between startMarker and JSON, so we skip it with +1
             Integer jsonStartIndex = startIndex + startMarker.length() + 1; // +1 for the space
-            
+
             // Ensure we don't go beyond endIndex
             if (jsonStartIndex < endIndex) {
               resultJsonFromLog = logContent.substring(jsonStartIndex, endIndex)
@@ -325,7 +325,7 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
               );
               resultJsonFromLog = null;
             }
-            
+
             System.debug(
               LoggingLevel.DEBUG,
               '✅ Successfully extracted JSON from Debug Log. Length: ' +
@@ -349,7 +349,7 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
               ', ApexLogId: ' +
               apexLogId
             );
-            
+
             // Debug: Show sample of log content around where marker should be
             if (logContent.length() > 1000) {
               System.debug(

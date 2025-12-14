@@ -273,6 +273,23 @@ public class JT_GenericRunAsTest {
           ? (Map<String, Object>) JSON.deserializeUntyped(params.bindingsJson)
           : new Map<String, Object>();
 
+        // Get config to check for LIKE clauses and add wildcards
+        // This ensures queries with LIKE :bindVar work correctly
+        JT_DynamicQueryConfiguration__mdt config = [
+          SELECT JT_BaseQuery__c
+          FROM JT_DynamicQueryConfiguration__mdt
+          WHERE DeveloperName = :params.configName
+          WITH USER_MODE
+          LIMIT 1
+        ];
+
+        // Auto-add wildcards for LIKE queries (same logic as JT_QueryViewerController)
+        // This ensures queries like "WHERE Name LIKE :searchName" work correctly
+        JT_QueryViewerController.addWildcardsForLikeBindings(
+          config.JT_BaseQuery__c,
+          bindings
+        );
+
         Long startTime = System.now().getTime();
 
         // Execute query

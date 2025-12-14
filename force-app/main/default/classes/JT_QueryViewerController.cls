@@ -653,7 +653,13 @@ public with sharing class JT_QueryViewerController {
    * @param query The SOQL query string
    * @param bindings The map of bind variables
    **/
-  private static void addWildcardsForLikeBindings(
+  /**
+   * @description Adds wildcards to bind parameters used in LIKE clauses
+   * Made public so JT_GenericRunAsTest can use it
+   * @param query The SOQL query string
+   * @param bindings The map of bind variables
+   **/
+  public static void addWildcardsForLikeBindings(
     String query,
     Map<String, Object> bindings
   ) {

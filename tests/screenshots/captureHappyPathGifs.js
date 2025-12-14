@@ -417,8 +417,8 @@ async function captureHappyPaths() {
   }
 
   // ==================================================================
-  // GIF 6: Run As User (12 seconds)
-  // Show: Open Run As → Select user → Execute query
+  // GIF 6: Run As User (15 seconds)
+  // Show: Expand Run As accordion → Select user → Execute with System.runAs → Show results
   // ==================================================================
   console.log("🎥 6/6: Capturing Run As User...");
   const { context: context6, page: page6 } =
@@ -430,37 +430,100 @@ async function captureHappyPaths() {
 
   try {
     // Select a configuration first
-    await selectConfiguration(page6, "Customer 360");
+    await selectConfiguration(page6, "Account By Name");
     await page6.waitForTimeout(1200);
 
-    // Open Run As modal
-    const runAsButton = page6.locator('button:has-text("Run As")').first();
-    if (await runAsButton.isVisible()) {
-      await runAsButton.click();
-      await page6.waitForTimeout(1500);
+    // Check if Run As section is available (user has permissions)
+    const accordionSection = page6
+      .locator('lightning-accordion-section[name="run-as"]')
+      .first();
+    const accordionExists = (await accordionSection.count()) > 0;
 
-      // Select a user from dropdown
-      const userCombobox = page6
-        .locator("c-jt-searchable-combobox input")
-        .nth(1);
-      if (await userCombobox.isVisible().catch(() => false)) {
-        await userCombobox.click();
-        await page6.waitForTimeout(1000);
-        await userCombobox.fill("User");
-        await page6.waitForTimeout(1000);
-        await page6.keyboard.press("ArrowDown");
-        await page6.keyboard.press("Enter");
+    if (accordionExists) {
+      // Expand Run As accordion section if collapsed
+      const isExpanded = await accordionSection
+        .getAttribute("aria-expanded")
+        .then((val) => val === "true")
+        .catch(() => false);
+
+      if (!isExpanded) {
+        await accordionSection.click();
         await page6.waitForTimeout(1500);
       }
 
-      // Close modal
-      await page6.keyboard.press("Escape");
+      // Wait for Run As section component to be visible
+      const runAsComponent = page6.locator("c-jt-run-as-section").first();
+      await runAsComponent.waitFor({ state: "visible", timeout: 5000 });
       await page6.waitForTimeout(1000);
-    }
 
-    // Execute query to show personalized results
-    await executeQuery(page6);
-    await page6.waitForTimeout(2500);
+      // Select a user from the combobox
+      const userCombobox = page6.locator(
+        'c-jt-run-as-section c-jt-searchable-combobox[data-testid="run-as-user-selector"]'
+      );
+      const userInput = userCombobox.locator("input").first();
+
+      if (await userInput.isVisible({ timeout: 5000 }).catch(() => false)) {
+        await userInput.click();
+        await page6.waitForTimeout(1000);
+
+        // Search for a user (try common names)
+        await userInput.fill("Mariano");
+        await page6.waitForTimeout(1500);
+
+        // Select first option if available
+        const userDropdown = userCombobox.locator(".slds-listbox").first();
+        const userOptions = userDropdown.locator(".slds-listbox__item");
+        const userCount = await userOptions.count();
+
+        if (userCount > 0) {
+          await userOptions.first().click();
+          await page6.waitForTimeout(1500);
+
+          // Fill parameter if needed (for Account By Name)
+          const paramInput = page6
+            .locator('lightning-input[data-testid*="parameter"] input')
+            .first();
+          if (await paramInput.isVisible({ timeout: 2000 }).catch(() => false)) {
+            await paramInput.fill("Dynamic");
+            await page6.waitForTimeout(1000);
+          }
+
+          // Execute query with "Execute with System.runAs" button
+          const executeRunAsButton = page6
+            .locator('button:has-text("Execute with System.runAs")')
+            .first();
+
+          if (await executeRunAsButton.isVisible({ timeout: 5000 }).catch(() => false)) {
+            await executeRunAsButton.click();
+            await page6.waitForTimeout(3000);
+
+            // Wait for results or test execution status
+            const resultsSection = page6.locator("c-jt-query-results").first();
+            const testStatus = page6.locator('text=/Running|Completed|Failed/i').first();
+
+            // Wait for either results or status message
+            await Promise.race([
+              resultsSection.waitFor({ state: "visible", timeout: 10000 }).catch(() => null),
+              testStatus.waitFor({ state: "visible", timeout: 10000 }).catch(() => null),
+              page6.waitForTimeout(5000)
+            ]);
+
+            // Scroll to see results if available
+            await page6.evaluate(() =>
+              window.scrollTo({ top: 400, behavior: "smooth" })
+            );
+            await page6.waitForTimeout(2000);
+          }
+        } else {
+          // If no users found, just show the search box
+          await page6.waitForTimeout(1500);
+        }
+      }
+    } else {
+      // If Run As section is not available, show a message
+      console.log("   ⚠️  Run As section not available (user lacks permissions)");
+      await page6.waitForTimeout(2000);
+    }
 
     console.log("   ✅ Run As User captured");
   } finally {

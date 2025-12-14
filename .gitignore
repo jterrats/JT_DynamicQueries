@@ -50,3 +50,8 @@ certs/
 # AppExchange media (large files)
 docs/appexchange/media/*.mp4
 docs/appexchange/media/*.webm
+
+# Temporary development documentation (optional - uncomment if needed)
+# docs/development/_local/
+# docs/development/*_TEMP.md
+# docs/development/*_DRAFT.md

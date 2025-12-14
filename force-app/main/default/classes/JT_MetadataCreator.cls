@@ -43,6 +43,13 @@ public with sharing class JT_MetadataCreator {
   @AuraEnabled
   public static MetadataCreationResult createConfiguration(String configJson) {
     MetadataCreationResult result = new MetadataCreationResult();
+    // Initialize all fields to ensure proper serialization
+    result.success = false;
+    result.message = null;
+    result.errorMessage = null;
+    result.stackTrace = null;
+    result.developerName = null;
+    result.deploymentId = null;
 
     try {
       // Deserialize and extract configuration values
@@ -137,6 +144,13 @@ public with sharing class JT_MetadataCreator {
     String developerName
   ) {
     MetadataCreationResult result = new MetadataCreationResult();
+    // Initialize all fields to ensure proper serialization
+    result.success = false;
+    result.message = null;
+    result.errorMessage = null;
+    result.stackTrace = null;
+    result.developerName = null;
+    result.deploymentId = null;
 
     try {
       // CRITICAL: Only allow in development/test environments
@@ -196,6 +210,13 @@ public with sharing class JT_MetadataCreator {
   @AuraEnabled
   public static MetadataCreationResult updateConfiguration(String configJson) {
     MetadataCreationResult result = new MetadataCreationResult();
+    // Initialize all fields to ensure proper serialization
+    result.success = false;
+    result.message = null;
+    result.errorMessage = null;
+    result.stackTrace = null;
+    result.developerName = null;
+    result.deploymentId = null;
 
     try {
       // Deserialize and extract configuration values
@@ -623,6 +644,13 @@ public with sharing class JT_MetadataCreator {
     String sanitizedDevName
   ) {
     MetadataCreationResult result = new MetadataCreationResult();
+    // Initialize all fields to ensure proper serialization
+    result.success = false;
+    result.message = null;
+    result.errorMessage = null;
+    result.stackTrace = null;
+    result.developerName = null;
+    result.deploymentId = null;
 
     // Step 1: Delete old record
     MetadataCreationResult deleteResult = deleteConfiguration(config.originalDevName);

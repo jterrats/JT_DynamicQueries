@@ -85,12 +85,18 @@ public with sharing class JT_MetadataCreator {
       String metadataXml = buildMetadataXml(params);
 
       // Deploy via Metadata API
-      String deploymentId = deployMetadata(metadataXml, sanitizedDevName);
+      DeploymentResult deployResult = deployMetadata(metadataXml, sanitizedDevName);
+
+      if (!deployResult.success) {
+        result.success = false;
+        result.errorMessage = deployResult.errorMessage;
+        return result;
+      }
 
       result.success = true;
       result.message = 'Configuration created successfully: ' + config.label;
       result.developerName = sanitizedDevName;
-      result.deploymentId = deploymentId;
+      result.deploymentId = deployResult.deploymentId;
 
       // No need for Platform Events - LWC will use refreshApex()
 
@@ -225,15 +231,21 @@ public with sharing class JT_MetadataCreator {
         String metadataXml = buildMetadataXml(params);
 
         // Deploy via Metadata API (will update existing record)
-        String deploymentId = deployMetadata(
+        DeploymentResult deployResult = deployMetadata(
           metadataXml,
           config.originalDevName
         );
 
+        if (!deployResult.success) {
+          result.success = false;
+          result.errorMessage = deployResult.errorMessage;
+          return result;
+        }
+
         result.success = true;
         result.message = 'Configuration updated successfully: ' + config.label;
         result.developerName = config.originalDevName;
-        result.deploymentId = deploymentId;
+        result.deploymentId = deployResult.deploymentId;
 
         return result;
       }
@@ -420,82 +432,99 @@ public with sharing class JT_MetadataCreator {
   }
 
   /**
+   * @description Result wrapper for deployment operation
+   */
+  private class DeploymentResult {
+    Boolean success;
+    String deploymentId;
+    String errorMessage;
+  }
+
+  /**
    * @description Deploys metadata via Metadata API
    * @author Jaime Terrats | 11-29-2025
    * @param metadataXml XML content
    * @param devName Developer name
-   * @return String Deployment ID
+   * @return DeploymentResult with success status, deploymentId, and errorMessage
    **/
-  private static String deployMetadata(String metadataXml, String devName) {
-    // Note: buildDeploymentZip is currently a placeholder - not actually building ZIP
-    // It's kept for future enhancement but not used in deployment
+  private static DeploymentResult deployMetadata(String metadataXml, String devName) {
+    DeploymentResult result = new DeploymentResult();
+    result.success = false;
 
-    // Deploy via Tooling API using API-enabled session ID
-    final String endpointPath =
-      '/services/data/' +
-      JT_ToolingApiUtil.getApiVersion() +
-      '/tooling/sobjects/CustomMetadata';
+    try {
+      // Deploy via Tooling API using API-enabled session ID
+      final String endpointPath =
+        '/services/data/' +
+        JT_ToolingApiUtil.getApiVersion() +
+        '/tooling/sobjects/CustomMetadata';
 
-    // Parse XML to JSON format required by Tooling API
-    Map<String, Object> metadataJson = parseMetadataXmlToJson(metadataXml);
+      // Parse XML to JSON format required by Tooling API
+      Map<String, Object> metadataJson = parseMetadataXmlToJson(metadataXml);
 
-    final Map<String, Object> metadata = new Map<String, Object>{
-      'FullName' => 'JT_DynamicQueryConfiguration.' + devName,
-      'Metadata' => metadataJson
-    };
+      final Map<String, Object> metadata = new Map<String, Object>{
+        'FullName' => 'JT_DynamicQueryConfiguration.' + devName,
+        'Metadata' => metadataJson
+      };
 
-    String requestBody = JSON.serialize(metadata);
-    System.debug(
-      LoggingLevel.FINE,
-      'Deploying Custom Metadata for: ' + devName
-    );
-    System.debug(LoggingLevel.FINE, 'Request body: ' + requestBody);
-
-    final HttpRequest request = JT_ToolingApiUtil.createToolingApiRestRequest(
-      endpointPath,
-      'POST',
-      30000
-    );
-    request.setBody(requestBody);
-
-    final Http httpClient = new Http();
-    final HttpResponse response = httpClient.send(request);
-
-    System.debug(
-      LoggingLevel.FINE,
-      'Response status: ' + response.getStatusCode()
-    );
-    System.debug(LoggingLevel.FINE, 'Response body: ' + response.getBody());
-
-    if (response.getStatusCode() == 201) {
-      final Map<String, Object> responseMap = (Map<String, Object>) JSON.deserializeUntyped(
-        response.getBody()
+      String requestBody = JSON.serialize(metadata);
+      System.debug(
+        LoggingLevel.FINE,
+        'Deploying Custom Metadata for: ' + devName
       );
-      return (String) responseMap.get('id');
-    } else {
-      // Parse error response for better error message
-      String errorMessage =
-        'Failed to deploy metadata (Status: ' +
-        response.getStatusCode() +
-        ')';
-      try {
-        Map<String, Object> errorMap = (Map<String, Object>) JSON.deserializeUntyped(
+      System.debug(LoggingLevel.FINE, 'Request body: ' + requestBody);
+
+      final HttpRequest request = JT_ToolingApiUtil.createToolingApiRestRequest(
+        endpointPath,
+        'POST',
+        30000
+      );
+      request.setBody(requestBody);
+
+      final Http httpClient = new Http();
+      final HttpResponse response = httpClient.send(request);
+
+      System.debug(
+        LoggingLevel.FINE,
+        'Response status: ' + response.getStatusCode()
+      );
+      System.debug(LoggingLevel.FINE, 'Response body: ' + response.getBody());
+
+      if (response.getStatusCode() == 201) {
+        final Map<String, Object> responseMap = (Map<String, Object>) JSON.deserializeUntyped(
           response.getBody()
         );
-        List<Object> errors = (List<Object>) errorMap.get('errors');
-        if (errors != null && !errors.isEmpty()) {
-          Map<String, Object> firstError = (Map<String, Object>) errors[0];
-          String message = (String) firstError.get('message');
-          if (String.isNotBlank(message)) {
-            errorMessage += ': ' + message;
+        result.success = true;
+        result.deploymentId = (String) responseMap.get('id');
+        return result;
+      } else {
+        // Parse error response for better error message
+        String errorMessage =
+          'Failed to deploy metadata (Status: ' +
+          response.getStatusCode() +
+          ')';
+        try {
+          Map<String, Object> errorMap = (Map<String, Object>) JSON.deserializeUntyped(
+            response.getBody()
+          );
+          List<Object> errors = (List<Object>) errorMap.get('errors');
+          if (errors != null && !errors.isEmpty()) {
+            Map<String, Object> firstError = (Map<String, Object>) errors[0];
+            String message = (String) firstError.get('message');
+            if (String.isNotBlank(message)) {
+              errorMessage += ': ' + message;
+            }
+          } else {
+            errorMessage += ': ' + response.getBody();
           }
-        } else {
+        } catch (Exception e) {
           errorMessage += ': ' + response.getBody();
         }
-      } catch (Exception e) {
-        errorMessage += ': ' + response.getBody();
+        result.errorMessage = errorMessage;
+        return result;
       }
-      throw new AuraHandledException(errorMessage);
+    } catch (Exception e) {
+      result.errorMessage = 'Error deploying metadata: ' + e.getMessage();
+      return result;
     }
   }
 

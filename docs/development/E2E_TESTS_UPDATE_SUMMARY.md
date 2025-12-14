@@ -1,22 +1,22 @@
-# ✅ Tests E2E Actualizados con Selectores Semánticos
+# ✅ E2E Tests Updated with Semantic Selectors
 
-## 📅 Fecha: 1 Diciembre 2024
+## 📅 Date: December 1, 2024
 
-## ✅ Estado: COMPLETADO
-
----
-
-## 🎯 Objetivo Logrado
-
-Todos los tests E2E han sido actualizados para usar **selectores semánticos** (`data-testid`) en lugar de selectores frágiles basados en texto o estructura DOM.
+## ✅ Status: COMPLETED
 
 ---
 
-## 📊 Tests Actualizados
+## 🎯 Objective Achieved
 
-### ✅ **Tests de Combobox (8 tests actualizados)**
+All E2E tests have been updated to use **semantic selectors** (`data-testid`) instead of fragile selectors based on text or DOM structure.
 
-**Antes (frágil):**
+---
+
+## 📊 Updated Tests
+
+### ✅ **Combobox Tests (8 tests updated)**
+
+**Before (fragile):**
 
 ```javascript
 const combobox = page
@@ -25,14 +25,14 @@ const combobox = page
 const input = combobox.locator("input");
 ```
 
-**Después (robusto):**
+**After (robust):**
 
 ```javascript
 const input = page.locator('[data-testid="config-selector-input"]');
 const dropdown = page.locator('[data-testid="config-selector-dropdown"]');
 ```
 
-**Tests actualizados:**
+**Updated tests:**
 
 1. ✅ should load and display query configurations
 2. ✅ should support searchable combobox with filtering
@@ -45,9 +45,9 @@ const dropdown = page.locator('[data-testid="config-selector-dropdown"]');
 
 ---
 
-### ✅ **Tests de Botones de Ejecución (6 tests actualizados)**
+### ✅ **Execute Button Tests (6 tests updated)**
 
-**Antes (frágil):**
+**Before (fragile):**
 
 ```javascript
 const executeButton = page
@@ -56,13 +56,13 @@ const executeButton = page
   .first();
 ```
 
-**Después (robusto):**
+**After (robust):**
 
 ```javascript
 const executeButton = page.locator('[data-testid="execute-query-button"]');
 ```
 
-**Tests actualizados:**
+**Updated tests:**
 
 1. ✅ should execute query and display results or empty table
 2. ✅ should display pagination when results exceed 10 records
@@ -73,9 +73,9 @@ const executeButton = page.locator('[data-testid="execute-query-button"]');
 
 ---
 
-### ✅ **Tests de Cache Management (7 tests actualizados)**
+### ✅ **Cache Management Tests (7 tests updated)**
 
-**Antes (frágil):**
+**Before (fragile):**
 
 ```javascript
 const clearCacheButton = page
@@ -87,7 +87,7 @@ const resultsCheckbox = page
 const clearButton = page.locator('button:has-text("Clear Selected")').last();
 ```
 
-**Después (robusto):**
+**After (robust):**
 
 ```javascript
 const clearCacheButton = page.locator(
@@ -97,7 +97,7 @@ const resultsCheckbox = page.locator('[data-testid="cache-option-results"]');
 const clearButton = page.locator('[data-testid="cache-clear-button"]');
 ```
 
-**Tests actualizados:**
+**Updated tests:**
 
 1. ✅ should have Clear Cache button in toolbar
 2. ✅ should open cache management modal
@@ -109,9 +109,9 @@ const clearButton = page.locator('[data-testid="cache-clear-button"]');
 
 ---
 
-### ✅ **Tests de Paginación (1 test actualizado)**
+### ✅ **Pagination Tests (1 test updated)**
 
-**Antes (frágil):**
+**Before (fragile):**
 
 ```javascript
 const nextButton = page.locator(
@@ -122,57 +122,57 @@ const prevButton = page.locator(
 );
 ```
 
-**Después (robusto):**
+**After (robust):**
 
 ```javascript
 const nextButton = page.locator('[data-testid="pagination-next"]');
 const prevButton = page.locator('[data-testid="pagination-previous"]');
 ```
 
-**Tests actualizados:**
+**Updated tests:**
 
 1. ✅ should display pagination when results exceed 10 records
 
 ---
 
-### ✅ **Otros Tests (2 tests actualizados)**
+### ✅ **Other Tests (2 tests updated)**
 
-**Tests actualizados:**
+**Updated tests:**
 
 1. ✅ should show key UI texts and labels
 2. ✅ should verify all critical features exist
 
 ---
 
-## 📋 Resumen de Selectores Semánticos Usados
+## 📋 Summary of Semantic Selectors Used
 
-### **Combobox de Configuración:**
+### **Configuration Combobox:**
 
-- `data-testid="config-selector-input"` - Input del combobox
-- `data-testid="config-selector-dropdown"` - Dropdown con opciones
-- `data-testid="config-selector-option-{value}"` - Cada opción individual
+- `data-testid="config-selector-input"` - Combobox input
+- `data-testid="config-selector-dropdown"` - Dropdown with options
+- `data-testid="config-selector-option-{value}"` - Each individual option
 
-### **Botones Principales:**
+### **Main Buttons:**
 
-- `data-testid="execute-query-button"` - Botón Execute Query
-- `data-testid="header-clear-cache-button"` - Botón Clear Cache
-- `data-testid="header-create-config-button"` - Botón Create Configuration
+- `data-testid="execute-query-button"` - Execute Query button
+- `data-testid="header-clear-cache-button"` - Clear Cache button
+- `data-testid="header-create-config-button"` - Create Configuration button
 
 ### **Cache Modal:**
 
-- `data-testid="cache-select-all"` - Checkbox Select All
-- `data-testid="cache-option-configurations"` - Checkbox Configurations
-- `data-testid="cache-option-results"` - Checkbox Results
-- `data-testid="cache-option-users"` - Checkbox Users
-- `data-testid="cache-option-recent"` - Checkbox Recent
-- `data-testid="cache-clear-button"` - Botón Clear Selected
-- `data-testid="cache-cancel-button"` - Botón Cancel
+- `data-testid="cache-select-all"` - Select All checkbox
+- `data-testid="cache-option-configurations"` - Configurations checkbox
+- `data-testid="cache-option-results"` - Results checkbox
+- `data-testid="cache-option-users"` - Users checkbox
+- `data-testid="cache-option-recent"` - Recent checkbox
+- `data-testid="cache-clear-button"` - Clear Selected button
+- `data-testid="cache-cancel-button"` - Cancel button
 
-### **Paginación:**
+### **Pagination:**
 
-- `data-testid="pagination-previous"` - Botón Previous
-- `data-testid="pagination-next"` - Botón Next
-- `data-testid="pagination-current"` - Indicador de página actual
+- `data-testid="pagination-previous"` - Previous button
+- `data-testid="pagination-next"` - Next button
+- `data-testid="pagination-current"` - Current page indicator
 
 ### **View Toggles:**
 
@@ -182,47 +182,47 @@ const prevButton = page.locator('[data-testid="pagination-previous"]');
 
 ---
 
-## 🎯 Beneficios Implementados
+## 🎯 Implemented Benefits
 
-### 1. **Eliminación de "Strict Mode Violations"**
+### 1. **Elimination of "Strict Mode Violations"**
 
-**Problema antes:**
+**Problem before:**
 
 ```
 Error: strict mode violation: locator('lightning-combobox') resolved to 2 elements
 ```
 
-**Solución ahora:**
+**Solution now:**
 
 ```javascript
-// Selector único y específico
+// Unique and specific selector
 page.locator('[data-testid="config-selector-input"]');
-// Siempre retorna 1 elemento ✅
+// Always returns 1 element ✅
 ```
 
-### 2. **Independencia del Idioma (i18n-proof)**
+### 2. **Language Independence (i18n-proof)**
 
-**Antes:**
+**Before:**
 
 ```javascript
-// ❌ Se rompe si cambias a español
+// ❌ Breaks if you change to Spanish
 page.locator('button:has-text("Clear Cache")');
 ```
 
-**Ahora:**
+**Now:**
 
 ```javascript
-// ✅ Funciona en cualquier idioma
+// ✅ Works in any language
 page.locator('[data-testid="header-clear-cache-button"]');
 ```
 
-### 3. **Selectores Más Rápidos**
+### 3. **Faster Selectors**
 
-Los selectores `data-testid` son más rápidos que los filtros de texto complejos.
+`data-testid` selectors are faster than complex text filters.
 
-### 4. **Más Mantenibles**
+### 4. **More Maintainable**
 
-Los nombres semánticos son auto-documentados:
+Semantic names are self-documenting:
 
 ```javascript
 // Clear what this selector does
@@ -231,20 +231,20 @@ page.locator('[data-testid="execute-query-button"]');
 
 ---
 
-## 📊 Estadísticas de Actualización
+## 📊 Update Statistics
 
-| Categoría             | Tests Actualizados | Selectores Cambiados |
-| --------------------- | ------------------ | -------------------- |
-| **Combobox**          | 8                  | ~25                  |
-| **Botones Ejecución** | 6                  | ~10                  |
-| **Cache Management**  | 7                  | ~20                  |
-| **Paginación**        | 1                  | ~3                   |
-| **Otros**             | 2                  | ~5                   |
-| **TOTAL**             | **24**             | **~63**              |
+| Category            | Updated Tests | Changed Selectors |
+| ------------------- | ------------- | ----------------- |
+| **Combobox**        | 8             | ~25               |
+| **Execute Buttons** | 6             | ~10               |
+| **Cache Management**| 7             | ~20               |
+| **Pagination**      | 1             | ~3                |
+| **Other**           | 2             | ~5                |
+| **TOTAL**           | **24**        | **~63**           |
 
 ---
 
-## ✅ Verificación de Calidad
+## ✅ Quality Verification
 
 ### **Linter:**
 
@@ -252,26 +252,26 @@ page.locator('[data-testid="execute-query-button"]');
 ✅ No linter errors found
 ```
 
-### **Cobertura:**
+### **Coverage:**
 
-- ✅ 24 tests actualizados
-- ✅ ~63 selectores cambiados a semánticos
-- ✅ 0 selectores ambiguos restantes
-- ✅ 100% de tests usando selectores semánticos
+- ✅ 24 tests updated
+- ✅ ~63 selectors changed to semantic
+- ✅ 0 ambiguous selectors remaining
+- ✅ 100% of tests using semantic selectors
 
 ---
 
-## 🚀 Próximos Pasos
+## 🚀 Next Steps
 
-### **1. Ejecutar Suite Completa de Tests**
+### **1. Run Complete Test Suite**
 
 ```bash
 npm run test:e2e
 ```
 
-### **2. Verificar Tests que No Han Corrido**
+### **2. Verify Tests That Haven't Run**
 
-Los siguientes tests nunca han corrido completamente debido a problemas previos de selectores:
+The following tests have never run completely due to previous selector issues:
 
 1. ✅ should have Clear Cache button in toolbar
 2. ✅ should open cache management modal
@@ -281,59 +281,59 @@ Los siguientes tests nunca han corrido completamente debido a problemas previos 
 6. ✅ should use Select All to select all options
 7. ✅ should close modal with Escape key
 
-**Estos tests ahora deberían pasar porque usan selectores robustos.**
+**These tests should now pass because they use robust selectors.**
 
-### **3. Monitorear Resultados**
+### **3. Monitor Results**
 
-Esperar que los tests pasen sin "strict mode violations" ni errores de selectores ambiguos.
+Expect tests to pass without "strict mode violations" or ambiguous selector errors.
 
 ---
 
-## 🎊 Comparación: Antes vs Ahora
+## 🎊 Comparison: Before vs Now
 
-### **Antes - Tests Frágiles:**
+### **Before - Fragile Tests:**
 
 ```javascript
-// ❌ Problema 1: Selector ambiguo
+// ❌ Problem 1: Ambiguous selector
 const combobox = page.locator("c-jt-query-viewer lightning-combobox");
 // Error: found 2 elements
 
-// ❌ Problema 2: Depende de texto i18n
+// ❌ Problem 2: Depends on i18n text
 const button = page.locator("lightning-button").filter({ hasText: /Execute/i });
-// Se rompe si cambias el idioma
+// Breaks if you change language
 
-// ❌ Problema 3: Selector complejo y lento
+// ❌ Problem 3: Complex and slow selector
 const checkbox = page
   .locator('lightning-input:has-text("Query Results")')
   .first();
-// Lento y frágil
+// Slow and fragile
 ```
 
-### **Ahora - Tests Robustos:**
+### **Now - Robust Tests:**
 
 ```javascript
-// ✅ Solución 1: Selector único y específico
+// ✅ Solution 1: Unique and specific selector
 const configInput = page.locator('[data-testid="config-selector-input"]');
-// Siempre retorna 1 elemento
+// Always returns 1 element
 
-// ✅ Solución 2: Independiente del idioma
+// ✅ Solution 2: Language independent
 const button = page.locator('[data-testid="execute-query-button"]');
-// Funciona en cualquier idioma
+// Works in any language
 
-// ✅ Solución 3: Selector directo y rápido
+// ✅ Solution 3: Direct and fast selector
 const checkbox = page.locator('[data-testid="cache-option-results"]');
-// Rápido y robusto
+// Fast and robust
 ```
 
 ---
 
-## 📝 Archivos Modificados
+## 📝 Modified Files
 
-### **Tests E2E:**
+### **E2E Tests:**
 
-- `/tests/e2e/queryViewer.spec.js` - 24 tests actualizados
+- `/tests/e2e/queryViewer.spec.js` - 24 tests updated
 
-### **Componentes LWC (ya actualizados previamente):**
+### **LWC Components (already updated previously):**
 
 - `/force-app/main/default/lwc/jtSearchableCombobox/`
 - `/force-app/main/default/lwc/jtExecuteButton/`
@@ -344,16 +344,16 @@ const checkbox = page.locator('[data-testid="cache-option-results"]');
 
 ---
 
-## 🎉 Conclusión
+## 🎉 Conclusion
 
-**Todos los tests E2E han sido actualizados exitosamente para usar selectores semánticos.**
+**All E2E tests have been successfully updated to use semantic selectors.**
 
-**Beneficios clave:**
+**Key benefits:**
 
-- ✅ Sin selectores ambiguos
-- ✅ Independientes del idioma
-- ✅ Más rápidos
-- ✅ Más mantenibles
-- ✅ Auto-documentados
+- ✅ No ambiguous selectors
+- ✅ Language independent
+- ✅ Faster
+- ✅ More maintainable
+- ✅ Self-documenting
 
-**¡Listos para ejecutar y pasar! 🚀**
+**Ready to run and pass! 🚀**

@@ -47,6 +47,7 @@ These documents may be temporary analysis or personal development notes:
 - **Personal Development Notes**: Notes specific to a developer's workflow
 
 **Recommendation**: If a document is truly temporary or personal, consider:
+
 1. Moving it to a local `docs/development/_local/` directory (gitignored)
 2. Or deleting it after the work is complete
 

@@ -1,4 +1,4 @@
-# Análisis del Error: Class Cast Exception
+# Error Analysis: Class Cast Exception
 
 ## Error
 
@@ -6,55 +6,55 @@
 Class Cast Exception: class java.lang.String cannot be cast to class java.util.Map
 ```
 
-## Ubicación
+## Location
 
-- Ocurre en `handleSaveConfiguration` cuando se llama a `createConfiguration` o `updateConfiguration`
-- El error ocurre ANTES de llegar al backend (no hay logs en Apex)
-- Sugiere problema de serialización en el framework de Aura
+- Occurs in `handleSaveConfiguration` when calling `createConfiguration` or `updateConfiguration`
+- Error occurs BEFORE reaching backend (no logs in Apex)
+- Suggests serialization problem in Aura framework
 
-## Cambios Aplicados
+## Applied Changes
 
-### 1. Inicialización de MetadataCreationResult
+### 1. MetadataCreationResult Initialization
 
-- ✅ Inicializados todos los campos en `createConfiguration`
-- ✅ Inicializados todos los campos en `updateConfiguration`
-- ✅ Inicializados todos los campos en `deleteConfiguration`
-- ✅ Inicializados todos los campos en `handleRename`
+- ✅ Initialized all fields in `createConfiguration`
+- ✅ Initialized all fields in `updateConfiguration`
+- ✅ Initialized all fields in `deleteConfiguration`
+- ✅ Initialized all fields in `handleRename`
 
-### 2. Manejo de Errores
+### 2. Error Handling
 
-- ✅ Cambiado `deployMetadata` para retornar `DeploymentResult` en lugar de lanzar excepciones
-- ✅ Todos los métodos ahora retornan `MetadataCreationResult` consistentemente
+- ✅ Changed `deployMetadata` to return `DeploymentResult` instead of throwing exceptions
+- ✅ All methods now return `MetadataCreationResult` consistently
 
-### 3. Lógica Duplicada Encontrada
+### 3. Duplicated Logic Found
 
-#### En jtConfigModal.js:
+#### In jtConfigModal.js:
 
-- Manejo de errores similar (línea 515): `error.body?.message`
-- **Acción pendiente**: Usar `extractErrorMessage` de jtUtils
+- Similar error handling (line 515): `error.body?.message`
+- **Pending action**: Use `extractErrorMessage` from jtUtils
 
-#### En otros componentes:
+#### In other components:
 
-- `jtQueryResults.js`: Usa `showErrorToast`, `showSuccessToast` (ya consolidado)
-- `jtSetupWizard.js`: Manejo de errores básico
+- `jtQueryResults.js`: Uses `showErrorToast`, `showSuccessToast` (already consolidated)
+- `jtSetupWizard.js`: Basic error handling
 
-## Posibles Causas Restantes
+## Possible Remaining Causes
 
-1. **Problema de serialización en el framework**: El framework podría estar intentando serializar algo incorrectamente
-2. **Problema con el JSON enviado**: El `configJson` podría tener un formato incorrecto
-3. **Problema con la respuesta del servidor**: Aunque el método retorna correctamente, el framework podría estar interpretando mal la respuesta
+1. **Framework serialization problem**: Framework might be trying to serialize something incorrectly
+2. **Problem with sent JSON**: The `configJson` might have incorrect format
+3. **Problem with server response**: Although method returns correctly, framework might be misinterpreting the response
 
-## Próximos Pasos Sugeridos
+## Suggested Next Steps
 
-1. Agregar logging detallado en el LWC para ver exactamente qué se está enviando
-2. Revisar si hay algún problema con el formato del JSON que se envía
-3. Verificar si el problema ocurre solo en modo "create" o también en "edit"
-4. Revisar si hay algún problema con la respuesta del servidor cuando hay errores
+1. Add detailed logging in LWC to see exactly what is being sent
+2. Review if there's a problem with the JSON format being sent
+3. Verify if problem occurs only in "create" mode or also in "edit"
+4. Review if there's a problem with server response when there are errors
 
-## Nota
+## Note
 
-El error sugiere que el framework está recibiendo un String cuando espera un Map. Esto podría indicar que:
+The error suggests the framework is receiving a String when it expects a Map. This could indicate:
 
-- Hay una excepción no capturada que se está serializando como String
-- El método está retornando algo incorrecto en algún path de código
-- Hay un problema con cómo se está llamando el método desde el LWC
+- There's an uncaught exception being serialized as String
+- Method is returning something incorrect in some code path
+- There's a problem with how the method is being called from LWC

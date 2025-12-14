@@ -1,76 +1,76 @@
-# Plan de Refactorización: jtQueryViewer.js
+# Refactoring Plan: jtQueryViewer.js
 
-## Análisis Actual
+## Current Analysis
 
-- **Tamaño**: 2243 líneas
-- **Métodos**: 99 métodos/propiedades
-- **Problemas identificados**:
-  1. Métodos de toast duplicados (ya existen en `jtUtils.js`)
-  2. Lógica de modales mezclada con lógica de negocio
-  3. Lógica de paginación duplicada (preview y resultados principales)
-  4. Método `getFieldType` duplicado (ya existe en `jtUtils.js`)
-  5. Muchos getters que podrían simplificarse
-  6. Lógica de ejecución de queries muy larga
+- **Size**: 2243 lines
+- **Methods**: 99 methods/properties
+- **Identified problems**:
+  1. Duplicated toast methods (already exist in `jtUtils.js`)
+  2. Modal logic mixed with business logic
+  3. Duplicated pagination logic (preview and main results)
+  4. Duplicated `getFieldType` method (already exists in `jtUtils.js`)
+  5. Many getters that could be simplified
+  6. Very long query execution logic
 
-## Plan de Refactorización (Priorizado)
+## Refactoring Plan (Prioritized)
 
-### Fase 1: Eliminar Código Duplicado (Alto Impacto, Bajo Riesgo)
+### Phase 1: Remove Duplicated Code (High Impact, Low Risk)
 
-1. **Reemplazar métodos de toast locales con `jtUtils`**
-   - Eliminar: `showSuccessToast`, `showErrorToast`, `showInfoToast`, `showWarningToast`
-   - Reemplazar todas las llamadas (57 ocurrencias) con funciones de `jtUtils`
-   - **Ahorro estimado**: ~100 líneas
+1. **Replace local toast methods with `jtUtils`**
+   - Remove: `showSuccessToast`, `showErrorToast`, `showInfoToast`, `showWarningToast`
+   - Replace all calls (57 occurrences) with `jtUtils` functions
+   - **Estimated savings**: ~100 lines
 
-2. **Eliminar `getFieldType` duplicado**
-   - Ya existe en `jtUtils.js`
-   - Reemplazar llamadas locales
-   - **Ahorro estimado**: ~15 líneas
+2. **Remove duplicated `getFieldType`**
+   - Already exists in `jtUtils.js`
+   - Replace local calls
+   - **Estimated savings**: ~15 lines
 
-### Fase 2: Extraer Lógica de Paginación (Medio Impacto, Medio Riesgo)
+### Phase 2: Extract Pagination Logic (Medium Impact, Medium Risk)
 
-3. **Crear componente `jtPagination` o utilidad**
-   - Extraer lógica de paginación (preview y resultados)
-   - Métodos: `handlePreviousPage`, `handleNextPage`, `resetPagination`, getters relacionados
-   - **Ahorro estimado**: ~150 líneas
+3. **Create `jtPagination` component or utility**
+   - Extract pagination logic (preview and results)
+   - Methods: `handlePreviousPage`, `handleNextPage`, `resetPagination`, related getters
+   - **Estimated savings**: ~150 lines
 
-### Fase 3: Extraer Lógica de Modales (Medio Impacto, Medio Riesgo)
+### Phase 3: Extract Modal Logic (Medium Impact, Medium Risk)
 
-4. **Crear servicio de gestión de modales**
-   - Extraer: `handleOpenCacheModal`, `handleCloseCacheModal`, `handleShowCreateModal`, `handleShowEditModal`, `handleCloseUsageModal`
-   - Centralizar estado de modales
-   - **Ahorro estimado**: ~100 líneas
+4. **Create modal management service**
+   - Extract: `handleOpenCacheModal`, `handleCloseCacheModal`, `handleShowCreateModal`, `handleShowEditModal`, `handleCloseUsageModal`
+   - Centralize modal state
+   - **Estimated savings**: ~100 lines
 
-### Fase 4: Simplificar Getters (Bajo Impacto, Bajo Riesgo)
+### Phase 4: Simplify Getters (Low Impact, Low Risk)
 
-5. **Consolidar getters relacionados**
-   - Agrupar getters de paginación, vista, estado
-   - Usar computed properties donde sea posible
-   - **Ahorro estimado**: ~50 líneas
+5. **Consolidate related getters**
+   - Group pagination, view, state getters
+   - Use computed properties where possible
+   - **Estimated savings**: ~50 lines
 
-### Fase 5: Extraer Lógica de Ejecución de Queries (Alto Impacto, Alto Riesgo)
+### Phase 5: Extract Query Execution Logic (High Impact, High Risk)
 
-6. **Crear componente `jtQueryExecutor`**
-   - Extraer: `executeQueryNormal`, `executeQueryWithBatches`, `assessQueryRiskAndExecute`
-   - Manejar toda la lógica de ejecución y resultados
-   - **Ahorro estimado**: ~300 líneas
+6. **Create `jtQueryExecutor` component**
+   - Extract: `executeQueryNormal`, `executeQueryWithBatches`, `assessQueryRiskAndExecute`
+   - Handle all execution and results logic
+   - **Estimated savings**: ~300 lines
 
-## Métricas Esperadas Post-Refactorización
+## Expected Metrics Post-Refactoring
 
-- **Líneas reducidas**: ~715 líneas (32% reducción)
-- **Métodos reducidos**: ~30 métodos (30% reducción)
-- **Mantenibilidad**: Significativamente mejorada
-- **Testabilidad**: Mejorada (componentes más pequeños y enfocados)
+- **Reduced lines**: ~715 lines (32% reduction)
+- **Reduced methods**: ~30 methods (30% reduction)
+- **Maintainability**: Significantly improved
+- **Testability**: Improved (smaller, focused components)
 
-## Orden de Ejecución Recomendado
+## Recommended Execution Order
 
-1. ✅ Fase 1 (ya iniciado)
-2. Fase 2
-3. Fase 3
-4. Fase 4
-5. Fase 5 (requiere más análisis)
+1. ✅ Phase 1 (already started)
+2. Phase 2
+3. Phase 3
+4. Phase 4
+5. Phase 5 (requires more analysis)
 
-## Notas
+## Notes
 
-- Cada fase debe incluir tests
-- Hacer commits incrementales después de cada fase
-- Validar funcionalidad después de cada cambio
+- Each phase must include tests
+- Make incremental commits after each phase
+- Validate functionality after each change

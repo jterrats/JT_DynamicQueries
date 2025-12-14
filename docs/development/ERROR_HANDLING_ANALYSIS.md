@@ -1,58 +1,58 @@
-# Análisis de Manejo de Errores: "Uncommitted Work Pending"
+# Error Handling Analysis: "Uncommitted Work Pending"
 
-## Problema Identificado
+## Identified Problem
 
-El error "You have uncommitted work pending. Please commit or rollback before calling out" ocurre cuando:
+The error "You have uncommitted work pending. Please commit or rollback before calling out" occurs when:
 
-1. **En Run As User:**
-   - Se crea/actualiza `JT_RunAsTest_Execution__c` (DML)
-   - Luego se intenta callout a Tooling API
-   - Salesforce no permite DML + callout en la misma transacción
-   - Esto ocurre especialmente durante deployments/setup operations
+1. **In Run As User:**
+   - `JT_RunAsTest_Execution__c` is created/updated (DML)
+   - Then a callout to Tooling API is attempted
+   - Salesforce does not allow DML + callout in the same transaction
+   - This occurs especially during deployments/setup operations
 
-2. **Flujo actual:**
+2. **Current Flow:**
 
    ```
    JT_RunAsTestExecutor.executeAsUser()
-   → Crea JT_RunAsTest_Execution__c (DML)
-   → Encola JT_RunAsTestEnqueuer (Queueable)
+   → Creates JT_RunAsTest_Execution__c (DML)
+   → Enqueues JT_RunAsTestEnqueuer (Queueable)
    → JT_RunAsTestEnqueuer.execute()
-   → Intenta callout síncrono (403 ORG_ADMIN_LOCKED)
-   → Intenta fallback asíncrono
+   → Attempts synchronous callout (403 ORG_ADMIN_LOCKED)
+   → Attempts async fallback
    → ❌ CalloutException: "uncommitted work pending"
    ```
 
-3. **En "Where is this used?":**
-   - Usa Continuation (no tiene problema de DML + callout)
-   - Pero podría tener otros errores relacionados con deployments
+3. **In "Where is this used?":**
+   - Uses Continuation (no DML + callout problem)
+   - But could have other deployment-related errors
 
-## Impacto en UX
+## UX Impact
 
-### Escenarios donde ocurre:
+### Scenarios where it occurs:
 
-1. **Durante Deployments:**
-   - Org está bloqueada para operaciones admin
-   - Usuario ve error técnico confuso
-   - No sabe que debe esperar o reintentar
+1. **During Deployments:**
+   - Org is locked for admin operations
+   - User sees confusing technical error
+   - Doesn't know to wait or retry
 
-2. **Durante Setup Operations:**
-   - Configuración inicial de la app
-   - Migraciones de datos
-   - Operaciones masivas en progreso
+2. **During Setup Operations:**
+   - Initial app configuration
+   - Data migrations
+   - Bulk operations in progress
 
-3. **Durante Operaciones Concurrentes:**
-   - Múltiples usuarios ejecutando Run As simultáneamente
-   - Límites de org alcanzados
+3. **During Concurrent Operations:**
+   - Multiple users executing Run As simultaneously
+   - Org limits reached
 
-### Mensajes Actuales (Técnicos):
+### Current Messages (Technical):
 
 - ❌ "Failed to execute test: You have uncommitted work pending. Please commit or rollback before calling out"
 - ❌ "Synchronous execution failed with HTTP status: 403"
-- ❌ Stack traces visibles al usuario
+- ❌ Stack traces visible to user
 
-### Mensajes Propuestos (User-Friendly):
+### Proposed Messages (User-Friendly):
 
-1. **Para "uncommitted work pending":**
+1. **For "uncommitted work pending":**
 
    ```
    "The system is currently processing another operation.
@@ -60,23 +60,23 @@ El error "You have uncommitted work pending. Please commit or rollback before ca
    This may occur during deployments or system maintenance."
    ```
 
-2. **Para "ORG_ADMIN_LOCKED" (403):**
+2. **For "ORG_ADMIN_LOCKED" (403):**
 
    ```
    "The system is temporarily unavailable due to an ongoing deployment or maintenance operation.
    Please wait a few minutes and try again."
    ```
 
-3. **Para errores de deployment/setup:**
+3. **For deployment/setup errors:**
    ```
    "This feature is temporarily unavailable.
    The system may be processing a deployment or configuration change.
    Please try again in a few minutes."
    ```
 
-## Cambios Propuestos
+## Proposed Changes
 
-### 1. Custom Labels a Crear:
+### 1. Custom Labels to Create:
 
 ```xml
 <labels>
@@ -93,30 +93,30 @@ El error "You have uncommitted work pending. Please commit or rollback before ca
 </labels>
 ```
 
-### 2. Cambios en `JT_RunAsTestEnqueuer.cls`:
+### 2. Changes in `JT_RunAsTestEnqueuer.cls`:
 
 ```apex
-// En execute() - Detectar error específico
+// In execute() - Detect specific error
 catch (Exception e) {
     String errorMessage = e.getMessage();
     String userFriendlyMessage;
 
-    // Detectar "uncommitted work pending"
+    // Detect "uncommitted work pending"
     if (errorMessage.contains('uncommitted work') ||
         errorMessage.contains('CalloutException')) {
         userFriendlyMessage = Label.JT_RunAsTestEnqueuer_uncommittedWorkPending;
     }
-    // Detectar ORG_ADMIN_LOCKED (403)
+    // Detect ORG_ADMIN_LOCKED (403)
     else if (errorMessage.contains('ORG_ADMIN_LOCKED') ||
              errorMessage.contains('admin operation already in progress')) {
         userFriendlyMessage = Label.JT_RunAsTestEnqueuer_orgAdminLocked;
     }
-    // Otros errores de deployment
+    // Other deployment errors
     else if (errorMessage.contains('deployment') ||
              errorMessage.contains('maintenance')) {
         userFriendlyMessage = Label.JT_RunAsTestEnqueuer_deploymentInProgress;
     }
-    // Error genérico
+    // Generic error
     else {
         userFriendlyMessage = 'Failed to execute test: ' + errorMessage;
     }
@@ -125,10 +125,10 @@ catch (Exception e) {
 }
 ```
 
-### 3. Cambios en `JT_UsageFinder.cls`:
+### 3. Changes in `JT_UsageFinder.cls`:
 
 ```apex
-// En processFlowSearchCallback() - Manejar errores de deployment
+// In processFlowSearchCallback() - Handle deployment errors
 catch (Exception e) {
     String errorMessage = e.getMessage();
     String userFriendlyError;
@@ -145,59 +145,59 @@ catch (Exception e) {
 }
 ```
 
-### 4. Cambios en LWC (`jtQueryViewer.js`):
+### 4. Changes in LWC (`jtQueryViewer.js`):
 
 ```javascript
-// En handleTestResults() - Mostrar mensajes user-friendly
+// In handleTestResults() - Show user-friendly messages
 if (!result.success) {
-  // El mensaje ya viene user-friendly desde Apex
+  // Message already comes user-friendly from Apex
   this.showError = true;
   this.errorMessage = result.errorMessage;
-  // No mostrar toast adicional si ya hay banner de error
+  // Don't show additional toast if error banner already displayed
 }
 ```
 
-## Consideraciones
+## Considerations
 
-### ✅ Ventajas:
+### ✅ Advantages:
 
-1. **Mejor UX:** Usuarios entienden qué pasó y qué hacer
-2. **Menos confusión:** No ven stack traces técnicos
-3. **Acción clara:** Saben que deben esperar y reintentar
-4. **Consistencia:** Mismo patrón para todos los errores de deployment
+1. **Better UX:** Users understand what happened and what to do
+2. **Less confusion:** No technical stack traces visible
+3. **Clear action:** They know to wait and retry
+4. **Consistency:** Same pattern for all deployment errors
 
-### ⚠️ Desventajas:
+### ⚠️ Disadvantages:
 
-1. **Menos información para debugging:** Perdemos detalles técnicos
-   - **Solución:** Mantener detalles técnicos en Debug Logs
+1. **Less information for debugging:** We lose technical details
+   - **Solution:** Keep technical details in Debug Logs
 
-2. **Detección de errores:** Necesitamos detectar correctamente los tipos de error
-   - **Solución:** Usar múltiples patrones de detección
+2. **Error detection:** We need to correctly detect error types
+   - **Solution:** Use multiple detection patterns
 
-3. **Mensajes genéricos:** Podrían no cubrir todos los casos
-   - **Solución:** Tener fallback a mensaje genérico con instrucciones
+3. **Generic messages:** Might not cover all cases
+   - **Solution:** Have fallback to generic message with instructions
 
-## Próximos Pasos
+## Next Steps
 
-1. ✅ Crear Custom Labels
-2. ✅ Actualizar `JT_RunAsTestEnqueuer.cls` con detección específica
-3. ✅ Actualizar `JT_UsageFinder.cls` para manejar errores similares
-4. ✅ Verificar que LWC muestra mensajes correctamente
-5. ✅ Probar durante deployment real
-6. ✅ Actualizar documentación
+1. ✅ Create Custom Labels
+2. ✅ Update `JT_RunAsTestEnqueuer.cls` with specific detection
+3. ✅ Update `JT_UsageFinder.cls` to handle similar errors
+4. ✅ Verify LWC displays messages correctly
+5. ✅ Test during real deployment
+6. ✅ Update documentation
 
 ## Testing
 
-### Escenarios a probar:
+### Scenarios to test:
 
-1. **Durante deployment activo:**
-   - Ejecutar Run As User → Debe mostrar mensaje user-friendly
-   - Ejecutar "Where is this used?" → Debe manejar error gracefully
+1. **During active deployment:**
+   - Execute Run As User → Should show user-friendly message
+   - Execute "Where is this used?" → Should handle error gracefully
 
-2. **Con operaciones concurrentes:**
-   - Múltiples usuarios ejecutando simultáneamente
-   - Verificar que mensajes son apropiados
+2. **With concurrent operations:**
+   - Multiple users executing simultaneously
+   - Verify messages are appropriate
 
-3. **Con setup operations:**
-   - Durante configuración inicial
-   - Durante migraciones
+3. **With setup operations:**
+   - During initial configuration
+   - During migrations

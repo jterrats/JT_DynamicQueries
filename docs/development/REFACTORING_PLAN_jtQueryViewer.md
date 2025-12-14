@@ -1,23 +1,23 @@
-# Plan de Refactorización: jtQueryViewer.js
+# Refactoring Plan: jtQueryViewer.js
 
-## Estado Actual
+## Current State
 
-- **Líneas de código**: 2,289
-- **Métodos**: 55
+- **Lines of code**: 2,289
+- **Methods**: 55
 - **Console.log/error/warn**: 60
-- **Imports de Custom Labels**: 89 individuales
+- **Custom Label imports**: 89 individual
 
-## Redundancias Identificadas
+## Identified Redundancies
 
-### 1. Console.log Statements (60 encontrados)
+### 1. Console.log Statements (60 found)
 
-- Muchos son de debug temporal que deberían eliminarse
-- Algunos son útiles pero deberían estar detrás de un flag de debug
-- **Acción**: Eliminar debug temporal, mantener solo logs críticos
+- Many are temporary debug that should be removed
+- Some are useful but should be behind a debug flag
+- **Action**: Remove temporary debug, keep only critical logs
 
-### 2. Manejo de Errores Duplicado
+### 2. Duplicated Error Handling
 
-- Patrón repetido de extracción de mensajes de error:
+- Repeated pattern of error message extraction:
   ```javascript
   error.body?.message ||
     error.body?.pageErrors?.[0]?.message ||
@@ -25,47 +25,47 @@
     error.message ||
     fallback;
   ```
-- **Acción**: Extraer a función helper `extractErrorMessage(error, fallback)` en jtUtils
+- **Action**: Extract to helper function `extractErrorMessage(error, fallback)` in jtUtils
 
-### 3. Validaciones Repetidas
+### 3. Repeated Validations
 
-- Validación de `configToUse` null/undefined
-- Validación de campos requeridos (label, developerName, baseQuery)
-- Validación de query syntax
-- **Acción**: Extraer funciones de validación a helpers
+- Validation of `configToUse` null/undefined
+- Validation of required fields (label, developerName, baseQuery)
+- Validation of query syntax
+- **Action**: Extract validation functions to helpers
 
-### 4. Lógica de Polling
+### 4. Polling Logic
 
-- `startPollingTestResults()` tiene lógica compleja que podría reutilizarse
-- **Acción**: Crear función helper genérica `pollUntilComplete()` en jtUtils
+- `startPollingTestResults()` has complex logic that could be reused
+- **Action**: Create generic helper function `pollUntilComplete()` in jtUtils
 
 ### 5. Custom Labels
 
-- 89 imports individuales
-- Ya existe `getLabels()` en jtUtils pero no se está usando
-- **Acción**: Usar `getLabels()` para simplificar imports
+- 89 individual imports
+- `getLabels()` already exists in jtUtils but not being used
+- **Action**: Use `getLabels()` to simplify imports
 
-## Plan de Refactorización
+## Refactoring Plan
 
-### Fase 1: Limpieza Inmediata
+### Phase 1: Immediate Cleanup
 
-1. ✅ Eliminar console.log de debug temporal
-2. ✅ Extraer `extractErrorMessage()` a jtUtils
-3. ✅ Extraer funciones de validación a helpers
+1. ✅ Remove temporary debug console.log
+2. ✅ Extract `extractErrorMessage()` to jtUtils
+3. ✅ Extract validation functions to helpers
 
-### Fase 2: Simplificación
+### Phase 2: Simplification
 
-4. ✅ Usar `getLabels()` para Custom Labels
-5. ✅ Extraer lógica de polling a helper genérico
-6. ✅ Consolidar manejo de errores
+4. ✅ Use `getLabels()` for Custom Labels
+5. ✅ Extract polling logic to generic helper
+6. ✅ Consolidate error handling
 
-### Fase 3: Optimización
+### Phase 3: Optimization
 
-7. ✅ Revisar métodos largos y dividirlos
-8. ✅ Identificar y extraer lógica común
+7. ✅ Review long methods and split them
+8. ✅ Identify and extract common logic
 
-## Métricas Objetivo
+## Target Metrics
 
-- Reducir a ~1,800 líneas (reducción del 21%)
-- Reducir console.log a <10 (solo críticos)
-- Simplificar imports de labels
+- Reduce to ~1,800 lines (21% reduction)
+- Reduce console.log to <10 (only critical)
+- Simplify label imports

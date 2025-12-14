@@ -1,57 +1,57 @@
-# Análisis: Máquina de Estados Finitos (FSM) para JT_DynamicQueries
+# Analysis: Finite State Machine (FSM) for JT_DynamicQueries
 
-## Estado Actual
+## Current State
 
-### Estados Existentes (Test_Status\_\_c)
+### Existing States (Test_Status\_\_c)
 
-- `Queued`: Ejecución creada, esperando procesamiento
-- `Running`: Ejecución en progreso
-- `Completed`: Ejecución exitosa con resultados
-- `Failed`: Ejecución fallida
-- `Expired`: Timeout o ejecución abandonada
+- `Queued`: Execution created, waiting for processing
+- `Running`: Execution in progress
+- `Completed`: Successful execution with results
+- `Failed`: Failed execution
+- `Expired`: Timeout or abandoned execution
 
-### Flujo Actual
+### Current Flow
 
 ```
 1. LWC → executeAsUser()
    ↓
-2. Queued (crea JT_RunAsTest_Execution__c)
+2. Queued (creates JT_RunAsTest_Execution__c)
    ↓
-3. Running (actualiza antes de enqueue Queueable)
+3. Running (updates before enqueue Queueable)
    ↓
 4. Queueable.execute()
    ↓
 5. Tooling API callout (runTestsSynchronous)
    ↓
-6. Extrae Debug Log (REST API)
+6. Extracts Debug Log (REST API)
    ↓
-7. Parsea JSON del log
+7. Parses JSON from log
    ↓
-8. Completed/Failed (actualiza registro)
+8. Completed/Failed (updates record)
    ↓
-9. LWC polling detecta cambio
+9. LWC polling detects change
 ```
 
-## Propuesta: FSM Ligera (Recomendada)
+## Proposal: Lightweight FSM (Recommended)
 
-### Opción 1: Solo Mejorar Validación de Transiciones (Mínimo)
+### Option 1: Only Improve Transition Validation (Minimum)
 
-**Ventajas:**
+**Advantages:**
 
-- Bajo overhead
-- Previene estados inválidos
-- Fácil de implementar
+- Low overhead
+- Prevents invalid states
+- Easy to implement
 
-**Implementación:**
+**Implementation:**
 
 ```apex
 public class ExecutionStateManager {
   private static final Map<String, Set<String>> VALID_TRANSITIONS = new Map<String, Set<String>>{
     'Queued' => new Set<String>{ 'Running', 'Failed', 'Expired' },
     'Running' => new Set<String>{ 'Completed', 'Failed', 'Expired' },
-    'Completed' => new Set<String>{}, // Estado final
-    'Failed' => new Set<String>{}, // Estado final
-    'Expired' => new Set<String>{} // Estado final
+    'Completed' => new Set<String>{}, // Final state
+    'Failed' => new Set<String>{}, // Final state
+    'Expired' => new Set<String>{} // Final state
   };
 
   public static Boolean isValidTransition(String fromState, String toState) {
@@ -74,24 +74,24 @@ public class ExecutionStateManager {
 }
 ```
 
-### Opción 2: FSM Completa con Sub-Estados (Completa)
+### Option 2: Complete FSM with Sub-States (Complete)
 
-**Ventajas:**
+**Advantages:**
 
-- Máxima visibilidad del proceso
-- Mejor debugging
-- Manejo robusto de errores
+- Maximum process visibility
+- Better debugging
+- Robust error handling
 
-**Desventajas:**
+**Disadvantages:**
 
-- Más complejidad
-- Más campos en el objeto
-- Posible over-engineering
+- More complexity
+- More fields in object
+- Possible over-engineering
 
-**Implementación:**
+**Implementation:**
 
 ```apex
-// Agregar campo Sub_Status__c (Text) al objeto
+// Add Sub_Status__c (Text) field to object
 
 public enum ExecutionSubState {
     INITIALIZING,
@@ -109,46 +109,46 @@ public class ExecutionStateManager {
         ExecutionSubState subState
     ) {
         execution.Sub_Status__c = subState.name();
-        // Log para debugging
+        // Log for debugging
         addStateLog(execution, 'Transitioned to: ' + subState.name());
     }
 }
 ```
 
-## Recomendación Final
+## Final Recommendation
 
-### ✅ Implementar: Opción 1 (Validación de Transiciones)
+### ✅ Implement: Option 1 (Transition Validation)
 
-**Razones:**
+**Reasons:**
 
-1. **Costo/Beneficio:** Bajo costo, alto beneficio
-2. **Simplicidad:** No requiere cambios en el objeto
-3. **Prevención de Bugs:** Evita estados inválidos
-4. **Mantenibilidad:** Fácil de entender y mantener
+1. **Cost/Benefit:** Low cost, high benefit
+2. **Simplicity:** No object changes required
+3. **Bug Prevention:** Prevents invalid states
+4. **Maintainability:** Easy to understand and maintain
 
-### ❌ No Implementar (Por Ahora): Opción 2 (FSM Completa)
+### ❌ Don't Implement (For Now): Option 2 (Complete FSM)
 
-**Razones:**
+**Reasons:**
 
-1. **Over-Engineering:** El flujo actual funciona bien
-2. **Complejidad:** Añade complejidad sin necesidad inmediata
-3. **YAGNI:** "You Aren't Gonna Need It" - resolver problemas cuando aparezcan
+1. **Over-Engineering:** Current flow works well
+2. **Complexity:** Adds complexity without immediate need
+3. **YAGNI:** "You Aren't Gonna Need It" - solve problems when they appear
 
-### Cuándo Considerar FSM Completa
+### When to Consider Complete FSM
 
-Considera implementar FSM completa si:
+Consider implementing complete FSM if:
 
-- ✅ Necesitas reintentos automáticos
-- ✅ Tienes múltiples flujos paralelos complejos
-- ✅ Necesitas auditoría detallada de cada paso
-- ✅ Tienes problemas frecuentes de estados inconsistentes
+- ✅ You need automatic retries
+- ✅ You have multiple complex parallel flows
+- ✅ You need detailed audit of each step
+- ✅ You have frequent inconsistent state problems
 
-## Conclusión
+## Conclusion
 
-**Para tu proyecto actual:**
+**For your current project:**
 
-- ✅ Implementa validación de transiciones (Opción 1)
-- ❌ No implementes FSM completa (Opción 2) - por ahora
+- ✅ Implement transition validation (Option 1)
+- ❌ Don't implement complete FSM (Option 2) - for now
 
-**El código actual ya tiene una FSM implícita funcional.**
-**Lo que falta es validación explícita de transiciones, no una reescritura completa.**
+**Current code already has a functional implicit FSM.**
+**What's missing is explicit transition validation, not a complete rewrite.**

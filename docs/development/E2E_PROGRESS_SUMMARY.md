@@ -1,32 +1,32 @@
-# 🎯 E2E Tests - Resumen de Progreso
+# 🎯 E2E Tests - Progress Summary
 
-## ✅ LOGROS COMPLETADOS
+## ✅ COMPLETED ACHIEVEMENTS
 
-### 1. ✅ Autenticación con SF CLI (RESUELTO)
+### 1. ✅ SF CLI Authentication (RESOLVED)
 
-**Problema**: Tests iban a la página de login  
-**Solución**: Inyectar cookies ANTES de navegar
+**Problem**: Tests went to login page  
+**Solution**: Inject cookies BEFORE navigating
 
 ```javascript
-// ✅ CORRECTO - Cookies PRIMERO
+// ✅ CORRECT - Cookies FIRST
 await page.context().addCookies([
     { name: 'sid', value: session.accessToken },
     { name: 'sid_Client', value: session.accessToken }
 ]);
-await page.goto(url); // Ya autenticado
+await page.goto(url); // Already authenticated
 
-✅ Resultado: Browser va directo a Salesforce sin login
+✅ Result: Browser goes directly to Salesforce without login
 ```
 
-### 2. ✅ Permission Set Auto-Asignado (RESUELTO)
+### 2. ✅ Permission Set Auto-Assigned (RESOLVED)
 
-**Problema**: Usuario podría no tener el Permission Set  
-**Solución**: Script Apex que lo asigna automáticamente
+**Problem**: User might not have Permission Set  
+**Solution**: Apex script that assigns it automatically
 
 ```javascript
 // scripts/apex/assign-permset.apex
-// Se ejecuta antes de cada suite de tests
-assignPermissionSet(); // ✅ Auto-asigna si no lo tiene
+// Executes before each test suite
+assignPermissionSet(); // ✅ Auto-assigns if not present
 ```
 
 **Output**:
@@ -35,121 +35,121 @@ assignPermissionSet(); // ✅ Auto-asigna si no lo tiene
 ✅ Permission Set "JT_Dynamic_Queries" assigned to user
 ```
 
-### 3. ✅ Detección de Ambiente (SANDBOX vs PRODUCTION)
+### 3. ✅ Environment Detection (SANDBOX vs PRODUCTION)
 
-**LWC**: Usa Organization.IsSandbox  
-**E2E**: Usa URL.includes('sandbox')
+**LWC**: Uses Organization.IsSandbox  
+**E2E**: Uses URL.includes('sandbox')
 
-Ambos métodos válidos y optimizados para su contexto.
+Both methods valid and optimized for their context.
 
 ---
 
-## ⚠️ PENDIENTE
+## ⚠️ PENDING
 
-### Navegación al Componente LWC
+### LWC Component Navigation
 
-**URLs probadas**:
+**Tested URLs**:
 
 - ❌ `/lightning/cmp/c__jtQueryViewer` - Page doesn't exist
 - ❌ `/lightning/n/Query_Viewer` - Tab not found
 
-**Necesitamos**:
+**We need**:
 
-- La URL correcta del tab en la Custom App
-- O navegar via App Launcher → Dynamic Queries → Query Viewer tab
+- The correct tab URL in the Custom App
+- Or navigate via App Launcher → Dynamic Queries → Query Viewer tab
 
-**Opciones**:
+**Options**:
 
-#### Opción A: Usar el Tab API name
+#### Option A: Use Tab API name
 
 ```javascript
-// Necesitamos el API name correcto del tab
+// We need the correct tab API name
 await page.goto(`${instanceUrl}/lightning/n/JT_Query_Viewer`);
 ```
 
-#### Opción B: Navegar via App Launcher
+#### Option B: Navigate via App Launcher
 
 ```javascript
 // 1. Click App Launcher
-// 2. Click "View All" o buscar directamente
+// 2. Click "View All" or search directly
 // 3. Click "Dynamic Queries"
 // 4. Click tab "Query Viewer"
 ```
 
 ---
 
-## 📊 ESTADO ACTUAL
+## 📊 CURRENT STATUS
 
 ```
 ╔════════════════════════════════════════════════════════════╗
 ║                                                            ║
-║  ✅ Autenticación SF CLI      - FUNCIONA                   ║
-║  ✅ Sin login manual          - FUNCIONA                   ║
-║  ✅ Permission Set            - AUTO-ASIGNADO              ║
-║  ✅ Detección de ambiente     - OPTIMIZADO                 ║
-║  ⚠️  Navegación al LWC        - NECESITA URL CORRECTA      ║
+║  ✅ SF CLI Authentication   - WORKING                     ║
+║  ✅ No manual login         - WORKING                     ║
+║  ✅ Permission Set           - AUTO-ASSIGNED               ║
+║  ✅ Environment detection    - OPTIMIZED                   ║
+║  ⚠️  LWC navigation          - NEEDS CORRECT URL          ║
 ║                                                            ║
 ╚════════════════════════════════════════════════════════════╝
 ```
 
 ---
 
-## 🎯 PRÓXIMOS PASOS
+## 🎯 NEXT STEPS
 
-1. **Obtener URL correcta del tab**:
+1. **Get correct tab URL**:
 
    ```bash
    sf org open --path "/lightning/n/JT_Query_Viewer"
-   # O revisar en Setup → Tabs → Query Viewer
+   # Or check in Setup → Tabs → Query Viewer
    ```
 
-2. **Actualizar beforeEach**:
+2. **Update beforeEach**:
 
    ```javascript
    await page.goto(`${session.instanceUrl}/lightning/n/[TAB_API_NAME]`);
    ```
 
-3. **Ejecutar tests completos**:
+3. **Run complete tests**:
    ```bash
    npm run test:e2e
    ```
 
 ---
 
-## 📝 ARCHIVOS CREADOS/ACTUALIZADOS
+## 📝 FILES CREATED/UPDATED
 
 ### Scripts
 
-- ✅ `scripts/apex/assign-permset.apex` - Auto-asigna Permission Set
-- ✅ `tests/e2e/utils/assignPermissionSet.js` - Wrapper para Apex
-- ✅ `tests/e2e/utils/sfAuth.js` - Autenticación mejorada
+- ✅ `scripts/apex/assign-permset.apex` - Auto-assigns Permission Set
+- ✅ `tests/e2e/utils/assignPermissionSet.js` - Apex wrapper
+- ✅ `tests/e2e/utils/sfAuth.js` - Improved authentication
 
-### Documentación
+### Documentation
 
-- ✅ `tests/e2e/README.md` - Guía completa de E2E tests
-- ✅ `tests/e2e/E2E_TEST_SCENARIOS.md` - 15 escenarios documentados
-- ✅ `tests/e2e/AUTH_TROUBLESHOOTING.md` - Troubleshooting de auth
-- ✅ `SANDBOX_DETECTION_COMPARISON.md` - Comparación LWC vs E2E
-- ✅ `E2E_PROGRESS_SUMMARY.md` - Este documento
+- ✅ `tests/e2e/README.md` - Complete E2E test guide
+- ✅ `tests/e2e/E2E_TEST_SCENARIOS.md` - 15 documented scenarios
+- ✅ `tests/e2e/AUTH_TROUBLESHOOTING.md` - Auth troubleshooting
+- ✅ `SANDBOX_DETECTION_COMPARISON.md` - LWC vs E2E comparison
+- ✅ `E2E_PROGRESS_SUMMARY.md` - This document
 
 ---
 
-## 🔧 CÓDIGO CLAVE
+## 🔧 KEY CODE
 
-### Autenticación (FUNCIONANDO ✅)
+### Authentication (WORKING ✅)
 
 ```javascript
 async function injectSFSession(page, session) {
-    // 1. Cookies PRIMERO
+    // 1. Cookies FIRST
     await page.context().addCookies([
         { name: 'sid', value: session.accessToken, ... },
         { name: 'sid_Client', value: session.accessToken, ... }
     ]);
 
-    // 2. Navegar DESPUÉS
+    // 2. Navigate AFTER
     await page.goto(session.instanceUrl + '/lightning/page/home');
 
-    // 3. Verificar NO está en login
+    // 3. Verify NOT on login page
     const isLoginPage = await page.locator('input[type="password"]')
                                    .isVisible({ timeout: 2000 })
                                    .catch(() => false);
@@ -162,49 +162,49 @@ async function injectSFSession(page, session) {
 }
 ```
 
-### Permission Set (FUNCIONANDO ✅)
+### Permission Set (WORKING ✅)
 
 ```javascript
 // beforeAll hook
 test.beforeAll(() => {
   session = getSFSession();
-  assignPermissionSet(); // ✅ Auto-asigna
+  assignPermissionSet(); // ✅ Auto-assigns
 });
 ```
 
 ---
 
-## 🎉 LOGROS DESTACADOS
+## 🎉 HIGHLIGHTS
 
-1. **Sin Login Manual**
-   - Usa sesión activa del SF CLI
-   - Ahorra tiempo en cada ejecución
-   - Más seguro (no credenciales hardcoded)
+1. **No Manual Login**
+   - Uses active SF CLI session
+   - Saves time on each execution
+   - More secure (no hardcoded credentials)
 
 2. **Auto-Configuration**
-   - Permission Set se asigna solo
-   - No requiere setup manual
+   - Permission Set assigns itself
+   - No manual setup required
    - Tests "just work"
 
-3. **Documentación Completa**
-   - 4 guías detalladas
-   - Troubleshooting incluido
-   - Ejemplos de código
+3. **Complete Documentation**
+   - 4 detailed guides
+   - Troubleshooting included
+   - Code examples
 
-4. **15 Escenarios E2E**
-   - Cobertura completa de features
-   - Production safeguard incluido
-   - Adaptativos a permisos
-
----
-
-## 💡 APRENDIZAJES
-
-1. **Cookies ANTES de navegar** - Crítico para auth
-2. **Permission Set necesario** - Agregar verificación
-3. **URL correcta importante** - Tabs tienen API names específicos
-4. **SF CLI = Gold** - Mejor que credentials hardcoded
+4. **15 E2E Scenarios**
+   - Complete feature coverage
+   - Production safeguard included
+   - Adaptive to permissions
 
 ---
 
-**Próximo paso**: Obtener la URL correcta del tab y actualizar navegación.
+## 💡 LEARNINGS
+
+1. **Cookies BEFORE navigating** - Critical for auth
+2. **Permission Set necessary** - Add verification
+3. **Correct URL important** - Tabs have specific API names
+4. **SF CLI = Gold** - Better than hardcoded credentials
+
+---
+
+**Next step**: Get the correct tab URL and update navigation.

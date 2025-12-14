@@ -235,11 +235,32 @@ public with sharing class JT_RunAsTestExecutor {
       return result;
     } catch (Exception e) {
       result.success = false;
-      result.errorMessage = e.getMessage();
+      
+      // Extract error message - check if it's an AuraHandledException with user-friendly message
+      String errorMsg = e.getMessage();
+      
+      // If it's an AuraHandledException, use its message directly
+      if (e instanceof AuraHandledException) {
+        errorMsg = e.getMessage();
+      } else {
+        // For other exceptions, check if message contains storage limit error
+        String exceptionMsg = e.getMessage();
+        if (exceptionMsg != null && exceptionMsg.contains('STORAGE_LIMIT_EXCEEDED')) {
+          errorMsg = Label.JT_RunAsTestExecutor_storageLimitExceeded;
+        } else {
+          errorMsg = exceptionMsg;
+        }
+      }
+      
+      result.errorMessage = errorMsg;
       result.stackTrace = e.getStackTraceString();
       System.debug(
         LoggingLevel.ERROR,
-        '❌ Error in executeAsUser: ' + e.getMessage()
+        '❌ Error in executeAsUser: ' + errorMsg
+      );
+      System.debug(
+        LoggingLevel.ERROR,
+        'Exception type: ' + e.getTypeName()
       );
       return result;
     }

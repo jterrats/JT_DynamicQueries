@@ -39,22 +39,37 @@ public with sharing class JT_MetadataCreator {
     MetadataCreationResult result = new MetadataCreationResult();
 
     try {
-      // Deserialize JSON input
-      Map<String, Object> configMap = (Map<String, Object>) JSON.deserializeUntyped(
-        configJson
-      );
+      // Validate input is not null/blank
+      if (String.isBlank(configJson)) {
+        result.success = false;
+        result.errorMessage = 'Configuration JSON is required.';
+        return result;
+      }
+
+      // Deserialize JSON input - handle both Map and potential edge cases
+      Object deserialized = JSON.deserializeUntyped(configJson);
+      
+      // Ensure we have a Map, not a List
+      Map<String, Object> configMap;
+      if (deserialized instanceof Map<String, Object>) {
+        configMap = (Map<String, Object>) deserialized;
+      } else {
+        result.success = false;
+        result.errorMessage = 'Invalid JSON format. Expected an object, but received: ' + deserialized;
+        return result;
+      }
 
       System.debug(
         LoggingLevel.ERROR,
         '🔍 createConfiguration configMap: ' + JSON.serialize(configMap)
       );
 
-      // Extract values from map
-      String label = (String) configMap.get('label');
-      String developerName = (String) configMap.get('developerName');
-      String baseQuery = (String) configMap.get('baseQuery');
-      String bindings = (String) configMap.get('bindings');
-      String objectName = (String) configMap.get('objectName');
+      // Extract values from map (handle null values safely)
+      String label = configMap.get('label') != null ? String.valueOf(configMap.get('label')) : null;
+      String developerName = configMap.get('developerName') != null ? String.valueOf(configMap.get('developerName')) : null;
+      String baseQuery = configMap.get('baseQuery') != null ? String.valueOf(configMap.get('baseQuery')) : null;
+      String bindings = configMap.get('bindings') != null ? String.valueOf(configMap.get('bindings')) : null;
+      String objectName = configMap.get('objectName') != null ? String.valueOf(configMap.get('objectName')) : null;
 
       // CRITICAL: Only allow in development/test environments
       if (!isSandboxOrScratch()) {

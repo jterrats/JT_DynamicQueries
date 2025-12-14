@@ -166,92 +166,90 @@ public with sharing class JT_MetadataCreator {
   /**
    * @description Updates an existing Dynamic Query Configuration metadata record
    * @author Jaime Terrats | 12-11-2025
-   * @param input Configuration input data (must include originalDevName)
+   * @param originalDevName Original developer name (for identification)
+   * @param label Configuration label
+   * @param developerName Developer name
+   * @param baseQuery Base SOQL query
+   * @param bindings Optional bindings JSON string
+   * @param objectName Optional object name
    * @return MetadataCreationResult
    **/
   @AuraEnabled
   public static MetadataCreationResult updateConfiguration(
-    ConfigurationInput input
+    String originalDevName,
+    String label,
+    String developerName,
+    String baseQuery,
+    String bindings,
+    String objectName
   ) {
     MetadataCreationResult result = new MetadataCreationResult();
 
     try {
-      System.debug(
-        'updateConfiguration called with input: ' + JSON.serialize(input)
-      );
+      System.debug(LoggingLevel.ERROR, '🔍 updateConfiguration parameters:');
+      System.debug(LoggingLevel.ERROR, '🔍 originalDevName: ' + originalDevName);
+      System.debug(LoggingLevel.ERROR, '🔍 label: ' + label);
 
       // CRITICAL: Only allow in sandbox/scratch
       if (!isSandboxOrScratch()) {
-        throw new AuraHandledException(
-          'Configuration editing is only allowed in development/test environments (Sandbox, Scratch Org, Developer Edition, or Trial). For production orgs (including Starter/Free Editions), use Setup > Custom Metadata Types.'
-        );
-      }
-
-      // Validate input is not null
-      if (input == null) {
-        throw new AuraHandledException('Configuration input cannot be null');
+        result.success = false;
+        result.errorMessage = 'Configuration editing is only allowed in development/test environments (Sandbox, Scratch Org, Developer Edition, or Trial). For production orgs (including Starter/Free Editions), use Setup > Custom Metadata Types.';
+        return result;
       }
 
       // Validate required fields
       if (
-        String.isBlank(input.originalDevName) ||
-        String.isBlank(input.label) ||
-        String.isBlank(input.baseQuery)
+        String.isBlank(originalDevName) ||
+        String.isBlank(label) ||
+        String.isBlank(baseQuery)
       ) {
-        throw new AuraHandledException(
-          'Original Developer Name, Label, and Base Query are required for update. Received: originalDevName=' +
-            input.originalDevName +
-            ', label=' +
-            input.label +
-            ', baseQuery length=' +
-            (String.isBlank(input.baseQuery)
-              ? '0'
-              : String.valueOf(input.baseQuery.length()))
-        );
+        result.success = false;
+        result.errorMessage = 'Original Developer Name, Label, and Base Query are required for update.';
+        return result;
       }
 
       // Sanitize developer name
-      String sanitizedDevName = sanitizeDeveloperName(input.developerName);
+      String sanitizedDevName = sanitizeDeveloperName(developerName);
 
       // Check if Developer Name changed (renaming scenario)
       Boolean isRenaming =
         String.isNotBlank(sanitizedDevName) &&
-        sanitizedDevName != input.originalDevName;
+        sanitizedDevName != originalDevName;
 
       if (isRenaming) {
         // Rename: Delete old record and create new one
         // Step 1: Delete old record
         MetadataCreationResult deleteResult = deleteConfiguration(
-          input.originalDevName
+          originalDevName
         );
 
         if (!deleteResult.success) {
-          throw new AuraHandledException(
-            'Failed to delete old configuration during rename: ' +
-            deleteResult.errorMessage
-          );
+          result.success = false;
+          result.errorMessage = 'Failed to delete old configuration during rename: ' +
+            deleteResult.errorMessage;
+          return result;
         }
 
         // Step 2: Create new record with new Developer Name
         MetadataCreationResult createResult = createConfiguration(
-          input.label,
+          label,
           sanitizedDevName,
-          input.baseQuery,
-          input.bindings,
-          input.objectName
+          baseQuery,
+          bindings,
+          objectName
         );
 
         if (!createResult.success) {
-          throw new AuraHandledException(
-            'Failed to create renamed configuration: ' +
-            createResult.errorMessage
-          );
+          result.success = false;
+          result.errorMessage = 'Failed to create renamed configuration: ' +
+            createResult.errorMessage;
+          return result;
         }
 
         result.success = true;
         result.message =
           'Configuration renamed successfully: ' +
-          input.originalDevName +
+          originalDevName +
           ' → ' +
           sanitizedDevName;
         result.developerName = sanitizedDevName;
@@ -261,22 +259,22 @@ public with sharing class JT_MetadataCreator {
       } else {
         // Normal update: Use original dev name
         String metadataXml = buildMetadataXml(
-          input.label,
-          input.originalDevName,
-          input.baseQuery,
-          input.bindings,
-          input.objectName
+          label,
+          originalDevName,
+          baseQuery,
+          bindings,
+          objectName
         );
 
         // Deploy via Metadata API (will update existing record)
         String deploymentId = deployMetadata(
           metadataXml,
-          input.originalDevName
+          originalDevName
         );
 
         result.success = true;
-        result.message = 'Configuration updated successfully: ' + input.label;
-        result.developerName = input.originalDevName;
+        result.message = 'Configuration updated successfully: ' + label;
+        result.developerName = originalDevName;
         result.deploymentId = deploymentId;
 
         return result;

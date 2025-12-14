@@ -4,7 +4,7 @@
 
 ### 1. ✅ SF CLI Authentication (RESOLVED)
 
-**Problem**: Tests went to login page  
+**Problem**: Tests went to login page
 **Solution**: Inject cookies BEFORE navigating
 
 ```javascript
@@ -20,7 +20,7 @@ await page.goto(url); // Already authenticated
 
 ### 2. ✅ Permission Set Auto-Assigned (RESOLVED)
 
-**Problem**: User might not have Permission Set  
+**Problem**: User might not have Permission Set
 **Solution**: Apex script that assigns it automatically
 
 ```javascript
@@ -37,7 +37,7 @@ assignPermissionSet(); // ✅ Auto-assigns if not present
 
 ### 3. ✅ Environment Detection (SANDBOX vs PRODUCTION)
 
-**LWC**: Uses Organization.IsSandbox  
+**LWC**: Uses Organization.IsSandbox
 **E2E**: Uses URL.includes('sandbox')
 
 Both methods valid and optimized for their context.

@@ -233,14 +233,14 @@ page.locator('[data-testid="execute-query-button"]');
 
 ## 📊 Update Statistics
 
-| Category            | Updated Tests | Changed Selectors |
-| ------------------- | ------------- | ----------------- |
-| **Combobox**        | 8             | ~25               |
-| **Execute Buttons** | 6             | ~10               |
-| **Cache Management**| 7             | ~20               |
-| **Pagination**      | 1             | ~3                |
-| **Other**           | 2             | ~5                |
-| **TOTAL**           | **24**        | **~63**           |
+| Category             | Updated Tests | Changed Selectors |
+| -------------------- | ------------- | ----------------- |
+| **Combobox**         | 8             | ~25               |
+| **Execute Buttons**  | 6             | ~10               |
+| **Cache Management** | 7             | ~20               |
+| **Pagination**       | 1             | ~3                |
+| **Other**            | 2             | ~5                |
+| **TOTAL**            | **24**        | **~63**           |
 
 ---
 

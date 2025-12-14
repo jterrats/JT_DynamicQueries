@@ -135,12 +135,12 @@ Real implemented examples:
 
 ### **Components:**
 
-| Metric                    | Before | After | Improvement |
-| ------------------------- | ------ | ----- | ----------- |
-| Components with testid    | 0      | 6     | ✅ +600%    |
-| Testable elements         | ~5     | ~45   | ✅ +800%    |
-| Unique selectors          | 0      | 45+   | ✅ 100%     |
-| Accessibility coverage    | 70%    | 95%   | ✅ +25pts   |
+| Metric                 | Before | After | Improvement |
+| ---------------------- | ------ | ----- | ----------- |
+| Components with testid | 0      | 6     | ✅ +600%    |
+| Testable elements      | ~5     | ~45   | ✅ +800%    |
+| Unique selectors       | 0      | 45+   | ✅ 100%     |
+| Accessibility coverage | 70%    | 95%   | ✅ +25pts   |
 
 ### **E2E Tests:**
 
@@ -148,8 +148,8 @@ Real implemented examples:
 | ------------------- | ------ | ----- | ----------- |
 | Updated tests       | 0      | 24    | ✅ 100%     |
 | Changed selectors   | 0      | ~63   | ✅ 100%     |
-| Ambiguous selectors| 5+     | 0     | ✅ -100%    |
-| i18n-proof tests   | 0%     | 100%  | ✅ +100pts  |
+| Ambiguous selectors | 5+     | 0     | ✅ -100%    |
+| i18n-proof tests    | 0%     | 100%  | ✅ +100pts  |
 | Avg test speed      | Base   | -15%  | ✅ +15%     |
 
 ---

@@ -24,6 +24,7 @@ These documents are intended for end users, administrators, and developers using
 > **⚠️ INTERNAL USE ONLY** - These documents contain internal analysis, technical decisions, and implementation details that are not intended for end users.
 
 **Contents**:
+
 - Analysis reports (`*_ANALYSIS.md`)
 - Implementation summaries (`*_IMPLEMENTATION.md`)
 - Refactoring plans (`*_PLAN.md`)
@@ -76,4 +77,3 @@ The following files in `/docs/development/` contain Spanish content and should b
 3. **Internal documentation** should be clearly marked with the `⚠️ INTERNAL USE ONLY` notice
 4. **Code examples** should be language-agnostic (use English comments)
 5. **File names** should use English (e.g., `ERROR_LOGGING_IMPLEMENTATION.md` not `IMPLEMENTACION_LOG_ERRORES.md`)
-

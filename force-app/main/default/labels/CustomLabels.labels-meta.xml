@@ -3035,4 +3035,11 @@ Y bueno...&lt;br /&gt;&lt;br /&gt;</value>
         <value
     >Query execution failed: {0}. This may be due to license restrictions, insufficient permissions, or field-level security settings.</value>
     </labels>
+    <labels>
+        <fullName>JT_RunAsTestExecutor_storageLimitExceeded</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_RunAsTestExecutor - storageLimitExceeded</shortDescription>
+        <value>Your Salesforce organization has reached its storage limit. Please contact your administrator to increase storage capacity or free up space by deleting unused records. This feature requires available storage to create execution records.</value>
+    </labels>
 </CustomLabels>

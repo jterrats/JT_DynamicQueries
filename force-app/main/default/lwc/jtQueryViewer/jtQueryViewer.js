@@ -1,7 +1,14 @@
 import { LightningElement, track, wire } from "lwc";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { refreshApex } from "@salesforce/apex";
-import { formatLabel, getFieldType } from "c/jtUtils";
+import {
+  formatLabel,
+  getFieldType,
+  showSuccessToast,
+  showErrorToast,
+  showInfoToast,
+  showWarningToast
+} from "c/jtUtils";
 // Import Custom Labels from Salesforce Translation Workbench (89 labels)
 import apexClassLabel from "@salesforce/label/c.JT_jtQueryViewer_apexClass";
 import autoDetectedFromQueryLabel from "@salesforce/label/c.JT_jtQueryViewer_autoDetectedFromQuery";
@@ -841,7 +848,6 @@ export default class JtQueryViewer extends LightningElement {
     }
   }
 
-
   // Phase 2 Refactor: Updated to use jtParameterInputs event
   handleParameterChange(event) {
     const { allValues } = event.detail;
@@ -1659,6 +1665,19 @@ export default class JtQueryViewer extends LightningElement {
       event?.detail?.config || configFromModal || this.newConfig;
     console.log("configToUse:", JSON.stringify(configToUse, null, 2));
     console.log("================================");
+
+    // Validate configToUse is not null/undefined
+    if (!configToUse) {
+      console.error("❌ CRITICAL: configToUse is null or undefined!");
+      console.error("event?.detail?.config:", event?.detail?.config);
+      console.error("configFromModal:", configFromModal);
+      console.error("this.newConfig:", this.newConfig);
+      this.showErrorToast(
+        "Configuration Error",
+        "Configuration data is missing. Please close and reopen the modal."
+      );
+      return;
+    }
 
     // Validate required fields
     if (

@@ -43,9 +43,7 @@ public with sharing class JT_MetadataCreator {
     try {
       // Validate input is not null
       if (input == null) {
-        throw new AuraHandledException(
-          'Configuration input is required.'
-        );
+        throw new AuraHandledException('Configuration input is required.');
       }
 
       // CRITICAL: Only allow in development/test environments
@@ -393,7 +391,11 @@ public with sharing class JT_MetadataCreator {
     String objectName
   ) {
     // Validate required parameters
-    if (String.isBlank(label) || String.isBlank(devName) || String.isBlank(baseQuery)) {
+    if (
+      String.isBlank(label) ||
+      String.isBlank(devName) ||
+      String.isBlank(baseQuery)
+    ) {
       throw new IllegalArgumentException(
         'Label, Developer Name, and Base Query are required for metadata XML generation.'
       );
@@ -466,7 +468,10 @@ public with sharing class JT_MetadataCreator {
     };
 
     String requestBody = JSON.serialize(metadata);
-    System.debug(LoggingLevel.FINE, 'Deploying Custom Metadata for: ' + devName);
+    System.debug(
+      LoggingLevel.FINE,
+      'Deploying Custom Metadata for: ' + devName
+    );
     System.debug(LoggingLevel.FINE, 'Request body: ' + requestBody);
 
     final HttpRequest request = JT_ToolingApiUtil.createToolingApiRestRequest(
@@ -479,7 +484,10 @@ public with sharing class JT_MetadataCreator {
     final Http httpClient = new Http();
     final HttpResponse response = httpClient.send(request);
 
-    System.debug(LoggingLevel.FINE, 'Response status: ' + response.getStatusCode());
+    System.debug(
+      LoggingLevel.FINE,
+      'Response status: ' + response.getStatusCode()
+    );
     System.debug(LoggingLevel.FINE, 'Response body: ' + response.getBody());
 
     if (response.getStatusCode() == 201) {
@@ -489,9 +497,14 @@ public with sharing class JT_MetadataCreator {
       return (String) responseMap.get('id');
     } else {
       // Parse error response for better error message
-      String errorMessage = 'Failed to deploy metadata (Status: ' + response.getStatusCode() + ')';
+      String errorMessage =
+        'Failed to deploy metadata (Status: ' +
+        response.getStatusCode() +
+        ')';
       try {
-        Map<String, Object> errorMap = (Map<String, Object>) JSON.deserializeUntyped(response.getBody());
+        Map<String, Object> errorMap = (Map<String, Object>) JSON.deserializeUntyped(
+          response.getBody()
+        );
         List<Object> errors = (List<Object>) errorMap.get('errors');
         if (errors != null && !errors.isEmpty()) {
           Map<String, Object> firstError = (Map<String, Object>) errors[0];

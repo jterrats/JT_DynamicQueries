@@ -17,7 +17,11 @@ private class JT_SystemSelector_Test {
     Test.stopTest();
 
     System.assertNotEquals(null, org, 'Organization should not be null');
-    System.assertNotEquals(null, org.OrganizationType, 'Should have organization type');
+    System.assertNotEquals(
+      null,
+      org.OrganizationType,
+      'Should have organization type'
+    );
   }
 
   /**
@@ -30,7 +34,11 @@ private class JT_SystemSelector_Test {
     Test.stopTest();
 
     System.assertNotEquals(null, org, 'Organization should not be null');
-    System.assertNotEquals(null, org.OrganizationType, 'Organization type should not be null');
+    System.assertNotEquals(
+      null,
+      org.OrganizationType,
+      'Organization type should not be null'
+    );
   }
 
   /**
@@ -71,9 +79,11 @@ private class JT_SystemSelector_Test {
     List<ApexClass> apexClasses = JT_SystemSelector.getApexClassForTestQuery();
     Test.stopTest();
 
-    System.assertNotEquals(null, apexClasses, 'ApexClasses list should not be null');
+    System.assertNotEquals(
+      null,
+      apexClasses,
+      'ApexClasses list should not be null'
+    );
     // May be empty depending on org, but should not throw error
   }
-
 }
-

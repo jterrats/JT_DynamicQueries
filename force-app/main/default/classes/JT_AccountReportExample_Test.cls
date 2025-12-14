@@ -261,7 +261,10 @@ private class JT_AccountReportExample_Test {
       // Expected if configuration doesn't exist or query fails
       // The method may succeed with empty results or fail with an error
       // Both scenarios are acceptable - just verify it doesn't crash
-      System.assert(true, 'Method should handle missing configuration gracefully');
+      System.assert(
+        true,
+        'Method should handle missing configuration gracefully'
+      );
     }
 
     Test.stopTest();

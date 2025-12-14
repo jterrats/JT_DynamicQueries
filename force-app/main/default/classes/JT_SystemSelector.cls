@@ -282,7 +282,6 @@ public without sharing class JT_SystemSelector {
     ];
   }
 
-
   /**
    * @description Gets Apex classes for usage search with configurable filter
    * Used by: JT_UsageFinder for finding configuration usages

@@ -308,7 +308,9 @@ public with sharing class JT_RunAsTestExecutor {
                 execution.Error_Message__c = result.errorMessage;
 
                 // Validate CRUD permissions before DML
-                if (Schema.sObjectType.JT_RunAsTest_Execution__c.isUpdateable()) {
+                if (
+                  Schema.sObjectType.JT_RunAsTest_Execution__c.isUpdateable()
+                ) {
                   update execution;
                 }
                 return result;

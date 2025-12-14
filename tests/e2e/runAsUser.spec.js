@@ -31,19 +31,6 @@ test.describe("Run As User Feature Tests", () => {
       targetTab: QUERY_VIEWER_TAB,
       waitForComponent: true
     });
-
-    // Verify Run As section is available (skip tests if not authorized)
-    const runAsSection = page.locator(".run-as-container").first();
-    const isVisible = await runAsSection
-      .isVisible({ timeout: 3000 })
-      .catch(() => false);
-
-    if (!isVisible) {
-      test.skip();
-      console.log(
-        "⚠️  Run As section not available - user lacks permissions. Skipping tests."
-      );
-    }
   });
 
   // ═══════════════════════════════════════════════════════════════
@@ -55,14 +42,54 @@ test.describe("Run As User Feature Tests", () => {
   }) => {
     console.log("🧪 Testing Run As User - Happy Path...");
 
+    // Verify Run As section is available (skip test if not authorized)
+    // The Run As section is inside a lightning-accordion-section that may be collapsed
+    // First check if the accordion section exists
+    const accordionSection = page.locator('lightning-accordion-section[name="run-as"]').first();
+    const accordionExists = (await accordionSection.count()) > 0;
+
+    if (!accordionExists) {
+      console.log(
+        "⚠️  Run As accordion section not found - user lacks permissions. Skipping test."
+      );
+      test.skip();
+      return;
+    }
+
+    // Expand the accordion section if it's collapsed
+    const isExpanded = await accordionSection.getAttribute("aria-expanded");
+    if (isExpanded !== "true") {
+      await accordionSection.click();
+      await page.waitForTimeout(1000); // Wait for accordion to expand
+    }
+
+    // Now check if the component inside is visible
+    const runAsComponent = page.locator("c-jt-run-as-section").first();
+    const isVisible = await runAsComponent
+      .isVisible({ timeout: 5000 })
+      .catch(() => false);
+
+    if (!isVisible) {
+      console.log(
+        "⚠️  Run As component not visible after expanding accordion - user lacks permissions. Skipping test."
+      );
+      test.skip();
+      return;
+    }
+
+    // Store reference to runAsComponent for later use
+    const runAsSection = runAsComponent;
+
     // Step 1: Select a configuration
     await selectConfiguration(page, "All Active");
     await page.waitForTimeout(2000);
 
     // Step 2: Select a user from Run As dropdown
-    const runAsSection = page.locator(".run-as-container").first();
-    const userCombobox = runAsSection.locator("c-jt-searchable-combobox").first();
-    
+    // The combobox is inside c-jt-run-as-section component
+    const userCombobox = page
+      .locator('c-jt-run-as-section c-jt-searchable-combobox[data-testid="run-as-user-selector"]')
+      .first();
+
     // Click to open user dropdown
     const userInput = userCombobox.locator("input").first();
     await userInput.click();
@@ -88,16 +115,18 @@ test.describe("Run As User Feature Tests", () => {
     await page.waitForTimeout(1000);
 
     // Step 3: Verify "Execute with System.runAs" button appears
+    // This button is shown in jtQueryViewer when a user is selected
     const executeRunAsButton = page
-      .locator("lightning-button")
-      .filter({ hasText: /Execute with System\.runAs/i });
+      .locator('lightning-button')
+      .filter({ hasText: /Execute with System\.runAs/i })
+      .or(page.locator('lightning-button[title*="Execute with System.runAs"]'));
     await expect(executeRunAsButton).toBeVisible({ timeout: 5000 });
     console.log("✅ Execute with System.runAs button visible");
 
     // Step 4: Verify "Clear Selection" button appears
     const clearButton = page
-      .locator("lightning-button")
-      .filter({ hasText: /Clear Selection/i });
+      .locator('lightning-button[data-testid="run-as-clear-button"]')
+      .or(page.locator("lightning-button").filter({ hasText: /Clear Selection/i }));
     await expect(clearButton).toBeVisible({ timeout: 5000 });
     console.log("✅ Clear Selection button visible");
 
@@ -125,7 +154,9 @@ test.describe("Run As User Feature Tests", () => {
       }
 
       // Check for error banner (test may have failed)
-      const errorBanner = page.locator(".slds-notify--error, .slds-alert--error");
+      const errorBanner = page.locator(
+        ".slds-notify--error, .slds-alert--error"
+      );
       const errorVisible = await errorBanner
         .isVisible({ timeout: 1000 })
         .catch(() => false);
@@ -176,7 +207,9 @@ test.describe("Run As User Feature Tests", () => {
         // ✅ Validate records (may be 0, but structure should exist)
         const rows = resultsTable.locator("tbody tr");
         const rowCount = await rows.count();
-        console.log(`✅ Query executed as ${selectedUserName}: ${rowCount} records returned`);
+        console.log(
+          `✅ Query executed as ${selectedUserName}: ${rowCount} records returned`
+        );
 
         // ✅ If results exist, validate data is displayed correctly
         if (rowCount > 0) {
@@ -184,7 +217,9 @@ test.describe("Run As User Feature Tests", () => {
           const cells = firstRow.locator("td");
           const cellCount = await cells.count();
           expect(cellCount).toBeGreaterThan(0);
-          console.log(`✅ Data displayed correctly: ${cellCount} columns in first row`);
+          console.log(
+            `✅ Data displayed correctly: ${cellCount} columns in first row`
+          );
         }
       }
 
@@ -213,7 +248,9 @@ test.describe("Run As User Feature Tests", () => {
           .catch(() => false);
 
         if (accordionVisible) {
-          console.log("✅ Nested relationships expand/collapse works correctly");
+          console.log(
+            "✅ Nested relationships expand/collapse works correctly"
+          );
         }
       } else {
         console.log("ℹ️  No nested relationships in this query (expected)");
@@ -249,14 +286,33 @@ test.describe("Run As User Feature Tests", () => {
   }) => {
     console.log("🧪 Testing Run As User - Error Path (No Permissions)...");
 
+    // Verify Run As section is available (skip test if not authorized)
+    // The Run As section is inside a lightning-accordion-section
+    const runAsSection = page
+      .locator('lightning-accordion-section[name="run-as"]')
+      .or(page.locator("c-jt-run-as-section"))
+      .first();
+    const isVisible = await runAsSection
+      .isVisible({ timeout: 5000 })
+      .catch(() => false);
+
+    if (!isVisible) {
+      console.log(
+        "⚠️  Run As section not available - user lacks permissions. Skipping test."
+      );
+      test.skip();
+      return;
+    }
+
     // Step 1: Select a configuration
     await selectConfiguration(page, "All Active");
     await page.waitForTimeout(2000);
 
     // Step 2: Try to find a Chatter Free or Guest User (users with limited permissions)
-    const runAsSection = page.locator(".run-as-container").first();
-    const userCombobox = runAsSection.locator("c-jt-searchable-combobox").first();
-    
+    const userCombobox = page
+      .locator('c-jt-run-as-section c-jt-searchable-combobox[data-testid="run-as-user-selector"]')
+      .first();
+
     const userInput = userCombobox.locator("input").first();
     await userInput.click();
     await page.waitForTimeout(2000);
@@ -276,7 +332,7 @@ test.describe("Run As User Feature Tests", () => {
     for (let i = 0; i < Math.min(userCount, 10); i++) {
       const option = userOptions.nth(i);
       const optionText = await option.textContent();
-      
+
       // Look for Chatter Free, Guest, or Community users
       if (
         optionText.toLowerCase().includes("chatter") ||
@@ -329,7 +385,9 @@ test.describe("Run As User Feature Tests", () => {
       const errorBanner = page.locator(
         ".slds-notify--error, .slds-alert--error, .slds-banner--error"
       );
-      errorVisible = await errorBanner.isVisible({ timeout: 1000 }).catch(() => false);
+      errorVisible = await errorBanner
+        .isVisible({ timeout: 1000 })
+        .catch(() => false);
 
       if (errorVisible) {
         break;
@@ -355,9 +413,9 @@ test.describe("Run As User Feature Tests", () => {
     console.log(`✅ Error detected after ${pollCount * 2} seconds`);
 
     // ✅ Validate error message contains user-friendly text (not technical stack trace)
-    const errorBanner = page.locator(
-      ".slds-notify--error, .slds-alert--error, .slds-banner--error"
-    ).first();
+    const errorBanner = page
+      .locator(".slds-notify--error, .slds-alert--error, .slds-banner--error")
+      .first();
     const errorText = await errorBanner.textContent();
 
     // Error should NOT contain technical terms
@@ -374,7 +432,9 @@ test.describe("Run As User Feature Tests", () => {
       errorText.includes(term)
     );
     expect(hasTechnicalTerms).toBe(false);
-    console.log("✅ Error message is user-friendly (no technical stack traces)");
+    console.log(
+      "✅ Error message is user-friendly (no technical stack traces)"
+    );
 
     // ✅ Validate error message mentions license/permission restrictions
     const userFriendlyTerms = [
@@ -391,12 +451,14 @@ test.describe("Run As User Feature Tests", () => {
     const hasUserFriendlyTerms = userFriendlyTerms.some((term) =>
       errorText.toLowerCase().includes(term)
     );
-    
+
     // Note: This might not always be true, but error should be descriptive
     if (hasUserFriendlyTerms) {
       console.log("✅ Error message mentions license/permission restrictions");
     } else {
-      console.log("ℹ️  Error message may not explicitly mention restrictions (still user-friendly)");
+      console.log(
+        "ℹ️  Error message may not explicitly mention restrictions (still user-friendly)"
+      );
     }
 
     // ✅ Validate error message is displayed in a banner (not just toast)
@@ -406,8 +468,10 @@ test.describe("Run As User Feature Tests", () => {
 
     // ✅ Validate no redundant error toast (error should be in banner only)
     const errorToast = page.locator(".slds-notify--toast.slds-notify--error");
-    const toastVisible = await errorToast.isVisible({ timeout: 1000 }).catch(() => false);
-    
+    const toastVisible = await errorToast
+      .isVisible({ timeout: 1000 })
+      .catch(() => false);
+
     // Toast might appear briefly, but banner should be primary
     if (toastVisible) {
       console.log("⚠️  Error toast also visible (may be redundant)");
@@ -419,12 +483,16 @@ test.describe("Run As User Feature Tests", () => {
     if (restrictedUserName) {
       const userNameInError = errorText
         .toLowerCase()
-        .includes(restrictedUserName.toLowerCase().split("\n")[0].substring(0, 10));
-      
+        .includes(
+          restrictedUserName.toLowerCase().split("\n")[0].substring(0, 10)
+        );
+
       if (userNameInError) {
         console.log("✅ User name included in error message");
       } else {
-        console.log("ℹ️  User name not explicitly in error message (acceptable)");
+        console.log(
+          "ℹ️  User name not explicitly in error message (acceptable)"
+        );
       }
     }
 
@@ -441,13 +509,32 @@ test.describe("Run As User Feature Tests", () => {
   }) => {
     console.log("🧪 Testing Clear Selection functionality...");
 
+    // Verify Run As section is available (skip test if not authorized)
+    // The Run As section is inside a lightning-accordion-section
+    const runAsSection = page
+      .locator('lightning-accordion-section[name="run-as"]')
+      .or(page.locator("c-jt-run-as-section"))
+      .first();
+    const isVisible = await runAsSection
+      .isVisible({ timeout: 5000 })
+      .catch(() => false);
+
+    if (!isVisible) {
+      console.log(
+        "⚠️  Run As section not available - user lacks permissions. Skipping test."
+      );
+      test.skip();
+      return;
+    }
+
     // Step 1: Select configuration and user, execute query
     await selectConfiguration(page, "All Active");
     await page.waitForTimeout(2000);
 
-    const runAsSection = page.locator(".run-as-container").first();
-    const userCombobox = runAsSection.locator("c-jt-searchable-combobox").first();
-    
+    const userCombobox = page
+      .locator('c-jt-run-as-section c-jt-searchable-combobox[data-testid="run-as-user-selector"]')
+      .first();
+
     const userInput = userCombobox.locator("input").first();
     await userInput.click();
     await page.waitForTimeout(2000);
@@ -486,7 +573,9 @@ test.describe("Run As User Feature Tests", () => {
       .isVisible({ timeout: 2000 })
       .catch(() => false);
 
-    console.log(`Results visible: ${resultsVisible}, Assert visible: ${assertVisible}`);
+    console.log(
+      `Results visible: ${resultsVisible}, Assert visible: ${assertVisible}`
+    );
 
     // Step 3: Click "Clear Selection" button
     const clearButton = page
@@ -549,6 +638,24 @@ test.describe("Run As User Feature Tests", () => {
   }) => {
     console.log("🧪 Testing Run As User with nested relationships...");
 
+    // Verify Run As section is available (skip test if not authorized)
+    // The Run As section is inside a lightning-accordion-section
+    const runAsSection = page
+      .locator('lightning-accordion-section[name="run-as"]')
+      .or(page.locator("c-jt-run-as-section"))
+      .first();
+    const isVisible = await runAsSection
+      .isVisible({ timeout: 5000 })
+      .catch(() => false);
+
+    if (!isVisible) {
+      console.log(
+        "⚠️  Run As section not available - user lacks permissions. Skipping test."
+      );
+      test.skip();
+      return;
+    }
+
     // Step 1: Select a configuration with nested relationships (e.g., "Customer 360 View")
     const configInput = page.locator('[data-testid="config-selector-input"]');
     await configInput.click();
@@ -556,12 +663,14 @@ test.describe("Run As User Feature Tests", () => {
     await configInput.fill("Customer 360 View");
     await page.waitForTimeout(2000);
 
-    const configDropdown = page.locator('[data-testid="config-selector-dropdown"]');
+    const configDropdown = page.locator(
+      '[data-testid="config-selector-dropdown"]'
+    );
     const configOption = configDropdown
       .locator(".slds-listbox__item")
       .filter({ hasText: /Customer 360 View/i })
       .first();
-    
+
     const optionExists = await configOption.count();
     if (optionExists === 0) {
       console.log("⚠️  'Customer 360 View' config not found - skipping test");
@@ -573,9 +682,10 @@ test.describe("Run As User Feature Tests", () => {
     await page.waitForTimeout(2000);
 
     // Step 2: Select a user
-    const runAsSection = page.locator(".run-as-container").first();
-    const userCombobox = runAsSection.locator("c-jt-searchable-combobox").first();
-    
+    const userCombobox = page
+      .locator('c-jt-run-as-section c-jt-searchable-combobox[data-testid="run-as-user-selector"]')
+      .first();
+
     const userInput = userCombobox.locator("input").first();
     await userInput.click();
     await page.waitForTimeout(2000);
@@ -609,12 +719,16 @@ test.describe("Run As User Feature Tests", () => {
     while (!resultsVisible && pollCount < maxPolls) {
       await page.waitForTimeout(2000);
       pollCount++;
-      resultsVisible = await queryResults.isVisible({ timeout: 1000 }).catch(() => false);
+      resultsVisible = await queryResults
+        .isVisible({ timeout: 1000 })
+        .catch(() => false);
       if (resultsVisible) break;
     }
 
     if (!resultsVisible) {
-      console.log("⚠️  Results did not appear - skipping nested relationship validation");
+      console.log(
+        "⚠️  Results did not appear - skipping nested relationship validation"
+      );
       test.skip();
       return;
     }
@@ -635,7 +749,9 @@ test.describe("Run As User Feature Tests", () => {
 
     // ✅ Validate accordion appears
     const accordion = page.locator("c-jt-query-results lightning-accordion");
-    const accordionVisible = await accordion.isVisible({ timeout: 2000 }).catch(() => false);
+    const accordionVisible = await accordion
+      .isVisible({ timeout: 2000 })
+      .catch(() => false);
     expect(accordionVisible).toBe(true);
     console.log("✅ Nested relationships accordion visible");
 
@@ -653,14 +769,18 @@ test.describe("Run As User Feature Tests", () => {
     await page.waitForTimeout(1000);
 
     const datatable = page.locator("c-jt-query-results lightning-datatable");
-    const datatableVisible = await datatable.isVisible({ timeout: 2000 }).catch(() => false);
-    
+    const datatableVisible = await datatable
+      .isVisible({ timeout: 2000 })
+      .catch(() => false);
+
     if (datatableVisible) {
       console.log("✅ Child records datatable visible");
-      
+
       // ✅ Validate AccountId is NOT in child columns (should be filtered out)
       const columns = await datatable.locator("thead th").allTextContents();
-      const hasAccountId = columns.some((col) => col.toLowerCase().includes("account id"));
+      const hasAccountId = columns.some((col) =>
+        col.toLowerCase().includes("account id")
+      );
       expect(hasAccountId).toBe(false);
       console.log("✅ AccountId correctly filtered from child columns");
     }
@@ -668,4 +788,3 @@ test.describe("Run As User Feature Tests", () => {
     console.log("✅ Run As User with nested relationships test completed");
   });
 });
-

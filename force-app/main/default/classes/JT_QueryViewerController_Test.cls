@@ -545,17 +545,28 @@ private class JT_QueryViewerController_Test {
 
     // Query with child relationship
     List<Account> accounts = [
-      SELECT Id, Name, Type, Industry, (SELECT Id, FirstName, LastName, Email FROM Contacts)
+      SELECT
+        Id,
+        Name,
+        Type,
+        Industry,
+        (SELECT Id, FirstName, LastName, Email FROM Contacts)
       FROM Account
       WHERE Id = :acc.Id
       LIMIT 1
     ];
 
     Test.startTest();
-    List<Object> serialized = JT_QueryViewerController.serializeRecordsForLWC(accounts);
+    List<Object> serialized = JT_QueryViewerController.serializeRecordsForLWC(
+      accounts
+    );
     Test.stopTest();
 
-    System.assertNotEquals(null, serialized, 'Serialized records should not be null');
+    System.assertNotEquals(
+      null,
+      serialized,
+      'Serialized records should not be null'
+    );
     System.assertEquals(1, serialized.size(), 'Should serialize one account');
 
     // Verify child relationships are preserved
@@ -588,10 +599,16 @@ private class JT_QueryViewerController_Test {
   @IsTest
   static void testSerializeRecordsForLWCEmpty() {
     Test.startTest();
-    List<Object> serialized = JT_QueryViewerController.serializeRecordsForLWC(new List<Account>());
+    List<Object> serialized = JT_QueryViewerController.serializeRecordsForLWC(
+      new List<Account>()
+    );
     Test.stopTest();
 
-    System.assertNotEquals(null, serialized, 'Should return empty list, not null');
+    System.assertNotEquals(
+      null,
+      serialized,
+      'Should return empty list, not null'
+    );
     System.assertEquals(0, serialized.size(), 'Should return empty list');
   }
 
@@ -602,11 +619,21 @@ private class JT_QueryViewerController_Test {
   @IsTest
   static void testSerializeRecordsForLWCNull() {
     Test.startTest();
-    List<Object> serialized = JT_QueryViewerController.serializeRecordsForLWC(null);
+    List<Object> serialized = JT_QueryViewerController.serializeRecordsForLWC(
+      null
+    );
     Test.stopTest();
 
-    System.assertNotEquals(null, serialized, 'Should return empty list, not null');
-    System.assertEquals(0, serialized.size(), 'Should return empty list for null input');
+    System.assertNotEquals(
+      null,
+      serialized,
+      'Should return empty list, not null'
+    );
+    System.assertEquals(
+      0,
+      serialized.size(),
+      'Should return empty list for null input'
+    );
   }
 
   /**

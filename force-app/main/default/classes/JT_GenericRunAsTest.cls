@@ -548,12 +548,18 @@ public class JT_GenericRunAsTest {
         // DML failure is expected in @IsTest context - that's okay, Queueable will handle it
         // Expected behavior: DML operations in @IsTest methods executed via Tooling API are rolled back
         // The Queueable will persist the final status after extracting results from Debug Log
-        System.debug(LoggingLevel.FINE, 'DML update reverted (expected in @IsTest context)');
+        System.debug(
+          LoggingLevel.FINE,
+          'DML update reverted (expected in @IsTest context)'
+        );
       } catch (Exception updateEx) {
         // Exception is expected in @IsTest context - that's okay, Queueable will handle it
         // Expected behavior: Exceptions in @IsTest methods executed via Tooling API are expected
         // The Queueable will persist the final status after extracting results from Debug Log
-        System.debug(LoggingLevel.FINE, 'Update exception (expected in @IsTest context)');
+        System.debug(
+          LoggingLevel.FINE,
+          'Update exception (expected in @IsTest context)'
+        );
       }
 
       return new TestResult(true, 'Results stored successfully');

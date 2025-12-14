@@ -195,7 +195,11 @@ private class JT_RunAsTestExecutor_Test {
 
     System.assertNotEquals(null, status, 'Status should not be null');
     System.assert(status.containsKey('status'), 'Should have status key');
-    System.assertEquals('NOT_FOUND', status.get('status'), 'Should return NOT_FOUND for invalid executionId');
+    System.assertEquals(
+      'NOT_FOUND',
+      status.get('status'),
+      'Should return NOT_FOUND for invalid executionId'
+    );
   }
 
   /**
@@ -383,7 +387,11 @@ private class JT_RunAsTestExecutor_Test {
 
     // Should handle error gracefully
     System.assertNotEquals(null, result, 'Result should not be null');
-    System.assertEquals(false, result.success, 'Should return false for invalid executionId');
+    System.assertEquals(
+      false,
+      result.success,
+      'Should return false for invalid executionId'
+    );
   }
 
   /**
@@ -618,7 +626,11 @@ private class JT_RunAsTestExecutor_Test {
     // Should handle gracefully
     System.assertNotEquals(null, result, 'Result should not be null');
     // If exception occurs, result.success should be false
-    System.assertEquals(false, result.success, 'Should return false for invalid executionId');
+    System.assertEquals(
+      false,
+      result.success,
+      'Should return false for invalid executionId'
+    );
   }
 
   /**
@@ -640,6 +652,10 @@ private class JT_RunAsTestExecutor_Test {
     System.assertNotEquals(null, status, 'Status should not be null');
     // Should have status key even if error occurs
     System.assert(status.containsKey('status'), 'Should have status key');
-    System.assertEquals('NOT_FOUND', status.get('status'), 'Should return NOT_FOUND for invalid executionId');
+    System.assertEquals(
+      'NOT_FOUND',
+      status.get('status'),
+      'Should return NOT_FOUND for invalid executionId'
+    );
   }
 }

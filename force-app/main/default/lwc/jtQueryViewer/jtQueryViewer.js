@@ -1813,13 +1813,22 @@ export default class JtQueryViewer extends LightningElement {
       return;
     }
 
+    // Create proper ConfigurationInput object for Apex
+    const configurationInput = {
+      label: configData.label,
+      developerName: configData.developerName,
+      baseQuery: configData.baseQuery,
+      bindings: configData.bindings,
+      objectName: configData.objectName,
+      originalDevName: modeFromEvent === "edit" ? this.originalDevName : undefined
+    };
+
+    console.log("configurationInput being sent:", JSON.stringify(configurationInput, null, 2));
+
     const saveMethod =
       modeFromEvent === "edit"
-        ? updateConfiguration({
-            originalDevName: this.originalDevName,
-            ...configData
-          })
-        : createConfiguration(configData);
+        ? updateConfiguration(configurationInput)
+        : createConfiguration(configurationInput);
 
     const actionLabel = modeFromEvent === "edit" ? "Updated" : "Created";
 

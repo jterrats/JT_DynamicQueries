@@ -41,12 +41,22 @@ public with sharing class JT_MetadataCreator {
     MetadataCreationResult result = new MetadataCreationResult();
 
     try {
+      // Debug: Log the input to see what we're receiving
+      System.debug(LoggingLevel.ERROR, '🔍 createConfiguration input: ' + JSON.serialize(input));
+      System.debug(LoggingLevel.ERROR, '🔍 createConfiguration input == null: ' + (input == null));
+      
       // Validate input is not null
       if (input == null) {
         result.success = false;
         result.errorMessage = 'Configuration input is required. Please ensure all fields are filled.';
+        System.debug(LoggingLevel.ERROR, '❌ Input is null - returning error');
         return result;
       }
+      
+      // Debug: Log individual fields
+      System.debug(LoggingLevel.ERROR, '🔍 input.label: ' + input.label);
+      System.debug(LoggingLevel.ERROR, '🔍 input.developerName: ' + input.developerName);
+      System.debug(LoggingLevel.ERROR, '🔍 input.baseQuery: ' + input.baseQuery);
 
       // CRITICAL: Only allow in development/test environments
       if (!isSandboxOrScratch()) {

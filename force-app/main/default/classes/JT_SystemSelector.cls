@@ -31,12 +31,27 @@ public without sharing class JT_SystemSelector {
 
   /**
    * @description Gets Organization information with security enforced
-   * Used by: JT_ProductionSettingsController for edition detection
+   * Used by: JT_ProductionSettingsController, JT_MetadataCreator for edition detection
    * @return Organization record with type, sandbox status, trial info
    */
   public static Organization getOrganizationInfo() {
     List<Organization> orgs = [
       SELECT OrganizationType, IsSandbox, TrialExpirationDate
+      FROM Organization
+      WITH SECURITY_ENFORCED
+      LIMIT 1
+    ];
+    return orgs.isEmpty() ? null : orgs[0];
+  }
+
+  /**
+   * @description Gets Organization information including Name
+   * Used by: JT_MetadataCreator.getOrgInfo() when Name is needed
+   * @return Organization record with Name, type, sandbox status, trial info
+   */
+  public static Organization getOrganizationInfoWithName() {
+    List<Organization> orgs = [
+      SELECT Name, OrganizationType, IsSandbox, TrialExpirationDate
       FROM Organization
       WITH SECURITY_ENFORCED
       LIMIT 1

@@ -11,21 +11,27 @@
 )
 public with sharing class JT_MetadataCreator {
   /**
-   * @description Input wrapper for configuration data
+   * @description Internal wrapper for metadata parameters
+   * Used to reduce parameter count in buildMetadataXml
    */
-  public class ConfigurationInput {
-    @AuraEnabled
-    public String label;
-    @AuraEnabled
-    public String developerName;
-    @AuraEnabled
-    public String baseQuery;
-    @AuraEnabled
-    public String bindings;
-    @AuraEnabled
-    public String objectName;
-    @AuraEnabled
-    public String originalDevName; // For updates only
+  private class MetadataParams {
+    String label;
+    String devName;
+    String baseQuery;
+    String bindings;
+    String objectName;
+  }
+
+  /**
+   * @description Internal wrapper for extracted configuration values
+   */
+  private class ConfigValues {
+    String label;
+    String developerName;
+    String baseQuery;
+    String bindings;
+    String objectName;
+    String originalDevName; // For updates only
   }
 
   /**
@@ -39,37 +45,13 @@ public with sharing class JT_MetadataCreator {
     MetadataCreationResult result = new MetadataCreationResult();
 
     try {
-      // Validate input is not null/blank
-      if (String.isBlank(configJson)) {
+      // Deserialize and extract configuration values
+      ConfigValues config = extractConfigValues(configJson);
+      if (config == null) {
         result.success = false;
         result.errorMessage = 'Configuration JSON is required.';
         return result;
       }
-
-      // Deserialize JSON input - handle both Map and potential edge cases
-      Object deserialized = JSON.deserializeUntyped(configJson);
-      
-      // Ensure we have a Map, not a List
-      Map<String, Object> configMap;
-      if (deserialized instanceof Map<String, Object>) {
-        configMap = (Map<String, Object>) deserialized;
-      } else {
-        result.success = false;
-        result.errorMessage = 'Invalid JSON format. Expected an object, but received: ' + deserialized;
-        return result;
-      }
-
-      System.debug(
-        LoggingLevel.ERROR,
-        '🔍 createConfiguration configMap: ' + JSON.serialize(configMap)
-      );
-
-      // Extract values from map (handle null values safely)
-      String label = configMap.get('label') != null ? String.valueOf(configMap.get('label')) : null;
-      String developerName = configMap.get('developerName') != null ? String.valueOf(configMap.get('developerName')) : null;
-      String baseQuery = configMap.get('baseQuery') != null ? String.valueOf(configMap.get('baseQuery')) : null;
-      String bindings = configMap.get('bindings') != null ? String.valueOf(configMap.get('bindings')) : null;
-      String objectName = configMap.get('objectName') != null ? String.valueOf(configMap.get('objectName')) : null;
 
       // CRITICAL: Only allow in development/test environments
       if (!isSandboxOrScratch()) {
@@ -80,9 +62,9 @@ public with sharing class JT_MetadataCreator {
 
       // Validate required fields
       if (
-        String.isBlank(label) ||
-        String.isBlank(developerName) ||
-        String.isBlank(baseQuery)
+        String.isBlank(config.label) ||
+        String.isBlank(config.developerName) ||
+        String.isBlank(config.baseQuery)
       ) {
         result.success = false;
         result.errorMessage = 'Label, Developer Name, and Base Query are required fields.';
@@ -90,22 +72,23 @@ public with sharing class JT_MetadataCreator {
       }
 
       // Sanitize developer name
-      String sanitizedDevName = sanitizeDeveloperName(developerName);
+      String sanitizedDevName = sanitizeDeveloperName(config.developerName);
 
       // Build metadata XML (handle null values for optional fields)
-      String metadataXml = buildMetadataXml(
-        label,
-        sanitizedDevName,
-        baseQuery,
-        String.isBlank(bindings) ? null : bindings,
-        String.isBlank(objectName) ? null : objectName
-      );
+      MetadataParams params = new MetadataParams();
+      params.label = config.label;
+      params.devName = sanitizedDevName;
+      params.baseQuery = config.baseQuery;
+      params.bindings = String.isBlank(config.bindings) ? null : config.bindings;
+      params.objectName = String.isBlank(config.objectName) ? null : config.objectName;
+
+      String metadataXml = buildMetadataXml(params);
 
       // Deploy via Metadata API
       String deploymentId = deployMetadata(metadataXml, sanitizedDevName);
 
       result.success = true;
-      result.message = 'Configuration created successfully: ' + label;
+      result.message = 'Configuration created successfully: ' + config.label;
       result.developerName = sanitizedDevName;
       result.deploymentId = deploymentId;
 
@@ -135,14 +118,16 @@ public with sharing class JT_MetadataCreator {
     try {
       // CRITICAL: Only allow in development/test environments
       if (!isSandboxOrScratch()) {
-        throw new AuraHandledException(
-          'Configuration deletion is only allowed in development/test environments (Sandbox, Scratch Org, Developer Edition, or Trial). For production orgs (including Starter/Free Editions), use Setup > Custom Metadata Types.'
-        );
+        result.success = false;
+        result.errorMessage = 'Configuration deletion is only allowed in development/test environments (Sandbox, Scratch Org, Developer Edition, or Trial). For production orgs (including Starter/Free Editions), use Setup > Custom Metadata Types.';
+        return result;
       }
 
       // Validate required field
       if (String.isBlank(developerName)) {
-        throw new AuraHandledException('Developer Name is required.');
+        result.success = false;
+        result.errorMessage = 'Developer Name is required.';
+        return result;
       }
 
       // Delete via Tooling API using API-enabled session ID
@@ -167,9 +152,9 @@ public with sharing class JT_MetadataCreator {
         result.developerName = developerName;
         return result;
       } else {
-        throw new AuraHandledException(
-          'Failed to delete metadata: ' + response.getBody()
-        );
+        result.success = false;
+        result.errorMessage = 'Failed to delete metadata: ' + response.getBody();
+        return result;
       }
     } catch (Exception e) {
       result.success = false;
@@ -190,38 +175,13 @@ public with sharing class JT_MetadataCreator {
     MetadataCreationResult result = new MetadataCreationResult();
 
     try {
-      // Validate input is not null/blank
-      if (String.isBlank(configJson)) {
+      // Deserialize and extract configuration values
+      ConfigValues config = extractConfigValues(configJson);
+      if (config == null) {
         result.success = false;
         result.errorMessage = 'Configuration JSON is required.';
         return result;
       }
-
-      // Deserialize JSON input - handle both Map and potential edge cases
-      Object deserialized = JSON.deserializeUntyped(configJson);
-      
-      // Ensure we have a Map, not a List
-      Map<String, Object> configMap;
-      if (deserialized instanceof Map<String, Object>) {
-        configMap = (Map<String, Object>) deserialized;
-      } else {
-        result.success = false;
-        result.errorMessage = 'Invalid JSON format. Expected an object, but received: ' + deserialized;
-        return result;
-      }
-
-      System.debug(
-        LoggingLevel.ERROR,
-        '🔍 updateConfiguration configMap: ' + JSON.serialize(configMap)
-      );
-
-      // Extract values from map (handle null values safely)
-      String originalDevName = configMap.get('originalDevName') != null ? String.valueOf(configMap.get('originalDevName')) : null;
-      String label = configMap.get('label') != null ? String.valueOf(configMap.get('label')) : null;
-      String developerName = configMap.get('developerName') != null ? String.valueOf(configMap.get('developerName')) : null;
-      String baseQuery = configMap.get('baseQuery') != null ? String.valueOf(configMap.get('baseQuery')) : null;
-      String bindings = configMap.get('bindings') != null ? String.valueOf(configMap.get('bindings')) : null;
-      String objectName = configMap.get('objectName') != null ? String.valueOf(configMap.get('objectName')) : null;
 
       // CRITICAL: Only allow in sandbox/scratch
       if (!isSandboxOrScratch()) {
@@ -232,9 +192,9 @@ public with sharing class JT_MetadataCreator {
 
       // Validate required fields
       if (
-        String.isBlank(originalDevName) ||
-        String.isBlank(label) ||
-        String.isBlank(baseQuery)
+        String.isBlank(config.originalDevName) ||
+        String.isBlank(config.label) ||
+        String.isBlank(config.baseQuery)
       ) {
         result.success = false;
         result.errorMessage = 'Original Developer Name, Label, and Base Query are required for update.';
@@ -242,78 +202,44 @@ public with sharing class JT_MetadataCreator {
       }
 
       // Sanitize developer name
-      String sanitizedDevName = sanitizeDeveloperName(developerName);
+      String sanitizedDevName = sanitizeDeveloperName(config.developerName);
 
       // Check if Developer Name changed (renaming scenario)
       Boolean isRenaming =
         String.isNotBlank(sanitizedDevName) &&
-        sanitizedDevName != originalDevName;
+        sanitizedDevName != config.originalDevName;
 
       if (isRenaming) {
         // Rename: Delete old record and create new one
-        // Step 1: Delete old record
-        MetadataCreationResult deleteResult = deleteConfiguration(
-          originalDevName
+        MetadataCreationResult renameResult = handleRename(
+          config.originalDevName,
+          config.label,
+          sanitizedDevName,
+          config.baseQuery,
+          config.bindings,
+          config.objectName
         );
-
-        if (!deleteResult.success) {
-          result.success = false;
-          result.errorMessage = 'Failed to delete old configuration during rename: ' +
-            deleteResult.errorMessage;
-          return result;
-        }
-
-        // Step 2: Create new record with new Developer Name
-        // Build JSON for createConfiguration
-        Map<String, Object> createConfigMap = new Map<String, Object>{
-          'label' => label,
-          'developerName' => sanitizedDevName,
-          'baseQuery' => baseQuery,
-          'bindings' => bindings,
-          'objectName' => objectName
-        };
-        String createConfigJson = JSON.serialize(createConfigMap);
-
-        MetadataCreationResult createResult = createConfiguration(
-          createConfigJson
-        );
-
-        if (!createResult.success) {
-          result.success = false;
-          result.errorMessage = 'Failed to create renamed configuration: ' +
-            createResult.errorMessage;
-          return result;
-        }
-
-        result.success = true;
-        result.message =
-          'Configuration renamed successfully: ' +
-          originalDevName +
-          ' → ' +
-          sanitizedDevName;
-        result.developerName = sanitizedDevName;
-        result.deploymentId = createResult.deploymentId;
-
-        return result;
+        return renameResult;
       } else {
         // Normal update: Use original dev name
-        String metadataXml = buildMetadataXml(
-          label,
-          originalDevName,
-          baseQuery,
-          bindings,
-          objectName
-        );
+        MetadataParams params = new MetadataParams();
+        params.label = config.label;
+        params.devName = config.originalDevName;
+        params.baseQuery = config.baseQuery;
+        params.bindings = String.isBlank(config.bindings) ? null : config.bindings;
+        params.objectName = String.isBlank(config.objectName) ? null : config.objectName;
+
+        String metadataXml = buildMetadataXml(params);
 
         // Deploy via Metadata API (will update existing record)
         String deploymentId = deployMetadata(
           metadataXml,
-          originalDevName
+          config.originalDevName
         );
 
         result.success = true;
-        result.message = 'Configuration updated successfully: ' + label;
-        result.developerName = originalDevName;
+        result.message = 'Configuration updated successfully: ' + config.label;
+        result.developerName = config.originalDevName;
         result.deploymentId = deploymentId;
 
         return result;
@@ -333,12 +259,11 @@ public with sharing class JT_MetadataCreator {
    **/
   @AuraEnabled(cacheable=true)
   public static Boolean isSandboxOrScratch() {
-    Organization org = [
-      SELECT IsSandbox, TrialExpirationDate, OrganizationType
-      FROM Organization
-      WITH SECURITY_ENFORCED
-      LIMIT 1
-    ];
+    // ✅ REFACTORED: Use SystemSelector pattern
+    Organization org = JT_SystemSelector.getOrganizationInfo();
+    if (org == null) {
+      return false;
+    }
 
     // Check if it's a development/test environment
     Boolean isDevelopmentOrg =
@@ -365,12 +290,19 @@ public with sharing class JT_MetadataCreator {
    **/
   @AuraEnabled(cacheable=true)
   public static Map<String, Object> getOrgInfo() {
-    Organization org = [
-      SELECT Name, IsSandbox, OrganizationType, TrialExpirationDate
-      FROM Organization
-      WITH SECURITY_ENFORCED
-      LIMIT 1
-    ];
+    // ✅ REFACTORED: Use SystemSelector pattern
+    Organization org = JT_SystemSelector.getOrganizationInfo();
+    if (org == null) {
+      return new Map<String, Object>{
+        'name' => 'Unknown',
+        'isSandbox' => false,
+        'organizationType' => 'Unknown',
+        'isScratch' => false,
+        'canCreateMetadata' => false,
+        'isProduction' => true,
+        'productionOverrideEnabled' => false
+      };
+    }
 
     Boolean isDevelopmentOrg =
       org.IsSandbox ||
@@ -384,8 +316,12 @@ public with sharing class JT_MetadataCreator {
 
     Boolean canCreate = isDevelopmentOrg || productionOverride;
 
+    // ✅ REFACTORED: Use SystemSelector for org name
+    Organization orgWithName = JT_SystemSelector.getOrganizationInfoWithName();
+    String orgName = orgWithName != null ? orgWithName.Name : 'Unknown';
+
     return new Map<String, Object>{
-      'name' => org.Name,
+      'name' => orgName,
       'isSandbox' => org.IsSandbox,
       'organizationType' => org.OrganizationType,
       'isScratch' => org.TrialExpirationDate != null,
@@ -421,25 +357,16 @@ public with sharing class JT_MetadataCreator {
   /**
    * @description Builds Custom Metadata XML
    * @author Jaime Terrats | 11-29-2025
-   * @param label Label
-   * @param devName Developer name
-   * @param baseQuery Base query
-   * @param bindings Bindings
-   * @param objectName Object name
+   * @param params MetadataParams wrapper containing all metadata fields
    * @return String XML content
    **/
-  private static String buildMetadataXml(
-    String label,
-    String devName,
-    String baseQuery,
-    String bindings,
-    String objectName
-  ) {
+  private static String buildMetadataXml(MetadataParams params) {
     // Validate required parameters
     if (
-      String.isBlank(label) ||
-      String.isBlank(devName) ||
-      String.isBlank(baseQuery)
+      params == null ||
+      String.isBlank(params.label) ||
+      String.isBlank(params.devName) ||
+      String.isBlank(params.baseQuery)
     ) {
       throw new IllegalArgumentException(
         'Label, Developer Name, and Base Query are required for metadata XML generation.'
@@ -448,7 +375,7 @@ public with sharing class JT_MetadataCreator {
 
     String xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
     xml += '<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata">\n';
-    xml += '    <label>' + escapeXml(label) + '</label>\n';
+    xml += '    <label>' + escapeXml(params.label) + '</label>\n';
     xml += '    <protected>false</protected>\n';
 
     // Base Query
@@ -456,28 +383,28 @@ public with sharing class JT_MetadataCreator {
     xml += '        <field>JT_BaseQuery__c</field>\n';
     xml +=
       '        <value xsi:type="xsd:string">' +
-      escapeXml(baseQuery) +
+      escapeXml(params.baseQuery) +
       '</value>\n';
     xml += '    </values>\n';
 
     // Bindings (optional)
-    if (String.isNotBlank(bindings)) {
+    if (String.isNotBlank(params.bindings)) {
       xml += '    <values>\n';
       xml += '        <field>JT_Binding__c</field>\n';
       xml +=
         '        <value xsi:type="xsd:string">' +
-        escapeXml(bindings) +
+        escapeXml(params.bindings) +
         '</value>\n';
       xml += '    </values>\n';
     }
 
     // Object Name (optional)
-    if (String.isNotBlank(objectName)) {
+    if (String.isNotBlank(params.objectName)) {
       xml += '    <values>\n';
       xml += '        <field>JT_ObjectName__c</field>\n';
       xml +=
         '        <value xsi:type="xsd:string">' +
-        escapeXml(objectName) +
+        escapeXml(params.objectName) +
         '</value>\n';
       xml += '    </values>\n';
     }
@@ -495,8 +422,8 @@ public with sharing class JT_MetadataCreator {
    * @return String Deployment ID
    **/
   private static String deployMetadata(String metadataXml, String devName) {
-    // Build deployment package
-    String zipBase64 = buildDeploymentZip(metadataXml, devName);
+    // Note: buildDeploymentZip is currently a placeholder - not actually building ZIP
+    // It's kept for future enhancement but not used in deployment
 
     // Deploy via Tooling API using API-enabled session ID
     final String endpointPath =
@@ -568,19 +495,113 @@ public with sharing class JT_MetadataCreator {
   }
 
   /**
-   * @description Builds deployment ZIP (simplified)
-   * @author Jaime Terrats | 11-29-2025
-   * @param metadataXml XML content
-   * @param devName Developer name
-   * @return String Base64 encoded ZIP
+   * @description Helper method to extract configuration values from JSON string
+   * @param configJson JSON string containing configuration data
+   * @return ConfigValues object with extracted values, or null if invalid
    **/
-  private static String buildDeploymentZip(String metadataXml, String devName) {
-    // In a real implementation, build proper ZIP with package.xml
-    // For now, encode metadata XML (devName used for future enhancement)
-    String encoded = EncodingUtil.base64Encode(Blob.valueOf(metadataXml));
-    // Use encoded result for deployment (devName logged for debugging)
-    System.debug(LoggingLevel.FINE, 'Built deployment for: ' + devName);
-    return encoded;
+  private static ConfigValues extractConfigValues(String configJson) {
+    if (String.isBlank(configJson)) {
+      return null;
+    }
+
+    try {
+      // Deserialize JSON input
+      Object deserialized = JSON.deserializeUntyped(configJson);
+
+      // Ensure we have a Map, not a List
+      if (!(deserialized instanceof Map<String, Object>)) {
+        System.debug(
+          LoggingLevel.ERROR,
+          'Invalid JSON format. Expected an object, but received: ' + deserialized
+        );
+        return null;
+      }
+
+      Map<String, Object> configMap = (Map<String, Object>) deserialized;
+
+      System.debug(
+        LoggingLevel.ERROR,
+        '🔍 Extracted configMap: ' + JSON.serialize(configMap)
+      );
+
+      // Extract values from map (handle null values safely)
+      ConfigValues config = new ConfigValues();
+      config.label = configMap.get('label') != null ? String.valueOf(configMap.get('label')) : null;
+      config.developerName = configMap.get('developerName') != null ? String.valueOf(configMap.get('developerName')) : null;
+      config.baseQuery = configMap.get('baseQuery') != null ? String.valueOf(configMap.get('baseQuery')) : null;
+      config.bindings = configMap.get('bindings') != null ? String.valueOf(configMap.get('bindings')) : null;
+      config.objectName = configMap.get('objectName') != null ? String.valueOf(configMap.get('objectName')) : null;
+      config.originalDevName = configMap.get('originalDevName') != null ? String.valueOf(configMap.get('originalDevName')) : null;
+
+      return config;
+    } catch (Exception e) {
+      System.debug(
+        LoggingLevel.ERROR,
+        'Error deserializing config JSON: ' + e.getMessage()
+      );
+      return null;
+    }
+  }
+
+  /**
+   * @description Handles renaming scenario (delete old + create new)
+   * @param originalDevName Original developer name
+   * @param label Configuration label
+   * @param sanitizedDevName New sanitized developer name
+   * @param baseQuery Base query
+   * @param bindings Bindings
+   * @param objectName Object name
+   * @return MetadataCreationResult
+   **/
+  private static MetadataCreationResult handleRename(
+    String originalDevName,
+    String label,
+    String sanitizedDevName,
+    String baseQuery,
+    String bindings,
+    String objectName
+  ) {
+    MetadataCreationResult result = new MetadataCreationResult();
+
+    // Step 1: Delete old record
+    MetadataCreationResult deleteResult = deleteConfiguration(originalDevName);
+
+    if (!deleteResult.success) {
+      result.success = false;
+      result.errorMessage = 'Failed to delete old configuration during rename: ' +
+        deleteResult.errorMessage;
+      return result;
+    }
+
+    // Step 2: Create new record with new Developer Name
+    Map<String, Object> createConfigMap = new Map<String, Object>{
+      'label' => label,
+      'developerName' => sanitizedDevName,
+      'baseQuery' => baseQuery,
+      'bindings' => bindings,
+      'objectName' => objectName
+    };
+    String createConfigJson = JSON.serialize(createConfigMap);
+
+    MetadataCreationResult createResult = createConfiguration(createConfigJson);
+
+    if (!createResult.success) {
+      result.success = false;
+      result.errorMessage = 'Failed to create renamed configuration: ' +
+        createResult.errorMessage;
+      return result;
+    }
+
+    result.success = true;
+    result.message =
+      'Configuration renamed successfully: ' +
+      originalDevName +
+      ' → ' +
+      sanitizedDevName;
+    result.developerName = sanitizedDevName;
+    result.deploymentId = createResult.deploymentId;
+
+    return result;
   }
 
   /**

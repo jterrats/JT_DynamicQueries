@@ -3042,4 +3042,242 @@ Y bueno...&lt;br /&gt;&lt;br /&gt;</value>
         <shortDescription>JT_RunAsTestExecutor - storageLimitExceeded</shortDescription>
         <value>Your Salesforce organization has reached its storage limit. Please contact your administrator to increase storage capacity or free up space by deleting unused records. This feature requires available storage to create execution records.</value>
     </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_configurationRequired</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - configurationRequired</shortDescription>
+        <value>Configuration Required</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_pleaseSelectConfiguration</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - pleaseSelectConfiguration</shortDescription>
+        <value>Please select a configuration first.</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_userRequired</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - userRequired</shortDescription>
+        <value>User Required</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_pleaseSelectUser</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - pleaseSelectUser</shortDescription>
+        <value>Please select a user to run as.</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_unknownError</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - unknownError</shortDescription>
+        <value>Unknown error occurred</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_noConfigurationSelected</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - noConfigurationSelected</shortDescription>
+        <value>No Configuration Selected</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_pleaseSelectConfigurationToEdit</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - pleaseSelectConfigurationToEdit</shortDescription>
+        <value>Please select a configuration to edit.</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_pleaseSelectConfigurationToDelete</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - pleaseSelectConfigurationToDelete</shortDescription>
+        <value>Please select a configuration to delete.</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_deleteFailed</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - deleteFailed</shortDescription>
+        <value>Delete Failed</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_configurationDeleted</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - configurationDeleted</shortDescription>
+        <value>Configuration Deleted</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_executionError</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - executionError</shortDescription>
+        <value>Execution Error</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_queryError</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - queryError</shortDescription>
+        <value>Query Error</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_errorUpdatingSettings</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - errorUpdatingSettings</shortDescription>
+        <value>Error updating settings</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_testExecutionTimeout</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - testExecutionTimeout</shortDescription>
+        <value>Test Execution Timeout</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_testExecutionTimeoutMessage</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - testExecutionTimeoutMessage</shortDescription>
+        <value>Test execution timed out after 120 seconds. In Developer Orgs, tests may not execute automatically. Please check Apex Test Execution in Setup or try again later.</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_pollingError</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - pollingError</shortDescription>
+        <value>Polling Error</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_errorLoadingUsers</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - errorLoadingUsers</shortDescription>
+        <value>Error Loading Users</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_failedToLoadUsers</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - failedToLoadUsers</shortDescription>
+        <value>Failed to load users</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_executionInProgress</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - executionInProgress</shortDescription>
+        <value>Execution in Progress</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_pleaseWaitForExecution</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - pleaseWaitForExecution</shortDescription>
+        <value>Please wait for the current test execution to complete.</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_errorExtractingParameters</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - errorExtractingParameters</shortDescription>
+        <value>Error extracting parameters</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_searchError</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - searchError</shortDescription>
+        <value>Search Error</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_partialResults</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - partialResults</shortDescription>
+        <value>Partial Results</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_partialResultsMessage</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - partialResultsMessage</shortDescription>
+        <value>Showing {0} available result(s). Some searches failed.</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_productionEditingEnabled</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - productionEditingEnabled</shortDescription>
+        <value>Production editing enabled. Please refresh the page to see changes.</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_productionEditingDisabled</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - productionEditingDisabled</shortDescription>
+        <value>Production editing disabled. Please refresh the page.</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_testPassedFoundRecords</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - testPassedFoundRecords</shortDescription>
+        <value>Test Passed: Found {0} record(s)</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtQueryViewer_testPassedExecutionTime</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - testPassedExecutionTime</shortDescription>
+        <value> in {0}ms</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtSearchableCombobox_typeToSearch</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtSearchableCombobox - typeToSearch</shortDescription>
+        <value>Type to search...</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtSearchableCombobox_noResultsFound</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtSearchableCombobox - noResultsFound</shortDescription>
+        <value>No results found</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtSearchableCombobox_pleaseSelectOption</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtSearchableCombobox - pleaseSelectOption</shortDescription>
+        <value>Please select an option</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtSearchableCombobox_clearSelection</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtSearchableCombobox - clearSelection</shortDescription>
+        <value>Clear selection</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtSearchableCombobox_showOptions</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtSearchableCombobox - showOptions</shortDescription>
+        <value>Show options</value>
+    </labels>
+    <labels>
+        <fullName>JT_jtSearchableCombobox_searchableCombobox</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtSearchableCombobox - searchableCombobox</shortDescription>
+        <value>Searchable combobox</value>
+    </labels>
 </CustomLabels>

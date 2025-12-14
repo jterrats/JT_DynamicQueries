@@ -156,6 +156,34 @@ import sandboxEnvironmentTitleLabel from "@salesforce/label/c.JT_jtQueryViewer_s
 import scratchOrgTitleLabel from "@salesforce/label/c.JT_jtQueryViewer_scratchOrgTitle";
 import developerEditionTitleLabel from "@salesforce/label/c.JT_jtQueryViewer_developerEditionTitle";
 import productionEnvironmentTitleLabel from "@salesforce/label/c.JT_jtQueryViewer_productionEnvironmentTitle";
+import configurationRequiredLabel from "@salesforce/label/c.JT_jtQueryViewer_configurationRequired";
+import pleaseSelectConfigurationLabel from "@salesforce/label/c.JT_jtQueryViewer_pleaseSelectConfiguration";
+import userRequiredLabel from "@salesforce/label/c.JT_jtQueryViewer_userRequired";
+import pleaseSelectUserLabel from "@salesforce/label/c.JT_jtQueryViewer_pleaseSelectUser";
+import unknownErrorLabel from "@salesforce/label/c.JT_jtQueryViewer_unknownError";
+import noConfigurationSelectedLabel from "@salesforce/label/c.JT_jtQueryViewer_noConfigurationSelected";
+import pleaseSelectConfigurationToEditLabel from "@salesforce/label/c.JT_jtQueryViewer_pleaseSelectConfigurationToEdit";
+import pleaseSelectConfigurationToDeleteLabel from "@salesforce/label/c.JT_jtQueryViewer_pleaseSelectConfigurationToDelete";
+import deleteFailedLabel from "@salesforce/label/c.JT_jtQueryViewer_deleteFailed";
+import configurationDeletedLabel from "@salesforce/label/c.JT_jtQueryViewer_configurationDeleted";
+import executionErrorLabel from "@salesforce/label/c.JT_jtQueryViewer_executionError";
+import queryErrorLabel from "@salesforce/label/c.JT_jtQueryViewer_queryError";
+import errorUpdatingSettingsLabel from "@salesforce/label/c.JT_jtQueryViewer_errorUpdatingSettings";
+import testExecutionTimeoutLabel from "@salesforce/label/c.JT_jtQueryViewer_testExecutionTimeout";
+import testExecutionTimeoutMessageLabel from "@salesforce/label/c.JT_jtQueryViewer_testExecutionTimeoutMessage";
+import pollingErrorLabel from "@salesforce/label/c.JT_jtQueryViewer_pollingError";
+import errorLoadingUsersLabel from "@salesforce/label/c.JT_jtQueryViewer_errorLoadingUsers";
+import failedToLoadUsersLabel from "@salesforce/label/c.JT_jtQueryViewer_failedToLoadUsers";
+import executionInProgressLabel from "@salesforce/label/c.JT_jtQueryViewer_executionInProgress";
+import pleaseWaitForExecutionLabel from "@salesforce/label/c.JT_jtQueryViewer_pleaseWaitForExecution";
+import errorExtractingParametersLabel from "@salesforce/label/c.JT_jtQueryViewer_errorExtractingParameters";
+import searchErrorLabel from "@salesforce/label/c.JT_jtQueryViewer_searchError";
+import partialResultsLabel from "@salesforce/label/c.JT_jtQueryViewer_partialResults";
+import partialResultsMessageLabel from "@salesforce/label/c.JT_jtQueryViewer_partialResultsMessage";
+import productionEditingEnabledLabel from "@salesforce/label/c.JT_jtQueryViewer_productionEditingEnabled";
+import productionEditingDisabledLabel from "@salesforce/label/c.JT_jtQueryViewer_productionEditingDisabled";
+import testPassedFoundRecordsLabel from "@salesforce/label/c.JT_jtQueryViewer_testPassedFoundRecords";
+import testPassedExecutionTimeLabel from "@salesforce/label/c.JT_jtQueryViewer_testPassedExecutionTime";
 
 // Apex imports
 import getConfigurations from "@salesforce/apex/JT_QueryViewerController.getConfigurations";
@@ -427,7 +455,35 @@ export default class JtQueryViewer extends LightningElement {
     sandboxEnvironmentTitle: sandboxEnvironmentTitleLabel,
     scratchOrgTitle: scratchOrgTitleLabel,
     developerEditionTitle: developerEditionTitleLabel,
-    productionEnvironmentTitle: productionEnvironmentTitleLabel
+    productionEnvironmentTitle: productionEnvironmentTitleLabel,
+    configurationRequired: configurationRequiredLabel,
+    pleaseSelectConfiguration: pleaseSelectConfigurationLabel,
+    userRequired: userRequiredLabel,
+    pleaseSelectUser: pleaseSelectUserLabel,
+    unknownError: unknownErrorLabel,
+    noConfigurationSelected: noConfigurationSelectedLabel,
+    pleaseSelectConfigurationToEdit: pleaseSelectConfigurationToEditLabel,
+    pleaseSelectConfigurationToDelete: pleaseSelectConfigurationToDeleteLabel,
+    deleteFailed: deleteFailedLabel,
+    configurationDeleted: configurationDeletedLabel,
+    executionError: executionErrorLabel,
+    queryError: queryErrorLabel,
+    errorUpdatingSettings: errorUpdatingSettingsLabel,
+    testExecutionTimeout: testExecutionTimeoutLabel,
+    testExecutionTimeoutMessage: testExecutionTimeoutMessageLabel,
+    pollingError: pollingErrorLabel,
+    errorLoadingUsers: errorLoadingUsersLabel,
+    failedToLoadUsers: failedToLoadUsersLabel,
+    executionInProgress: executionInProgressLabel,
+    pleaseWaitForExecution: pleaseWaitForExecutionLabel,
+    errorExtractingParameters: errorExtractingParametersLabel,
+    searchError: searchErrorLabel,
+    partialResults: partialResultsLabel,
+    partialResultsMessage: partialResultsMessageLabel,
+    productionEditingEnabled: productionEditingEnabledLabel,
+    productionEditingDisabled: productionEditingDisabledLabel,
+    testPassedFoundRecords: testPassedFoundRecordsLabel,
+    testPassedExecutionTime: testPassedExecutionTimeLabel
   };
 
   // Wire to get all configurations (cacheable for refreshApex)
@@ -488,15 +544,15 @@ export default class JtQueryViewer extends LightningElement {
         showSuccessToast(
           this,
           enabled
-            ? "Production editing enabled. Please refresh the page to see changes."
-            : "Production editing disabled. Please refresh the page."
+            ? this.labels.productionEditingEnabled
+            : this.labels.productionEditingDisabled
         );
 
         // Refresh org info
         return refreshApex(this.wiredConfigurationsResult);
       })
       .catch((error) => {
-        showErrorToast(this, "Error updating settings", error.body?.message);
+        showErrorToast(this, this.labels.errorUpdatingSettings, error.body?.message);
         // Revert checkbox
         this.productionOverrideEnabled = !enabled;
       })
@@ -592,8 +648,8 @@ export default class JtQueryViewer extends LightningElement {
       .catch((error) => {
         showErrorToast(
           this,
-          "Error Loading Users",
-          error.body?.message || "Failed to load users"
+          this.labels.errorLoadingUsers,
+          error.body?.message || this.labels.failedToLoadUsers
         );
         this.userOptions = [];
       })
@@ -843,7 +899,7 @@ export default class JtQueryViewer extends LightningElement {
         .catch((error) => {
           showErrorToast(
             this,
-            "Error extracting parameters",
+            this.labels.errorExtractingParameters,
             error.body?.message
           );
         });
@@ -926,8 +982,8 @@ export default class JtQueryViewer extends LightningElement {
     if (this.isRunningTest) {
       showErrorToast(
         this,
-        "Execution in Progress",
-        "Please wait for the current test execution to complete."
+        this.labels.executionInProgress,
+        this.labels.pleaseWaitForExecution
       );
       return;
     }
@@ -935,14 +991,14 @@ export default class JtQueryViewer extends LightningElement {
     if (!this.selectedConfig) {
       showErrorToast(
         this,
-        "Configuration Required",
-        "Please select a configuration first."
+        this.labels.configurationRequired,
+        this.labels.pleaseSelectConfiguration
       );
       return;
     }
 
     if (!this.runAsUserId) {
-      showErrorToast(this, "User Required", "Please select a user to run as.");
+      showErrorToast(this, this.labels.userRequired, this.labels.pleaseSelectUser);
       return;
     }
 
@@ -997,7 +1053,7 @@ export default class JtQueryViewer extends LightningElement {
           error.body?.pageErrors?.[0]?.message ||
           error.body?.output?.errors?.[0]?.message ||
           error.message ||
-          "Unknown error occurred";
+          this.labels.unknownError;
 
         // If it's a generic "Script-thrown exception", try to get more details
         if (errorMsg === "Script-thrown exception" && error.body?.output?.errors) {
@@ -1083,8 +1139,8 @@ export default class JtQueryViewer extends LightningElement {
               this.isRunningTest = false;
               showErrorToast(
                 this,
-                "Test Execution Timeout",
-                "Test execution timed out after 120 seconds. In Developer Orgs, tests may not execute automatically. Please check Apex Test Execution in Setup or try again later."
+                this.labels.testExecutionTimeout,
+                this.labels.testExecutionTimeoutMessage
               );
             }
             // Keep polling
@@ -1111,7 +1167,7 @@ export default class JtQueryViewer extends LightningElement {
           console.error("❌ Polling error:", error);
           clearInterval(this.pollInterval);
           this.isRunningTest = false;
-          showErrorToast(this, "Polling Error", error.body?.message);
+          showErrorToast(this, this.labels.pollingError, error.body?.message);
         });
     }, 2000); // Poll every 2 seconds
   }
@@ -1157,9 +1213,15 @@ export default class JtQueryViewer extends LightningElement {
       // Only show toast for regular execution, not for Run As User
       // Run As User already has its own UI feedback
       if (!result.runAsUserName) {
-        let successMsg = `Test Passed: Found ${result.recordCount} record(s)`;
+        let successMsg = this.labels.testPassedFoundRecords.replace(
+          "{0}",
+          result.recordCount
+        );
         if (result.executionTime) {
-          successMsg += ` in ${result.executionTime}ms`;
+          successMsg += this.labels.testPassedExecutionTime.replace(
+            "{0}",
+            result.executionTime
+          );
         }
         showSuccessToast(this, successMsg);
       }
@@ -1257,8 +1319,8 @@ export default class JtQueryViewer extends LightningElement {
     if (!this.selectedConfig) {
       showErrorToast(
         this,
-        "No Configuration Selected",
-        "Please select a configuration to edit."
+        this.labels.noConfigurationSelected,
+        this.labels.pleaseSelectConfigurationToEdit
       );
       return;
     }
@@ -1321,8 +1383,8 @@ export default class JtQueryViewer extends LightningElement {
     if (!this.selectedConfig) {
       showErrorToast(
         this,
-        "No Configuration Selected",
-        "Please select a configuration to delete."
+        this.labels.noConfigurationSelected,
+        this.labels.pleaseSelectConfigurationToDelete
       );
       return;
     }
@@ -1356,13 +1418,13 @@ export default class JtQueryViewer extends LightningElement {
     deleteConfiguration({ developerName: currentConfig.developerName })
       .then((result) => {
         if (result.success) {
-          showSuccessToast(this, result.message, "Configuration Deleted");
+          showSuccessToast(this, result.message, this.labels.configurationDeleted);
           // Clear selection
           this.selectedConfig = "";
           // Refresh the configurations list
           return refreshApex(this.wiredConfigurationsResult);
         }
-        showErrorToast(this, "Delete Failed", result.errorMessage);
+        showErrorToast(this, this.labels.deleteFailed, result.errorMessage);
         return Promise.resolve();
       })
       .catch((error) => {
@@ -1401,8 +1463,8 @@ export default class JtQueryViewer extends LightningElement {
     if (!this.selectedConfig) {
       showErrorToast(
         this,
-        "No Configuration Selected",
-        "Please select a configuration first"
+        this.labels.noConfigurationSelected,
+        this.labels.pleaseSelectConfiguration
       );
       return;
     }
@@ -1440,8 +1502,11 @@ export default class JtQueryViewer extends LightningElement {
         if (this.hasPartialUsageResults && this.usageResults.length > 0) {
           showWarningToast(
             this,
-            "Partial Results",
-            `Showing ${this.usageResults.length} available result(s). Some searches failed.`
+            this.labels.partialResults,
+            this.labels.partialResultsMessage.replace(
+              "{0}",
+              this.usageResults.length
+            )
           );
         }
 
@@ -1456,7 +1521,7 @@ export default class JtQueryViewer extends LightningElement {
       .catch((error) => {
         showErrorToast(
           this,
-          "Search Error",
+          this.labels.searchError,
           error.body?.message || "Failed to execute search orchestrator"
         );
         this.isLoadingUsage = false;
@@ -1547,7 +1612,7 @@ export default class JtQueryViewer extends LightningElement {
         this,
         "Error",
         "Error clearing cache: " +
-          (error.body?.message || error.message || "Unknown error")
+          (error.body?.message || error.message || this.labels.unknownError)
       );
     }
   }
@@ -1768,7 +1833,7 @@ export default class JtQueryViewer extends LightningElement {
         showErrorToast(
           this,
           `${actionLabel} Failed`,
-          result.errorMessage || "Unknown error occurred"
+          result.errorMessage || this.labels.unknownError
         );
         return Promise.resolve();
       })
@@ -1986,13 +2051,13 @@ export default class JtQueryViewer extends LightningElement {
         } else {
           this.showError = true;
           this.errorMessage = result.errorMessage;
-          showErrorToast(this, "Query Error", result.errorMessage);
+          showErrorToast(this, this.labels.queryError, result.errorMessage);
         }
       })
       .catch((error) => {
         this.showError = true;
-        this.errorMessage = error.body?.message || "Unknown error occurred";
-        showErrorToast(this, "Execution Error", this.errorMessage);
+        this.errorMessage = error.body?.message || this.labels.unknownError;
+        showErrorToast(this, this.labels.executionError, this.errorMessage);
       })
       .finally(() => {
         this.isLoading = false;
@@ -2018,13 +2083,13 @@ export default class JtQueryViewer extends LightningElement {
         } else {
           this.showError = true;
           this.errorMessage = result.errorMessage;
-          showErrorToast(this, "Query Error", result.errorMessage);
+          showErrorToast(this, this.labels.queryError, result.errorMessage);
         }
       })
       .catch((error) => {
         this.showError = true;
-        this.errorMessage = error.body?.message || "Unknown error occurred";
-        showErrorToast(this, "Execution Error", this.errorMessage);
+        this.errorMessage = error.body?.message || this.labels.unknownError;
+        showErrorToast(this, this.labels.executionError, this.errorMessage);
       })
       .finally(() => {
         this.isLoading = false;

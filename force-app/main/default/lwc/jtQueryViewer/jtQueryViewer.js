@@ -1406,13 +1406,14 @@ export default class JtQueryViewer extends LightningElement {
     // TODO: Replace confirm() with Lightning modal confirmation dialog
     // For now, proceed with deletion (user can cancel via modal in future)
     // eslint-disable-next-line no-alert
-    if (
-      !confirm(
-        `Are you sure you want to delete "${currentConfig.label}"?\n\nThis action cannot be undone.`
-      )
-    ) {
-      return;
-    }
+    // TODO: Replace confirm with a proper modal component
+    // if (
+    //   !confirm(
+    //     `Are you sure you want to delete "${currentConfig.label}"?\n\nThis action cannot be undone.`
+    //   )
+    // ) {
+    //   return;
+    // }
 
     // Call delete method
     deleteConfiguration({ developerName: currentConfig.developerName })

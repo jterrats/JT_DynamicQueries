@@ -304,10 +304,8 @@ export default class JtQueryViewer extends LightningElement {
   searchTimeout;
   pollInterval;
 
-  // Computed property for labels (cannot call functions at class level)
-  // Custom Labels (89 labels from Translation Workbench)
-  // Custom Labels (89 labels from Translation Workbench)
-  labels = {
+  // Custom Labels organized using getLabels() utility
+  labels = getLabels('jtQueryViewer', {
     apexClass: apexClassLabel,
     autoDetectedFromQuery: autoDetectedFromQueryLabel,
     baseQuery: baseQueryLabel,

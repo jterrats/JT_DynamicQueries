@@ -942,8 +942,6 @@ export default class JtQueryViewer extends LightningElement {
 
   // Clear Run As user and all related data
   handleClearRunAs() {
-    console.log("🧹 Clearing Run As User selection and all related data");
-
     // Clear user selection
     this.runAsUserId = "";
     this.runAsUserName = "";
@@ -977,8 +975,6 @@ export default class JtQueryViewer extends LightningElement {
       clearInterval(this.pollInterval);
       this.pollInterval = null;
     }
-
-    console.log("✅ Run As User cleared - all related data reset");
   }
 
   // Execute query with true System.runAs (test context)
@@ -1040,7 +1036,6 @@ export default class JtQueryViewer extends LightningElement {
           this.testJobId = result.jobId;
           this.runAsUserName = result.runAsUserName;
           // Start polling for results
-          console.log("✅ Test execution initiated, starting polling...");
           this.startPollingTestResults();
         } else {
           this.showError = true;
@@ -1065,8 +1060,6 @@ export default class JtQueryViewer extends LightningElement {
         this.errorMessage = errorMsg;
         // Error message is displayed in banner below, no need for redundant toast
         this.isRunningTest = false;
-        console.error("❌ Error in Run As User execution:", error);
-        console.error("❌ Error body:", JSON.stringify(error.body, null, 2));
       });
   }
 
@@ -1103,24 +1096,14 @@ export default class JtQueryViewer extends LightningElement {
   startPollingTestResults() {
     let pollCount = 0;
     const maxPolls = 60; // 120 seconds max (2 sec intervals) - increased for Developer Org test execution delays
-    console.log("🔄 Starting polling for execution:", this.testJobId);
 
     // eslint-disable-next-line @lwc/lwc/no-async-operation
     this.pollInterval = setInterval(() => {
       pollCount++;
-      console.log(
-        `📊 Polling attempt ${pollCount}/${maxPolls} for execution ${this.testJobId}`
-      );
 
       // Use executionId instead of userId
       getTestResults({ executionId: this.testJobId })
         .then((result) => {
-          console.log("📥 Poll response:", {
-            pollCount,
-            hasSuccess: result.success !== undefined,
-            message: result.message,
-            result
-          });
 
           // Check if test is still in progress (Queued or Running)
           const isInProgress =
@@ -1130,10 +1113,8 @@ export default class JtQueryViewer extends LightningElement {
 
           if (isInProgress) {
             // Test still executing, continue polling
-            console.log(`⏳ ${result.message}, continuing to poll...`);
             if (pollCount >= maxPolls) {
               // Timeout
-              console.warn("⏱️ Polling timeout reached");
               clearInterval(this.pollInterval);
               this.isRunningTest = false;
               showErrorToast(
@@ -1145,12 +1126,10 @@ export default class JtQueryViewer extends LightningElement {
             // Keep polling
           } else if (result.success !== undefined) {
             // Results are ready (success or failure)
-            console.log("✅ Results ready! Stopping polling and processing...");
             clearInterval(this.pollInterval);
             this.handleTestResults(result);
           } else if (pollCount >= maxPolls) {
             // Timeout with no clear status
-            console.warn("⏱️ Polling timeout reached");
             clearInterval(this.pollInterval);
             this.isRunningTest = false;
             showErrorToast(
@@ -1158,8 +1137,6 @@ export default class JtQueryViewer extends LightningElement {
               "Test Execution Timeout",
               "Test execution timed out after 120 seconds. In Developer Orgs, tests may not execute automatically. Please check Apex Test Execution in Setup or try again later."
             );
-          } else {
-            console.log("⏳ No results yet, continuing to poll...");
           }
         })
         .catch((error) => {
@@ -1176,25 +1153,10 @@ export default class JtQueryViewer extends LightningElement {
 
   // Handle test results
   handleTestResults(result) {
-    console.log("🔍 DEBUG handleTestResults - Raw result from Apex:", {
-      success: result.success,
-      recordCount: result.recordCount,
-      runAsUserName: result.runAsUserName,
-      assertMessage: result.assertMessage,
-      recordsLength: result.records?.length,
-      fieldsLength: result.fields?.length,
-      firstRecord: result.records?.[0]
-    });
-
     this.isRunningTest = false;
     this.testAssertMessage = result.assertMessage || "";
 
     if (result.success) {
-      console.log(
-        "✅ Test passed - Processing results for Run As User:",
-        result.runAsUserName
-      );
-
       // Parse and display results FIRST
       this.processTestQueryResults(result);
 
@@ -1204,12 +1166,6 @@ export default class JtQueryViewer extends LightningElement {
         // CRITICAL: Set isLoading to false AFTER processTestQueryResults
         // This ensures showResults getter returns true
         this.isLoading = false;
-        console.log("🎯 Final state after Run As:", {
-          queryResultsLength: this.queryResults.length,
-          recordCount: this.recordCount,
-          hasResults: this.hasResults,
-          showResults: this.showResults
-        });
       }, 0);
 
       // Only show toast for regular execution, not for Run As User
@@ -1228,13 +1184,6 @@ export default class JtQueryViewer extends LightningElement {
         showSuccessToast(this, successMsg);
       }
     } else {
-      console.error("❌ Test failed:", result.errorMessage);
-      console.error("❌ Error details:", {
-        errorMessage: result.errorMessage,
-        recordCount: result.recordCount,
-        runAsUserName: result.runAsUserName
-      });
-
       // Clear any previous results when there's an error
       this.queryResults = [];
       this.hasResults = false;
@@ -1254,13 +1203,6 @@ export default class JtQueryViewer extends LightningElement {
 
   // Process test query results for display
   processTestQueryResults(result) {
-    console.log("DEBUG processTestQueryResults - Input:", {
-      recordCount: result.recordCount,
-      recordsLength: result.records?.length,
-      fields: result.fields,
-      hasRecords: result.records && result.records.length > 0
-    });
-
     this.recordCount = result.recordCount || 0;
 
     // Always build columns (even with 0 records)
@@ -1689,49 +1631,26 @@ export default class JtQueryViewer extends LightningElement {
       this.queryPreviewColumns = [];
     }
 
-    console.log("✅ Query preview updated from modal:", recordCount, "records");
   }
 
   // Save configuration (create or update)
   handleSaveConfiguration(event) {
-    // DEBUG TEMPORAL
-    console.log("=== DEBUG handleSaveConfiguration ===");
-    console.log("event:", event);
-    console.log("event.detail:", event?.detail);
-    console.log("this.newConfig:", JSON.stringify(this.newConfig, null, 2));
-    console.log("this.configModalMode:", this.configModalMode);
-    console.log(
-      "this.queryValidation:",
-      JSON.stringify(this.queryValidation, null, 2)
-    );
-
     // Get config from modal if available
     const modal = this.refs.configModal;
     let configFromModal = null;
     let modalQueryValidation = null;
     if (modal) {
       configFromModal = modal.getConfig();
-      console.log("configFromModal:", JSON.stringify(configFromModal, null, 2));
       // Get query validation state from modal (it handles its own validation)
       modalQueryValidation = modal.getQueryValidation();
-      console.log(
-        "modalQueryValidation:",
-        JSON.stringify(modalQueryValidation, null, 2)
-      );
     }
 
     // Use config from event detail if available, otherwise use newConfig
     const configToUse =
       event?.detail?.config || configFromModal || this.newConfig;
-    console.log("configToUse:", JSON.stringify(configToUse, null, 2));
-    console.log("================================");
 
     // Validate configToUse is not null/undefined
     if (!configToUse) {
-      console.error("❌ CRITICAL: configToUse is null or undefined!");
-      console.error("event?.detail?.config:", event?.detail?.config);
-      console.error("configFromModal:", configFromModal);
-      console.error("this.newConfig:", this.newConfig);
       showErrorToast(
         this,
         "Configuration Error",
@@ -1746,10 +1665,6 @@ export default class JtQueryViewer extends LightningElement {
       !configToUse.developerName ||
       !configToUse.baseQuery
     ) {
-      console.error("VALIDATION FAILED:");
-      console.error("label:", configToUse.label);
-      console.error("developerName:", configToUse.developerName);
-      console.error("baseQuery:", configToUse.baseQuery);
       showErrorToast(
         this,
         "Validation Error",
@@ -1761,10 +1676,6 @@ export default class JtQueryViewer extends LightningElement {
     // Use modal's query validation if available, otherwise fall back to this.queryValidation
     const queryValidationToCheck = modalQueryValidation || this.queryValidation;
     if (!queryValidationToCheck || !queryValidationToCheck.isValid) {
-      console.error("QUERY VALIDATION FAILED:");
-      console.error("modalQueryValidation:", modalQueryValidation);
-      console.error("this.queryValidation:", this.queryValidation);
-      console.error("queryValidationToCheck:", queryValidationToCheck);
       showErrorToast(
         this,
         "Invalid Query",
@@ -1786,7 +1697,6 @@ export default class JtQueryViewer extends LightningElement {
 
     // Double-check required fields before sending
     if (!configData.label || !configData.developerName || !configData.baseQuery) {
-      console.error("❌ CRITICAL: Required fields are missing after processing:", configData);
       showErrorToast(
         this,
         "Validation Error",
@@ -1796,16 +1706,11 @@ export default class JtQueryViewer extends LightningElement {
       return;
     }
 
-    console.log("configData being sent:", JSON.stringify(configData, null, 2));
-
     // Choose create or update based on mode
     const modeFromEvent = event?.detail?.mode || this.configModalMode;
-    console.log("modeFromEvent:", modeFromEvent);
-    console.log("this.originalDevName:", this.originalDevName);
 
     // Validate originalDevName for edit mode
     if (modeFromEvent === "edit" && !this.originalDevName) {
-      console.error("❌ CRITICAL: originalDevName is missing for edit mode!");
       showErrorToast(
         this,
         "Configuration Error",
@@ -1825,7 +1730,6 @@ export default class JtQueryViewer extends LightningElement {
       : configData;
 
     const configJson = JSON.stringify(configDataForApex);
-    console.log("configJson being sent:", configJson);
 
     const saveMethod =
       modeFromEvent === "edit"
@@ -1836,7 +1740,6 @@ export default class JtQueryViewer extends LightningElement {
 
     saveMethod
       .then((result) => {
-        console.log("Save result:", JSON.stringify(result, null, 2));
         if (result.success) {
           showSuccessToast(this, result.message, `Configuration ${actionLabel}`);
           this.handleCloseCreateModal();
@@ -1852,9 +1755,6 @@ export default class JtQueryViewer extends LightningElement {
           });
         }
         // Show error toast and don't refresh
-        console.error("Save failed:", result);
-        console.error("Error message:", result.errorMessage);
-        console.error("Stack trace:", result.stackTrace);
         showErrorToast(
           this,
           `${actionLabel} Failed`,
@@ -1885,7 +1785,6 @@ export default class JtQueryViewer extends LightningElement {
     // This prevents the UI from being blocked indefinitely
     setTimeout(() => {
       if (this.isInitialLoading) {
-        console.warn("Initial loading timeout reached - showing UI anyway");
         this.isInitialLoading = false;
       }
     }, 10000);

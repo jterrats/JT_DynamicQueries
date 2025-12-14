@@ -3280,4 +3280,193 @@ Y bueno...&lt;br /&gt;&lt;br /&gt;</value>
         <shortDescription>jtSearchableCombobox - searchableCombobox</shortDescription>
         <value>Searchable combobox</value>
     </labels>
+    <labels>
+        <fullName>JT_MetadataCreator_configJsonRequired</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_MetadataCreator - configJsonRequired</shortDescription>
+        <value>Configuration JSON is required.</value>
+    </labels>
+    <labels>
+        <fullName>JT_MetadataCreator_creationNotAllowed</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_MetadataCreator - creationNotAllowed</shortDescription>
+        <value>Configuration creation is only allowed in development/test environments (Sandbox, Scratch Org, Developer Edition, or Trial). For production orgs (including Starter/Free Editions), use Setup &gt; Custom Metadata Types.</value>
+    </labels>
+    <labels>
+        <fullName>JT_MetadataCreator_requiredFieldsMissing</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_MetadataCreator - requiredFieldsMissing</shortDescription>
+        <value>Label, Developer Name, and Base Query are required fields.</value>
+    </labels>
+    <labels>
+        <fullName>JT_MetadataCreator_developerNameBlank</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_MetadataCreator - developerNameBlank</shortDescription>
+        <value>Developer Name cannot be blank.</value>
+    </labels>
+    <labels>
+        <fullName>JT_MetadataCreator_invalidMetadataParams</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_MetadataCreator - invalidMetadataParams</shortDescription>
+        <value>Invalid metadata parameters</value>
+    </labels>
+    <labels>
+        <fullName>JT_MetadataCreator_errorBuildingXml</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_MetadataCreator - errorBuildingXml</shortDescription>
+        <value>Error building metadata XML: {0}</value>
+    </labels>
+    <labels>
+        <fullName>JT_MetadataCreator_configCreatedSuccess</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_MetadataCreator - configCreatedSuccess</shortDescription>
+        <value>Configuration created successfully: {0}</value>
+    </labels>
+    <labels>
+        <fullName>JT_MetadataCreator_unexpectedError</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_MetadataCreator - unexpectedError</shortDescription>
+        <value>An unexpected error occurred: {0}</value>
+    </labels>
+    <labels>
+        <fullName>JT_MetadataCreator_deletionNotAllowed</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_MetadataCreator - deletionNotAllowed</shortDescription>
+        <value>Configuration deletion is only allowed in development/test environments (Sandbox, Scratch Org, Developer Edition, or Trial). For production orgs (including Starter/Free Editions), use Setup &gt; Custom Metadata Types.</value>
+    </labels>
+    <labels>
+        <fullName>JT_MetadataCreator_developerNameRequired</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_MetadataCreator - developerNameRequired</shortDescription>
+        <value>Developer Name is required.</value>
+    </labels>
+    <labels>
+        <fullName>JT_MetadataCreator_configDeletedSuccess</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_MetadataCreator - configDeletedSuccess</shortDescription>
+        <value>Configuration deleted successfully: {0}</value>
+    </labels>
+    <labels>
+        <fullName>JT_MetadataCreator_failedDeleteMetadata</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_MetadataCreator - failedDeleteMetadata</shortDescription>
+        <value>Failed to delete metadata: {0}</value>
+    </labels>
+    <labels>
+        <fullName>JT_MetadataCreator_editingNotAllowed</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_MetadataCreator - editingNotAllowed</shortDescription>
+        <value>Configuration editing is only allowed in development/test environments (Sandbox, Scratch Org, Developer Edition, or Trial). For production orgs (including Starter/Free Editions), use Setup &gt; Custom Metadata Types.</value>
+    </labels>
+    <labels>
+        <fullName>JT_MetadataCreator_updateRequiredFieldsMissing</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_MetadataCreator - updateRequiredFieldsMissing</shortDescription>
+        <value>Original Developer Name, Label, and Base Query are required for update.</value>
+    </labels>
+    <labels>
+        <fullName>JT_MetadataCreator_configUpdatedSuccess</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_MetadataCreator - configUpdatedSuccess</shortDescription>
+        <value>Configuration updated successfully: {0}</value>
+    </labels>
+    <labels>
+        <fullName>JT_MetadataCreator_failedDeployMetadata</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_MetadataCreator - failedDeployMetadata</shortDescription>
+        <value>Failed to deploy metadata (Status: {0}){1}</value>
+    </labels>
+    <labels>
+        <fullName>JT_MetadataCreator_errorDeployingMetadata</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_MetadataCreator - errorDeployingMetadata</shortDescription>
+        <value>Error deploying metadata: {0}</value>
+    </labels>
+    <labels>
+        <fullName>JT_MetadataCreator_unexpectedErrorDeployment</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_MetadataCreator - unexpectedErrorDeployment</shortDescription>
+        <value>An unexpected error occurred during deployment: {0}</value>
+    </labels>
+    <labels>
+        <fullName>JT_MetadataCreator_invalidJsonFormat</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_MetadataCreator - invalidJsonFormat</shortDescription>
+        <value>Invalid JSON format. Expected an object, but received: {0}</value>
+    </labels>
+    <labels>
+        <fullName>JT_MetadataCreator_errorDeserializingJson</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_MetadataCreator - errorDeserializingJson</shortDescription>
+        <value>Error deserializing config JSON: {0}</value>
+    </labels>
+    <labels>
+        <fullName>JT_MetadataCreator_failedDeleteRename</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_MetadataCreator - failedDeleteRename</shortDescription>
+        <value>Failed to delete old configuration during rename: {0}</value>
+    </labels>
+    <labels>
+        <fullName>JT_MetadataCreator_failedCreateRename</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_MetadataCreator - failedCreateRename</shortDescription>
+        <value>Failed to create renamed configuration: {0}</value>
+    </labels>
+    <labels>
+        <fullName>JT_MetadataCreator_configRenamedSuccess</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_MetadataCreator - configRenamedSuccess</shortDescription>
+        <value>Configuration renamed successfully: {0} → {1}</value>
+    </labels>
+    <labels>
+        <fullName>JT_MetadataCreator_queryMustStartWithSelect</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_MetadataCreator - queryMustStartWithSelect</shortDescription>
+        <value>Query must start with SELECT</value>
+    </labels>
+    <labels>
+        <fullName>JT_MetadataCreator_queryMustContainFrom</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_MetadataCreator - queryMustContainFrom</shortDescription>
+        <value>Query must contain FROM clause</value>
+    </labels>
+    <labels>
+        <fullName>JT_MetadataCreator_querySyntaxValid</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_MetadataCreator - querySyntaxValid</shortDescription>
+        <value>Query syntax is valid</value>
+    </labels>
+    <labels>
+        <fullName>JT_MetadataCreator_xmlGenerationRequiredFields</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>JT_MetadataCreator - xmlGenerationRequiredFields</shortDescription>
+        <value>Label, Developer Name, and Base Query are required for metadata XML generation.</value>
+    </labels>
 </CustomLabels>

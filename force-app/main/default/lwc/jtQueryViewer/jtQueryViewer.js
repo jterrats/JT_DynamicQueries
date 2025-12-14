@@ -1813,26 +1813,24 @@ export default class JtQueryViewer extends LightningElement {
       return;
     }
 
-    // Create proper ConfigurationInput object for Apex
-    // IMPORTANT: All properties must match exactly with Apex class property names (case-sensitive)
-    // and must be present (even if null/empty) for proper deserialization
-    const configurationInput = {
-      label: configData.label || null,
-      developerName: configData.developerName || null,
-      baseQuery: configData.baseQuery || null,
-      bindings: configData.bindings || null,
-      objectName: configData.objectName || null,
-      originalDevName: modeFromEvent === "edit" ? (this.originalDevName || null) : null
-    };
-
-    console.log("configurationInput being sent:", JSON.stringify(configurationInput, null, 2));
-    console.log("configurationInput type:", typeof configurationInput);
-    console.log("configurationInput keys:", Object.keys(configurationInput));
-
+    // Pass parameters individually instead of object wrapper (fixes serialization issue)
     const saveMethod =
       modeFromEvent === "edit"
-        ? updateConfiguration(configurationInput)
-        : createConfiguration(configurationInput);
+        ? updateConfiguration({
+            originalDevName: this.originalDevName,
+            label: configData.label,
+            developerName: configData.developerName,
+            baseQuery: configData.baseQuery,
+            bindings: configData.bindings,
+            objectName: configData.objectName
+          })
+        : createConfiguration({
+            label: configData.label,
+            developerName: configData.developerName,
+            baseQuery: configData.baseQuery,
+            bindings: configData.bindings,
+            objectName: configData.objectName
+          });
 
     const actionLabel = modeFromEvent === "edit" ? "Updated" : "Created";
 

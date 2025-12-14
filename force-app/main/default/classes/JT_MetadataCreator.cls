@@ -31,32 +31,29 @@ public with sharing class JT_MetadataCreator {
   /**
    * @description Creates a new Dynamic Query Configuration metadata record
    * @author Jaime Terrats | 12-11-2025
-   * @param input Configuration input data
+   * @param label Configuration label
+   * @param developerName Developer name
+   * @param baseQuery Base SOQL query
+   * @param bindings Optional bindings JSON string
+   * @param objectName Optional object name
    * @return MetadataCreationResult
    **/
   @AuraEnabled
   public static MetadataCreationResult createConfiguration(
-    ConfigurationInput input
+    String label,
+    String developerName,
+    String baseQuery,
+    String bindings,
+    String objectName
   ) {
     MetadataCreationResult result = new MetadataCreationResult();
 
     try {
-      // Debug: Log the input to see what we're receiving
-      System.debug(LoggingLevel.ERROR, '🔍 createConfiguration input: ' + JSON.serialize(input));
-      System.debug(LoggingLevel.ERROR, '🔍 createConfiguration input == null: ' + (input == null));
-
-      // Validate input is not null
-      if (input == null) {
-        result.success = false;
-        result.errorMessage = 'Configuration input is required. Please ensure all fields are filled.';
-        System.debug(LoggingLevel.ERROR, '❌ Input is null - returning error');
-        return result;
-      }
-
-      // Debug: Log individual fields
-      System.debug(LoggingLevel.ERROR, '🔍 input.label: ' + input.label);
-      System.debug(LoggingLevel.ERROR, '🔍 input.developerName: ' + input.developerName);
-      System.debug(LoggingLevel.ERROR, '🔍 input.baseQuery: ' + input.baseQuery);
+      // Debug: Log the parameters
+      System.debug(LoggingLevel.ERROR, '🔍 createConfiguration parameters:');
+      System.debug(LoggingLevel.ERROR, '🔍 label: ' + label);
+      System.debug(LoggingLevel.ERROR, '🔍 developerName: ' + developerName);
+      System.debug(LoggingLevel.ERROR, '🔍 baseQuery: ' + baseQuery);
 
       // CRITICAL: Only allow in development/test environments
       if (!isSandboxOrScratch()) {
@@ -65,14 +62,11 @@ public with sharing class JT_MetadataCreator {
         return result;
       }
 
-      // Validate required fields (handle null values safely)
+      // Validate required fields
       if (
-        input.label == null ||
-        String.isBlank(input.label) ||
-        input.developerName == null ||
-        String.isBlank(input.developerName) ||
-        input.baseQuery == null ||
-        String.isBlank(input.baseQuery)
+        String.isBlank(label) ||
+        String.isBlank(developerName) ||
+        String.isBlank(baseQuery)
       ) {
         result.success = false;
         result.errorMessage = 'Label, Developer Name, and Base Query are required fields.';
@@ -80,22 +74,22 @@ public with sharing class JT_MetadataCreator {
       }
 
       // Sanitize developer name
-      String sanitizedDevName = sanitizeDeveloperName(input.developerName);
+      String sanitizedDevName = sanitizeDeveloperName(developerName);
 
       // Build metadata XML (handle null values for optional fields)
       String metadataXml = buildMetadataXml(
-        input.label,
+        label,
         sanitizedDevName,
-        input.baseQuery,
-        String.isBlank(input.bindings) ? null : input.bindings,
-        String.isBlank(input.objectName) ? null : input.objectName
+        baseQuery,
+        String.isBlank(bindings) ? null : bindings,
+        String.isBlank(objectName) ? null : objectName
       );
 
       // Deploy via Metadata API
       String deploymentId = deployMetadata(metadataXml, sanitizedDevName);
 
       result.success = true;
-      result.message = 'Configuration created successfully: ' + input.label;
+      result.message = 'Configuration created successfully: ' + label;
       result.developerName = sanitizedDevName;
       result.deploymentId = deploymentId;
 
@@ -239,14 +233,13 @@ public with sharing class JT_MetadataCreator {
         }
 
         // Step 2: Create new record with new Developer Name
-        ConfigurationInput createInput = new ConfigurationInput();
-        createInput.label = input.label;
-        createInput.developerName = sanitizedDevName;
-        createInput.baseQuery = input.baseQuery;
-        createInput.bindings = input.bindings;
-        createInput.objectName = input.objectName;
-
-        MetadataCreationResult createResult = createConfiguration(createInput);
+        MetadataCreationResult createResult = createConfiguration(
+          input.label,
+          sanitizedDevName,
+          input.baseQuery,
+          input.bindings,
+          input.objectName
+        );
 
         if (!createResult.success) {
           throw new AuraHandledException(

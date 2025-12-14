@@ -100,11 +100,14 @@ public with sharing class JT_MetadataCreator {
         metadataXml = buildMetadataXml(params);
       } catch (IllegalArgumentException iae) {
         result.success = false;
-        result.errorMessage = iae.getMessage();
+        String iaeMsg = iae.getMessage();
+        result.errorMessage = String.isNotBlank(iaeMsg) ? iaeMsg : 'Invalid metadata parameters';
         return result;
       } catch (Exception xmlEx) {
         result.success = false;
-        result.errorMessage = 'Error building metadata XML: ' + xmlEx.getMessage();
+        String xmlMsg = xmlEx.getMessage();
+        String xmlErrorMsg = String.isNotBlank(xmlMsg) ? xmlMsg : xmlEx.getTypeName();
+        result.errorMessage = 'Error building metadata XML: ' + xmlErrorMsg;
         return result;
       }
 
@@ -583,7 +586,11 @@ public with sharing class JT_MetadataCreator {
         return result;
       }
     } catch (Exception e) {
-      result.errorMessage = 'Error deploying metadata: ' + e.getMessage();
+      String errorMsg = e.getMessage();
+      if (String.isBlank(errorMsg)) {
+        errorMsg = 'An unexpected error occurred during deployment: ' + e.getTypeName();
+      }
+      result.errorMessage = 'Error deploying metadata: ' + errorMsg;
       return result;
     }
   }

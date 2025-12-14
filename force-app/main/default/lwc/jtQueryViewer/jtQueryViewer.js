@@ -7,9 +7,10 @@ import {
   showErrorToast,
   showInfoToast,
   showWarningToast,
-  extractErrorMessage
+  extractErrorMessage,
+  getLabels
 } from "c/jtUtils";
-// Import Custom Labels from Salesforce Translation Workbench (89 labels)
+// Import Custom Labels from Salesforce Translation Workbench
 import apexClassLabel from "@salesforce/label/c.JT_jtQueryViewer_apexClass";
 import autoDetectedFromQueryLabel from "@salesforce/label/c.JT_jtQueryViewer_autoDetectedFromQuery";
 import baseQueryLabel from "@salesforce/label/c.JT_jtQueryViewer_baseQuery";

@@ -147,9 +147,23 @@ public with sharing class JT_RunAsTestExecutor {
           LoggingLevel.ERROR,
           'Stack trace: ' + insertEx.getStackTraceString()
         );
-        throw new AuraHandledException(
-          'Failed to create execution record: ' + insertEx.getMessage()
-        );
+        
+        // Check if this is a DmlException that wasn't caught by the DmlException catch block
+        // (shouldn't happen, but handle gracefully)
+        String errorMsg = insertEx.getMessage();
+        if (insertEx instanceof DmlException) {
+          DmlException dmlEx = (DmlException) insertEx;
+          String statusCode = dmlEx.getDmlStatusCode(0);
+          if (statusCode == 'STORAGE_LIMIT_EXCEEDED') {
+            errorMsg = Label.JT_RunAsTestExecutor_storageLimitExceeded;
+          } else {
+            errorMsg = 'Failed to create execution record: ' + dmlEx.getMessage();
+          }
+        } else {
+          errorMsg = 'Failed to create execution record: ' + insertEx.getMessage();
+        }
+        
+        throw new AuraHandledException(errorMsg);
       }
 
       // Enqueue test execution via Tooling API using Queueable

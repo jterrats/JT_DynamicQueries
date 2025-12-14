@@ -13,7 +13,8 @@ import {
   validateRequiredFields,
   validateQuerySyntax,
   sanitizeConfigData,
-  validateEditMode
+  validateEditMode,
+  pollUntilComplete
 } from "c/jtUtils";
 // Import Custom Labels from Salesforce Translation Workbench
 import apexClassLabel from "@salesforce/label/c.JT_jtQueryViewer_apexClass";
@@ -976,7 +977,13 @@ export default class JtQueryViewer extends LightningElement {
 
     // Stop any polling
     if (this.pollInterval) {
-      clearInterval(this.pollInterval);
+      // pollInterval is now a function (stopPolling), not an interval ID
+      if (typeof this.pollInterval === 'function') {
+        this.pollInterval();
+      } else {
+        // Fallback for old interval ID format (shouldn't happen, but safe)
+        clearInterval(this.pollInterval);
+      }
       this.pollInterval = null;
     }
   }
@@ -1098,61 +1105,52 @@ export default class JtQueryViewer extends LightningElement {
 
   // Start polling for test results
   startPollingTestResults() {
-    let pollCount = 0;
-    const maxPolls = 60; // 120 seconds max (2 sec intervals) - increased for Developer Org test execution delays
+    // Use polling helper utility
+    const stopPolling = pollUntilComplete(
+      // Poll function
+      () => getTestResults({ executionId: this.testJobId }),
+      // Check if complete
+      (result) => {
+        // Check if test is still in progress (Queued or Running)
+        const isInProgress =
+          result.message &&
+          (result.message.toLowerCase().includes("queued") ||
+            result.message.toLowerCase().includes("running"));
 
-    // eslint-disable-next-line @lwc/lwc/no-async-operation
-    this.pollInterval = setInterval(() => {
-      pollCount++;
+        // Complete if results are ready (success or failure) or not in progress
+        return result.success !== undefined || !isInProgress;
+      },
+      // On complete
+      (result) => {
+        this.handleTestResults(result);
+      },
+      // On error
+      (error) => {
+        this.isRunningTest = false;
+        showErrorToast(
+          this,
+          this.labels.pollingError,
+          extractErrorMessage(error, "Failed to poll test results")
+        );
+      },
+      // On timeout
+      () => {
+        this.isRunningTest = false;
+        showErrorToast(
+          this,
+          this.labels.testExecutionTimeout,
+          this.labels.testExecutionTimeoutMessage
+        );
+      },
+      // Options
+      {
+        interval: 2000, // Poll every 2 seconds
+        maxPolls: 60 // 120 seconds max (2 sec intervals) - increased for Developer Org test execution delays
+      }
+    );
 
-      // Use executionId instead of userId
-      getTestResults({ executionId: this.testJobId })
-        .then((result) => {
-
-          // Check if test is still in progress (Queued or Running)
-          const isInProgress =
-            result.message &&
-            (result.message.toLowerCase().includes("queued") ||
-              result.message.toLowerCase().includes("running"));
-
-          if (isInProgress) {
-            // Test still executing, continue polling
-            if (pollCount >= maxPolls) {
-              // Timeout
-              clearInterval(this.pollInterval);
-              this.isRunningTest = false;
-              showErrorToast(
-                this,
-                this.labels.testExecutionTimeout,
-                this.labels.testExecutionTimeoutMessage
-              );
-            }
-            // Keep polling
-          } else if (result.success !== undefined) {
-            // Results are ready (success or failure)
-            clearInterval(this.pollInterval);
-            this.handleTestResults(result);
-          } else if (pollCount >= maxPolls) {
-            // Timeout with no clear status
-            clearInterval(this.pollInterval);
-            this.isRunningTest = false;
-            showErrorToast(
-              this,
-              "Test Execution Timeout",
-              "Test execution timed out after 120 seconds. In Developer Orgs, tests may not execute automatically. Please check Apex Test Execution in Setup or try again later."
-            );
-          }
-        })
-        .catch((error) => {
-          clearInterval(this.pollInterval);
-          this.isRunningTest = false;
-          showErrorToast(
-            this,
-            this.labels.pollingError,
-            extractErrorMessage(error, "Failed to poll test results")
-          );
-        });
-    }, 2000); // Poll every 2 seconds
+    // Store stop function for cleanup
+    this.pollInterval = stopPolling;
   }
 
   // Handle test results

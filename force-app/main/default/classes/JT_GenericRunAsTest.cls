@@ -283,9 +283,9 @@ public class JT_GenericRunAsTest {
           LIMIT 1
         ];
 
-        // Auto-add wildcards for LIKE queries (same logic as JT_QueryViewerController)
+        // Auto-add wildcards for LIKE queries using centralized utility
         // This ensures queries like "WHERE Name LIKE :searchName" work correctly
-        JT_QueryViewerController.addWildcardsForLikeBindings(
+        JT_QueryBindingUtil.addWildcardsForLikeBindings(
           config.JT_BaseQuery__c,
           bindings
         );

@@ -655,7 +655,8 @@ public with sharing class JT_QueryViewerController {
    **/
   /**
    * @description Adds wildcards to bind parameters used in LIKE clauses
-   * Made public so JT_GenericRunAsTest can use it
+   * Delegates to JT_QueryBindingUtil for consistency
+   * @deprecated Use JT_QueryBindingUtil.addWildcardsForLikeBindings instead
    * @param query The SOQL query string
    * @param bindings The map of bind variables
    **/
@@ -663,45 +664,7 @@ public with sharing class JT_QueryViewerController {
     String query,
     Map<String, Object> bindings
   ) {
-    if (String.isBlank(query) || bindings == null || bindings.isEmpty()) {
-      return;
-    }
-
-    System.debug(LoggingLevel.FINE, '🔍 Adding wildcards for LIKE bindings...');
-
-    // Find all LIKE clauses with bind variables: LIKE :bindVar
-    // (?i) makes the pattern case-insensitive
-    Pattern likePattern = Pattern.compile('(?i)\\bLIKE\\s+:(\\w+)');
-    Matcher matcher = likePattern.matcher(query);
-
-    while (matcher.find()) {
-      String bindVar = matcher.group(1);
-      System.debug(
-        LoggingLevel.FINE,
-        '📌 Found LIKE bind variable: ' + bindVar
-      );
-
-      if (bindings.containsKey(bindVar)) {
-        Object value = bindings.get(bindVar);
-        if (value instanceof String) {
-          String strValue = (String) value;
-          // Only add wildcards if they're not already present
-          if (!strValue.contains('%') && !strValue.contains('_')) {
-            String newValue = '%' + strValue + '%';
-            bindings.put(bindVar, newValue);
-            System.debug(
-              LoggingLevel.FINE,
-              '✅ Added wildcards: "' + strValue + '" → "' + newValue + '"'
-            );
-          } else {
-            System.debug(
-              LoggingLevel.FINE,
-              'ℹ️  Wildcards already present: "' + strValue + '"'
-            );
-          }
-        }
-      }
-    }
+    JT_QueryBindingUtil.addWildcardsForLikeBindings(query, bindings);
   }
 
   /**

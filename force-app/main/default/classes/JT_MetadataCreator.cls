@@ -127,7 +127,12 @@ public with sharing class JT_MetadataCreator {
       return result;
     } catch (Exception e) {
       result.success = false;
-      result.errorMessage = e.getMessage();
+      // Ensure errorMessage is never null - use fallback if needed
+      String errorMsg = e.getMessage();
+      if (String.isBlank(errorMsg)) {
+        errorMsg = 'An unexpected error occurred: ' + e.getTypeName();
+      }
+      result.errorMessage = errorMsg;
       result.stackTrace = e.getStackTraceString();
       return result;
     }

@@ -8,6 +8,7 @@
  */
 import { LightningElement, api, track } from "lwc";
 import executeQueryPreview from "@salesforce/apex/JT_QueryViewerController.executeQueryPreview";
+import { extractErrorMessage } from "c/jtUtils";
 
 // Import Custom Labels from Salesforce Translation Workbench
 import labelRequired from "@salesforce/label/c.JT_jtConfigModal_labelRequired";
@@ -509,10 +510,10 @@ export default class JtConfigModal extends LightningElement {
         };
       }
     } catch (error) {
-      // Network or other error
+      // Network or other error - use extractErrorMessage utility
       this.queryValidation = {
         isValid: false,
-        message: error.body?.message || this.labels.errorValidatingQuery,
+        message: extractErrorMessage(error, this.labels.errorValidatingQuery),
         objectName: ""
       };
       this._config.objectName = "";

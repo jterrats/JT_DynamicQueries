@@ -990,10 +990,28 @@ export default class JtQueryViewer extends LightningElement {
       })
       .catch((error) => {
         this.showError = true;
-        this.errorMessage = error.body?.message || "Unknown error occurred";
+        // Extract error message from various possible locations
+        // AuraHandledException messages can be in different places depending on how they're thrown
+        let errorMsg = 
+          error.body?.message || 
+          error.body?.pageErrors?.[0]?.message ||
+          error.body?.output?.errors?.[0]?.message ||
+          error.message ||
+          "Unknown error occurred";
+        
+        // If it's a generic "Script-thrown exception", try to get more details
+        if (errorMsg === "Script-thrown exception" && error.body?.output?.errors) {
+          const errors = error.body.output.errors;
+          if (errors.length > 0 && errors[0].message) {
+            errorMsg = errors[0].message;
+          }
+        }
+        
+        this.errorMessage = errorMsg;
         showErrorToast(this, "Execution Error", this.errorMessage);
         this.isRunningTest = false;
         console.error("❌ Error in Run As User execution:", error);
+        console.error("❌ Error body:", JSON.stringify(error.body, null, 2));
       });
   }
 

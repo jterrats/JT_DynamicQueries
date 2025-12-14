@@ -24,7 +24,11 @@ private class JT_ErrorLogDomain_Test {
     JT_ErrorLogDomain.insertLog(errorLog);
     Test.stopTest();
 
-    System.assertNotEquals(null, errorLog.Id, 'Error log should have ID after insert');
+    System.assertNotEquals(
+      null,
+      errorLog.Id,
+      'Error log should have ID after insert'
+    );
 
     List<JT_ErrorLog__c> logs = [
       SELECT Id, JT_ErrorType__c, JT_ErrorMessage__c
@@ -33,7 +37,11 @@ private class JT_ErrorLogDomain_Test {
     ];
 
     System.assertEquals(1, logs.size(), 'One log should be created');
-    System.assertEquals('TestError', logs[0].JT_ErrorType__c, 'Error type should match');
+    System.assertEquals(
+      'TestError',
+      logs[0].JT_ErrorType__c,
+      'Error type should match'
+    );
     System.assertEquals(
       'Test error message',
       logs[0].JT_ErrorMessage__c,
@@ -208,7 +216,8 @@ private class JT_ErrorLogDomain_Test {
     List<JT_ErrorLog__c> remainingLogs = [
       SELECT Id
       FROM JT_ErrorLog__c
-      WHERE Id IN :new List<Id>(new Map<Id, JT_ErrorLog__c>(recentLogs).keySet())
+      WHERE
+        Id IN :new List<Id>(new Map<Id, JT_ErrorLog__c>(recentLogs).keySet())
     ];
 
     System.assertEquals(3, remainingLogs.size(), 'Recent logs should remain');
@@ -270,4 +279,3 @@ private class JT_ErrorLogDomain_Test {
     System.assertEquals(10000, deletedCount, 'Should delete up to limit');
   }
 }
-

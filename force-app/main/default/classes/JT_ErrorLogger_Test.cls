@@ -24,11 +24,23 @@ private class JT_ErrorLogger_Test {
     );
     Test.stopTest();
 
-    System.assertEquals('TestError', params.errorType, 'Error type should match');
-    System.assertEquals('Test error message', params.errorMessage, 'Error message should match');
+    System.assertEquals(
+      'TestError',
+      params.errorType,
+      'Error type should match'
+    );
+    System.assertEquals(
+      'Test error message',
+      params.errorMessage,
+      'Error message should match'
+    );
     System.assertEquals(testEx, params.ex, 'Exception should match');
     System.assertEquals('TestContext', params.context, 'Context should match');
-    System.assertEquals('{"key": "value"}', params.additionalDetails, 'Additional details should match');
+    System.assertEquals(
+      '{"key": "value"}',
+      params.additionalDetails,
+      'Additional details should match'
+    );
     System.assertEquals('High', params.severity, 'Severity should match');
   }
 
@@ -47,10 +59,26 @@ private class JT_ErrorLogger_Test {
     );
     Test.stopTest();
 
-    System.assertEquals('TestError', params.errorType, 'Error type should match');
-    System.assertEquals('Test error message', params.errorMessage, 'Error message should match');
-    System.assertEquals('Medium', params.severity, 'Severity should default to Medium');
-    System.assertEquals(null, params.additionalDetails, 'Additional details should be null');
+    System.assertEquals(
+      'TestError',
+      params.errorType,
+      'Error type should match'
+    );
+    System.assertEquals(
+      'Test error message',
+      params.errorMessage,
+      'Error message should match'
+    );
+    System.assertEquals(
+      'Medium',
+      params.severity,
+      'Severity should default to Medium'
+    );
+    System.assertEquals(
+      null,
+      params.additionalDetails,
+      'Additional details should be null'
+    );
   }
 
   /**
@@ -71,10 +99,7 @@ private class JT_ErrorLogger_Test {
     Test.stopTest();
 
     System.assertNotEquals(null, logId, 'Log ID should be returned');
-    System.assert(
-      logId.length() > 0,
-      'Log ID should be a valid Salesforce ID'
-    );
+    System.assert(logId.length() > 0, 'Log ID should be a valid Salesforce ID');
 
     // Verify log was created
     List<JT_ErrorLog__c> logs = [
@@ -91,7 +116,11 @@ private class JT_ErrorLogger_Test {
     ];
 
     System.assertEquals(1, logs.size(), 'One log should be created');
-    System.assertEquals('TestError', logs[0].JT_ErrorType__c, 'Error type should match');
+    System.assertEquals(
+      'TestError',
+      logs[0].JT_ErrorType__c,
+      'Error type should match'
+    );
     System.assertEquals(
       'User-friendly error message',
       logs[0].JT_ErrorMessage__c,
@@ -102,7 +131,11 @@ private class JT_ErrorLogger_Test {
       logs[0].JT_ExceptionType__c,
       'Exception type should match'
     );
-    System.assertEquals('Medium', logs[0].JT_Severity__c, 'Severity should match');
+    System.assertEquals(
+      'Medium',
+      logs[0].JT_Severity__c,
+      'Severity should match'
+    );
     System.assertEquals(
       UserInfo.getUserId(),
       logs[0].OwnerId,
@@ -116,7 +149,9 @@ private class JT_ErrorLogger_Test {
   @IsTest
   static void testLogErrorWithNullParams() {
     Test.startTest();
-    String logId = JT_ErrorLogger.logError((JT_ErrorLogger.ErrorLogParams) null);
+    String logId = JT_ErrorLogger.logError(
+      (JT_ErrorLogger.ErrorLogParams) null
+    );
     Test.stopTest();
 
     System.assertEquals(null, logId, 'Should return null for null params');
@@ -152,7 +187,11 @@ private class JT_ErrorLogger_Test {
       logs[0].JT_ErrorType__c,
       'Error type should match enum name'
     );
-    System.assertEquals('High', logs[0].JT_Severity__c, 'Severity should be High for object access');
+    System.assertEquals(
+      'High',
+      logs[0].JT_Severity__c,
+      'Severity should be High for object access'
+    );
   }
 
   /**
@@ -163,7 +202,11 @@ private class JT_ErrorLogger_Test {
     Exception testEx = new DmlException('Test exception message');
 
     Test.startTest();
-    String logId = JT_ErrorLogger.logError('CustomError', testEx, 'TestContext');
+    String logId = JT_ErrorLogger.logError(
+      'CustomError',
+      testEx,
+      'TestContext'
+    );
     Test.stopTest();
 
     System.assertNotEquals(null, logId, 'Log ID should be returned');
@@ -175,7 +218,11 @@ private class JT_ErrorLogger_Test {
     ];
 
     System.assertEquals(1, logs.size(), 'One log should be created');
-    System.assertEquals('CustomError', logs[0].JT_ErrorType__c, 'Error type should match');
+    System.assertEquals(
+      'CustomError',
+      logs[0].JT_ErrorType__c,
+      'Error type should match'
+    );
     System.assertEquals(
       'Test exception message',
       logs[0].JT_ErrorMessage__c,
@@ -242,7 +289,11 @@ private class JT_ErrorLogger_Test {
     ];
 
     System.assertEquals(1, logs.size(), 'One log should be created');
-    System.assertEquals('Critical', logs[0].JT_Severity__c, 'Severity should match');
+    System.assertEquals(
+      'Critical',
+      logs[0].JT_Severity__c,
+      'Severity should match'
+    );
     System.assertEquals(
       '{"additional": "data"}',
       logs[0].JT_AdditionalDetails__c,
@@ -274,8 +325,16 @@ private class JT_ErrorLogger_Test {
     ];
 
     System.assertEquals(1, logs.size(), 'One log should be created');
-    System.assertEquals(null, logs[0].JT_ExceptionType__c, 'Exception type should be null');
-    System.assertEquals(null, logs[0].JT_StackTrace__c, 'Stack trace should be null');
+    System.assertEquals(
+      null,
+      logs[0].JT_ExceptionType__c,
+      'Exception type should be null'
+    );
+    System.assertEquals(
+      null,
+      logs[0].JT_StackTrace__c,
+      'Stack trace should be null'
+    );
   }
 
   /**
@@ -356,13 +415,24 @@ private class JT_ErrorLogger_Test {
     // Find each log by error type
     for (JT_ErrorLog__c log : logs) {
       if (log.JT_ErrorType__c == 'LICENSE_RESTRICTION') {
-        System.assertEquals('Medium', log.JT_Severity__c, 'License restriction should be Medium');
+        System.assertEquals(
+          'Medium',
+          log.JT_Severity__c,
+          'License restriction should be Medium'
+        );
       } else if (log.JT_ErrorType__c == 'OBJECT_ACCESS_DENIED') {
-        System.assertEquals('High', log.JT_Severity__c, 'Object access denied should be High');
+        System.assertEquals(
+          'High',
+          log.JT_Severity__c,
+          'Object access denied should be High'
+        );
       } else if (log.JT_ErrorType__c == 'INVALID_SOQL_SYNTAX') {
-        System.assertEquals('Low', log.JT_Severity__c, 'Syntax error should be Low');
+        System.assertEquals(
+          'Low',
+          log.JT_Severity__c,
+          'Syntax error should be Low'
+        );
       }
     }
   }
 }
-

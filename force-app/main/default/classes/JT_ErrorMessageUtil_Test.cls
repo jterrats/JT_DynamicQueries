@@ -172,8 +172,12 @@ private class JT_ErrorMessageUtil_Test {
     JT_ErrorMessageUtil.ErrorType result1 = JT_ErrorMessageUtil.detectErrorType(
       'Some random error message'
     );
-    JT_ErrorMessageUtil.ErrorType result2 = JT_ErrorMessageUtil.detectErrorType(null);
-    JT_ErrorMessageUtil.ErrorType result3 = JT_ErrorMessageUtil.detectErrorType('');
+    JT_ErrorMessageUtil.ErrorType result2 = JT_ErrorMessageUtil.detectErrorType(
+      null
+    );
+    JT_ErrorMessageUtil.ErrorType result3 = JT_ErrorMessageUtil.detectErrorType(
+      ''
+    );
     Test.stopTest();
 
     System.assertEquals(
@@ -226,8 +230,16 @@ private class JT_ErrorMessageUtil_Test {
     String result3 = JT_ErrorMessageUtil.extractAssertionMessage(null);
     Test.stopTest();
 
-    System.assertEquals(null, result1, 'Should return null when no message after Assertion Failed');
-    System.assertEquals(null, result2, 'Should return null when no Assertion Failed');
+    System.assertEquals(
+      null,
+      result1,
+      'Should return null when no message after Assertion Failed'
+    );
+    System.assertEquals(
+      null,
+      result2,
+      'Should return null when no Assertion Failed'
+    );
     System.assertEquals(null, result3, 'Should return null for null input');
   }
 
@@ -253,7 +265,11 @@ private class JT_ErrorMessageUtil_Test {
       result.assertionMessage,
       'Assertion message should be extracted'
     );
-    System.assertEquals(true, result.isAssertionFailed, 'Should flag as assertion failed');
+    System.assertEquals(
+      true,
+      result.isAssertionFailed,
+      'Should flag as assertion failed'
+    );
   }
 
   /**
@@ -273,7 +289,11 @@ private class JT_ErrorMessageUtil_Test {
       result.errorType,
       'Should detect object access denied'
     );
-    System.assertEquals(false, result.isAssertionFailed, 'Should not be assertion failed');
+    System.assertEquals(
+      false,
+      result.isAssertionFailed,
+      'Should not be assertion failed'
+    );
     System.assertEquals(null, result.assertionMessage, 'No assertion message');
   }
 
@@ -302,7 +322,10 @@ private class JT_ErrorMessageUtil_Test {
   @IsTest
   static void testAnalyzeErrorWithBlankMessage() {
     Test.startTest();
-    JT_ErrorMessageUtil.ErrorAnalysisResult result = JT_ErrorMessageUtil.analyzeError(null, null);
+    JT_ErrorMessageUtil.ErrorAnalysisResult result = JT_ErrorMessageUtil.analyzeError(
+      null,
+      null
+    );
     Test.stopTest();
 
     System.assertEquals(
@@ -311,7 +334,11 @@ private class JT_ErrorMessageUtil_Test {
       'Should return UNKNOWN for blank message'
     );
     System.assertEquals(null, result.assertionMessage, 'No assertion message');
-    System.assertEquals(false, result.isAssertionFailed, 'Not assertion failed');
+    System.assertEquals(
+      false,
+      result.isAssertionFailed,
+      'Not assertion failed'
+    );
   }
 
   /**
@@ -328,7 +355,11 @@ private class JT_ErrorMessageUtil_Test {
       result.errorType,
       'Default error type should be UNKNOWN'
     );
-    System.assertEquals(null, result.assertionMessage, 'Default assertion message should be null');
+    System.assertEquals(
+      null,
+      result.assertionMessage,
+      'Default assertion message should be null'
+    );
     System.assertEquals(
       false,
       result.isAssertionFailed,
@@ -336,4 +367,3 @@ private class JT_ErrorMessageUtil_Test {
     );
   }
 }
-

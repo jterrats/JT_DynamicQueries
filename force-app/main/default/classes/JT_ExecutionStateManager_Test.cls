@@ -65,7 +65,11 @@ private class JT_ExecutionStateManager_Test {
     System.assertEquals(true, toRunning, 'Queued -> Running should be valid');
     System.assertEquals(true, toFailed, 'Queued -> Failed should be valid');
     System.assertEquals(true, toExpired, 'Queued -> Expired should be valid');
-    System.assertEquals(false, toCompleted, 'Queued -> Completed should be invalid');
+    System.assertEquals(
+      false,
+      toCompleted,
+      'Queued -> Completed should be invalid'
+    );
   }
 
   /**
@@ -92,7 +96,11 @@ private class JT_ExecutionStateManager_Test {
     );
     Test.stopTest();
 
-    System.assertEquals(true, toCompleted, 'Running -> Completed should be valid');
+    System.assertEquals(
+      true,
+      toCompleted,
+      'Running -> Completed should be valid'
+    );
     System.assertEquals(true, toFailed, 'Running -> Failed should be valid');
     System.assertEquals(true, toExpired, 'Running -> Expired should be valid');
     System.assertEquals(false, toQueued, 'Running -> Queued should be invalid');
@@ -118,9 +126,21 @@ private class JT_ExecutionStateManager_Test {
     );
     Test.stopTest();
 
-    System.assertEquals(false, fromCompleted, 'Completed should not allow transitions');
-    System.assertEquals(false, fromFailed, 'Failed should not allow transitions');
-    System.assertEquals(false, fromExpired, 'Expired should not allow transitions');
+    System.assertEquals(
+      false,
+      fromCompleted,
+      'Completed should not allow transitions'
+    );
+    System.assertEquals(
+      false,
+      fromFailed,
+      'Failed should not allow transitions'
+    );
+    System.assertEquals(
+      false,
+      fromExpired,
+      'Expired should not allow transitions'
+    );
   }
 
   /**
@@ -129,18 +149,35 @@ private class JT_ExecutionStateManager_Test {
   @IsTest
   static void testIsValidTransitionWithInvalidInputs() {
     Test.startTest();
-    Boolean nullFrom = JT_ExecutionStateManager.isValidTransition(null, 'Running');
+    Boolean nullFrom = JT_ExecutionStateManager.isValidTransition(
+      null,
+      'Running'
+    );
     Boolean nullTo = JT_ExecutionStateManager.isValidTransition('Queued', null);
-    Boolean blankFrom = JT_ExecutionStateManager.isValidTransition('', 'Running');
+    Boolean blankFrom = JT_ExecutionStateManager.isValidTransition(
+      '',
+      'Running'
+    );
     Boolean blankTo = JT_ExecutionStateManager.isValidTransition('Queued', '');
-    Boolean unknownState = JT_ExecutionStateManager.isValidTransition('Unknown', 'Running');
+    Boolean unknownState = JT_ExecutionStateManager.isValidTransition(
+      'Unknown',
+      'Running'
+    );
     Test.stopTest();
 
     System.assertEquals(false, nullFrom, 'Null fromState should return false');
     System.assertEquals(false, nullTo, 'Null toState should return false');
-    System.assertEquals(false, blankFrom, 'Blank fromState should return false');
+    System.assertEquals(
+      false,
+      blankFrom,
+      'Blank fromState should return false'
+    );
     System.assertEquals(false, blankTo, 'Blank toState should return false');
-    System.assertEquals(false, unknownState, 'Unknown state should return false');
+    System.assertEquals(
+      false,
+      unknownState,
+      'Unknown state should return false'
+    );
   }
 
   /**
@@ -275,4 +312,3 @@ private class JT_ExecutionStateManager_Test {
     Test.stopTest();
   }
 }
-

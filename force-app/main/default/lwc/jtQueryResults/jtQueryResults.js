@@ -4,7 +4,6 @@
  * @date 2025-11-30
  */
 import { LightningElement, api, track } from "lwc";
-import { ShowToastEvent } from "lightning/platformShowToastEvent";
 // Import Custom Labels
 import queryResultsLabel from "@salesforce/label/c.JT_jtQueryResults_queryResults";
 import viewModeSelectionLabel from "@salesforce/label/c.JT_jtQueryResults_viewModeSelection";
@@ -46,7 +45,12 @@ import noDataLabel from "@salesforce/label/c.JT_jtQueryResults_noData";
 import noRecordsToExportLabel from "@salesforce/label/c.JT_jtQueryResults_noRecordsToExport";
 import jsonErrorLabel from "@salesforce/label/c.JT_jtQueryResults_jsonError";
 import generationFailedLabel from "@salesforce/label/c.JT_jtQueryResults_generationFailed";
-import { escapeCSV, formatLabel } from "c/jtUtils";
+import {
+  escapeCSV,
+  formatLabel,
+  showSuccessToast,
+  showErrorToast
+} from "c/jtUtils";
 
 // Pure functions for data transformation
 const toggleSetMembership = (set, item) => {
@@ -407,12 +411,12 @@ export default class JtQueryResults extends LightningElement {
 
     this.copyToClipboard(this.jsonOutput)
       .then(() =>
-        this.showToast("success", this.labels.success, this.labels.jsonCopied)
+        showSuccessToast(this, this.labels.jsonCopied, this.labels.success)
       )
       .catch((error) => {
         const errorMessage = error.message || "Unknown error";
-        this.showToast(
-          "error",
+        showErrorToast(
+          this,
           this.labels.error,
           this.labels.copyFailed.replace("{0}", errorMessage)
         );
@@ -427,12 +431,12 @@ export default class JtQueryResults extends LightningElement {
 
     this.copyToClipboard(this.csvOutput)
       .then(() =>
-        this.showToast("success", this.labels.success, this.labels.csvCopied)
+        showSuccessToast(this, this.labels.csvCopied, this.labels.success)
       )
       .catch((error) => {
         const errorMessage = error?.message || "Unknown error";
-        this.showToast(
-          "error",
+        showErrorToast(
+          this,
           this.labels.error,
           this.labels.copyFailed.replace("{0}", errorMessage)
         );
@@ -441,8 +445,8 @@ export default class JtQueryResults extends LightningElement {
 
   handleDownloadCsv() {
     if (!this._records?.length) {
-      this.showToast(
-        "error",
+      showErrorToast(
+        this,
         this.labels.noData,
         this.labels.noRecordsToExport
       );
@@ -451,7 +455,7 @@ export default class JtQueryResults extends LightningElement {
 
     const csv = this.generateCSV();
     this.downloadFile(csv, `query_results_${Date.now()}.csv`, "text/csv");
-    this.showToast("success", this.labels.success, this.labels.csvDownloaded);
+    showSuccessToast(this, this.labels.csvDownloaded, this.labels.success);
   }
 
   handlePreviousPage() {
@@ -474,8 +478,8 @@ export default class JtQueryResults extends LightningElement {
         2
       );
     } catch {
-      this.showToast(
-        "error",
+      showErrorToast(
+        this,
         this.labels.jsonError,
         this.labels.generationFailed
       );
@@ -713,28 +717,6 @@ export default class JtQueryResults extends LightningElement {
     URL.revokeObjectURL(url);
   }
 
-  showToast(variant, title, message) {
-    // ✅ Clear any pending toast timeout to prevent stacking
-    if (this._toastTimeout) {
-      clearTimeout(this._toastTimeout);
-      this._toastTimeout = null;
-    }
-
-    // ✅ Dispatch toast with auto-dismiss mode (3 seconds)
-    this.dispatchEvent(
-      new ShowToastEvent({
-        title,
-        message,
-        variant,
-        mode: "dismissible" // Allow manual dismiss but auto-dismiss after 3s
-      })
-    );
-
-    // ✅ Set timeout to clear reference (prevents memory leaks)
-    this._toastTimeout = setTimeout(() => {
-      this._toastTimeout = null;
-    }, 3000);
-  }
 
   // Public API
   @api

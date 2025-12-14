@@ -270,6 +270,55 @@ export function escapeLikeValue(value) {
 }
 
 // ========================================================================
+// LABEL MANAGEMENT UTILITIES
+// ========================================================================
+
+/**
+ * Get labels for a component
+ * This function centralizes label management and provides a consistent API
+ * for retrieving Custom Labels by component name.
+ *
+ * @param {string} componentName - Name of the component (e.g., 'jtQueryViewer', 'jtConfigModal')
+ * @param {Object} importedLabels - Object containing imported Custom Labels from the component
+ * @returns {Object} Object with labels keyed by their usage identifier (data-id, data-name, etc.)
+ *
+ * @example
+ * // In component:
+ * import label1 from "@salesforce/label/c.JT_jtQueryViewer_label1";
+ * import label2 from "@salesforce/label/c.JT_jtQueryViewer_label2";
+ * 
+ * const labels = getLabels('jtQueryViewer', {
+ *   label1,
+ *   label2
+ * });
+ * 
+ * // Usage in template:
+ * // {labels['data-id-button-save']}
+ */
+export function getLabels(componentName, importedLabels = {}) {
+  if (!componentName) {
+    console.warn('getLabels: componentName is required');
+    return {};
+  }
+
+  // Return the imported labels as-is, but with component name prefix for namespacing
+  // This allows components to organize their labels however they want
+  // The function serves as a central point for label management patterns
+  const labels = {};
+  
+  // Copy all imported labels to the result object
+  // Components can use keys like 'data-id-button-save', 'data-name-input-query', etc.
+  Object.keys(importedLabels).forEach(key => {
+    labels[key] = importedLabels[key];
+  });
+
+  // Add component name metadata for debugging
+  labels._componentName = componentName;
+  
+  return labels;
+}
+
+// ========================================================================
 // VALIDATION UTILITIES
 // ========================================================================
 

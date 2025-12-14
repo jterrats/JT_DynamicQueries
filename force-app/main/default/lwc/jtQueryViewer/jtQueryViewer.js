@@ -484,7 +484,7 @@ export default class JtQueryViewer extends LightningElement {
     productionEditingDisabled: productionEditingDisabledLabel,
     testPassedFoundRecords: testPassedFoundRecordsLabel,
     testPassedExecutionTime: testPassedExecutionTimeLabel
-  };
+  });
 
   // Wire to get all configurations (cacheable for refreshApex)
   @wire(getConfigurations)

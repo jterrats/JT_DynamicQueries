@@ -31,29 +31,30 @@ public with sharing class JT_MetadataCreator {
   /**
    * @description Creates a new Dynamic Query Configuration metadata record
    * @author Jaime Terrats | 12-11-2025
-   * @param label Configuration label
-   * @param developerName Developer name
-   * @param baseQuery Base SOQL query
-   * @param bindings Optional bindings JSON string
-   * @param objectName Optional object name
+   * @param configJson JSON string containing configuration data (label, developerName, baseQuery, bindings, objectName)
    * @return MetadataCreationResult
    **/
   @AuraEnabled
-  public static MetadataCreationResult createConfiguration(
-    String label,
-    String developerName,
-    String baseQuery,
-    String bindings,
-    String objectName
-  ) {
+  public static MetadataCreationResult createConfiguration(String configJson) {
     MetadataCreationResult result = new MetadataCreationResult();
 
     try {
-      // Debug: Log the parameters
-      System.debug(LoggingLevel.ERROR, '🔍 createConfiguration parameters:');
-      System.debug(LoggingLevel.ERROR, '🔍 label: ' + label);
-      System.debug(LoggingLevel.ERROR, '🔍 developerName: ' + developerName);
-      System.debug(LoggingLevel.ERROR, '🔍 baseQuery: ' + baseQuery);
+      // Deserialize JSON input
+      Map<String, Object> configMap = (Map<String, Object>) JSON.deserializeUntyped(
+        configJson
+      );
+
+      System.debug(
+        LoggingLevel.ERROR,
+        '🔍 createConfiguration configMap: ' + JSON.serialize(configMap)
+      );
+
+      // Extract values from map
+      String label = (String) configMap.get('label');
+      String developerName = (String) configMap.get('developerName');
+      String baseQuery = (String) configMap.get('baseQuery');
+      String bindings = (String) configMap.get('bindings');
+      String objectName = (String) configMap.get('objectName');
 
       // CRITICAL: Only allow in development/test environments
       if (!isSandboxOrScratch()) {
@@ -166,29 +167,31 @@ public with sharing class JT_MetadataCreator {
   /**
    * @description Updates an existing Dynamic Query Configuration metadata record
    * @author Jaime Terrats | 12-11-2025
-   * @param originalDevName Original developer name (for identification)
-   * @param label Configuration label
-   * @param developerName Developer name
-   * @param baseQuery Base SOQL query
-   * @param bindings Optional bindings JSON string
-   * @param objectName Optional object name
+   * @param configJson JSON string containing configuration data (originalDevName, label, developerName, baseQuery, bindings, objectName)
    * @return MetadataCreationResult
    **/
   @AuraEnabled
-  public static MetadataCreationResult updateConfiguration(
-    String originalDevName,
-    String label,
-    String developerName,
-    String baseQuery,
-    String bindings,
-    String objectName
-  ) {
+  public static MetadataCreationResult updateConfiguration(String configJson) {
     MetadataCreationResult result = new MetadataCreationResult();
 
     try {
-      System.debug(LoggingLevel.ERROR, '🔍 updateConfiguration parameters:');
-      System.debug(LoggingLevel.ERROR, '🔍 originalDevName: ' + originalDevName);
-      System.debug(LoggingLevel.ERROR, '🔍 label: ' + label);
+      // Deserialize JSON input
+      Map<String, Object> configMap = (Map<String, Object>) JSON.deserializeUntyped(
+        configJson
+      );
+
+      System.debug(
+        LoggingLevel.ERROR,
+        '🔍 updateConfiguration configMap: ' + JSON.serialize(configMap)
+      );
+
+      // Extract values from map
+      String originalDevName = (String) configMap.get('originalDevName');
+      String label = (String) configMap.get('label');
+      String developerName = (String) configMap.get('developerName');
+      String baseQuery = (String) configMap.get('baseQuery');
+      String bindings = (String) configMap.get('bindings');
+      String objectName = (String) configMap.get('objectName');
 
       // CRITICAL: Only allow in sandbox/scratch
       if (!isSandboxOrScratch()) {
@@ -231,12 +234,18 @@ public with sharing class JT_MetadataCreator {
         }
 
         // Step 2: Create new record with new Developer Name
+        // Build JSON for createConfiguration
+        Map<String, Object> createConfigMap = new Map<String, Object>{
+          'label' => label,
+          'developerName' => sanitizedDevName,
+          'baseQuery' => baseQuery,
+          'bindings' => bindings,
+          'objectName' => objectName
+        };
+        String createConfigJson = JSON.serialize(createConfigMap);
+
         MetadataCreationResult createResult = createConfiguration(
-          label,
-          sanitizedDevName,
-          baseQuery,
-          bindings,
-          objectName
+          createConfigJson
         );
 
         if (!createResult.success) {

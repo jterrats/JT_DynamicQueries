@@ -1813,24 +1813,19 @@ export default class JtQueryViewer extends LightningElement {
       return;
     }
 
-    // Pass parameters individually instead of object wrapper (fixes serialization issue)
+    // Serialize configData to JSON string for Apex deserialization
+    const configJson = JSON.stringify(configData);
+    console.log("configJson being sent:", configJson);
+
     const saveMethod =
       modeFromEvent === "edit"
-        ? updateConfiguration({
-            originalDevName: this.originalDevName,
-            label: configData.label,
-            developerName: configData.developerName,
-            baseQuery: configData.baseQuery,
-            bindings: configData.bindings,
-            objectName: configData.objectName
-          })
-        : createConfiguration({
-            label: configData.label,
-            developerName: configData.developerName,
-            baseQuery: configData.baseQuery,
-            bindings: configData.bindings,
-            objectName: configData.objectName
-          });
+        ? updateConfiguration(
+            JSON.stringify({
+              originalDevName: this.originalDevName,
+              ...configData
+            })
+          )
+        : createConfiguration(configJson);
 
     const actionLabel = modeFromEvent === "edit" ? "Updated" : "Created";
 

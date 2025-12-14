@@ -17,11 +17,15 @@ private class JT_DataCleanupUtil_Test {
           Test_Status__c = 'Completed',
           Config_Name__c = 'Test_Record',
           User_To_Impersonate__c = UserInfo.getUserId(),
-          CreatedDate = DateTime.now().addDays(-35) // Older than default retention
+          Initiated_By__c = UserInfo.getUserId()
         )
       );
     }
     insert oldExecutions;
+    // Set created date to 35 days ago
+    for (JT_RunAsTest_Execution__c exec : oldExecutions) {
+      Test.setCreatedDate(exec.Id, DateTime.now().addDays(-35));
+    }
 
     // Create recent execution records (should not be deleted)
     List<JT_RunAsTest_Execution__c> recentExecutions = new List<JT_RunAsTest_Execution__c>();
@@ -31,11 +35,15 @@ private class JT_DataCleanupUtil_Test {
           Test_Status__c = 'Completed',
           Config_Name__c = 'Test_Record',
           User_To_Impersonate__c = UserInfo.getUserId(),
-          CreatedDate = DateTime.now().addDays(-10) // Within retention period
+          Initiated_By__c = UserInfo.getUserId()
         )
       );
     }
     insert recentExecutions;
+    // Set created date to 10 days ago
+    for (JT_RunAsTest_Execution__c exec : recentExecutions) {
+      Test.setCreatedDate(exec.Id, DateTime.now().addDays(-10));
+    }
 
     // Create stuck execution records (Queued/Running older than 7 days)
     List<JT_RunAsTest_Execution__c> stuckExecutions = new List<JT_RunAsTest_Execution__c>();
@@ -45,11 +53,15 @@ private class JT_DataCleanupUtil_Test {
           Test_Status__c = i == 0 ? 'Queued' : 'Running',
           Config_Name__c = 'Test_Record',
           User_To_Impersonate__c = UserInfo.getUserId(),
-          CreatedDate = DateTime.now().addDays(-10) // Older than 7 days
+          Initiated_By__c = UserInfo.getUserId()
         )
       );
     }
     insert stuckExecutions;
+    // Set created date to 10 days ago
+    for (JT_RunAsTest_Execution__c exec : stuckExecutions) {
+      Test.setCreatedDate(exec.Id, DateTime.now().addDays(-10));
+    }
 
     // Create old audit logs
     List<JT_SettingsAuditLog__c> oldAuditLogs = new List<JT_SettingsAuditLog__c>();
@@ -57,12 +69,15 @@ private class JT_DataCleanupUtil_Test {
       oldAuditLogs.add(
         new JT_SettingsAuditLog__c(
           JT_Action__c = 'Test Action',
-          JT_ChangedBy__c = UserInfo.getUserId(),
-          CreatedDate = DateTime.now().addDays(-100) // Older than default retention
+          JT_ChangedBy__c = UserInfo.getUserId()
         )
       );
     }
     insert oldAuditLogs;
+    // Set created date to 100 days ago
+    for (JT_SettingsAuditLog__c log : oldAuditLogs) {
+      Test.setCreatedDate(log.Id, DateTime.now().addDays(-100));
+    }
 
     // Create recent audit logs (should not be deleted)
     List<JT_SettingsAuditLog__c> recentAuditLogs = new List<JT_SettingsAuditLog__c>();
@@ -70,12 +85,15 @@ private class JT_DataCleanupUtil_Test {
       recentAuditLogs.add(
         new JT_SettingsAuditLog__c(
           JT_Action__c = 'Test Action',
-          JT_ChangedBy__c = UserInfo.getUserId(),
-          CreatedDate = DateTime.now().addDays(-30) // Within retention period
+          JT_ChangedBy__c = UserInfo.getUserId()
         )
       );
     }
     insert recentAuditLogs;
+    // Set created date to 30 days ago
+    for (JT_SettingsAuditLog__c log : recentAuditLogs) {
+      Test.setCreatedDate(log.Id, DateTime.now().addDays(-30));
+    }
   }
 
   /**
@@ -115,7 +133,9 @@ private class JT_DataCleanupUtil_Test {
     Integer customDays = 5; // Very short retention
 
     Test.startTest();
-    Integer deletedCount = JT_DataCleanupUtil.cleanupExecutionRecords(customDays);
+    Integer deletedCount = JT_DataCleanupUtil.cleanupExecutionRecords(
+      customDays
+    );
     Test.stopTest();
 
     System.assert(deletedCount >= 0, 'Should return count of deleted records');
@@ -137,10 +157,7 @@ private class JT_DataCleanupUtil_Test {
 
     System.assert(deletedCount >= 0, 'Should return count of deleted records');
     // Should use default retention when zero or negative
-    System.assert(
-      deletedCount >= 7,
-      'Should use default retention period'
-    );
+    System.assert(deletedCount >= 7, 'Should use default retention period');
   }
 
   /**
@@ -157,7 +174,10 @@ private class JT_DataCleanupUtil_Test {
     System.assert(deletedCount >= 4, 'Should delete old audit logs');
 
     // Verify recent audit logs still exist
-    List<JT_SettingsAuditLog__c> remainingLogs = [SELECT Id FROM JT_SettingsAuditLog__c];
+    List<JT_SettingsAuditLog__c> remainingLogs = [
+      SELECT Id
+      FROM JT_SettingsAuditLog__c
+    ];
 
     System.assert(remainingLogs.size() >= 2, 'Recent audit logs should remain');
   }
@@ -196,7 +216,10 @@ private class JT_DataCleanupUtil_Test {
       stats.containsKey('stuckExecutionRecords'),
       'Should contain stuckExecutionRecords'
     );
-    System.assert(stats.containsKey('oldAuditLogs'), 'Should contain oldAuditLogs');
+    System.assert(
+      stats.containsKey('oldAuditLogs'),
+      'Should contain oldAuditLogs'
+    );
     System.assert(
       stats.containsKey('totalDeletableRecords'),
       'Should contain totalDeletableRecords'
@@ -225,7 +248,10 @@ private class JT_DataCleanupUtil_Test {
   @IsTest
   static void testPerformFullCleanup() {
     Test.startTest();
-    Map<String, Object> results = JT_DataCleanupUtil.performFullCleanup(null, null);
+    Map<String, Object> results = JT_DataCleanupUtil.performFullCleanup(
+      null,
+      null
+    );
     Test.stopTest();
 
     System.assertNotEquals(null, results, 'Results should not be null');
@@ -238,7 +264,10 @@ private class JT_DataCleanupUtil_Test {
       results.containsKey('auditLogsDeleted'),
       'Should contain auditLogsDeleted'
     );
-    System.assert(results.containsKey('totalDeleted'), 'Should contain totalDeleted');
+    System.assert(
+      results.containsKey('totalDeleted'),
+      'Should contain totalDeleted'
+    );
 
     Integer executionDeleted = (Integer) results.get('executionRecordsDeleted');
     Integer auditDeleted = (Integer) results.get('auditLogsDeleted');

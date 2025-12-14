@@ -13,13 +13,19 @@ private class JT_QueryBindingUtil_Test {
   @IsTest
   static void testAddWildcardsForLikeBindings() {
     String query = 'SELECT Id FROM Account WHERE Name LIKE :searchName';
-    Map<String, Object> bindings = new Map<String, Object>{ 'searchName' => 'test' };
+    Map<String, Object> bindings = new Map<String, Object>{
+      'searchName' => 'test'
+    };
 
     Test.startTest();
     JT_QueryBindingUtil.addWildcardsForLikeBindings(query, bindings);
     Test.stopTest();
 
-    System.assertEquals('%test%', bindings.get('searchName'), 'Should add wildcards');
+    System.assertEquals(
+      '%test%',
+      bindings.get('searchName'),
+      'Should add wildcards'
+    );
   }
 
   /**
@@ -37,8 +43,16 @@ private class JT_QueryBindingUtil_Test {
     JT_QueryBindingUtil.addWildcardsForLikeBindings(query, bindings);
     Test.stopTest();
 
-    System.assertEquals('%test1%', bindings.get('name1'), 'First binding should have wildcards');
-    System.assertEquals('%test2%', bindings.get('name2'), 'Second binding should have wildcards');
+    System.assertEquals(
+      '%test1%',
+      bindings.get('name1'),
+      'First binding should have wildcards'
+    );
+    System.assertEquals(
+      '%test2%',
+      bindings.get('name2'),
+      'Second binding should have wildcards'
+    );
   }
 
   /**
@@ -47,13 +61,19 @@ private class JT_QueryBindingUtil_Test {
   @IsTest
   static void testAddWildcardsForLikeBindingsCaseInsensitive() {
     String query = 'SELECT Id FROM Account WHERE Name like :searchName';
-    Map<String, Object> bindings = new Map<String, Object>{ 'searchName' => 'test' };
+    Map<String, Object> bindings = new Map<String, Object>{
+      'searchName' => 'test'
+    };
 
     Test.startTest();
     JT_QueryBindingUtil.addWildcardsForLikeBindings(query, bindings);
     Test.stopTest();
 
-    System.assertEquals('%test%', bindings.get('searchName'), 'Should work with lowercase like');
+    System.assertEquals(
+      '%test%',
+      bindings.get('searchName'),
+      'Should work with lowercase like'
+    );
   }
 
   /**
@@ -62,13 +82,19 @@ private class JT_QueryBindingUtil_Test {
   @IsTest
   static void testAddWildcardsForLikeBindingsWithExistingWildcards() {
     String query = 'SELECT Id FROM Account WHERE Name LIKE :searchName';
-    Map<String, Object> bindings = new Map<String, Object>{ 'searchName' => '%test%' };
+    Map<String, Object> bindings = new Map<String, Object>{
+      'searchName' => '%test%'
+    };
 
     Test.startTest();
     JT_QueryBindingUtil.addWildcardsForLikeBindings(query, bindings);
     Test.stopTest();
 
-    System.assertEquals('%test%', bindings.get('searchName'), 'Should not modify existing wildcards');
+    System.assertEquals(
+      '%test%',
+      bindings.get('searchName'),
+      'Should not modify existing wildcards'
+    );
   }
 
   /**
@@ -77,7 +103,9 @@ private class JT_QueryBindingUtil_Test {
   @IsTest
   static void testAddWildcardsForLikeBindingsWithUnderscore() {
     String query = 'SELECT Id FROM Account WHERE Name LIKE :searchName';
-    Map<String, Object> bindings = new Map<String, Object>{ 'searchName' => 'test_value' };
+    Map<String, Object> bindings = new Map<String, Object>{
+      'searchName' => 'test_value'
+    };
 
     Test.startTest();
     JT_QueryBindingUtil.addWildcardsForLikeBindings(query, bindings);
@@ -96,13 +124,19 @@ private class JT_QueryBindingUtil_Test {
   @IsTest
   static void testAddWildcardsForLikeBindingsNonString() {
     String query = 'SELECT Id FROM Account WHERE Name LIKE :searchName';
-    Map<String, Object> bindings = new Map<String, Object>{ 'searchName' => 123 };
+    Map<String, Object> bindings = new Map<String, Object>{
+      'searchName' => 123
+    };
 
     Test.startTest();
     JT_QueryBindingUtil.addWildcardsForLikeBindings(query, bindings);
     Test.stopTest();
 
-    System.assertEquals(123, bindings.get('searchName'), 'Non-string bindings should not be modified');
+    System.assertEquals(
+      123,
+      bindings.get('searchName'),
+      'Non-string bindings should not be modified'
+    );
   }
 
   /**
@@ -110,13 +144,19 @@ private class JT_QueryBindingUtil_Test {
    */
   @IsTest
   static void testAddWildcardsForLikeBindingsNullQuery() {
-    Map<String, Object> bindings = new Map<String, Object>{ 'searchName' => 'test' };
+    Map<String, Object> bindings = new Map<String, Object>{
+      'searchName' => 'test'
+    };
 
     Test.startTest();
     JT_QueryBindingUtil.addWildcardsForLikeBindings(null, bindings);
     Test.stopTest();
 
-    System.assertEquals('test', bindings.get('searchName'), 'Should not modify bindings');
+    System.assertEquals(
+      'test',
+      bindings.get('searchName'),
+      'Should not modify bindings'
+    );
   }
 
   /**
@@ -146,7 +186,11 @@ private class JT_QueryBindingUtil_Test {
     JT_QueryBindingUtil.addWildcardsForLikeBindings(query, bindings);
     Test.stopTest();
 
-    System.assertEquals(0, bindings.size(), 'Empty bindings should remain empty');
+    System.assertEquals(
+      0,
+      bindings.size(),
+      'Empty bindings should remain empty'
+    );
   }
 
   /**
@@ -161,7 +205,11 @@ private class JT_QueryBindingUtil_Test {
     JT_QueryBindingUtil.addWildcardsForLikeBindings(query, bindings);
     Test.stopTest();
 
-    System.assertEquals('test', bindings.get('name'), 'Should not modify non-LIKE bindings');
+    System.assertEquals(
+      'test',
+      bindings.get('name'),
+      'Should not modify non-LIKE bindings'
+    );
   }
 
   /**
@@ -173,11 +221,18 @@ private class JT_QueryBindingUtil_Test {
     String bindingsJson = '{"searchName": "test"}';
 
     Test.startTest();
-    Map<String, Object> bindings = JT_QueryBindingUtil.processBindings(query, bindingsJson);
+    Map<String, Object> bindings = JT_QueryBindingUtil.processBindings(
+      query,
+      bindingsJson
+    );
     Test.stopTest();
 
     System.assertNotEquals(null, bindings, 'Bindings should not be null');
-    System.assertEquals('%test%', bindings.get('searchName'), 'Should add wildcards');
+    System.assertEquals(
+      '%test%',
+      bindings.get('searchName'),
+      'Should add wildcards'
+    );
   }
 
   /**
@@ -188,7 +243,10 @@ private class JT_QueryBindingUtil_Test {
     String query = 'SELECT Id FROM Account WHERE Name LIKE :searchName';
 
     Test.startTest();
-    Map<String, Object> bindings = JT_QueryBindingUtil.processBindings(query, null);
+    Map<String, Object> bindings = JT_QueryBindingUtil.processBindings(
+      query,
+      null
+    );
     Test.stopTest();
 
     System.assertNotEquals(null, bindings, 'Bindings should not be null');
@@ -203,7 +261,10 @@ private class JT_QueryBindingUtil_Test {
     String query = 'SELECT Id FROM Account WHERE Name LIKE :searchName';
 
     Test.startTest();
-    Map<String, Object> bindings = JT_QueryBindingUtil.processBindings(query, '');
+    Map<String, Object> bindings = JT_QueryBindingUtil.processBindings(
+      query,
+      ''
+    );
     Test.stopTest();
 
     System.assertNotEquals(null, bindings, 'Bindings should not be null');
@@ -219,10 +280,21 @@ private class JT_QueryBindingUtil_Test {
     String bindingsJson = '{"name": "test", "industry": "tech"}';
 
     Test.startTest();
-    Map<String, Object> bindings = JT_QueryBindingUtil.processBindings(query, bindingsJson);
+    Map<String, Object> bindings = JT_QueryBindingUtil.processBindings(
+      query,
+      bindingsJson
+    );
     Test.stopTest();
 
-    System.assertEquals('%test%', bindings.get('name'), 'First binding should have wildcards');
-    System.assertEquals('%tech%', bindings.get('industry'), 'Second binding should have wildcards');
+    System.assertEquals(
+      '%test%',
+      bindings.get('name'),
+      'First binding should have wildcards'
+    );
+    System.assertEquals(
+      '%tech%',
+      bindings.get('industry'),
+      'Second binding should have wildcards'
+    );
   }
 }

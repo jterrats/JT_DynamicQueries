@@ -45,7 +45,11 @@ private class JT_ConfigurationSelector_Test {
     Test.stopTest();
 
     System.assertNotEquals(null, config, 'Configuration should not be null');
-    System.assertEquals(devName, config.DeveloperName, 'Developer name should match');
+    System.assertEquals(
+      devName,
+      config.DeveloperName,
+      'Developer name should match'
+    );
     System.assertNotEquals(null, config.Label, 'Label should be populated');
   }
 
@@ -136,7 +140,11 @@ private class JT_ConfigurationSelector_Test {
     Test.stopTest();
 
     System.assertNotEquals(null, configs, 'Configurations should not be null');
-    System.assertEquals(0, configs.size(), 'Should return empty list for non-existent object');
+    System.assertEquals(
+      0,
+      configs.size(),
+      'Should return empty list for non-existent object'
+    );
   }
 
   /**
@@ -151,6 +159,10 @@ private class JT_ConfigurationSelector_Test {
     Test.stopTest();
 
     System.assertNotEquals(null, configs, 'Configurations should not be null');
-    System.assertEquals(0, configs.size(), 'Should return empty list for null object');
+    System.assertEquals(
+      0,
+      configs.size(),
+      'Should return empty list for null object'
+    );
   }
 }

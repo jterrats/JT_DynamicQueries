@@ -36,9 +36,21 @@ private class JT_SetupWizardController_Test {
 
     // Verify Tooling API step
     JT_SetupWizardController.SetupStepStatus toolingStep = status.steps[0];
-    System.assertNotEquals(null, toolingStep.stepName, 'Step name should be populated');
-    System.assertEquals(true, toolingStep.isRequired, 'Tooling API step should be required');
-    System.assertNotEquals(null, toolingStep.statusMessage, 'Status message should be populated');
+    System.assertNotEquals(
+      null,
+      toolingStep.stepName,
+      'Step name should be populated'
+    );
+    System.assertEquals(
+      true,
+      toolingStep.isRequired,
+      'Tooling API step should be required'
+    );
+    System.assertNotEquals(
+      null,
+      toolingStep.statusMessage,
+      'Status message should be populated'
+    );
   }
 
   /**
@@ -53,7 +65,11 @@ private class JT_SetupWizardController_Test {
 
     // Result depends on org configuration
     // Just verify it returns a boolean (doesn't throw exception)
-    System.assertNotEquals(null, connectionWorks, 'Should return boolean value');
+    System.assertNotEquals(
+      null,
+      connectionWorks,
+      'Should return boolean value'
+    );
   }
 
   /**
@@ -70,9 +86,21 @@ private class JT_SetupWizardController_Test {
     Test.stopTest();
 
     System.assertEquals(true, result.success, 'Success should be set');
-    System.assertEquals('Test message', result.message, 'Message should be set');
-    System.assertEquals('Test details', result.details, 'Details should be set');
-    System.assertEquals('https://test.salesforce.com', result.orgUrl, 'Org URL should be set');
+    System.assertEquals(
+      'Test message',
+      result.message,
+      'Message should be set'
+    );
+    System.assertEquals(
+      'Test details',
+      result.details,
+      'Details should be set'
+    );
+    System.assertEquals(
+      'https://test.salesforce.com',
+      result.orgUrl,
+      'Org URL should be set'
+    );
   }
 
   /**
@@ -92,7 +120,11 @@ private class JT_SetupWizardController_Test {
     System.assertEquals('Test Step', step.stepName, 'Step name should be set');
     System.assertEquals(true, step.isComplete, 'Is complete should be set');
     System.assertEquals(true, step.isRequired, 'Is required should be set');
-    System.assertEquals('Test status', step.statusMessage, 'Status message should be set');
+    System.assertEquals(
+      'Test status',
+      step.statusMessage,
+      'Status message should be set'
+    );
     System.assertEquals(
       'https://test.salesforce.com',
       step.setupUrl,
@@ -113,7 +145,11 @@ private class JT_SetupWizardController_Test {
     status.documentationUrl = '/lightning/n/JT_Project_Docs';
     Test.stopTest();
 
-    System.assertEquals(true, status.allStepsComplete, 'All steps complete should be set');
+    System.assertEquals(
+      true,
+      status.allStepsComplete,
+      'All steps complete should be set'
+    );
     System.assertNotEquals(null, status.steps, 'Steps should be initialized');
     System.assertEquals(
       'https://test.salesforce.com',

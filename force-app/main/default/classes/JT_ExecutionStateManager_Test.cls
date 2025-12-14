@@ -13,7 +13,8 @@ private class JT_ExecutionStateManager_Test {
     JT_RunAsTest_Execution__c execution = new JT_RunAsTest_Execution__c(
       Test_Status__c = JT_ExecutionStateManager.STATE_QUEUED,
       Config_Name__c = 'Test_Record',
-      User_To_Impersonate__c = UserInfo.getUserId()
+      User_To_Impersonate__c = UserInfo.getUserId(),
+      Initiated_By__c = UserInfo.getUserId()
     );
     insert execution;
   }
@@ -293,6 +294,7 @@ private class JT_ExecutionStateManager_Test {
 
     // First transition to final state
     execution.Test_Status__c = JT_ExecutionStateManager.STATE_COMPLETED;
+    execution.Initiated_By__c = UserInfo.getUserId();
     update execution;
 
     Test.startTest();

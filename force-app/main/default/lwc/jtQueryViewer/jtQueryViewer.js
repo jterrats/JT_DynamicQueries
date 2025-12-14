@@ -1814,17 +1814,20 @@ export default class JtQueryViewer extends LightningElement {
     }
 
     // Serialize configData to JSON string for Apex deserialization
-    const configJson = JSON.stringify(configData);
+    // For edit mode, include originalDevName
+    const configDataForApex = modeFromEvent === "edit"
+      ? {
+          originalDevName: this.originalDevName,
+          ...configData
+        }
+      : configData;
+    
+    const configJson = JSON.stringify(configDataForApex);
     console.log("configJson being sent:", configJson);
 
     const saveMethod =
       modeFromEvent === "edit"
-        ? updateConfiguration(
-            JSON.stringify({
-              originalDevName: this.originalDevName,
-              ...configData
-            })
-          )
+        ? updateConfiguration(configJson)
         : createConfiguration(configJson);
 
     const actionLabel = modeFromEvent === "edit" ? "Updated" : "Created";

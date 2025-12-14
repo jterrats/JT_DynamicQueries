@@ -71,7 +71,12 @@ public with sharing class JT_MetadataCreator {
         return result;
       }
 
-      // Sanitize developer name
+      // Sanitize developer name (with null check)
+      if (String.isBlank(config.developerName)) {
+        result.success = false;
+        result.errorMessage = 'Developer Name cannot be blank.';
+        return result;
+      }
       String sanitizedDevName = sanitizeDeveloperName(config.developerName);
 
       // Build metadata XML (handle null values for optional fields)
@@ -82,7 +87,19 @@ public with sharing class JT_MetadataCreator {
       params.bindings = String.isBlank(config.bindings) ? null : config.bindings;
       params.objectName = String.isBlank(config.objectName) ? null : config.objectName;
 
-      String metadataXml = buildMetadataXml(params);
+      // Build XML - catch any exceptions here to prevent serialization issues
+      String metadataXml;
+      try {
+        metadataXml = buildMetadataXml(params);
+      } catch (IllegalArgumentException iae) {
+        result.success = false;
+        result.errorMessage = iae.getMessage();
+        return result;
+      } catch (Exception xmlEx) {
+        result.success = false;
+        result.errorMessage = 'Error building metadata XML: ' + xmlEx.getMessage();
+        return result;
+      }
 
       // Deploy via Metadata API
       DeploymentResult deployResult = deployMetadata(metadataXml, sanitizedDevName);
@@ -207,8 +224,10 @@ public with sharing class JT_MetadataCreator {
         return result;
       }
 
-      // Sanitize developer name
-      String sanitizedDevName = sanitizeDeveloperName(config.developerName);
+      // Sanitize developer name (with null check)
+      String sanitizedDevName = String.isNotBlank(config.developerName) 
+        ? sanitizeDeveloperName(config.developerName) 
+        : config.originalDevName;
 
       // Check if Developer Name changed (renaming scenario)
       Boolean isRenaming =
@@ -228,7 +247,19 @@ public with sharing class JT_MetadataCreator {
         params.bindings = String.isBlank(config.bindings) ? null : config.bindings;
         params.objectName = String.isBlank(config.objectName) ? null : config.objectName;
 
-        String metadataXml = buildMetadataXml(params);
+        // Build XML - catch any exceptions here to prevent serialization issues
+        String metadataXml;
+        try {
+          metadataXml = buildMetadataXml(params);
+        } catch (IllegalArgumentException iae) {
+          result.success = false;
+          result.errorMessage = iae.getMessage();
+          return result;
+        } catch (Exception xmlEx) {
+          result.success = false;
+          result.errorMessage = 'Error building metadata XML: ' + xmlEx.getMessage();
+          return result;
+        }
 
         // Deploy via Metadata API (will update existing record)
         DeploymentResult deployResult = deployMetadata(
@@ -355,6 +386,9 @@ public with sharing class JT_MetadataCreator {
    * @return String Sanitized name
    **/
   private static String sanitizeDeveloperName(String devName) {
+    if (String.isBlank(devName)) {
+      return devName;
+    }
     // Remove spaces and special characters
     String sanitized = devName.replaceAll('[^a-zA-Z0-9_]', '_');
 

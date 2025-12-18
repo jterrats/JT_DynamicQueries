@@ -5,42 +5,44 @@
       <div class="slds-text-heading_small" id="results-heading">
         Results ({recordCount} {recordCountLabel}):
       </div>
-      <lightning-button-group aria-label={labels.viewModeSelection}>
-        <lightning-button
-          label={labels.table}
-          icon-name="utility:table"
-          variant={isTableView}
-          onclick={handleViewChange}
-          data-view="table"
-          title={labels.viewAsTable}
-          aria-label={labels.viewResultsAsTable}
-          aria-pressed={isTableActive}
-        ></lightning-button>
-        <lightning-button
-          label={labels.json}
-          icon-name="utility:file"
-          variant={isJsonView}
-          onclick={handleViewChange}
-          data-view="json"
-          title={labels.viewAsJson}
-          aria-label={labels.viewResultsAsJson}
-          aria-pressed={isJsonActive}
-        ></lightning-button>
-        <lightning-button
-          label={labels.csv}
-          icon-name="utility:download"
-          variant={isCsvView}
-          onclick={handleViewChange}
-          data-view="csv"
-          title={labels.downloadAsCsv}
-          aria-label={labels.downloadResultsAsCsvFile}
-          aria-pressed={isCsvActive}
-        ></lightning-button>
-      </lightning-button-group>
+      <template if:true={showViewToggleValue}>
+        <lightning-button-group aria-label={labels.viewModeSelection}>
+          <lightning-button
+            label={labels.table}
+            icon-name="utility:table"
+            variant={isTableView}
+            onclick={handleViewChange}
+            data-view="table"
+            title={labels.viewAsTable}
+            aria-label={labels.viewResultsAsTable}
+            aria-pressed={isTableActive}
+          ></lightning-button>
+          <lightning-button
+            label={labels.json}
+            icon-name="utility:file"
+            variant={isJsonView}
+            onclick={handleViewChange}
+            data-view="json"
+            title={labels.viewAsJson}
+            aria-label={labels.viewResultsAsJson}
+            aria-pressed={isJsonActive}
+          ></lightning-button>
+          <lightning-button
+            label={labels.csv}
+            icon-name="utility:download"
+            variant={isCsvView}
+            onclick={handleViewChange}
+            data-view="csv"
+            title={labels.downloadAsCsv}
+            aria-label={labels.downloadResultsAsCsvFile}
+            aria-pressed={isCsvActive}
+          ></lightning-button>
+        </lightning-button-group>
+      </template>
     </div>
 
     <!-- Table View -->
-    <template if:true={viewMode.table}>
+    <template if:true={effectiveViewMode.table}>
       <!-- Desktop: Nested Viewer with Child Relationships -->
       <div class="desktop-table slds-show_medium">
         <table class="slds-table slds-table_cell-buffer slds-table_bordered">
@@ -198,7 +200,7 @@
     </template>
 
     <!-- JSON View -->
-    <template if:true={viewMode.json}>
+    <template if:true={effectiveViewMode.json}>
       <div class="json-view slds-box slds-theme_shade slds-m-bottom_medium">
         <div class="slds-grid slds-grid_align-spread slds-p-bottom_x-small">
           <div class="slds-text-heading_small">{labels.jsonOutput}</div>
@@ -214,7 +216,7 @@
     </template>
 
     <!-- CSV Preview -->
-    <template if:true={viewMode.csv}>
+    <template if:true={effectiveViewMode.csv}>
       <div class="csv-view slds-box slds-theme_shade slds-m-bottom_medium">
         <div class="slds-grid slds-grid_align-spread slds-p-bottom_x-small">
           <div class="slds-text-heading_small">{labels.csvPreview}</div>

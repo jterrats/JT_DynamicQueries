@@ -102,7 +102,6 @@
               data-field="baseQuery"
               onchange={handleFieldChange}
               required
-              rows="4"
               placeholder={labels.baseQueryPlaceholder}
             ></lightning-textarea>
 
@@ -214,6 +213,7 @@
                           records={queryPreviewResults}
                           record-count={queryPreviewResults.length}
                           page-size={queryPreviewPageSize}
+                          show-view-toggle
                           class="preview-results"
                         ></c-jt-query-results>
                       </template>
@@ -257,7 +257,6 @@
               value={_config.bindings}
               data-field="bindings"
               onchange={handleFieldChange}
-              rows="3"
               placeholder={labels.bindingsPlaceholder}
               field-level-help={labels.bindingsHelpText}
             ></lightning-textarea>

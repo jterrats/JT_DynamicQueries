@@ -483,7 +483,9 @@ async function captureHappyPaths() {
           const paramInput = page6
             .locator('lightning-input[data-testid*="parameter"] input')
             .first();
-          if (await paramInput.isVisible({ timeout: 2000 }).catch(() => false)) {
+          if (
+            await paramInput.isVisible({ timeout: 2000 }).catch(() => false)
+          ) {
             await paramInput.fill("Dynamic");
             await page6.waitForTimeout(1000);
           }
@@ -493,18 +495,28 @@ async function captureHappyPaths() {
             .locator('button:has-text("Execute with System.runAs")')
             .first();
 
-          if (await executeRunAsButton.isVisible({ timeout: 5000 }).catch(() => false)) {
+          if (
+            await executeRunAsButton
+              .isVisible({ timeout: 5000 })
+              .catch(() => false)
+          ) {
             await executeRunAsButton.click();
             await page6.waitForTimeout(3000);
 
             // Wait for results or test execution status
             const resultsSection = page6.locator("c-jt-query-results").first();
-            const testStatus = page6.locator('text=/Running|Completed|Failed/i').first();
+            const testStatus = page6
+              .locator("text=/Running|Completed|Failed/i")
+              .first();
 
             // Wait for either results or status message
             await Promise.race([
-              resultsSection.waitFor({ state: "visible", timeout: 10000 }).catch(() => null),
-              testStatus.waitFor({ state: "visible", timeout: 10000 }).catch(() => null),
+              resultsSection
+                .waitFor({ state: "visible", timeout: 10000 })
+                .catch(() => null),
+              testStatus
+                .waitFor({ state: "visible", timeout: 10000 })
+                .catch(() => null),
               page6.waitForTimeout(5000)
             ]);
 
@@ -521,7 +533,9 @@ async function captureHappyPaths() {
       }
     } else {
       // If Run As section is not available, show a message
-      console.log("   ⚠️  Run As section not available (user lacks permissions)");
+      console.log(
+        "   ⚠️  Run As section not available (user lacks permissions)"
+      );
       await page6.waitForTimeout(2000);
     }
 

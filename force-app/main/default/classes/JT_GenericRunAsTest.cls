@@ -570,6 +570,10 @@ public class JT_GenericRunAsTest {
 
       // CRITICAL: Try to update execution record with error using robust fallback strategy
       // This ensures the record is never left in an inconsistent state
+      // Use centralized utility for consistent error handling
+      String errorMessage = 'Failed to store results: ' + e.getMessage();
+
+      // Try to update with full error message and log messages
       try {
         List<JT_RunAsTest_Execution__c> executions = [
           SELECT Id, Test_Status__c, Error_Message__c, Log_Messages__c
@@ -578,14 +582,10 @@ public class JT_GenericRunAsTest {
           LIMIT 1
         ];
         if (!executions.isEmpty()) {
-          String errorMessage = 'Failed to store results: ' + e.getMessage();
-          // Truncate error message if too long
-          String truncatedError = errorMessage.length() > 255
-            ? errorMessage.substring(0, 252) + '...'
-            : errorMessage;
-
           executions[0].Test_Status__c = 'Failed';
-          executions[0].Error_Message__c = truncatedError;
+          executions[0].Error_Message__c = JT_ExecutionUpdateUtil.truncateErrorMessage(
+            errorMessage
+          );
           executions[0].Log_Messages__c =
             (String.isNotBlank(executions[0].Log_Messages__c)
               ? executions[0].Log_Messages__c + '\n'
@@ -593,65 +593,28 @@ public class JT_GenericRunAsTest {
             'Error storing results: ' +
             e.getMessage();
           update executions[0];
-        }
-      } catch (DmlException dmlEx) {
-        System.debug(
-          LoggingLevel.ERROR,
-          '❌ DML error updating execution record with error (Strategy 1): ' +
-          dmlEx.getMessage()
-        );
-        System.debug(
-          LoggingLevel.ERROR,
-          'DML Status Code: ' + dmlEx.getDmlStatusCode(0)
-        );
-
-        // Strategy 2: Try with minimal update (only status)
-        try {
-          JT_RunAsTest_Execution__c minimalUpdate = new JT_RunAsTest_Execution__c(
-            Id = executionId,
-            Test_Status__c = 'Failed'
-          );
-          update minimalUpdate;
-        } catch (Exception minimalEx) {
-          System.debug(
-            LoggingLevel.ERROR,
-            '❌ Minimal update also failed (Strategy 2): ' +
-            minimalEx.getMessage()
-          );
-          System.debug(
-            LoggingLevel.ERROR,
-            'CRITICAL: Record may remain in inconsistent state. Manual intervention required.'
-          );
+          return new TestResult(false, errorMessage);
         }
       } catch (Exception updateEx) {
+        // If full update fails, use utility fallback strategy
         System.debug(
           LoggingLevel.ERROR,
-          '❌ General error updating execution record with error (Strategy 1): ' +
-          updateEx.getMessage()
+          'Full update failed, using fallback strategy: ' + updateEx.getMessage()
         );
-        System.debug(
-          LoggingLevel.ERROR,
-          'Stack trace: ' + updateEx.getStackTraceString()
-        );
+      }
 
-        // Strategy 2: Try with minimal update (only status)
-        try {
-          JT_RunAsTest_Execution__c minimalUpdate = new JT_RunAsTest_Execution__c(
-            Id = executionId,
-            Test_Status__c = 'Failed'
-          );
-          update minimalUpdate;
-        } catch (Exception minimalEx) {
-          System.debug(
-            LoggingLevel.ERROR,
-            '❌ Minimal update also failed (Strategy 2 fallback): ' +
-            minimalEx.getMessage()
-          );
-          System.debug(
-            LoggingLevel.ERROR,
-            'CRITICAL: Record may remain in inconsistent state. Manual intervention required.'
-          );
-        }
+      // Fallback: Use utility method with robust error handling
+      Boolean updateSuccess = JT_ExecutionUpdateUtil.updateExecutionWithError(
+        executionId,
+        errorMessage,
+        'JT_GenericRunAsTest.storeResults'
+      );
+
+      if (!updateSuccess) {
+        System.debug(
+          LoggingLevel.ERROR,
+          'CRITICAL: All update strategies failed. Record may remain in inconsistent state.'
+        );
       }
 
       return new TestResult(

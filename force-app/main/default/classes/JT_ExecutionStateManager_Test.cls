@@ -186,11 +186,7 @@ private class JT_ExecutionStateManager_Test {
    */
   @IsTest
   static void testTransitionValid() {
-    JT_RunAsTest_Execution__c execution = [
-      SELECT Id, Test_Status__c
-      FROM JT_RunAsTest_Execution__c
-      LIMIT 1
-    ];
+    JT_RunAsTest_Execution__c execution = JT_SystemSelector.getTestExecutionWithAllFields();
 
     Test.startTest();
     JT_ExecutionStateManager.transition(
@@ -211,11 +207,7 @@ private class JT_ExecutionStateManager_Test {
    */
   @IsTest
   static void testTransitionInvalid() {
-    JT_RunAsTest_Execution__c execution = [
-      SELECT Id, Test_Status__c
-      FROM JT_RunAsTest_Execution__c
-      LIMIT 1
-    ];
+    JT_RunAsTest_Execution__c execution = JT_SystemSelector.getTestExecutionWithAllFields();
 
     Test.startTest();
     try {
@@ -250,11 +242,7 @@ private class JT_ExecutionStateManager_Test {
    */
   @IsTest
   static void testTransitionMultipleStates() {
-    JT_RunAsTest_Execution__c execution = [
-      SELECT Id, Test_Status__c
-      FROM JT_RunAsTest_Execution__c
-      LIMIT 1
-    ];
+    JT_RunAsTest_Execution__c execution = JT_SystemSelector.getTestExecutionWithAllFields();
 
     Test.startTest();
     // Queued -> Running
@@ -286,11 +274,7 @@ private class JT_ExecutionStateManager_Test {
    */
   @IsTest
   static void testTransitionFromFinalState() {
-    JT_RunAsTest_Execution__c execution = [
-      SELECT Id, Test_Status__c
-      FROM JT_RunAsTest_Execution__c
-      LIMIT 1
-    ];
+    JT_RunAsTest_Execution__c execution = JT_SystemSelector.getTestExecutionWithAllFields();
 
     // First transition to final state
     execution.Test_Status__c = JT_ExecutionStateManager.STATE_COMPLETED;

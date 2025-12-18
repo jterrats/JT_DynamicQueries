@@ -49,7 +49,8 @@ import {
   escapeCSV,
   formatLabel,
   showSuccessToast,
-  showErrorToast
+  showErrorToast,
+  getNestedFieldValue
 } from "c/jtUtils";
 
 // Pure functions for data transformation
@@ -64,7 +65,7 @@ const toggleSetMembership = (set, item) => {
 };
 
 const createCSVRow = (columns) => (row) =>
-  columns.map((col) => escapeCSV(row[col.fieldName])).join(",");
+  columns.map((col) => escapeCSV(getNestedFieldValue(row, col.fieldName))).join(",");
 
 const createJSONMetadata = (recordCount, columns) => ({
   totalRecords: recordCount,
@@ -78,6 +79,7 @@ export default class JtQueryResults extends LightningElement {
   @api pageSize = 10;
 
   @track currentPage = 1;
+  @api showViewToggle; // Show view toggle buttons by default (true), can be hidden for previews (false)
   @track viewMode = { table: true, json: false, csv: false };
   @track jsonOutput = "";
   @track csvOutput = "";
@@ -85,6 +87,20 @@ export default class JtQueryResults extends LightningElement {
 
   _records = [];
   _previousRecordCount = 0;
+
+  // Getter to handle undefined/null values (LWC doesn't allow boolean defaults to true)
+  get showViewToggleValue() {
+    // If explicitly set to false, return false; otherwise return true (default)
+    return this.showViewToggle !== false;
+  }
+
+  // Ensure table view is always shown when view toggle is hidden
+  get effectiveViewMode() {
+    if (!this.showViewToggleValue) {
+      return { table: true, json: false, csv: false };
+    }
+    return this.viewMode;
+  }
 
   // Custom Labels
   labels = {
@@ -196,6 +212,11 @@ export default class JtQueryResults extends LightningElement {
 
   // Event handlers - Pure intent, side effects isolated
   handleViewChange(event) {
+    // Prevent view change if view toggle is hidden (preview mode)
+    if (this.showViewToggle === false) {
+      return;
+    }
+
     const view = event.currentTarget.dataset.view;
 
     this.viewMode = {
@@ -285,10 +306,11 @@ export default class JtQueryResults extends LightningElement {
       enrichedRow._toggleAriaLabel = `${this.labels.toggleDetailsFor} ${enrichedRow._displayName}`;
 
       // ✅ Create _cells array for template iteration (LWC doesn't allow computed property access)
+      // Handle nested fields like Recordtype.Name using getNestedFieldValue
       enrichedRow._cells = this.parentColumns.map((col) => ({
         key: col.fieldName,
         label: col.label,
-        value: row[col.fieldName] || ""
+        value: getNestedFieldValue(row, col.fieldName)
       }));
 
       // Detect child relationships
@@ -547,10 +569,10 @@ export default class JtQueryResults extends LightningElement {
     // Build CSV rows
     const rows = [];
     this._records.forEach((record) => {
-      // Extract parent data
+      // Extract parent data (handle nested fields)
       const parentData = {};
       parentFields.forEach((field) => {
-        parentData[field] = record[field];
+        parentData[field] = getNestedFieldValue(record, field);
       });
 
       // Collect all children from all relationships
@@ -603,9 +625,9 @@ export default class JtQueryResults extends LightningElement {
           // Add relationship type
           row.push(escapeCSV(child.type));
 
-          // Add child fields
+          // Add child fields (handle nested fields)
           childFields.forEach((field) => {
-            row.push(escapeCSV(child.data[field]));
+            row.push(escapeCSV(getNestedFieldValue(child.data, field)));
           });
 
           rows.push(row.join(","));

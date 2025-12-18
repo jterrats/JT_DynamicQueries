@@ -66,9 +66,7 @@ public with sharing class JT_QueryViewerController {
         validateRunAsPermission(runAsUserId);
       }
 
-      Map<String, Object> bindings = String.isNotBlank(bindingsJson)
-        ? (Map<String, Object>) JSON.deserializeUntyped(bindingsJson)
-        : new Map<String, Object>();
+      Map<String, Object> bindings = deserializeBindings(bindingsJson);
 
       // Get config to check for LIKE clauses
       JT_DynamicQueryConfiguration__mdt config = [
@@ -104,8 +102,7 @@ public with sharing class JT_QueryViewerController {
       QueryResult result = new QueryResult();
 
       // ✅ SERIALIZE to preserve child relationships
-      String recordsJson = JSON.serialize(sobjectRecords);
-      result.records = (List<Object>) JSON.deserializeUntyped(recordsJson);
+      result.records = serializeRecordsForLWC(sobjectRecords);
 
       result.recordCount = sobjectRecords.size();
       result.success = true;
@@ -120,12 +117,7 @@ public with sharing class JT_QueryViewerController {
 
       return result;
     } catch (Exception e) {
-      QueryResult result = new QueryResult();
-      result.success = false;
-      result.errorMessage = e.getMessage();
-      result.records = new List<Object>(); // Changed from List<SObject>
-      result.recordCount = 0;
-      return result;
+      return createErrorResult(e);
     }
   }
 
@@ -153,6 +145,33 @@ public with sharing class JT_QueryViewerController {
     // fields.sort();
 
     return fields;
+  }
+
+  /**
+   * @description Deserializes bindings JSON string to Map
+   * Centralizes bindings deserialization to avoid duplication
+   * @param bindingsJson JSON string with bindings
+   * @return Map<String, Object> Deserialized bindings, or empty map if blank
+   **/
+  private static Map<String, Object> deserializeBindings(String bindingsJson) {
+    return String.isNotBlank(bindingsJson)
+      ? (Map<String, Object>) JSON.deserializeUntyped(bindingsJson)
+      : new Map<String, Object>();
+  }
+
+  /**
+   * @description Creates an error QueryResult with error message
+   * Centralizes error result creation to avoid duplication
+   * @param e Exception that occurred
+   * @return QueryResult Error result with exception message
+   **/
+  private static QueryResult createErrorResult(Exception e) {
+    QueryResult result = new QueryResult();
+    result.success = false;
+    result.errorMessage = e.getMessage();
+    result.records = new List<Object>();
+    result.recordCount = 0;
+    return result;
   }
 
   /**
@@ -190,9 +209,7 @@ public with sharing class JT_QueryViewerController {
     String queryOverride
   ) {
     try {
-      Map<String, Object> bindings = String.isNotBlank(bindingsJson)
-        ? (Map<String, Object>) JSON.deserializeUntyped(bindingsJson)
-        : new Map<String, Object>();
+      Map<String, Object> bindings = deserializeBindings(bindingsJson);
 
       String baseQuery;
 
@@ -201,13 +218,7 @@ public with sharing class JT_QueryViewerController {
         baseQuery = queryOverride;
       } else {
         // Get the configuration to modify query with LIMIT
-        JT_DynamicQueryConfiguration__mdt config = [
-          SELECT JT_BaseQuery__c, JT_ObjectName__c
-          FROM JT_DynamicQueryConfiguration__mdt
-          WHERE DeveloperName = :devName
-          WITH USER_MODE
-          LIMIT 1
-        ];
+        JT_DynamicQueryConfiguration__mdt config = getConfigWithObjectName(devName);
         baseQuery = config.JT_BaseQuery__c;
       }
 
@@ -510,18 +521,10 @@ public with sharing class JT_QueryViewerController {
     String bindingsJson
   ) {
     try {
-      Map<String, Object> bindings = String.isNotBlank(bindingsJson)
-        ? (Map<String, Object>) JSON.deserializeUntyped(bindingsJson)
-        : new Map<String, Object>();
+      Map<String, Object> bindings = deserializeBindings(bindingsJson);
 
       // Get config
-      JT_DynamicQueryConfiguration__mdt config = [
-        SELECT JT_BaseQuery__c, JT_ObjectName__c, JT_Binding__c
-        FROM JT_DynamicQueryConfiguration__mdt
-        WHERE DeveloperName = :devName
-        WITH USER_MODE
-        LIMIT 1
-      ];
+      JT_DynamicQueryConfiguration__mdt config = getConfigWithAllFields(devName);
 
       // Merge bindings
       Map<String, Object> configBindings = String.isNotBlank(
@@ -689,9 +692,7 @@ public with sharing class JT_QueryViewerController {
     Integer batchSize
   ) {
     try {
-      Map<String, Object> bindings = String.isNotBlank(bindingsJson)
-        ? (Map<String, Object>) JSON.deserializeUntyped(bindingsJson)
-        : new Map<String, Object>();
+      Map<String, Object> bindings = deserializeBindings(bindingsJson);
 
       // Get config to check for LIKE clauses
       JT_DynamicQueryConfiguration__mdt config = [
@@ -746,12 +747,7 @@ public with sharing class JT_QueryViewerController {
 
       return result;
     } catch (Exception e) {
-      QueryResult result = new QueryResult();
-      result.success = false;
-      result.errorMessage = e.getMessage();
-      result.records = new List<Object>(); // Changed from List<SObject>
-      result.recordCount = 0;
-      return result;
+      return createErrorResult(e);
     }
   }
 
@@ -863,6 +859,61 @@ public with sharing class JT_QueryViewerController {
         new List<String>{ String.valueOf(estimatedCount) }
       );
     }
+  }
+
+  /**
+   * @description Gets configuration with base query only
+   * Centralizes config queries to avoid duplication
+   * @param devName Configuration developer name
+   * @return JT_DynamicQueryConfiguration__mdt Configuration record
+   **/
+  private static JT_DynamicQueryConfiguration__mdt getConfig(String devName) {
+    List<JT_DynamicQueryConfiguration__mdt> configs = [
+      SELECT JT_BaseQuery__c
+      FROM JT_DynamicQueryConfiguration__mdt
+      WHERE DeveloperName = :devName
+      WITH USER_MODE
+      LIMIT 1
+    ];
+    return configs.isEmpty() ? null : configs[0];
+  }
+
+  /**
+   * @description Gets configuration with base query and object name
+   * Centralizes config queries to avoid duplication
+   * @param devName Configuration developer name
+   * @return JT_DynamicQueryConfiguration__mdt Configuration record
+   **/
+  private static JT_DynamicQueryConfiguration__mdt getConfigWithObjectName(
+    String devName
+  ) {
+    List<JT_DynamicQueryConfiguration__mdt> configs = [
+      SELECT JT_BaseQuery__c, JT_ObjectName__c
+      FROM JT_DynamicQueryConfiguration__mdt
+      WHERE DeveloperName = :devName
+      WITH USER_MODE
+      LIMIT 1
+    ];
+    return configs.isEmpty() ? null : configs[0];
+  }
+
+  /**
+   * @description Gets configuration with all fields (base query, object name, bindings)
+   * Centralizes config queries to avoid duplication
+   * @param devName Configuration developer name
+   * @return JT_DynamicQueryConfiguration__mdt Configuration record
+   **/
+  private static JT_DynamicQueryConfiguration__mdt getConfigWithAllFields(
+    String devName
+  ) {
+    List<JT_DynamicQueryConfiguration__mdt> configs = [
+      SELECT JT_BaseQuery__c, JT_ObjectName__c, JT_Binding__c
+      FROM JT_DynamicQueryConfiguration__mdt
+      WHERE DeveloperName = :devName
+      WITH USER_MODE
+      LIMIT 1
+    ];
+    return configs.isEmpty() ? null : configs[0];
   }
 
   /**

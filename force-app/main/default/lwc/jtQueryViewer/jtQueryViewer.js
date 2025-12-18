@@ -202,10 +202,27 @@ import failedToExtractParametersLabel from "@salesforce/label/c.JT_jtQueryViewer
 import failedToPollTestResultsLabel from "@salesforce/label/c.JT_jtQueryViewer_failedToPollTestResults";
 import testExecutionFailedLabel from "@salesforce/label/c.JT_jtQueryViewer_testExecutionFailed";
 import failedToDeleteConfigurationLabel from "@salesforce/label/c.JT_jtQueryViewer_failedToDeleteConfiguration";
+import confirmDeleteConfigurationLabel from "@salesforce/label/c.JT_jtQueryViewer_confirmDeleteConfiguration";
+import confirmDeleteTitleLabel from "@salesforce/label/c.JT_jtQueryViewer_confirmDeleteTitle";
+import LightningConfirm from "lightning/confirm";
 import failedToExecuteSearchOrchestratorLabel from "@salesforce/label/c.JT_jtQueryViewer_failedToExecuteSearchOrchestrator";
 import errorClearingCacheLabel from "@salesforce/label/c.JT_jtQueryViewer_errorClearingCache";
 import toolingApiSetupInstructionsLabel from "@salesforce/label/c.JT_jtQueryViewer_toolingApiSetupInstructions";
 import errorTitleLabel from "@salesforce/label/c.JT_jtUtils_errorTitle";
+import deploymentStartedLabel from "@salesforce/label/c.JT_jtQueryViewer_deploymentStarted";
+import deploymentDeletionInProgressLabel from "@salesforce/label/c.JT_jtQueryViewer_deploymentDeletionInProgress";
+import deploymentInProgressLabel from "@salesforce/label/c.JT_jtQueryViewer_deploymentInProgress";
+import deploymentInitiatedLabel from "@salesforce/label/c.JT_jtQueryViewer_deploymentInitiated";
+import configurationActionSuccessfullyLabel from "@salesforce/label/c.JT_jtQueryViewer_configurationActionSuccessfully";
+import metadataDeploymentCompletedLabel from "@salesforce/label/c.JT_jtQueryViewer_metadataDeploymentCompleted";
+import listUpdatedLabel from "@salesforce/label/c.JT_jtQueryViewer_listUpdated";
+import configurationListRefreshedLabel from "@salesforce/label/c.JT_jtQueryViewer_configurationListRefreshed";
+import deploymentFailedCheckStatusLabel from "@salesforce/label/c.JT_jtQueryViewer_deploymentFailedCheckStatus";
+import actionFailedLabel from "@salesforce/label/c.JT_jtQueryViewer_actionFailed";
+import deploymentStatusCheckFailedLabel from "@salesforce/label/c.JT_jtQueryViewer_deploymentStatusCheckFailed";
+import failedToCheckDeploymentStatusLabel from "@salesforce/label/c.JT_jtQueryViewer_failedToCheckDeploymentStatus";
+import deploymentTimeoutLabel from "@salesforce/label/c.JT_jtQueryViewer_deploymentTimeout";
+import deploymentTimeoutMessageLabel from "@salesforce/label/c.JT_jtQueryViewer_deploymentTimeoutMessage";
 
 // Apex imports
 import getConfigurations from "@salesforce/apex/JT_QueryViewerController.getConfigurations";
@@ -221,6 +238,7 @@ import getOrgInfo from "@salesforce/apex/JT_MetadataCreator.getOrgInfo";
 import createConfiguration from "@salesforce/apex/JT_MetadataCreator.createConfiguration";
 import updateConfiguration from "@salesforce/apex/JT_MetadataCreator.updateConfiguration";
 import deleteConfiguration from "@salesforce/apex/JT_MetadataCreator.deleteConfiguration";
+import checkDeploymentStatus from "@salesforce/apex/JT_MetadataCreator.checkDeploymentStatus";
 import updateProductionEditingSetting from "@salesforce/apex/JT_ProductionSettingsController.updateProductionEditingSetting";
 import getUsageTrackingSetting from "@salesforce/apex/JT_ProductionSettingsController.getUsageTrackingSetting";
 import updateUsageTrackingSetting from "@salesforce/apex/JT_ProductionSettingsController.updateUsageTrackingSetting";
@@ -293,6 +311,7 @@ export default class JtQueryViewer extends LightningElement {
   @track originalDevName = ""; // For edit mode
   @track queryValidation = { isValid: false, message: "" };
   @track isSaving = false;
+  @track isDeletingConfiguration = false;
   @track showCacheModal = false;
   @track isLoadingQueryPreview = false;
   @track queryPreviewResults = [];
@@ -516,7 +535,23 @@ export default class JtQueryViewer extends LightningElement {
     testExecutionFailed: testExecutionFailedLabel,
     validSoqlSyntax: validSOQLSyntaxLabel,
     failedToDeleteConfiguration: failedToDeleteConfigurationLabel,
-    failedToExecuteSearchOrchestrator: failedToExecuteSearchOrchestratorLabel
+    failedToExecuteSearchOrchestrator: failedToExecuteSearchOrchestratorLabel,
+    confirmDeleteConfiguration: confirmDeleteConfigurationLabel,
+    confirmDeleteTitle: confirmDeleteTitleLabel,
+    deploymentStarted: deploymentStartedLabel,
+    deploymentDeletionInProgress: deploymentDeletionInProgressLabel,
+    deploymentInProgress: deploymentInProgressLabel,
+    deploymentInitiated: deploymentInitiatedLabel,
+    configurationActionSuccessfully: configurationActionSuccessfullyLabel,
+    metadataDeploymentCompleted: metadataDeploymentCompletedLabel,
+    listUpdated: listUpdatedLabel,
+    configurationListRefreshed: configurationListRefreshedLabel,
+    deploymentFailedCheckStatus: deploymentFailedCheckStatusLabel,
+    actionFailed: actionFailedLabel,
+    deploymentStatusCheckFailed: deploymentStatusCheckFailedLabel,
+    failedToCheckDeploymentStatus: failedToCheckDeploymentStatusLabel,
+    deploymentTimeout: deploymentTimeoutLabel,
+    deploymentTimeoutMessage: deploymentTimeoutMessageLabel
   });
 
   // Wire to get all configurations (cacheable for refreshApex)
@@ -1193,19 +1228,8 @@ export default class JtQueryViewer extends LightningElement {
 
       // Only show toast for regular execution, not for Run As User
       // Run As User already has its own UI feedback
-      if (!result.runAsUserName) {
-        let successMsg = this.labels.testPassedFoundRecords.replace(
-          "{0}",
-          result.recordCount
-        );
-        if (result.executionTime) {
-          successMsg += this.labels.testPassedExecutionTime.replace(
-            "{0}",
-            result.executionTime
-          );
-        }
-        // Toast removed - results are already displayed in the UI
-      }
+      // Toast removed - results are already displayed in the UI
+      // Previously computed successMsg but no longer needed since toast was removed
     } else {
       // Clear any previous results when there's an error
       this.queryResults = [];
@@ -1330,7 +1354,7 @@ export default class JtQueryViewer extends LightningElement {
   }
 
   // Handle delete configuration
-  handleDeleteConfiguration() {
+  async handleDeleteConfiguration() {
     // Validate and find configuration
     const validation = validateAndFindConfig(
       this.selectedConfig,
@@ -1349,37 +1373,101 @@ export default class JtQueryViewer extends LightningElement {
     }
 
     const currentConfig = validation.config;
+    // Get developerName from value (value is the DeveloperName in ConfigurationOption)
+    const developerNameToDelete = currentConfig.value;
 
-    // TODO: Replace confirm() with Lightning modal confirmation dialog
-    // For now, proceed with deletion (user can cancel via modal in future)
-    // eslint-disable-next-line no-alert
-    // TODO: Replace confirm with a proper modal component
-    // if (
-    //   !confirm(
-    //     `Are you sure you want to delete "${currentConfig.label}"?\n\nThis action cannot be undone.`
-    //   )
-    // ) {
-    //   return;
-    // }
+    // Validate developerName exists
+    if (!developerNameToDelete) {
+      showErrorToast(
+        this,
+        this.labels.deleteFailed,
+        this.labels.developerNameRequired
+      );
+      return;
+    }
+
+    // Show confirmation modal using LightningConfirm
+    const confirmed = await LightningConfirm.open({
+      message: this.labels.confirmDeleteConfiguration.replace(
+        "{0}",
+        currentConfig.label || developerNameToDelete
+      ),
+      variant: "header",
+      label: this.labels.confirmDeleteTitle,
+      theme: "error"
+    });
+
+    // If user cancelled, do nothing
+    if (!confirmed) {
+      return;
+    }
+
+    // Set loading state
+    this.isDeletingConfiguration = true;
 
     // Call delete method
-    deleteConfiguration({ developerName: currentConfig.developerName })
+    deleteConfiguration({ developerName: developerNameToDelete })
       .then((result) => {
         if (result.success) {
-          showSuccessToast(
-            this,
-            result.message,
-            this.labels.configurationDeleted
-          );
-          // Clear selection
-          this.selectedConfig = "";
-          // Refresh the configurations list
-          return refreshApex(this.wiredConfigurationsResult);
+          // Metadata API deployment is asynchronous - check if we have a deploymentId
+          if (result.deploymentId) {
+            // Start polling for deployment status
+            showInfoToast(
+              this,
+              this.labels.deploymentStarted,
+              this.labels.deploymentDeletionInProgress
+            );
+            this.startPollingDeploymentStatus(
+              result.deploymentId,
+              "deleted",
+              null,
+              developerNameToDelete
+            );
+          } else {
+            // No deploymentId - treat as synchronous success (shouldn't happen with Metadata API)
+            this.isDeletingConfiguration = false;
+            showSuccessToast(
+              this,
+              result.message || this.labels.configurationDeleted,
+              this.labels.configurationDeletedSuccess
+            );
+
+            // Clear selection and preview if the deleted config was selected
+            const wasSelected = this.selectedConfig === developerNameToDelete;
+            this.selectedConfig = "";
+
+            // Reset the combobox component to clear its internal state
+            const combobox = this.template.querySelector(
+              'c-jt-searchable-combobox[test-id="config-selector"]'
+            );
+            if (combobox) {
+              combobox.reset();
+            }
+
+            // Clear preview data if the deleted config was being displayed
+            if (wasSelected) {
+              this.baseQuery = "";
+              this.bindings = "";
+              this.objectName = "";
+              this.queryResults = [];
+              this.hasResults = false;
+              this.queryPreviewData = [];
+              this.showPreviewData = false;
+              this.recordCount = 0;
+              this.previewRecordCount = 0;
+            }
+
+            // Refresh the configurations list to update dropdown
+            refreshApex(this.wiredConfigurationsResult);
+          }
+        } else {
+          this.isDeletingConfiguration = false;
+          showErrorToast(this, this.labels.deleteFailed, result.errorMessage);
         }
-        showErrorToast(this, this.labels.deleteFailed, result.errorMessage);
         return Promise.resolve();
       })
       .catch((error) => {
+        this.isDeletingConfiguration = false; // Hide spinner on error
         showErrorToast(
           this,
           this.labels.errorTitle,
@@ -1633,7 +1721,7 @@ export default class JtQueryViewer extends LightningElement {
 
   // Handle query preview event from modal (Modal now handles validation & preview)
   handleQueryPreview(event) {
-    const { records, fields, recordCount } = event.detail;
+    const { records, fields } = event.detail;
 
     this.queryPreviewResults = records || [];
 
@@ -1735,31 +1823,118 @@ export default class JtQueryViewer extends LightningElement {
 
     // Serialize configData to JSON string for Apex deserialization
     // For edit mode, include originalDevName
-    const configDataForApex =
-      modeFromEvent === "edit"
-        ? {
-            originalDevName: this.originalDevName,
-            ...configData
-          }
-        : configData;
+    let configDataForApex;
+    if (modeFromEvent === "edit") {
+      // Exclude originalDevName from configData if it exists, then set it explicitly
+      // eslint-disable-next-line no-unused-vars
+      const { originalDevName, ...configDataWithoutOriginal } = configData;
+      configDataForApex = {
+        ...configDataWithoutOriginal,
+        originalDevName: this.originalDevName || configData.developerName
+      };
+    } else {
+      configDataForApex = configData;
+    }
 
-    const configJson = JSON.stringify(configDataForApex);
+    // Debug: Log originalDevName to help diagnose issues
+    if (modeFromEvent === "edit") {
+      console.log(
+        "UpdateConfiguration - originalDevName:",
+        this.originalDevName,
+        "configData.developerName:",
+        configData.developerName,
+        "configDataForApex:",
+        configDataForApex
+      );
+    }
+
+    // Ensure configDataForApex is a plain object (not already a string)
+    if (typeof configDataForApex === 'string') {
+      showErrorToast(
+        this,
+        "Configuration Error",
+        "Invalid configuration data format. Please try again."
+      );
+      this.isSaving = false;
+      return;
+    }
+
+    // Validate that configDataForApex is an object
+    if (!configDataForApex || typeof configDataForApex !== 'object' || Array.isArray(configDataForApex)) {
+      showErrorToast(
+        this,
+        "Configuration Error",
+        "Configuration data must be a valid object. Please check your input."
+      );
+      this.isSaving = false;
+      return;
+    }
+
+    // Serialize to JSON string - ensure it's a single string, not double-encoded
+    let configJson;
+    try {
+      configJson = JSON.stringify(configDataForApex);
+      // Validate that the result is a string
+      if (typeof configJson !== 'string') {
+        throw new Error('JSON.stringify did not return a string');
+      }
+    } catch (jsonError) {
+      showErrorToast(
+        this,
+        "Configuration Error",
+        `Failed to serialize configuration: ${jsonError.message}`
+      );
+      this.isSaving = false;
+      return;
+    }
 
     const saveMethod =
       modeFromEvent === "edit"
-        ? updateConfiguration(configJson)
-        : createConfiguration(configJson);
+        ? updateConfiguration({ configJson })
+        : createConfiguration({ configJson });
 
     const actionLabel = modeFromEvent === "edit" ? "Updated" : "Created";
+
+    // Store config data for potential update of selected config
+    const updatedConfigData = configData;
+    const updatedDevName = configData.developerName || this.originalDevName;
 
     saveMethod
       .then((result) => {
         if (result.success) {
+          // Check if deployment is asynchronous (has deploymentId)
+          if (result.deploymentId) {
+            // Deployment is asynchronous - poll for status
+            // Show info toast immediately to give user feedback
+            showInfoToast(
+              this,
+              this.labels.deploymentInProgress,
+              this.labels.deploymentInitiated.replace("{0}", actionLabel)
+            );
+
+            // Don't reset originalDevName yet - keep it for potential retry
+            this.showCreateModal = false;
+            this.configModalMode = "create";
+            this.resetNewConfig();
+            this.startPollingDeploymentStatus(
+              result.deploymentId,
+              actionLabel,
+              updatedConfigData,
+              updatedDevName
+            );
+            return Promise.resolve();
+          }
+
+          // Deployment is synchronous (update) - refresh immediately
           showSuccessToast(
             this,
-            result.message,
-            `Configuration ${actionLabel}`
+            result.message || this.labels.configurationActionSuccessfully.replace("{0}", actionLabel),
+            this.labels.configurationActionSuccessfully.replace("{0}", actionLabel)
           );
+
+          // Update selected config if it matches the updated one
+          this.updateSelectedConfigIfMatches(updatedDevName, updatedConfigData);
+
           this.handleCloseCreateModal();
 
           // Refresh the configurations list using refreshApex
@@ -1767,8 +1942,8 @@ export default class JtQueryViewer extends LightningElement {
             // Only show "List Updated" toast if the update was successful
             showInfoToast(
               this,
-              "List Updated",
-              "Configuration list has been refreshed."
+              this.labels.listUpdated,
+              this.labels.configurationListRefreshed
             );
           });
         }
@@ -1795,6 +1970,152 @@ export default class JtQueryViewer extends LightningElement {
       });
   }
 
+  // Start polling for deployment status
+  startPollingDeploymentStatus(deploymentId, actionLabel, updatedConfigData = null, updatedDevName = null) {
+    const stopPolling = pollUntilComplete(
+      // Poll function
+      () => checkDeploymentStatus({ deploymentId }),
+      // Check if complete
+      (result) => {
+        // Deployment is complete if done is true
+        return result.done === true;
+      },
+      // On complete
+      (result) => {
+        // Hide spinner for deletion (create/update use isSaving)
+        if (actionLabel === "deleted") {
+          this.isDeletingConfiguration = false;
+        }
+
+        if (result.success === true) {
+          // Deployment succeeded - show success toast and refresh list
+          showSuccessToast(
+            this,
+            this.labels.configurationActionSuccessfully.replace("{0}", actionLabel),
+            this.labels.metadataDeploymentCompleted
+          );
+
+          // Handle deletion: clear preview if deleted config was selected
+          if (actionLabel === "deleted" && updatedDevName) {
+            const wasSelected = this.selectedConfig === updatedDevName;
+            if (wasSelected) {
+              this.selectedConfig = "";
+
+              // Reset the combobox component to clear its internal state
+              const combobox = this.template.querySelector(
+                'c-jt-searchable-combobox[test-id="config-selector"]'
+              );
+              if (combobox) {
+                combobox.reset();
+              }
+
+              // Clear preview data
+              this.baseQuery = "";
+              this.bindings = "";
+              this.objectName = "";
+              this.queryResults = [];
+              this.hasResults = false;
+              this.queryPreviewData = [];
+              this.showPreviewData = false;
+              this.recordCount = 0;
+              this.previewRecordCount = 0;
+            }
+          } else if (updatedConfigData && updatedDevName) {
+            // Update selected config if it matches the updated one (for create/update)
+            this.updateSelectedConfigIfMatches(updatedDevName, updatedConfigData);
+          }
+
+          // Refresh the configurations list using refreshApex
+          refreshApex(this.wiredConfigurationsResult).then(() => {
+            showInfoToast(
+              this,
+              this.labels.listUpdated,
+              this.labels.configurationListRefreshed
+            );
+          });
+        } else {
+          // Deployment failed - show error toast
+          const errorMsg = result.error || this.labels.deploymentFailedCheckStatus;
+          showErrorToast(
+            this,
+            this.labels.actionFailed.replace("{0}", actionLabel),
+            errorMsg
+          );
+        }
+      },
+      // On error
+      (error) => {
+        // Hide spinner for deletion on error
+        if (actionLabel === "deleted") {
+          this.isDeletingConfiguration = false;
+        }
+        showErrorToast(
+          this,
+          this.labels.deploymentStatusCheckFailed,
+          extractErrorMessage(error, this.labels.failedToCheckDeploymentStatus)
+        );
+      },
+      // On timeout
+      () => {
+        // Hide spinner for deletion on timeout
+        if (actionLabel === "deleted") {
+          this.isDeletingConfiguration = false;
+        }
+        showErrorToast(
+          this,
+          this.labels.deploymentTimeout,
+          this.labels.deploymentTimeoutMessage.replace("{0}", deploymentId)
+        );
+      },
+      // Options - optimized for metadata deployments
+      {
+        interval: 1000, // Start with 1 second intervals
+        maxPolls: 60, // Allow up to 60 polls (with exponential backoff, this gives ~2-3 minutes max)
+        immediateFirstPoll: true, // Poll immediately without waiting
+        exponentialBackoff: true, // Gradually increase interval if taking longer
+        maxInterval: 3000 // Max 3 seconds between polls
+      }
+    );
+
+    // Store stop function for cleanup
+    this.deploymentPollInterval = stopPolling;
+  }
+
+  // Update selected configuration data if it matches the updated one
+  updateSelectedConfigIfMatches(updatedDevName, updatedConfigData) {
+    if (!updatedDevName || !updatedConfigData) return;
+
+    // Check if the updated config is currently selected
+    if (this.selectedConfig === updatedDevName) {
+      // Update baseQuery and bindings if they changed
+      if (updatedConfigData.baseQuery) {
+        this.baseQuery = updatedConfigData.baseQuery;
+      }
+      if (updatedConfigData.bindings !== undefined) {
+        this.bindings = updatedConfigData.bindings || "";
+      }
+      if (updatedConfigData.objectName) {
+        this.objectName = updatedConfigData.objectName;
+      }
+
+      // Re-extract parameters if bindings are not predefined
+      if (!this.hasBindings) {
+        this.extractQueryParameters();
+      } else {
+        // Clear parameters if bindings are predefined
+        this.parameters = [];
+        this.parameterValues = {};
+      }
+
+      // If modal is open and showing preview, trigger preview update
+      const modal = this.refs.configModal;
+      if (modal && this.showCreateModal) {
+        // Modal will handle its own preview update when config changes
+        // We can trigger a config change event if needed
+      }
+    }
+  }
+
   // Disconnect polling on component destroy
   connectedCallback() {
     this.loadUsageTrackingSetting();
@@ -1817,6 +2138,14 @@ export default class JtQueryViewer extends LightningElement {
         // Fallback for old interval ID format (shouldn't happen, but safe)
         clearInterval(this.pollInterval);
       }
+      this.pollInterval = null;
+    }
+    if (this.deploymentPollInterval) {
+      // deploymentPollInterval is a function (stopPolling)
+      if (typeof this.deploymentPollInterval === "function") {
+        this.deploymentPollInterval();
+      }
+      this.deploymentPollInterval = null;
     }
   }
 
@@ -1995,11 +2324,7 @@ export default class JtQueryViewer extends LightningElement {
       .then((result) => {
         if (result.success) {
           this.processQueryResults(result);
-          let successMsg = `Found ${result.recordCount} record(s)`;
-          if (result.runAsUserName) {
-            successMsg += ` (Run As: ${result.runAsUserName})`;
-          }
-          showSuccessToast(this, successMsg);
+          // Success toast removed - results are already displayed in the table
         } else {
           this.showError = true;
           this.errorMessage = result.errorMessage;
@@ -2088,7 +2413,7 @@ export default class JtQueryViewer extends LightningElement {
 
       this.hasResults = true;
       this.resetPagination(); // Initialize pagination
-      showSuccessToast(this, `Found ${result.recordCount} record(s)`);
+      // Success toast removed - results are already displayed in the table
     } else {
       // Show empty table with columns
       this.queryResults = [];

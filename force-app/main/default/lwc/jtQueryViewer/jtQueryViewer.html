@@ -63,6 +63,35 @@
     </div>
   </template>
 
+  <!-- Configuration Deletion Spinner Overlay -->
+  <template if:true={isDeletingConfiguration}>
+    <div
+      class="deletion-spinner-overlay slds-is-fixed"
+      role="status"
+      aria-live="polite"
+      aria-label="Deleting configuration"
+    >
+      <div
+        class="slds-grid slds-grid_vertical slds-grid_align-center slds-grid_align-space-around slds-text-align_center"
+        style="max-width: 500px"
+      >
+        <p class="slds-text-heading_small slds-m-bottom_medium">
+          Deleting Configuration
+        </p>
+        <lightning-spinner
+          alternative-text="Deleting configuration"
+          size="large"
+          variant="brand"
+        ></lightning-spinner>
+        <p
+          class="slds-m-top_medium slds-text-body_regular slds-max-medium-text-width"
+        >
+          Configuration deletion is being processed. Please wait...
+        </p>
+      </div>
+    </div>
+  </template>
+
   <lightning-card title={labels.dynamicQueryViewer} icon-name="custom:custom63">
     <!-- Card Header Actions -->
     <div slot="actions">

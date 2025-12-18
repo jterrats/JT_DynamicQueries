@@ -162,4 +162,116 @@ private class JT_SetupWizardController_Test {
       'Documentation URL should be set'
     );
   }
+
+  /**
+   * @description Test testToolingAPIConnection with HTTP 200 success response
+   */
+  @IsTest
+  static void testTestToolingAPIConnectionSuccess() {
+    // Mock successful HTTP 200 response
+    String successResponse = JSON.serialize(
+      new Map<String, Object>{
+        'size' => 1,
+        'records' => new List<Object>{ new Map<String, Object>{ 'Id' => '01p000000000000AAA' } }
+      }
+    );
+
+    Test.setMock(
+      HttpCalloutMock.class,
+      new JT_ToolingAPIMock(200, successResponse)
+    );
+
+    Test.startTest();
+    Boolean connectionWorks = JT_SetupWizardController.testToolingAPIConnection();
+    Test.stopTest();
+
+    System.assertEquals(true, connectionWorks, 'Should return true for HTTP 200');
+  }
+
+  /**
+   * @description Test testToolingAPIConnection with HTTP error response (non-200)
+   */
+  @IsTest
+  static void testTestToolingAPIConnectionHttpError() {
+    // Mock HTTP error response (e.g., 401 Unauthorized)
+    String errorResponse = JSON.serialize(
+      new Map<String, Object>{
+        'message' => 'Session expired or invalid',
+        'errorCode' => 'INVALID_SESSION_ID'
+      }
+    );
+
+    Test.setMock(
+      HttpCalloutMock.class,
+      new JT_ToolingAPIMock(401, errorResponse)
+    );
+
+    Test.startTest();
+    Boolean connectionWorks = JT_SetupWizardController.testToolingAPIConnection();
+    Test.stopTest();
+
+    System.assertEquals(false, connectionWorks, 'Should return false for HTTP error');
+  }
+
+  /**
+   * @description Test testToolingAPIConnection with HTTP 500 server error
+   */
+  @IsTest
+  static void testTestToolingAPIConnectionServerError() {
+    // Mock HTTP 500 server error
+    Test.setMock(
+      HttpCalloutMock.class,
+      new JT_ToolingAPIMock(500, 'Internal Server Error')
+    );
+
+    Test.startTest();
+    Boolean connectionWorks = JT_SetupWizardController.testToolingAPIConnection();
+    Test.stopTest();
+
+    System.assertEquals(false, connectionWorks, 'Should return false for server error');
+  }
+
+  /**
+   * @description Test testToolingAPIConnection with CalloutException
+   */
+  @IsTest
+  static void testTestToolingAPIConnectionCalloutException() {
+    // Mock callout exception (simulates network failure)
+    Test.setMock(HttpCalloutMock.class, new JT_ToolingAPIMock());
+
+    Test.startTest();
+    Boolean connectionWorks = JT_SetupWizardController.testToolingAPIConnection();
+    Test.stopTest();
+
+    System.assertEquals(false, connectionWorks, 'Should return false on callout exception');
+  }
+
+  /**
+   * @description Test checkCompleteSetup when Tooling API connection fails
+   */
+  @IsTest
+  static void testCheckCompleteSetupConnectionFailed() {
+    // Mock HTTP error to simulate connection failure
+    Test.setMock(
+      HttpCalloutMock.class,
+      new JT_ToolingAPIMock(401, 'Unauthorized')
+    );
+
+    Test.startTest();
+    JT_SetupWizardController.CompleteSetupStatus status = JT_SetupWizardController.checkCompleteSetup();
+    Test.stopTest();
+
+    System.assertNotEquals(null, status, 'Status should not be null');
+    System.assertNotEquals(null, status.steps, 'Steps should not be null');
+    System.assertEquals(1, status.steps.size(), 'Should have one step');
+
+    JT_SetupWizardController.SetupStepStatus toolingStep = status.steps[0];
+    System.assertEquals(false, toolingStep.isComplete, 'Step should be incomplete');
+    System.assertEquals(false, status.allStepsComplete, 'All steps should not be complete');
+    System.assertNotEquals(
+      null,
+      toolingStep.statusMessage,
+      'Status message should be populated'
+    );
+  }
 }

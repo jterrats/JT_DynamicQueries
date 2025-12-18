@@ -25,7 +25,6 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
    **/
   public void execute(QueueableContext context) {
     try {
-      // Check for async queue contention
       Integer queuedJobs = [
         SELECT COUNT()
         FROM AsyncApexJob
@@ -35,8 +34,6 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
           AND CreatedDate >= :Datetime.now().addMinutes(-5)
       ];
 
-      // If queue is heavily loaded, log a warning but proceed anyway
-      // The synchronous execution should bypass the queue
       if (queuedJobs > 50) {
         System.debug(
           LoggingLevel.WARN,
@@ -46,7 +43,6 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
         );
       }
 
-      // Get the ApexClass for JT_GenericRunAsTest
       ApexClass testClass = JT_SystemSelector.getApexClassByName(
         'JT_GenericRunAsTest'
       );
@@ -62,23 +58,23 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
       // This Queueable only handles the callout and final DML updates
       // DML + callout in same transaction causes "uncommitted work pending" error
 
-      // Try synchronous execution first (avoids async queue contention)
       Boolean synchronousSuccess = executeTestSynchronously(testClass.Name);
 
       if (!synchronousSuccess) {
-        // Fallback to asynchronous execution if synchronous failed
         enqueueTestAsynchronously(testClass.Id);
       }
     } catch (Exception e) {
-      // Log error for support
       JT_ErrorLogger.logError(
         'Test Execution Failed',
         e,
         'JT_RunAsTestEnqueuer.execute'
       );
 
-      // Try to update execution record with error status
-      updateExecutionWithError('Failed to execute test: ' + e.getMessage());
+      JT_ExecutionUpdateUtil.updateExecutionWithError(
+        this.executionId,
+        'Failed to execute test: ' + e.getMessage(),
+        'JT_RunAsTestEnqueuer.execute'
+      );
     }
   }
 
@@ -128,7 +124,6 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
       );
 
       if (response.getStatusCode() == 200) {
-        // Parse synchronous test results
         // CRITICAL: With skipCodeCoverage=true, response is minimal and deserialization is fast
         // If this still times out, it indicates a CPU limit issue unrelated to code coverage
         try {
@@ -136,58 +131,22 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
             response.getBody()
           );
 
-          // Process results and update execution record
-          // Note: Test execution writes results to Custom Object in a separate transaction
-          // We need to wait a bit and retry reading the results
           processSynchronousTestResults(responseBody);
           return true;
         } catch (JSONException jsonEx) {
-          // Log error for support
-          Map<String, Object> details = new Map<String, Object>{
-            'responseStatusCode' => response.getStatusCode(),
-            'responseBodyLength' => response.getBody() != null
-              ? response.getBody().length()
-              : 0,
-            'executionId' => this.executionId
-          };
-          JT_ErrorLogger.logError(
-            'Tooling API JSON Deserialization Failed',
-            jsonEx.getMessage(),
+          return handleDeserializationError(
             jsonEx,
-            'JT_RunAsTestEnqueuer.executeTestSynchronously',
-            JSON.serialize(details),
-            'High'
+            response,
+            'JSON Deserialization'
           );
-
-          // CRITICAL: CPU/DML limit error - use specific handler
-          updateExecutionWithProcessingError(
-            'JSON deserialization failed (CPU limit): ' + jsonEx.getMessage()
-          );
-          return false;
         } catch (Exception deserializeEx) {
-          // Log error for support
-          Map<String, Object> details = new Map<String, Object>{
-            'responseStatusCode' => response.getStatusCode(),
-            'executionId' => this.executionId
-          };
-          JT_ErrorLogger.logError(
-            'Tooling API Response Deserialization Failed',
-            deserializeEx.getMessage(),
+          return handleDeserializationError(
             deserializeEx,
-            'JT_RunAsTestEnqueuer.executeTestSynchronously',
-            JSON.serialize(details),
-            'High'
+            response,
+            'Response Deserialization'
           );
-
-          // CRITICAL: CPU/DML limit error - use specific handler
-          updateExecutionWithProcessingError(
-            'Error deserializing response (CPU timeout): ' +
-            deserializeEx.getMessage()
-          );
-          return false;
         }
       } else {
-        // Log Tooling API error for support
         Map<String, Object> details = new Map<String, Object>{
           'httpStatusCode' => response.getStatusCode(),
           'httpStatus' => response.getStatus(),
@@ -207,24 +166,23 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
           'High'
         );
 
-        updateExecutionWithError(
+        JT_ExecutionUpdateUtil.updateExecutionWithError(
+          this.executionId,
           'Synchronous execution failed with HTTP status: ' +
-          response.getStatusCode()
+          response.getStatusCode(),
+          'JT_RunAsTestEnqueuer.executeTestSynchronously'
         );
         return false;
       }
     } catch (CalloutException e) {
-      // Log callout timeout/error
       JT_ErrorLogger.logError(
         'Tooling API Callout Exception',
         e.getMessage(),
         e,
         'JT_RunAsTestEnqueuer.executeTestSynchronously'
       );
-      // Timeout or callout error - fallback to async
       return false;
     } catch (Exception e) {
-      // Log unexpected error
       JT_ErrorLogger.logError(
         'Tooling API Unexpected Error',
         e.getMessage(),
@@ -244,15 +202,12 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
    **/
   private void processSynchronousTestResults(Map<String, Object> responseBody) {
     try {
-      // Parse test results from synchronous response
-      // Format: {"numFailures":0,"numTestsRun":1,"successes":[...],"failures":[],"apexLogId":"..."}
       // NOTE: With skipCodeCoverage=true, responseBody is minimal (no code coverage data)
       // We only extract essential fields to minimize CPU usage
       Integer numFailures = (Integer) responseBody.get('numFailures');
       Integer numTestsRun = (Integer) responseBody.get('numTestsRun');
       List<Object> successes = (List<Object>) responseBody.get('successes');
       List<Object> failures = (List<Object>) responseBody.get('failures');
-      // Extract apexLogId if available (for debugging, but don't store full responseBody)
 
       System.debug(
         '📊 Parsed synchronous test results: numFailures=' +
@@ -262,23 +217,23 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
       );
 
       if (numFailures > 0 && !failures.isEmpty()) {
-        // Test execution failed (compilation error, assertion failure, etc.)
         Map<String, Object> failure = (Map<String, Object>) failures[0];
         String errorMessage = (String) failure.get('message');
 
-        // Extract user-friendly message from Assertion Failed errors
-        // When System.assert(false, message) is called, the message is in the assertion text
         String friendlyMessage = extractUserFriendlyErrorMessage(
           errorMessage,
           failure
         );
 
-        updateExecutionWithError(friendlyMessage);
+        JT_ExecutionUpdateUtil.updateExecutionWithError(
+          this.executionId,
+          friendlyMessage,
+          'JT_RunAsTestEnqueuer.processSynchronousTestResults'
+        );
         return;
       }
 
       if (!successes.isEmpty()) {
-        // Test passed - Tooling API indicates test execution succeeded
         // CRITICAL: The test class (@IsTest) may not persist DML reliably
         // We must write the final status based on Tooling API response
         // If the test class wrote additional data (records, fields), we preserve it
@@ -290,12 +245,10 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
         // The test class writes results to Debug Log with unique markers instead of persisting via DML.
         // We must extract the results from the Debug Log and persist them here.
 
-        // 1. Get the Debug Log content
         String logContent = JT_ToolingApiUtil.getApexLogContent(apexLogId);
         String resultJsonFromLog = null;
 
         if (String.isNotBlank(logContent)) {
-          // 2. Extract JSON from Debug Log using unique markers
           // IMPORTANT: Developer Console UI truncates strings to ~512 chars, but Tooling API
           // retrieves the FULL log content. The extraction will work correctly even if UI shows truncation.
           String startMarker =
@@ -304,7 +257,6 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
             '***';
           String endMarker = ' ***QUERY_RESULT_END***';
 
-          // Debug: Log marker search details
           System.debug(
             LoggingLevel.DEBUG,
             '🔍 Searching for markers in Debug Log. ExecutionId: ' +
@@ -321,8 +273,6 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
             '🔍 StartMarker found at index: ' + startIndex
           );
 
-          // If startMarker found, search endMarker from that position
-          // Otherwise, search from beginning (shouldn't happen, but handle gracefully)
           Integer endIndex = -1;
           if (startIndex != -1) {
             endIndex = logContent.indexOf(endMarker, startIndex);
@@ -344,9 +294,8 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
           }
 
           if (startIndex != -1 && endIndex != -1 && endIndex > startIndex) {
-            // Extract the JSON between markers
             // Note: There's a space between startMarker and JSON, so we skip it with +1
-            Integer jsonStartIndex = startIndex + startMarker.length() + 1; // +1 for the space
+            Integer jsonStartIndex = startIndex + startMarker.length() + 1;
 
             // Ensure we don't go beyond endIndex
             if (jsonStartIndex < endIndex) {
@@ -378,7 +327,6 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
                 : resultJsonFromLog)
             );
           } else {
-            // Marker not found - log detailed error for debugging
             System.debug(
               LoggingLevel.WARN,
               '⚠️ Marker not found in Debug Log. StartIndex: ' +
@@ -389,7 +337,6 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
                 apexLogId
             );
 
-            // Debug: Show sample of log content around where marker should be
             if (logContent.length() > 1000) {
               System.debug(
                 LoggingLevel.DEBUG,
@@ -410,7 +357,6 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
           );
         }
 
-        // 3. Query execution record
         List<JT_RunAsTest_Execution__c> executions = [
           SELECT
             Id,
@@ -432,12 +378,9 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
 
         JT_RunAsTest_Execution__c execution = executions[0];
 
-        // 4. Update execution record with results from Debug Log
         execution.Test_Status__c = (numFailures == 0) ? 'Completed' : 'Failed';
-        // Store apexLogId in Log_Messages__c since Apex_Log_Id__c field doesn't exist
 
         if (String.isNotBlank(resultJsonFromLog)) {
-          // Successfully extracted results from Debug Log - parse and persist
           try {
             Map<String, Object> resultData = (Map<String, Object>) JSON.deserializeUntyped(
               resultJsonFromLog
@@ -458,12 +401,11 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
               'runAsUserName'
             );
 
-            execution.Log_Messages__c =
-              (String.isNotBlank(execution.Log_Messages__c)
-                ? execution.Log_Messages__c + '\n'
-                : '') +
+            appendLogMessage(
+              execution,
               'Synchronous test execution completed. Results extracted from Debug Log. Log ID: ' +
-              apexLogId;
+              apexLogId
+            );
 
             System.debug('  Execution Time: ' + execution.Execution_Time__c);
             System.debug('  Run As User: ' + execution.Run_As_User_Name__c);
@@ -478,12 +420,9 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
             execution.Record_Count__c = 0;
           }
         } else if (numFailures > 0) {
-          // Test failed - extract failure message from Tooling API response
-          // Note: failures variable already declared at method start (line 179)
           if (failures != null && !failures.isEmpty()) {
             Map<String, Object> failure = (Map<String, Object>) failures[0];
             String errorMessage = (String) failure.get('message');
-            // Extract user-friendly message from Assertion Failed errors
             execution.Error_Message__c = extractUserFriendlyErrorMessage(
               errorMessage,
               failure
@@ -491,28 +430,23 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
             execution.Results_Json__c = null;
             execution.Record_Count__c = 0;
           }
-          execution.Log_Messages__c =
-            (String.isNotBlank(execution.Log_Messages__c)
-              ? execution.Log_Messages__c + '\n'
-              : '') +
-            'Synchronous test execution failed. Log ID: ' +
-            apexLogId;
+          appendLogMessage(
+            execution,
+            'Synchronous test execution failed. Log ID: ' + apexLogId
+          );
         } else {
-          // Test passed but no results found in Debug Log
           execution.Error_Message__c =
             'Test passed but query results could not be extracted from Debug Log (Marker missing or query returned 0 rows). Log ID: ' +
             apexLogId;
           execution.Results_Json__c = null;
           execution.Record_Count__c = 0;
-          execution.Log_Messages__c =
-            (String.isNotBlank(execution.Log_Messages__c)
-              ? execution.Log_Messages__c + '\n'
-              : '') +
+          appendLogMessage(
+            execution,
             'Synchronous test execution completed but no results found in Debug Log. Log ID: ' +
-            apexLogId;
+            apexLogId
+          );
         }
 
-        // 5. Persist the final status and results
         try {
           update execution;
           System.debug(
@@ -523,8 +457,10 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
             LoggingLevel.ERROR,
             '❌ Error persisting final status: ' + updateEx.getMessage()
           );
-          updateExecutionWithProcessingError(
-            'Error persisting final status: ' + updateEx.getMessage()
+          JT_ExecutionUpdateUtil.updateExecutionWithProcessingError(
+            this.executionId,
+            'Error persisting final status: ' + updateEx.getMessage(),
+            'JT_RunAsTestEnqueuer.processSynchronousTestResults'
           );
         }
       }
@@ -538,9 +474,11 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
         'Stack trace: ' + e.getStackTraceString()
       );
       // CRITICAL: CPU/DML limit error - use specific handler
-      updateExecutionWithProcessingError(
+      JT_ExecutionUpdateUtil.updateExecutionWithProcessingError(
+        this.executionId,
         'Error processing synchronous test results (CPU/DML limit): ' +
-        e.getMessage()
+        e.getMessage(),
+        'JT_RunAsTestEnqueuer.processSynchronousTestResults'
       );
     }
   }
@@ -592,16 +530,11 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
       ];
       if (!executions.isEmpty()) {
         executions[0].Apex_Test_Queue_Item_Id__c = queueItemId;
-        executions[0].Log_Messages__c =
-          (String.isNotBlank(executions[0].Log_Messages__c)
-            ? executions[0].Log_Messages__c + '\n'
-            : '') +
-          'Fell back to asynchronous execution. Queue Item ID: ' +
-          queueItemId;
-        update executions[0];
-        System.debug(
-          '✅ Test enqueued asynchronously with Queue Item ID: ' + queueItemId
+        appendLogMessage(
+          executions[0],
+          'Fell back to asynchronous execution. Queue Item ID: ' + queueItemId
         );
+        update executions[0];
       }
     } else {
       throw new AuraHandledException(
@@ -614,16 +547,57 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
   }
 
   /**
-   * @description Updates execution record with processing error status (CPU/DML limit errors)
-   * CRITICAL: This method MUST succeed to prevent records from staying in 'Queued' state
-   * Specifically designed for CPU timeout and DML limit errors
-   * @param errorMessage Error message to store
+   * @description Handles deserialization errors with consistent error handling
+   * Centralizes deserialization error handling to avoid duplication
+   * @param e Exception that occurred during deserialization
+   * @param response HTTP response that failed to deserialize
+   * @param errorType Type of error (e.g., "JSON Deserialization", "Response Deserialization")
+   * @return Boolean Always returns false (indicates failure)
    **/
-  private void updateExecutionWithProcessingError(String errorMessage) {
-    // Use the same robust error handler but with specific error message prefix
-    updateExecutionWithError(
-      'Processing Error (CPU/DML Limit): ' + errorMessage
+  private Boolean handleDeserializationError(
+    Exception e,
+    HttpResponse response,
+    String errorType
+  ) {
+    Map<String, Object> details = new Map<String, Object>{
+      'responseStatusCode' => response.getStatusCode(),
+      'responseBodyLength' => response.getBody() != null
+        ? response.getBody().length()
+        : 0,
+      'executionId' => this.executionId,
+      'errorType' => errorType
+    };
+    JT_ErrorLogger.logError(
+      'Tooling API ' + errorType + ' Failed',
+      e.getMessage(),
+      e,
+      'JT_RunAsTestEnqueuer.executeTestSynchronously',
+      JSON.serialize(details),
+      'High'
     );
+    JT_ExecutionUpdateUtil.updateExecutionWithProcessingError(
+      this.executionId,
+      errorType + ' failed (CPU limit): ' + e.getMessage(),
+      'JT_RunAsTestEnqueuer.executeTestSynchronously'
+    );
+    return false;
+  }
+
+  /**
+   * @description Appends a log message to execution record
+   * Centralizes log message construction to avoid duplication
+   * @param execution Execution record to update
+   * @param message Message to append
+   **/
+  private void appendLogMessage(
+    JT_RunAsTest_Execution__c execution,
+    String message
+  ) {
+    execution.Log_Messages__c =
+      (String.isNotBlank(execution.Log_Messages__c)
+        ? execution.Log_Messages__c + '\n'
+        : '') +
+      message;
   }
 
   /**
@@ -682,107 +656,4 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
     }
   }
 
-  /**
-   * @description Updates execution record with error status
-   * CRITICAL: This method MUST succeed to prevent records from staying in 'Queued' state
-   * Uses minimal DML operations and has multiple fallback strategies
-   * @param errorMessage Error message to store
-   **/
-  @SuppressWarnings('PMD.EmptyCatchBlock')
-  private void updateExecutionWithError(String errorMessage) {
-    // Strategy 1: Try with fresh query and minimal fields
-    try {
-      List<JT_RunAsTest_Execution__c> executions = [
-        SELECT Id, Test_Status__c, Error_Message__c
-        FROM JT_RunAsTest_Execution__c
-        WHERE Id = :this.executionId
-        LIMIT 1
-      ];
-      if (!executions.isEmpty()) {
-        executions[0].Test_Status__c = 'Failed';
-        // Truncate error message if too long to avoid DML issues
-        String truncatedError = errorMessage.length() > 255
-          ? errorMessage.substring(0, 252) + '...'
-          : errorMessage;
-        executions[0].Error_Message__c = truncatedError;
-        update executions[0];
-        return;
-      }
-    } catch (DmlException dmlEx) {
-      // Log DML error for support
-      Map<String, Object> details = new Map<String, Object>{
-        'dmlStatusCode' => dmlEx.getDmlStatusCode(0),
-        'dmlFields' => dmlEx.getDmlFields(0),
-        'executionId' => this.executionId,
-        'errorMessage' => errorMessage
-      };
-      JT_ErrorLogger.logError(
-        'DML Update Failed',
-        dmlEx.getMessage(),
-        dmlEx,
-        'JT_RunAsTestEnqueuer.updateExecutionWithError',
-        JSON.serialize(details),
-        'Critical'
-      );
-
-      // Strategy 2: Try with even more minimal update (only status, no error message)
-      try {
-        JT_RunAsTest_Execution__c minimalUpdate = new JT_RunAsTest_Execution__c(
-          Id = this.executionId,
-          Test_Status__c = 'Failed'
-        );
-        update minimalUpdate;
-        return;
-      } catch (Exception minimalEx) {
-        // Log critical failure
-        JT_ErrorLogger.logError(
-          'DML Update Failed - All Strategies',
-          minimalEx.getMessage(),
-          minimalEx,
-          'JT_RunAsTestEnqueuer.updateExecutionWithError (Strategy 2)',
-          JSON.serialize(
-            new Map<String, Object>{ 'executionId' => this.executionId }
-          ),
-          'Critical'
-        );
-      }
-    } catch (Exception updateEx) {
-      // Log general error
-      JT_ErrorLogger.logError(
-        'Execution Update Failed',
-        updateEx.getMessage(),
-        updateEx,
-        'JT_RunAsTestEnqueuer.updateExecutionWithError'
-      );
-      System.debug(
-        LoggingLevel.ERROR,
-        'Stack trace: ' + updateEx.getStackTraceString()
-      );
-
-      // Strategy 2: Try with minimal update
-      try {
-        JT_RunAsTest_Execution__c minimalUpdate = new JT_RunAsTest_Execution__c(
-          Id = this.executionId,
-          Test_Status__c = 'Failed'
-        );
-        update minimalUpdate;
-        return;
-      } catch (Exception minimalEx) {
-        // Strategy 2 fallback failed - error already logged in Strategy 1 catch block
-        // No additional action needed as this is a fallback strategy
-        // PMD suppressed: Empty catch is intentional for fallback strategy
-      }
-    }
-
-    // Strategy 3: Last resort - log but don't fail silently
-    System.debug(
-      LoggingLevel.ERROR,
-      '❌ CRITICAL: All update strategies failed for execution: ' +
-      this.executionId
-    );
-    System.debug(
-      LoggingLevel.ERROR,
-      Label.JT_RunAsTestEnqueuer_recordInconsistentState
-    );
-  }
 }

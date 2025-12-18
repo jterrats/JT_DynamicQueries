@@ -17,8 +17,8 @@
 ```markdown
 ## 🎯 User Story
 
-**As a** Salesforce Administrator with limited SOQL knowledge  
-**I want** a visual drag-and-drop SOQL builder  
+**As a** Salesforce Administrator with limited SOQL knowledge
+**I want** a visual drag-and-drop SOQL builder
 **So that** I can create queries without writing code manually
 
 ## 📝 Description
@@ -106,8 +106,8 @@ Implement a visual SOQL builder that allows users to:
 ```markdown
 ## 🎯 User Story
 
-**As a** power user who runs queries frequently  
-**I want** to track my query history and mark favorites  
+**As a** power user who runs queries frequently
+**I want** to track my query history and mark favorites
 **So that** I can quickly re-run my most common queries
 
 ## 📝 Description
@@ -1162,8 +1162,8 @@ force-app/main/default/
 ```markdown
 ## 🎯 User Story
 
-**As a** developer integrating with external systems  
-**I want** to query Salesforce data using GraphQL  
+**As a** developer integrating with external systems
+**I want** to query Salesforce data using GraphQL
 **So that** I can fetch exactly the data I need with one request
 
 ## 📝 Description
@@ -1812,6 +1812,155 @@ Create standard Reports and Dashboard for usage analytics:
 
 ---
 
+### Issue 19: Email Notification UI for Usage Search
+
+**Title:** `[Enhancement] Add Optional Email Field in UI for Usage Search Notifications`
+
+**Labels:** `enhancement`, `v3.0`, `medium-priority`, `ui/ux`, `usage-search`
+
+**Story:**
+
+```markdown
+## 🎯 User Story
+
+**As a** Salesforce Administrator running large-scale usage searches
+**I want** to optionally provide my email address in the UI
+**So that** I can receive email notifications when the search completes (especially for async Queueable searches)
+
+## 📝 Description
+
+Currently, `JT_UsageFinderQueueable` supports email notifications, but there's no UI field to request them. The email functionality exists but is only accessible programmatically. This enhancement adds:
+
+- Optional email input field in the "Where is this used?" modal
+- Checkbox to enable/disable email notifications
+- Automatic use of Queueable when email is requested (for async processing)
+- Email sent with HTML-formatted results summary
+- Fallback to current synchronous method if email is not provided
+
+## ✅ Acceptance Criteria
+
+- [ ] Add optional email input field in `jtUsageModal` component
+- [ ] Add checkbox: "Send email notification when complete"
+- [ ] Email field defaults to current user's email (pre-filled)
+- [ ] When email is provided, use `JT_UsageFinderQueueable` instead of `findAllUsagesWithContinuation`
+- [ ] Show progress indicator: "Search running in background. You'll receive an email when complete."
+- [ ] Email includes HTML-formatted results summary (already implemented)
+- [ ] Error email sent if search fails
+- [ ] Results cached for 7 days (already implemented)
+- [ ] If email not provided, use current synchronous method (no breaking changes)
+
+## 🎨 UI Mockup
+
+```
+┌─────────────────────────────────────────────┐
+│ Where is this used? - "Account_Summary"    │
+├─────────────────────────────────────────────┤
+│                                             │
+│  [Searching...]                            │
+│                                             │
+│  ☑ Send email notification when complete   │
+│  📧 Email: [admin@company.com        ]     │
+│                                             │
+│  ℹ️ Large searches run in background.      │
+│     You'll receive an email when complete. │
+│                                             │
+│  [Cancel]                                   │
+└─────────────────────────────────────────────┘
+```
+
+## 🔧 Technical Implementation
+
+**LWC Component Changes:**
+
+```javascript
+// jtUsageModal.js
+@track requestEmail = false;
+@track userEmail = UserInfo.getUserEmail();
+
+handleEmailToggle(event) {
+  this.requestEmail = event.target.checked;
+}
+
+handleEmailChange(event) {
+  this.userEmail = event.target.value;
+}
+```
+
+**Apex Controller Enhancement:**
+
+```apex
+// JT_UsageFinder.cls
+@AuraEnabled(cacheable=false)
+public static String findAllUsagesWithEmailOption(
+  final String configName,
+  final String userEmail,
+  final Boolean sendEmail
+) {
+  if (sendEmail && String.isNotBlank(userEmail)) {
+    // Use Queueable for async processing
+    Id jobId = System.enqueueJob(
+      new JT_UsageFinderQueueable(
+        configName,
+        userEmail,
+        UserInfo.getUserId()
+      )
+    );
+    return JSON.serialize(new Map<String, Object>{
+      'jobId' => jobId,
+      'isAsync' => true,
+      'message' => 'Search started. You will receive an email when complete.'
+    });
+  } else {
+    // Use current synchronous method
+    return findAllUsagesWithContinuation(configName);
+  }
+}
+```
+
+**UI Flow:**
+
+1. User clicks "Where is this used?"
+2. Modal opens with optional email checkbox and field
+3. If email checked:
+   - Show "Searching in background..." message
+   - Enqueue Queueable job
+   - Close modal immediately
+   - User receives email when complete
+4. If email not checked:
+   - Use current synchronous method (Continuation)
+   - Show results in modal (current behavior)
+
+## 📦 Related Components
+
+- Enhanced: `jtUsageModal.cmp` (add email UI)
+- Enhanced: `JT_UsageFinder.cls` (add email option method)
+- Existing: `JT_UsageFinderQueueable.cls` (already supports email)
+- Enhanced: `jtQueryViewer.js` (pass email option to modal)
+
+## 🎯 Priority
+
+**Medium** - Enhances existing functionality without breaking changes
+
+## 📅 Estimated Effort
+
+**5 points** (0.5 sprint)
+
+## 🔗 Related Issues
+
+- Issue #11: Queueable Apex for Usage Search (backend implementation)
+- This issue adds the UI layer for Issue #11's email feature
+
+## 📝 Notes
+
+- Email functionality already exists in `JT_UsageFinderQueueable`
+- This is purely a UI enhancement
+- Backward compatible: if email not provided, current behavior maintained
+- Email field validates format before submission
+- Defaults to current user's email for convenience
+```
+
+---
+
 ## 📊 Summary of Issues
 
 | # | Title | Priority | Effort | Labels |
@@ -1834,7 +1983,8 @@ Create standard Reports and Dashboard for usage analytics:
 | 16 | Advanced Agentforce Actions | Medium | 8 pts | agentforce, ai |
 | 17 | Security Enhancements Suite | High | 21 pts | security |
 | 18 | Reports & Dashboard | Medium | 8 pts | analytics |
+| 19 | Email Notification UI for Usage Search | Medium | 5 pts | ui/ux, usage-search |
 
-**Total:** 18 issues, ~198 story points
+**Total:** 19 issues, ~203 story points
 
 ```

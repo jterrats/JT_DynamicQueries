@@ -379,4 +379,104 @@ public without sharing class JT_SystemSelector {
       ];
     }
   }
+
+  // ========================================
+  // EXECUTION QUERIES (Run As Test)
+  // ========================================
+
+  /**
+   * @description Gets a test execution record by ID
+   * Used by: JT_RunAsTestExecutor, JT_RunAsTestEnqueuer for execution updates
+   * @param executionId The execution record ID
+   * @return JT_RunAsTest_Execution__c The execution record, or null if not found
+   */
+  public static JT_RunAsTest_Execution__c getExecutionById(Id executionId) {
+    List<JT_RunAsTest_Execution__c> executions = [
+      SELECT Id
+      FROM JT_RunAsTest_Execution__c
+      WHERE Id = :executionId
+      WITH USER_MODE
+      LIMIT 1
+    ];
+    return executions.isEmpty() ? null : executions[0];
+  }
+
+  /**
+   * @description Gets a test execution record with all fields
+   * Used by: JT_RunAsTestExecutor for retrieving full execution details
+   * @param executionId The execution record ID
+   * @return JT_RunAsTest_Execution__c The execution record with all fields, or null if not found
+   */
+  public static JT_RunAsTest_Execution__c getExecutionWithAllFields(Id executionId) {
+    List<JT_RunAsTest_Execution__c> executions = [
+      SELECT
+        Id,
+        Test_Status__c,
+        Config_Name__c,
+        User_To_Impersonate__c,
+        Initiated_By__c,
+        Bindings_Json__c,
+        Results_Json__c,
+        Record_Count__c,
+        Execution_Time__c,
+        Error_Message__c,
+        Log_Messages__c,
+        Run_As_User_Name__c,
+        Apex_Test_Queue_Item_Id__c,
+        Apex_Queueable_Job_Id__c,
+        CreatedDate
+      FROM JT_RunAsTest_Execution__c
+      WHERE Id = :executionId
+      WITH USER_MODE
+      LIMIT 1
+    ];
+    return executions.isEmpty() ? null : executions[0];
+  }
+
+  /**
+   * @description Gets the first test execution record (helper for test classes)
+   * Used by: Test classes to avoid repeating the same query
+   * @return JT_RunAsTest_Execution__c The first execution record, or null if none found
+   */
+  @TestVisible
+  public static JT_RunAsTest_Execution__c getTestExecution() {
+    List<JT_RunAsTest_Execution__c> executions = [
+      SELECT Id
+      FROM JT_RunAsTest_Execution__c
+      WITH USER_MODE
+      LIMIT 1
+    ];
+    return executions.isEmpty() ? null : executions[0];
+  }
+
+  /**
+   * @description Gets the first test execution record with all fields (helper for test classes)
+   * Used by: Test classes when full execution details are needed
+   * @return JT_RunAsTest_Execution__c The first execution record with all fields, or null if none found
+   */
+  @TestVisible
+  public static JT_RunAsTest_Execution__c getTestExecutionWithAllFields() {
+    List<JT_RunAsTest_Execution__c> executions = [
+      SELECT
+        Id,
+        Test_Status__c,
+        Config_Name__c,
+        User_To_Impersonate__c,
+        Initiated_By__c,
+        Bindings_Json__c,
+        Results_Json__c,
+        Record_Count__c,
+        Execution_Time__c,
+        Error_Message__c,
+        Log_Messages__c,
+        Run_As_User_Name__c,
+        Apex_Test_Queue_Item_Id__c,
+        Apex_Queueable_Job_Id__c,
+        CreatedDate
+      FROM JT_RunAsTest_Execution__c
+      WITH USER_MODE
+      LIMIT 1
+    ];
+    return executions.isEmpty() ? null : executions[0];
+  }
 }

@@ -60,7 +60,9 @@ test.describe("Run As User Feature Tests", () => {
         .isVisible({ timeout: 2000 })
         .catch(() => false);
       expect(isVisible).toBe(false);
-      console.log("✅ Run As section correctly hidden for user without permissions");
+      console.log(
+        "✅ Run As section correctly hidden for user without permissions"
+      );
       return; // Exit test early - feature not available for this user
     }
 
@@ -83,7 +85,9 @@ test.describe("Run As User Feature Tests", () => {
         "ℹ️  Run As component not visible after expanding accordion - user lacks permissions (expected behavior)"
       );
       expect(isVisible).toBe(false);
-      console.log("✅ Run As component correctly hidden for user without permissions");
+      console.log(
+        "✅ Run As component correctly hidden for user without permissions"
+      );
       return; // Exit test early - feature not available for this user
     }
 
@@ -139,7 +143,9 @@ test.describe("Run As User Feature Tests", () => {
 
     if (!marianoOption) {
       // ✅ VALIDATION: Mariano Arnica not found - this is a valid scenario to validate
-      console.log("ℹ️  Mariano Arnica not found in results - validating search functionality");
+      console.log(
+        "ℹ️  Mariano Arnica not found in results - validating search functionality"
+      );
       // Validate that search works (even if user not found)
       const userInputValue = await userInput.inputValue();
       expect(userInputValue.toLowerCase()).toContain("mariano");
@@ -384,7 +390,9 @@ test.describe("Run As User Feature Tests", () => {
         .isVisible({ timeout: 2000 })
         .catch(() => false);
       expect(componentVisible).toBe(false);
-      console.log("✅ Run As section correctly hidden for user without permissions");
+      console.log(
+        "✅ Run As section correctly hidden for user without permissions"
+      );
       return; // Exit test early - feature not available for this user
     }
 
@@ -459,7 +467,9 @@ test.describe("Run As User Feature Tests", () => {
 
     if (!restrictedUser) {
       // ✅ VALIDATION: Restricted users not found - this is a valid scenario to validate
-      console.log("ℹ️  Guest User or Chatter Expert not found - validating search functionality");
+      console.log(
+        "ℹ️  Guest User or Chatter Expert not found - validating search functionality"
+      );
       // Validate that search works (even if users not found)
       const userInputValue = await userInput.inputValue();
       expect(userInputValue.toLowerCase()).toMatch(/guest|chatter/i);
@@ -647,7 +657,9 @@ test.describe("Run As User Feature Tests", () => {
         .isVisible({ timeout: 2000 })
         .catch(() => false);
       expect(componentVisible).toBe(false);
-      console.log("✅ Run As section correctly hidden for user without permissions");
+      console.log(
+        "✅ Run As section correctly hidden for user without permissions"
+      );
       return; // Exit test early - feature not available for this user
     }
 
@@ -725,7 +737,9 @@ test.describe("Run As User Feature Tests", () => {
 
     if (!restrictedUser) {
       // ✅ VALIDATION: Restricted users not found - this is a valid scenario to validate
-      console.log("ℹ️  Guest User or Chatter Expert not found - validating search functionality");
+      console.log(
+        "ℹ️  Guest User or Chatter Expert not found - validating search functionality"
+      );
       // Validate that search works (even if users not found)
       const userInputValue = await userInput.inputValue();
       expect(userInputValue.toLowerCase()).toMatch(/guest|chatter/i);
@@ -866,7 +880,9 @@ test.describe("Run As User Feature Tests", () => {
         .isVisible({ timeout: 2000 })
         .catch(() => false);
       expect(componentVisible).toBe(false);
-      console.log("✅ Run As section correctly hidden for user without permissions");
+      console.log(
+        "✅ Run As section correctly hidden for user without permissions"
+      );
       return; // Exit test early - feature not available for this user
     }
 
@@ -1028,7 +1044,9 @@ test.describe("Run As User Feature Tests", () => {
         .isVisible({ timeout: 2000 })
         .catch(() => false);
       expect(componentVisible).toBe(false);
-      console.log("✅ Run As section correctly hidden for user without permissions");
+      console.log(
+        "✅ Run As section correctly hidden for user without permissions"
+      );
       return; // Exit test early - feature not available for this user
     }
 
@@ -1050,7 +1068,9 @@ test.describe("Run As User Feature Tests", () => {
     const optionExists = await configOption.count();
     if (optionExists === 0) {
       // ✅ VALIDATION: Config not found - this is a valid scenario to validate
-      console.log("ℹ️  'Customer 360 View' config not found - validating search functionality");
+      console.log(
+        "ℹ️  'Customer 360 View' config not found - validating search functionality"
+      );
       // Validate that search works (even if config not found)
       const configInputValue = await configInput.inputValue();
       expect(configInputValue.toLowerCase()).toContain("customer");
@@ -1106,7 +1126,9 @@ test.describe("Run As User Feature Tests", () => {
 
     if (!marianoOption) {
       // ✅ VALIDATION: Mariano Arnica not found - this is a valid scenario to validate
-      console.log("ℹ️  Mariano Arnica not found in results - validating search functionality");
+      console.log(
+        "ℹ️  Mariano Arnica not found in results - validating search functionality"
+      );
       // Validate that search works (even if user not found)
       const userInputValue = await userInput.inputValue();
       expect(userInputValue.toLowerCase()).toContain("mariano");
@@ -1156,9 +1178,13 @@ test.describe("Run As User Feature Tests", () => {
       if (errorVisible) {
         const errorText = await errorBanner.textContent();
         expect(errorText.length).toBeGreaterThan(0);
-        console.log("✅ Error handling works correctly when results don't appear");
+        console.log(
+          "✅ Error handling works correctly when results don't appear"
+        );
       } else {
-        console.log("ℹ️  No error banner - query may have returned 0 results (valid scenario)");
+        console.log(
+          "ℹ️  No error banner - query may have returned 0 results (valid scenario)"
+        );
       }
       return; // Exit test early - no results to validate nested relationships
     }

@@ -251,6 +251,76 @@ export function buildTableColumns(fields) {
 }
 
 /**
+ * Get nested field value from an object using dot notation
+ * Handles related fields like Recordtype.Name, Account.Name, etc.
+ * @param {Object} obj - The object to navigate
+ * @param {string} fieldPath - Field path with dots (e.g., "Recordtype.Name")
+ * @returns {string} The value as a string, or empty string if not found
+ * @example getNestedFieldValue(record, "Recordtype.Name") → "Account"
+ */
+export function getNestedFieldValue(obj, fieldPath) {
+  if (!obj || !fieldPath) return "";
+
+  // If fieldPath has no dots, access directly
+  if (!fieldPath.includes(".")) {
+    const value = obj[fieldPath];
+    return formatFieldValue(value);
+  }
+
+  // Split path and navigate nested object
+  const parts = fieldPath.split(".");
+  let current = obj;
+
+  for (let i = 0; i < parts.length; i++) {
+    if (current == null || typeof current !== "object") {
+      return "";
+    }
+    current = current[parts[i]];
+    if (current == null) {
+      return "";
+    }
+  }
+
+  return formatFieldValue(current);
+}
+
+/**
+ * Format a field value for display (handles objects, arrays, null, etc.)
+ * @param {*} value - The value to format
+ * @returns {string} Formatted string value
+ */
+function formatFieldValue(value) {
+  if (value == null) return "";
+  if (typeof value === "string") return value;
+  if (typeof value === "number" || typeof value === "boolean") return String(value);
+  if (typeof value === "object") {
+    // If it's an object with Name property, use that
+    if (value.Name !== undefined) return String(value.Name);
+    // If it's an object with DeveloperName property, use that
+    if (value.DeveloperName !== undefined) return String(value.DeveloperName);
+    // Otherwise, try to stringify (but avoid [object Object])
+    try {
+      const str = JSON.stringify(value);
+      // If it's a simple object like {"Name": "value"}, extract the value
+      const parsed = JSON.parse(str);
+      if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+        // Try common fields
+        if (parsed.Name) return String(parsed.Name);
+        if (parsed.DeveloperName) return String(parsed.DeveloperName);
+        if (parsed.Id) return String(parsed.Id);
+        // If it's a single-key object, return that value
+        const keys = Object.keys(parsed);
+        if (keys.length === 1) return String(parsed[keys[0]]);
+      }
+      return str;
+    } catch {
+      return String(value);
+    }
+  }
+  return String(value);
+}
+
+/**
  * Escape CSV values (wraps in quotes and escapes internal quotes)
  * @param {*} value - Value to escape
  * @returns {string} Escaped CSV value
@@ -584,20 +654,44 @@ export function pollUntilComplete(
   onTimeout,
   options = {}
 ) {
-  const { interval = 2000, maxPolls = 60, onProgress = null } = options;
+  const {
+    interval = 2000,
+    maxPolls = 60,
+    onProgress = null,
+    immediateFirstPoll = false,
+    exponentialBackoff = false,
+    maxInterval = 5000
+  } = options;
 
   let pollCount = 0;
   let pollInterval = null;
+  let currentInterval = interval;
+  let timeoutId = null;
 
   const stopPolling = () => {
     if (pollInterval) {
       clearInterval(pollInterval);
       pollInterval = null;
     }
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
   };
 
-  // eslint-disable-next-line @lwc/lwc/no-async-operation
-  pollInterval = setInterval(() => {
+  const scheduleNextPoll = () => {
+    // Apply exponential backoff if enabled
+    if (exponentialBackoff && pollCount > 0) {
+      currentInterval = Math.min(currentInterval * 1.5, maxInterval);
+    }
+
+    // eslint-disable-next-line @lwc/lwc/no-async-operation
+    timeoutId = setTimeout(() => {
+      performPoll();
+    }, currentInterval);
+  };
+
+  const performPoll = () => {
     pollCount++;
 
     pollFunction()
@@ -622,6 +716,9 @@ export function pollUntilComplete(
           }
           return;
         }
+
+        // Schedule next poll
+        scheduleNextPoll();
       })
       .catch((error) => {
         stopPolling();
@@ -629,7 +726,15 @@ export function pollUntilComplete(
           onError(error);
         }
       });
-  }, interval);
+  };
+
+  // Perform first poll immediately if requested
+  if (immediateFirstPoll) {
+    performPoll();
+  } else {
+    // Start polling with initial interval
+    scheduleNextPoll();
+  }
 
   return stopPolling;
 }

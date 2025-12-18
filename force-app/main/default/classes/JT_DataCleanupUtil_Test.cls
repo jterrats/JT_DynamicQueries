@@ -301,4 +301,166 @@ private class JT_DataCleanupUtil_Test {
       'Should contain auditLogsDeleted'
     );
   }
+
+  /**
+   * @description Test cleanupExecutionRecords with negative days (should use default)
+   */
+  @IsTest
+  static void testCleanupExecutionRecordsNegativeDays() {
+    Test.startTest();
+    Integer deletedCount = JT_DataCleanupUtil.cleanupExecutionRecords(-5);
+    Test.stopTest();
+
+    System.assert(deletedCount >= 0, 'Should return count of deleted records');
+    // Should use default retention when negative
+    System.assert(deletedCount >= 7, 'Should use default retention period');
+  }
+
+  /**
+   * @description Test cleanupAuditLogs with zero days (should use default)
+   */
+  @IsTest
+  static void testCleanupAuditLogsZeroDays() {
+    Test.startTest();
+    Integer deletedCount = JT_DataCleanupUtil.cleanupAuditLogs(0);
+    Test.stopTest();
+
+    System.assert(deletedCount >= 0, 'Should return count of deleted records');
+    // Should use default retention when zero or negative
+    System.assert(deletedCount >= 4, 'Should use default retention period');
+  }
+
+  /**
+   * @description Test cleanupAuditLogs with negative days (should use default)
+   */
+  @IsTest
+  static void testCleanupAuditLogsNegativeDays() {
+    Test.startTest();
+    Integer deletedCount = JT_DataCleanupUtil.cleanupAuditLogs(-10);
+    Test.stopTest();
+
+    System.assert(deletedCount >= 0, 'Should return count of deleted records');
+    // Should use default retention when negative
+    System.assert(deletedCount >= 4, 'Should use default retention period');
+  }
+
+  /**
+   * @description Test cleanupExecutionRecords when no records exist
+   */
+  @IsTest
+  static void testCleanupExecutionRecordsNoRecords() {
+    // Delete all test data first
+    delete [SELECT Id FROM JT_RunAsTest_Execution__c];
+
+    Test.startTest();
+    Integer deletedCount = JT_DataCleanupUtil.cleanupExecutionRecords(null);
+    Test.stopTest();
+
+    System.assertEquals(0, deletedCount, 'Should return 0 when no records exist');
+  }
+
+  /**
+   * @description Test cleanupAuditLogs when no records exist
+   */
+  @IsTest
+  static void testCleanupAuditLogsNoRecords() {
+    // Delete all test data first
+    delete [SELECT Id FROM JT_SettingsAuditLog__c];
+
+    Test.startTest();
+    Integer deletedCount = JT_DataCleanupUtil.cleanupAuditLogs(null);
+    Test.stopTest();
+
+    System.assertEquals(0, deletedCount, 'Should return 0 when no records exist');
+  }
+
+  /**
+   * @description Test getCleanupStatistics when no records exist
+   */
+  @IsTest
+  static void testGetCleanupStatisticsNoRecords() {
+    // Delete all test data first
+    delete [SELECT Id FROM JT_RunAsTest_Execution__c];
+    delete [SELECT Id FROM JT_SettingsAuditLog__c];
+
+    Test.startTest();
+    Map<String, Object> stats = JT_DataCleanupUtil.getCleanupStatistics();
+    Test.stopTest();
+
+    System.assertNotEquals(null, stats, 'Statistics should not be null');
+    System.assertEquals(0, stats.get('oldExecutionRecords'), 'Should return 0');
+    System.assertEquals(0, stats.get('stuckExecutionRecords'), 'Should return 0');
+    System.assertEquals(0, stats.get('oldAuditLogs'), 'Should return 0');
+    System.assertEquals(0, stats.get('totalDeletableRecords'), 'Should return 0');
+  }
+
+  /**
+   * @description Test performFullCleanup with zero days for both parameters
+   */
+  @IsTest
+  static void testPerformFullCleanupZeroDays() {
+    Test.startTest();
+    Map<String, Object> results = JT_DataCleanupUtil.performFullCleanup(0, 0);
+    Test.stopTest();
+
+    System.assertEquals(true, results.get('success'), 'Should succeed');
+    System.assert(
+      results.containsKey('executionRecordsDeleted'),
+      'Should contain executionRecordsDeleted'
+    );
+    System.assert(
+      results.containsKey('auditLogsDeleted'),
+      'Should contain auditLogsDeleted'
+    );
+  }
+
+  /**
+   * @description Test performFullCleanup with negative days (should use defaults)
+   */
+  @IsTest
+  static void testPerformFullCleanupNegativeDays() {
+    Test.startTest();
+    Map<String, Object> results = JT_DataCleanupUtil.performFullCleanup(-5, -10);
+    Test.stopTest();
+
+    System.assertEquals(true, results.get('success'), 'Should succeed');
+    System.assert(
+      results.containsKey('executionRecordsDeleted'),
+      'Should contain executionRecordsDeleted'
+    );
+    System.assert(
+      results.containsKey('auditLogsDeleted'),
+      'Should contain auditLogsDeleted'
+    );
+  }
+
+  /**
+   * @description Test cleanupExecutionRecords with Failed status records
+   */
+  @IsTest
+  static void testCleanupExecutionRecordsFailedStatus() {
+    // Create old failed execution records
+    List<JT_RunAsTest_Execution__c> failedExecutions = new List<JT_RunAsTest_Execution__c>();
+    for (Integer i = 0; i < 3; i++) {
+      failedExecutions.add(
+        new JT_RunAsTest_Execution__c(
+          Test_Status__c = 'Failed',
+          Config_Name__c = 'Test_Record',
+          User_To_Impersonate__c = UserInfo.getUserId(),
+          Initiated_By__c = UserInfo.getUserId()
+        )
+      );
+    }
+    insert failedExecutions;
+    // Set created date to 35 days ago
+    for (JT_RunAsTest_Execution__c exec : failedExecutions) {
+      Test.setCreatedDate(exec.Id, DateTime.now().addDays(-35));
+    }
+
+    Test.startTest();
+    Integer deletedCount = JT_DataCleanupUtil.cleanupExecutionRecords(null);
+    Test.stopTest();
+
+    System.assert(deletedCount >= 3, 'Should delete failed execution records');
+  }
 }

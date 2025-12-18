@@ -40,11 +40,7 @@ public without sharing class JT_ErrorLogDomain {
       );
     }
 
-    try {
-      insert log; // PMD suppressed: Error logs must be created regardless of permissions
-    } catch (DmlException e) {
-      throw e; // Re-throw to let caller handle
-    }
+    insert log; // PMD suppressed: Error logs must be created regardless of permissions
   }
 
   /**
@@ -57,11 +53,7 @@ public without sharing class JT_ErrorLogDomain {
       return;
     }
 
-    try {
-      insert logs; // PMD suppressed: Error logs must be created regardless of permissions
-    } catch (DmlException e) {
-      throw e; // Re-throw to let caller handle
-    }
+    insert logs; // PMD suppressed: Error logs must be created regardless of permissions
   }
 
   /**

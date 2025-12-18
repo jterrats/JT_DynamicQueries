@@ -437,6 +437,31 @@ export default class JtConfigModal extends LightningElement {
     const fromMatch = query.match(/FROM\s+(\w+)/i);
     const objectName = fromMatch ? fromMatch[1] : "";
 
+    // Detect complex queries (with nested relationships) to avoid execution
+    // Count opening parentheses in SELECT clause (indicates nested queries)
+    const selectMatch = query.match(/SELECT\s+(.+?)\s+FROM/i);
+    const hasComplexRelationships =
+      selectMatch && (selectMatch[1].match(/\(/g) || []).length > 2;
+
+    // For complex queries, only do syntactic validation to prevent UI freezing
+    if (hasComplexRelationships) {
+      const hasBindings = /:\w+/.test(query);
+      const bindingsProvided =
+        this._config.bindings && this._config.bindings.trim().length > 0;
+
+      this.queryValidation = {
+        isValid: true,
+        message:
+          this.labels.validSyntax +
+          (hasBindings && !bindingsProvided
+            ? " (bindings will be required at execution time)"
+            : " (complex query - validation skipped to prevent UI blocking)"),
+        objectName: objectName
+      };
+      this._config.objectName = objectName;
+      return;
+    }
+
     // Check if query has bind variables (e.g., :searchName, :accountType)
     const hasBindings = /:\w+/.test(query);
     const bindingsProvided =

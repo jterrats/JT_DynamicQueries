@@ -408,3 +408,29 @@ lightning-badge {
   opacity: 1 !important;
   display: block !important;
 }
+
+/* Configuration Deletion Spinner Overlay - Full screen light backdrop */
+.deletion-spinner-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.95);
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.deletion-spinner-overlay > div {
+  position: relative;
+  z-index: 9001;
+}
+
+.deletion-spinner-overlay p {
+  color: #080707 !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: block !important;
+}

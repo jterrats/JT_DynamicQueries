@@ -47,11 +47,7 @@ public with sharing class JT_UsageFinderQueueable implements Queueable {
 
       // Store results in Platform Cache (2 days TTL - max allowed)
       // Use alphanumeric cache key to avoid invalid characters (underscores, etc.)
-      String sanitizedConfigName = JT_ToolingApiUtil.toAlphanumeric(
-        configurationDevName
-      );
-      String sanitizedUserId = JT_ToolingApiUtil.toAlphanumeric(userId);
-      String cacheKey = 'UsageSearch' + sanitizedConfigName + sanitizedUserId;
+      String cacheKey = buildCacheKey(configurationDevName, userId);
       Cache.Org.put(cacheKey, JSON.serialize(result), 172800); // 2 days in seconds (max allowed)
 
       System.debug('Usage search completed. Found:');
@@ -92,16 +88,9 @@ public with sharing class JT_UsageFinderQueueable implements Queueable {
   private void sendCompletionEmail(
     JT_UsageFinder.AggregatedUsageResponse result
   ) {
-    Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
-    email.setToAddresses(new List<String>{ userEmail });
-    email.setSubject(
-      'Dynamic Queries - Usage Search Complete: ' + configurationDevName
-    );
-
+    String subject = 'Dynamic Queries - Usage Search Complete: ' + configurationDevName;
     String body = buildEmailBody(result);
-    email.setHtmlBody(body);
-
-    Messaging.sendEmail(new List<Messaging.SingleEmailMessage>{ email });
+    sendEmail(subject, body);
   }
 
   /**
@@ -173,12 +162,7 @@ public with sharing class JT_UsageFinderQueueable implements Queueable {
    * @param e Exception that occurred
    */
   private void sendErrorEmail(Exception e) {
-    Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
-    email.setToAddresses(new List<String>{ userEmail });
-    email.setSubject(
-      'Dynamic Queries - Usage Search Failed: ' + configurationDevName
-    );
-
+    String subject = 'Dynamic Queries - Usage Search Failed: ' + configurationDevName;
     String body = '<html><body style="font-family: Arial, sans-serif;">';
     body += '<h2>Usage Search Failed</h2>';
     body +=
@@ -191,10 +175,34 @@ public with sharing class JT_UsageFinderQueueable implements Queueable {
     body += '<p><strong>Line Number:</strong> ' + e.getLineNumber() + '</p>';
     body += '<p>Please contact your Salesforce administrator for assistance.</p>';
     body += '</body></html>';
+    sendEmail(subject, body);
+  }
 
-    email.setHtmlBody(body);
-
+  /**
+   * @description Sends an email with the given subject and HTML body
+   * Centralizes email sending logic to avoid duplication
+   * @param subject Email subject
+   * @param htmlBody HTML email body
+   */
+  private void sendEmail(String subject, String htmlBody) {
+    Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
+    email.setToAddresses(new List<String>{ userEmail });
+    email.setSubject(subject);
+    email.setHtmlBody(htmlBody);
     Messaging.sendEmail(new List<Messaging.SingleEmailMessage>{ email });
+  }
+
+  /**
+   * @description Builds cache key for storing/retrieving usage search results
+   * Centralizes cache key construction logic to avoid duplication
+   * @param configurationDevName Developer name of the configuration
+   * @param userId User ID who initiated the search
+   * @return String Cache key for Platform Cache
+   */
+  private static String buildCacheKey(String configurationDevName, String userId) {
+    String sanitizedConfigName = JT_ToolingApiUtil.toAlphanumeric(configurationDevName);
+    String sanitizedUserId = JT_ToolingApiUtil.toAlphanumeric(userId);
+    return 'UsageSearch' + sanitizedConfigName + sanitizedUserId;
   }
 
   /**
@@ -208,11 +216,7 @@ public with sharing class JT_UsageFinderQueueable implements Queueable {
     String userId
   ) {
     // Use alphanumeric cache key to match the key used in execute()
-    String sanitizedConfigName = JT_ToolingApiUtil.toAlphanumeric(
-      configurationDevName
-    );
-    String sanitizedUserId = JT_ToolingApiUtil.toAlphanumeric(userId);
-    String cacheKey = 'UsageSearch' + sanitizedConfigName + sanitizedUserId;
+    String cacheKey = buildCacheKey(configurationDevName, userId);
     String cachedJson = (String) Cache.Org.get(cacheKey);
 
     if (String.isNotBlank(cachedJson)) {

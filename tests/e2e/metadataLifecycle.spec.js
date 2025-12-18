@@ -108,18 +108,39 @@ test.describe("Metadata Lifecycle Tests", () => {
       .locator("lightning-button")
       .filter({ hasText: /Save|Create/i });
     await saveButton.click();
-    await page.waitForTimeout(2000); // Wait for save and refresh
 
-    // ✅ Validate success toast appears
+    // Wait for modal to close (indicates save initiated)
+    await expect(modal).not.toBeVisible({ timeout: TIMEOUTS.medium });
+
+    // Wait for info toast (deployment in progress) or success toast (if synchronous)
+    const infoToast = page.locator(".slds-notify--info");
     const successToast = page.locator(".slds-notify--success");
-    const toastVisible = await successToast
+
+    // Check if info toast appears (async deployment) or success toast (sync)
+    const infoVisible = await infoToast
       .isVisible({ timeout: TIMEOUTS.component })
       .catch(() => false);
-    expect(toastVisible).toBe(true);
-    console.log("✅ Configuration created successfully");
+    const successVisible = await successToast
+      .isVisible({ timeout: TIMEOUTS.component })
+      .catch(() => false);
 
-    // ✅ Validate modal closed
-    await expect(modal).not.toBeVisible({ timeout: TIMEOUTS.medium });
+    if (infoVisible) {
+      // Async deployment - wait for polling to complete
+      console.log("⏳ Async deployment detected, waiting for completion...");
+      await expect(successToast).toBeVisible({ timeout: TIMEOUTS.long });
+      console.log("✅ Configuration created successfully (async)");
+    } else if (successVisible) {
+      // Synchronous deployment
+      console.log("✅ Configuration created successfully (sync)");
+    } else {
+      // Fallback: wait a bit more and check again
+      await page.waitForTimeout(3000);
+      const finalSuccess = await successToast
+        .isVisible({ timeout: TIMEOUTS.component })
+        .catch(() => false);
+      expect(finalSuccess).toBe(true);
+      console.log("✅ Configuration created successfully");
+    }
 
     // Step 4: Select the newly created configuration
     await selectConfiguration(page, configLabel);
@@ -267,18 +288,39 @@ test.describe("Metadata Lifecycle Tests", () => {
       .locator("lightning-button")
       .filter({ hasText: /Update/i });
     await updateButton.click();
-    await page.waitForTimeout(2000); // Wait for update and refresh
 
-    // ✅ Validate success toast appears
+    // Wait for modal to close (indicates update initiated)
+    await expect(modal).not.toBeVisible({ timeout: TIMEOUTS.medium });
+
+    // Wait for info toast (deployment in progress) or success toast (if synchronous)
+    const infoToast = page.locator(".slds-notify--info");
     const successToast = page.locator(".slds-notify--success");
-    const toastVisible = await successToast
+
+    // Check if info toast appears (async deployment) or success toast (sync)
+    const infoVisible = await infoToast
       .isVisible({ timeout: TIMEOUTS.component })
       .catch(() => false);
-    expect(toastVisible).toBe(true);
-    console.log("✅ Configuration updated successfully");
+    const successVisible = await successToast
+      .isVisible({ timeout: TIMEOUTS.component })
+      .catch(() => false);
 
-    // ✅ Validate modal closed
-    await expect(modal).not.toBeVisible({ timeout: TIMEOUTS.medium });
+    if (infoVisible) {
+      // Async deployment - wait for polling to complete
+      console.log("⏳ Async deployment detected, waiting for completion...");
+      await expect(successToast).toBeVisible({ timeout: TIMEOUTS.long });
+      console.log("✅ Configuration updated successfully (async)");
+    } else if (successVisible) {
+      // Synchronous deployment
+      console.log("✅ Configuration updated successfully (sync)");
+    } else {
+      // Fallback: wait a bit more and check again
+      await page.waitForTimeout(3000);
+      const finalSuccess = await successToast
+        .isVisible({ timeout: TIMEOUTS.component })
+        .catch(() => false);
+      expect(finalSuccess).toBe(true);
+      console.log("✅ Configuration updated successfully");
+    }
 
     // Step 6: Select the updated configuration (by new label)
     await selectConfiguration(page, updatedLabel);
@@ -402,12 +444,36 @@ test.describe("Metadata Lifecycle Tests", () => {
       .locator("lightning-button")
       .filter({ hasText: /Save|Create/i })
       .click();
-    await page.waitForTimeout(2000);
 
-    // ✅ Validate success
-    const successToast = page.locator(".slds-notify--success");
-    await expect(successToast).toBeVisible({ timeout: TIMEOUTS.component });
+    // Wait for modal to close (indicates save initiated)
     await expect(modal).not.toBeVisible({ timeout: TIMEOUTS.medium });
+
+    // Wait for info toast (deployment in progress) or success toast (if synchronous)
+    const infoToast = page.locator(".slds-notify--info");
+    const successToast = page.locator(".slds-notify--success");
+
+    // Check if info toast appears (async deployment) or success toast (sync)
+    const infoVisible = await infoToast
+      .isVisible({ timeout: TIMEOUTS.component })
+      .catch(() => false);
+    const successVisible = await successToast
+      .isVisible({ timeout: TIMEOUTS.component })
+      .catch(() => false);
+
+    if (infoVisible) {
+      // Async deployment - wait for polling to complete
+      console.log("⏳ Async deployment detected, waiting for completion...");
+      await expect(successToast).toBeVisible({ timeout: TIMEOUTS.long });
+      console.log("✅ Configuration created successfully (async)");
+    } else if (successVisible) {
+      // Synchronous deployment
+      console.log("✅ Configuration created successfully (sync)");
+    } else {
+      // Fallback: wait a bit more and check again
+      await page.waitForTimeout(3000);
+      await expect(successToast).toBeVisible({ timeout: TIMEOUTS.component });
+      console.log("✅ Configuration created successfully");
+    }
 
     // Step 2: Select configuration
     await selectConfiguration(page, configLabel);

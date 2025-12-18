@@ -140,6 +140,48 @@ public inherited sharing class JT_DataSelector {
   }
 
   /**
+   * @description Gets bindings from configuration JSON string
+   * Centralizes bindings deserialization to avoid duplication
+   * @param config Configuration record with JT_Binding__c field
+   * @return Map<String, Object> Deserialized bindings, or empty map if blank
+   **/
+  private static Map<String, Object> getConfigBindings(
+    JT_DynamicQueryConfiguration__mdt config
+  ) {
+    return String.isNotBlank(config.JT_Binding__c)
+      ? (Map<String, Object>) JSON.deserializeUntyped(config.JT_Binding__c)
+      : new Map<String, Object>();
+  }
+
+  /**
+   * @description Merges config bindings with custom bindings
+   * Centralizes bindings merge logic to avoid duplication
+   * @param configBindings Bindings from configuration
+   * @param customBindings Custom bindings to merge
+   * @return Map<String, Object> Merged bindings map
+   **/
+  private static Map<String, Object> mergeBindings(
+    Map<String, Object> configBindings,
+    Map<String, Object> customBindings
+  ) {
+    Map<String, Object> merged = new Map<String, Object>(configBindings);
+    if (customBindings != null) {
+      merged.putAll(customBindings);
+    }
+    return merged;
+  }
+
+  /**
+   * @description Gets AccessLevel based on enforceSecurity flag
+   * Centralizes access level determination to avoid duplication
+   * @param enforceSecurity Whether to enforce security (USER_MODE vs SYSTEM_MODE)
+   * @return AccessLevel USER_MODE if enforceSecurity is true, SYSTEM_MODE otherwise
+   **/
+  private static AccessLevel getAccessLevel(Boolean enforceSecurity) {
+    return enforceSecurity ? AccessLevel.USER_MODE : AccessLevel.SYSTEM_MODE;
+  }
+
+  /**
    * @description instance method to get the config with caching optimization
    * @param devName
    * @author Jaime Terrats | 06-18-2025
@@ -201,14 +243,10 @@ public inherited sharing class JT_DataSelector {
     validateSupportedOperators(config.JT_BaseQuery__c);
 
     // Deserialize bindings only once
-    Map<String, Object> bindings = String.isNotBlank(config.JT_Binding__c)
-      ? (Map<String, Object>) JSON.deserializeUntyped(config.JT_Binding__c)
-      : new Map<String, Object>();
+    Map<String, Object> bindings = getConfigBindings(config);
 
     // Use appropriate access level
-    AccessLevel accessMode = enforceSecurity
-      ? AccessLevel.USER_MODE
-      : AccessLevel.SYSTEM_MODE;
+    AccessLevel accessMode = getAccessLevel(enforceSecurity);
 
     return Database.queryWithBinds(
       config.JT_BaseQuery__c,
@@ -408,19 +446,13 @@ public inherited sharing class JT_DataSelector {
       params.devName
     );
 
-    Map<String, Object> configBindings = String.isNotBlank(config.JT_Binding__c)
-      ? (Map<String, Object>) JSON.deserializeUntyped(config.JT_Binding__c)
-      : new Map<String, Object>();
-    Map<String, Object> mergedBindings = new Map<String, Object>(
-      configBindings
+    Map<String, Object> configBindings = getConfigBindings(config);
+    Map<String, Object> mergedBindings = mergeBindings(
+      configBindings,
+      params.bindings
     );
-    if (params.bindings != null) {
-      mergedBindings.putAll(params.bindings);
-    }
 
-    AccessLevel accessMode = params.enforceSecurity
-      ? AccessLevel.USER_MODE
-      : AccessLevel.SYSTEM_MODE;
+    AccessLevel accessMode = getAccessLevel(params.enforceSecurity);
 
     Integer effectiveBatchSize = params.batchSize != null &&
       params.batchSize > 0
@@ -563,9 +595,7 @@ public inherited sharing class JT_DataSelector {
     );
 
     // Use appropriate access level
-    AccessLevel accessMode = enforceSecurity
-      ? AccessLevel.USER_MODE
-      : AccessLevel.SYSTEM_MODE;
+    AccessLevel accessMode = getAccessLevel(enforceSecurity);
 
     return Database.queryWithBinds(
       config.JT_BaseQuery__c,
@@ -607,15 +637,8 @@ public inherited sharing class JT_DataSelector {
     );
 
     // Merge config bindings with custom bindings
-    Map<String, Object> configBindings = String.isNotBlank(config.JT_Binding__c)
-      ? (Map<String, Object>) JSON.deserializeUntyped(config.JT_Binding__c)
-      : new Map<String, Object>();
-    Map<String, Object> mergedBindings = new Map<String, Object>(
-      configBindings
-    );
-    if (bindings != null) {
-      mergedBindings.putAll(bindings);
-    }
+    Map<String, Object> configBindings = getConfigBindings(config);
+    Map<String, Object> mergedBindings = mergeBindings(configBindings, bindings);
 
     return countRecordsInternal(
       config.JT_BaseQuery__c,
@@ -649,9 +672,7 @@ public inherited sharing class JT_DataSelector {
     countQuery = countQuery.replaceAll('(?i)\\s+OFFSET\\s+\\d+', '');
 
     // Use appropriate access level
-    AccessLevel accessMode = enforceSecurity
-      ? AccessLevel.USER_MODE
-      : AccessLevel.SYSTEM_MODE;
+    AccessLevel accessMode = getAccessLevel(enforceSecurity);
 
     // Replace bind variables in the query string for Database.countQuery()
     String finalQuery = countQuery;
@@ -721,15 +742,8 @@ public inherited sharing class JT_DataSelector {
     );
 
     // Merge config bindings with custom bindings
-    Map<String, Object> configBindings = String.isNotBlank(config.JT_Binding__c)
-      ? (Map<String, Object>) JSON.deserializeUntyped(config.JT_Binding__c)
-      : new Map<String, Object>();
-    Map<String, Object> mergedBindings = new Map<String, Object>(
-      configBindings
-    );
-    if (bindings != null) {
-      mergedBindings.putAll(bindings);
-    }
+    Map<String, Object> configBindings = getConfigBindings(config);
+    Map<String, Object> mergedBindings = mergeBindings(configBindings, bindings);
 
     // Set threshold (default 50,000)
     Integer effectiveThreshold = threshold != null &&

@@ -8,6 +8,23 @@
 @SuppressWarnings('PMD.AvoidDebugStatements')
 public with sharing class JT_RunAsTestExecutor {
   /**
+   * @description Caches Run As test result data
+   * Centralizes cache operations to avoid duplication
+   * @param userId User ID to use as part of cache key
+   * @param resultData Map containing result data to cache
+   * @param ttl Time to live in seconds (default: 300)
+   **/
+  private static void cacheRunAsTestResult(
+    String userId,
+    Map<String, Object> resultData,
+    Integer ttl
+  ) {
+    String sanitizedUserId = JT_ToolingApiUtil.toAlphanumeric(userId);
+    String cacheKey = 'RunAsTestResult' + sanitizedUserId;
+    Cache.Org.put(cacheKey, JSON.serialize(resultData), ttl != null ? ttl : 300);
+  }
+
+  /**
    * @description Executes query as specified user using test context
    * @author Jaime Terrats | 11-29-2025
    * @param userId User ID to run as
@@ -45,15 +62,22 @@ public with sharing class JT_RunAsTestExecutor {
       result.runAsUserName = targetUser.Name + ' (' + targetUser.Username + ')';
 
       // Rate limiting: Check for pending executions to avoid queue saturation
-      Integer pendingExecutions = [
-        SELECT COUNT()
-        FROM JT_RunAsTest_Execution__c
-        WHERE
-          Initiated_By__c = :UserInfo.getUserId()
-          AND Test_Status__c IN ('Queued', 'Running')
-          AND CreatedDate >= :Datetime.now().addMinutes(-10)
-        WITH USER_MODE
-      ];
+      Integer pendingExecutions = 0;
+      try {
+        pendingExecutions = [
+          SELECT COUNT()
+          FROM JT_RunAsTest_Execution__c
+          WHERE
+            Initiated_By__c = :UserInfo.getUserId()
+            AND Test_Status__c IN ('Queued', 'Running')
+            AND CreatedDate >= :Datetime.now().addMinutes(-10)
+          WITH USER_MODE
+        ];
+      } catch (SecurityException se) {
+        // If user doesn't have access to the object, assume no pending executions
+        // This allows the method to continue and fail later with a more user-friendly error
+        pendingExecutions = 0;
+      }
 
       final Integer maxPendingExecutions = 3;
       if (pendingExecutions >= maxPendingExecutions) {
@@ -226,26 +250,69 @@ public with sharing class JT_RunAsTestExecutor {
       result.success = true;
 
       return result;
+    } catch (AuraHandledException ahe) {
+      result.success = false;
+      // AuraHandledException messages are user-friendly and should be used directly
+      String errorMsg = ahe.getMessage();
+      // Handle case where AuraHandledException message might be "Script-thrown exception"
+      // This can happen if the exception was re-thrown without preserving the original message
+      // In @AuraEnabled methods, AuraHandledException messages are sometimes wrapped
+      if (String.isBlank(errorMsg) || errorMsg == 'Script-thrown exception') {
+        // Try to get the original message from the cause if available
+        Exception cause = ahe.getCause();
+        if (cause != null && String.isNotBlank(cause.getMessage())) {
+          errorMsg = cause.getMessage();
+        } else {
+          // Check if this is a rate limiting exception by examining the stack trace
+          String stackTrace = ahe.getStackTraceString();
+          if (stackTrace != null && stackTrace.contains('executeAsUser')) {
+            // This is likely a rate limiting exception that lost its message
+            // Try to reconstruct the message, but handle SecurityException gracefully
+            try {
+              Integer pendingExecutions = [
+                SELECT COUNT()
+                FROM JT_RunAsTest_Execution__c
+                WHERE
+                  Initiated_By__c = :UserInfo.getUserId()
+                  AND Test_Status__c IN ('Queued', 'Running')
+                  AND CreatedDate >= :Datetime.now().addMinutes(-10)
+                WITH USER_MODE
+              ];
+              if (pendingExecutions >= 3) {
+                errorMsg =
+                  'Too many test executions in queue (' +
+                  pendingExecutions +
+                  '). Please wait for pending executions to complete before starting a new one. Maximum allowed: 3.';
+              } else {
+                errorMsg = 'An error occurred during test execution';
+              }
+            } catch (SecurityException se) {
+              // If we can't check pending executions due to permissions, use generic message
+              errorMsg = 'An error occurred during test execution';
+            }
+          } else {
+            errorMsg = 'An error occurred during test execution';
+          }
+        }
+      }
+      result.errorMessage = errorMsg;
+      result.stackTrace = ahe.getStackTraceString();
+      return result;
     } catch (Exception e) {
       result.success = false;
 
-      // Extract error message - check if it's an AuraHandledException with user-friendly message
-      String errorMsg = e.getMessage();
-
-      // If it's an AuraHandledException, use its message directly
-      if (e instanceof AuraHandledException) {
-        errorMsg = e.getMessage();
+      // Extract error message - check if message contains storage limit error
+      String exceptionMsg = e.getMessage();
+      String errorMsg;
+      if (
+        exceptionMsg != null &&
+        exceptionMsg.contains('STORAGE_LIMIT_EXCEEDED')
+      ) {
+        errorMsg = Label.JT_RunAsTestExecutor_storageLimitExceeded;
       } else {
-        // For other exceptions, check if message contains storage limit error
-        String exceptionMsg = e.getMessage();
-        if (
-          exceptionMsg != null &&
-          exceptionMsg.contains('STORAGE_LIMIT_EXCEEDED')
-        ) {
-          errorMsg = Label.JT_RunAsTestExecutor_storageLimitExceeded;
-        } else {
-          errorMsg = exceptionMsg;
-        }
+        errorMsg = String.isNotBlank(exceptionMsg)
+          ? exceptionMsg
+          : 'An unexpected error occurred';
       }
 
       result.errorMessage = errorMsg;
@@ -640,9 +707,6 @@ public with sharing class JT_RunAsTestExecutor {
         );
         Long endTime = System.now().getTime();
 
-        // Sanitize userId for Platform Cache key
-        final String sanitizedUserId = JT_ToolingApiUtil.toAlphanumeric(userId);
-
         // Extract field names from first record
         List<String> fieldNames = new List<String>();
         if (!records.isEmpty() && records[0] != null) {
@@ -651,37 +715,30 @@ public with sharing class JT_RunAsTestExecutor {
         }
 
         // Store results in cache as JSON string (keys must be alphanumeric)
-        Cache.Org.put(
-          'RunAsTestResult' + sanitizedUserId,
-          JSON.serialize(
-            new Map<String, Object>{
-              'success' => true,
-              'records' => records,
-              'fields' => fieldNames,
-              'recordCount' => records.size(),
-              'errorMessage' => null,
-              'executionTime' => (Integer) (endTime - startTime),
-              'runAsUserName' => 'Current User (Queueable)'
-            }
-          ),
+        cacheRunAsTestResult(
+          userId,
+          new Map<String, Object>{
+            'success' => true,
+            'records' => records,
+            'fields' => fieldNames,
+            'recordCount' => records.size(),
+            'errorMessage' => null,
+            'executionTime' => (Integer) (endTime - startTime),
+            'runAsUserName' => 'Current User (Queueable)'
+          },
           300
         );
       } catch (Exception e) {
-        // Sanitize userId for Platform Cache key
-        final String sanitizedUserId = JT_ToolingApiUtil.toAlphanumeric(userId);
-
         // Store error as JSON string
-        Cache.Org.put(
-          'RunAsTestResult' + sanitizedUserId,
-          JSON.serialize(
-            new Map<String, Object>{
-              'success' => false,
-              'queryResults' => null,
-              'recordCount' => 0,
-              'errorMessage' => e.getMessage(),
-              'executionTime' => 0
-            }
-          ),
+        cacheRunAsTestResult(
+          userId,
+          new Map<String, Object>{
+            'success' => false,
+            'queryResults' => null,
+            'recordCount' => 0,
+            'errorMessage' => e.getMessage(),
+            'executionTime' => 0
+          },
           300
         );
       }
@@ -718,19 +775,14 @@ public with sharing class JT_RunAsTestExecutor {
           Label.JT_RunAsTestExecutor_testExecutionFailedException
         );
 
-        // Sanitize userId for Platform Cache key
-        final String sanitizedUserId = JT_ToolingApiUtil.toAlphanumeric(userId);
-
         // Store error in cache
-        Cache.Org.put(
-          'RunAsTestResult' + sanitizedUserId,
-          JSON.serialize(
-            new Map<String, Object>{
-              'success' => false,
-              'errorMessage' => Label.JT_RunAsTestExecutor_testExecutionFailedUnexpectedly,
-              'recordCount' => 0
-            }
-          ),
+        JT_RunAsTestExecutor.cacheRunAsTestResult(
+          userId,
+          new Map<String, Object>{
+            'success' => false,
+            'errorMessage' => Label.JT_RunAsTestExecutor_testExecutionFailedUnexpectedly,
+            'recordCount' => 0
+          },
           300
         );
       }

@@ -35,61 +35,67 @@
 
   <!-- Usage Search Spinner Overlay -->
   <!-- Show while searching for usage, before modal appears -->
+  <!-- Only show when loading AND no modals are open (modals have higher z-index) -->
   <template if:true={isLoadingUsage}>
-    <div
-      class="usage-search-spinner-overlay slds-is-fixed"
-      role="status"
-      aria-live="polite"
-      aria-label={labels.searchingForUsage}
-    >
+    <template if:false={hasOpenModals}>
       <div
-        class="slds-grid slds-grid_vertical slds-grid_align-center slds-grid_align-space-around slds-text-align_center"
-        style="max-width: 500px"
+        class="usage-search-spinner-overlay slds-is-fixed"
+        role="status"
+        aria-live="polite"
+        aria-label={labels.searchingForUsage}
       >
-        <p class="slds-text-heading_small slds-m-bottom_medium">
-          {labels.searchingFlows}
-        </p>
-        <lightning-spinner
-          alternative-text={labels.searching}
-          size="large"
-          variant="brand"
-        ></lightning-spinner>
-        <p
-          class="slds-m-top_medium slds-text-body_regular slds-max-medium-text-width"
+        <div
+          class="slds-grid slds-grid_vertical slds-grid_align-center slds-grid_align-space-around slds-text-align_center"
+          style="max-width: 500px"
         >
-          {searchingUsageMessage}
-        </p>
+          <p class="slds-text-heading_small slds-m-bottom_medium">
+            {labels.searchingFlows}
+          </p>
+          <lightning-spinner
+            alternative-text={labels.searching}
+            size="large"
+            variant="brand"
+          ></lightning-spinner>
+          <p
+            class="slds-m-top_medium slds-text-body_regular slds-max-medium-text-width"
+          >
+            {searchingUsageMessage}
+          </p>
+        </div>
       </div>
-    </div>
+    </template>
   </template>
 
   <!-- Configuration Deletion Spinner Overlay -->
+  <!-- Only show when deleting AND no modals are open (modals have higher z-index) -->
   <template if:true={isDeletingConfiguration}>
-    <div
-      class="deletion-spinner-overlay slds-is-fixed"
-      role="status"
-      aria-live="polite"
-      aria-label="Deleting configuration"
-    >
+    <template if:false={hasOpenModals}>
       <div
-        class="slds-grid slds-grid_vertical slds-grid_align-center slds-grid_align-space-around slds-text-align_center"
-        style="max-width: 500px"
+        class="deletion-spinner-overlay slds-is-fixed"
+        role="status"
+        aria-live="polite"
+        aria-label="Deleting configuration"
       >
-        <p class="slds-text-heading_small slds-m-bottom_medium">
-          Deleting Configuration
-        </p>
-        <lightning-spinner
-          alternative-text="Deleting configuration"
-          size="large"
-          variant="brand"
-        ></lightning-spinner>
-        <p
-          class="slds-m-top_medium slds-text-body_regular slds-max-medium-text-width"
+        <div
+          class="slds-grid slds-grid_vertical slds-grid_align-center slds-grid_align-space-around slds-text-align_center"
+          style="max-width: 500px"
         >
-          Configuration deletion is being processed. Please wait...
-        </p>
+          <p class="slds-text-heading_small slds-m-bottom_medium">
+            Deleting Configuration
+          </p>
+          <lightning-spinner
+            alternative-text="Deleting configuration"
+            size="large"
+            variant="brand"
+          ></lightning-spinner>
+          <p
+            class="slds-m-top_medium slds-text-body_regular slds-max-medium-text-width"
+          >
+            Configuration deletion is being processed. Please wait...
+          </p>
+        </div>
       </div>
-    </div>
+    </template>
   </template>
 
   <lightning-card title={labels.dynamicQueryViewer} icon-name="custom:custom63">

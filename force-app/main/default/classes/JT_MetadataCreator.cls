@@ -7,7 +7,7 @@
  * @warning Use only in Sandbox, Scratch Org, Developer Edition, or Trial - Blocked in Production
  **/
 @SuppressWarnings(
-  'PMD.AvoidDebugStatements, PMD.UnusedLocalVariable, PMD.CyclomaticComplexity, PMD.StdCyclomaticComplexity'
+  'PMD.AvoidDebugStatements, PMD.UnusedLocalVariable, PMD.CyclomaticComplexity, PMD.StdCyclomaticComplexity, PMD.EmptyCatchBlock, PMD.ApexSuggestUsingNamedCred'
 )
 public with sharing class JT_MetadataCreator {
   /**
@@ -41,6 +41,7 @@ public with sharing class JT_MetadataCreator {
    * @return MetadataCreationResult
    **/
   @AuraEnabled
+  @SuppressWarnings('PMD.EmptyCatchBlock')
   public static MetadataCreationResult createConfiguration(String configJson) {
     MetadataCreationResult result = createEmptyResult();
 
@@ -174,7 +175,7 @@ public with sharing class JT_MetadataCreator {
         return result;
       }
 
-      // Delete via Metadata API using DeleteContainer
+      // Delete via Metadata API using deleteMetadata() SOAP call
       DeploymentResult deployResult = deleteMetadataViaApi(developerName);
 
       if (!deployResult.success) {
@@ -184,11 +185,16 @@ public with sharing class JT_MetadataCreator {
       }
 
       result.success = true;
-      result.message = String.format(
-        Label.JT_MetadataCreator_configDeletedSuccess,
-        new List<String>{ developerName }
-      );
+      // Use message from deployResult if available, otherwise use default
+      result.message = String.isNotBlank(deployResult.message)
+        ? deployResult.message
+        : String.format(
+            Label.JT_MetadataCreator_configDeletedSuccess,
+            new List<String>{ developerName }
+          );
       result.developerName = developerName;
+      // deleteMetadata() is synchronous, so deploymentId will be null
+      // The LWC will handle this as a synchronous success
       result.deploymentId = deployResult.deploymentId;
 
       return result;
@@ -528,6 +534,7 @@ public with sharing class JT_MetadataCreator {
     Boolean success;
     String deploymentId;
     String errorMessage;
+    String message;
   }
 
   /**
@@ -544,151 +551,106 @@ public with sharing class JT_MetadataCreator {
     String crlf = '\r\n';
 
     // Part 1: JSON deployment options
+    // Format matches successful examples: Content-Disposition and Content-Type on separate lines
+    // Using "json" as field name (matches successful curl examples and Ruby examples)
     String jsonPart = '--' + boundary + crlf +
-      'Content-Disposition: form-data; name="entity_content"' + crlf +
+      'Content-Disposition: form-data; name="json"' + crlf +
       'Content-Type: application/json' + crlf + crlf +
       deploymentOptionsJson + crlf;
 
     // Part 2: ZIP file
+    // Using "upload" as field name (matches successful curl examples from Stack Overflow)
+    // Order: Content-Disposition first, then Content-Type
     String filePartHeader = '--' + boundary + crlf +
-      'Content-Disposition: form-data; name="file"; filename="deploy.zip"' +
+      'Content-Disposition: form-data; name="upload"; filename="deploy.zip"' +
       crlf +
       'Content-Type: application/zip' +
       crlf +
       crlf;
 
-    // Footer
-    String footer = crlf + '--' + boundary + '--';
+    // Footer - must include \r\n after ZIP and before final boundary
+    // Format: \r\n--boundary--\r\n (matches successful Ruby example)
+    String footer = crlf + '--' + boundary + '--' + crlf;
 
-    // Combine parts
+    // Convert string parts to blobs
     Blob jsonPartBlob = Blob.valueOf(jsonPart);
     Blob filePartHeaderBlob = Blob.valueOf(filePartHeader);
     Blob footerBlob = Blob.valueOf(footer);
 
-    // Combine all parts
-    Blob result = combineBlobs(jsonPartBlob, filePartHeaderBlob);
-    result = combineBlobs(result, zipBlob);
-    result = combineBlobs(result, footerBlob);
+    // Combine all parts: convert each to hex, concatenate hex strings, then convert back
+    // This approach avoids multiple blob concatenations which could cause issues
+    String hexJson = EncodingUtil.convertToHex(jsonPartBlob);
+    String hexHeader = EncodingUtil.convertToHex(filePartHeaderBlob);
+    String hexZip = EncodingUtil.convertToHex(zipBlob);
+    String hexFooter = EncodingUtil.convertToHex(footerBlob);
 
-    return result;
+    String combinedHex = hexJson + hexHeader + hexZip + hexFooter;
+
+    return EncodingUtil.convertFromHex(combinedHex);
   }
 
   /**
-   * @description Deletes metadata via Metadata API using destructiveChanges.xml
-   * Note: Custom Metadata Type records cannot be deleted via Tooling API DELETE.
-   * We must use Metadata API REST with destructiveChanges.xml (async deployment).
-   * @author Jaime Terrats | 12-13-2025
+   * @description Deletes metadata via Metadata API using deleteMetadata() SOAP call
+   * This is simpler than deploy() with destructiveChanges.xml and avoids ZIP file issues
+   * @author Jaime Terrats | 12-22-2025
    * @param devName Developer name of configuration to delete
    * @return DeploymentResult with success status, deploymentId, and errorMessage
    **/
+  @SuppressWarnings('PMD.ApexSuggestUsingNamedCred')
   private static DeploymentResult deleteMetadataViaApi(String devName) {
     DeploymentResult result = new DeploymentResult();
     result.success = false;
 
     try {
-      // Create destructiveChanges.xml content
+      // Use deleteMetadata() SOAP call - simpler than deploy() with destructiveChanges.xml
       // Format: CustomMetadataType.DeveloperName
-      final String destructiveChangesXml =
-        '<?xml version="1.0" encoding="UTF-8"?>\n' +
-        '<Package xmlns="http://soap.sforce.com/2006/04/metadata">\n' +
-        '  <types>\n' +
-        '    <members>JT_DynamicQueryConfiguration__mdt.' +
-        devName +
-        '</members>\n' +
-        '    <name>CustomMetadata</name>\n' +
-        '  </types>\n' +
-        '</Package>';
+      String fullName = 'JT_DynamicQueryConfiguration__mdt.' + devName;
+      List<String> fullNames = new List<String>{ fullName };
 
-      // Create package.xml (empty, only version)
-      final String packageXml =
-        '<?xml version="1.0" encoding="UTF-8"?>\n' +
-        '<Package xmlns="http://soap.sforce.com/2006/04/metadata">\n' +
-        '  <version>' +
-        JT_ToolingApiUtil.getApiVersion().substring(1) +
-        '</version>\n' +
-        '</Package>';
+      // Create SOAP service
+      JT_MetadataApiSoap.MetadataPort service = new JT_MetadataApiSoap.MetadataPort();
+      service.SessionHeader = new JT_MetadataApiSoap.SessionHeader_element();
+      service.SessionHeader.sessionId = JT_ToolingApiUtil.getApiSessionId();
+      service.timeout_x = 120000;
 
-      // Create ZIP file in memory
-      // ZIP format: package.xml + destructiveChanges.xml
-      Blob zipBlob = createMetadataZip(packageXml, destructiveChangesXml);
-
-      // Create deployment options JSON
-      Map<String, Object> deployOptions = new Map<String, Object>{
-        'allowMissingFiles' => false,
-        'autoUpdatePackage' => false,
-        'checkOnly' => false,
-        'ignoreWarnings' => false,
-        'performRetrieve' => false,
-        'purgeOnDelete' => false,
-        'rollbackOnError' => false,
-        'runTests' => null,
-        'singlePackage' => true,
-        'testLevel' => 'NoTestRun'
-      };
-      Map<String, Object> deployRequest = new Map<String, Object>{
-        'deployOptions' => deployOptions
-      };
-      String deploymentOptionsJson = JSON.serialize(deployRequest);
-
-      // Create multipart/form-data body
-      Blob multipartBody = createMultipartFormDataBody(
-        deploymentOptionsJson,
-        zipBlob
+      // Call deleteMetadata() - this is synchronous, no deployment ID needed
+      JT_MetadataApiSoap.DeleteResult[] deleteResults = service.deleteMetadata(
+        'CustomMetadata',
+        fullNames
       );
 
-      // Deploy via Metadata API REST
-      final String orgUrl = JT_ToolingApiUtil.getOrgDomainUrl();
-      final String sessionId = JT_ToolingApiUtil.getApiSessionId();
-      final String apiVersion = JT_ToolingApiUtil.getApiVersion();
-      final String endpoint =
-        orgUrl +
-        '/services/data/' +
-        apiVersion +
-        '/metadata/deployRequest';
+      if (deleteResults != null && deleteResults.size() > 0) {
+        JT_MetadataApiSoap.DeleteResult deleteResult = deleteResults[0];
 
-      HttpRequest request = new HttpRequest();
-      request.setEndpoint(endpoint);
-      request.setMethod('POST');
-      request.setHeader('Authorization', 'Bearer ' + sessionId);
-      request.setHeader(
-        'Content-Type',
-        'multipart/form-data; boundary=--------------------------BOUNDARY'
-      );
-      request.setBodyAsBlob(multipartBody);
-      request.setTimeout(30000);
-
-      Http httpClient = new Http();
-      HttpResponse response = httpClient.send(request);
-
-      if (response.getStatusCode() == 200 || response.getStatusCode() == 201) {
-        // Parse response to get deployment ID
-        Map<String, Object> responseMap = (Map<String, Object>) JSON.deserializeUntyped(
-          response.getBody()
-        );
-        String deploymentId = (String) responseMap.get('id');
-
-        if (String.isNotBlank(deploymentId)) {
+        if (deleteResult.success != null && deleteResult.success) {
           result.success = true;
-          result.deploymentId = deploymentId;
+          result.message = String.format(
+            Label.JT_MetadataCreator_configDeletedSuccess,
+            new List<String>{ devName }
+          );
+          // deleteMetadata() is synchronous, so we don't return a deploymentId
+          // The LWC will handle this as a synchronous success
+          result.deploymentId = null;
           return result;
         } else {
           result.success = false;
+          String errorMsg = String.isNotBlank(deleteResult.errorMessage)
+            ? deleteResult.errorMessage
+            : 'Delete operation failed';
           result.errorMessage = String.format(
-            Label.JT_MetadataCreator_errorDeployingMetadata,
-            new List<String>{
-              'Deployment started but no deployment ID returned: ' +
-              response.getBody()
-            }
+            Label.JT_MetadataCreator_failedDeleteMetadata,
+            new List<String>{ errorMsg }
           );
           Map<String, Object> errorDetails = new Map<String, Object>{
             'devName' => devName,
-            'responseBody' => response.getBody()
+            'fullName' => fullName,
+            'deleteResult' => JSON.serialize(deleteResult)
           };
           JT_ErrorLogger.logError(
             'Metadata Deletion Exception',
             result.errorMessage,
             null,
-            'JT_MetadataCreator.deleteMetadataViaApi - No deployment ID',
+            'JT_MetadataCreator.deleteMetadataViaApi - deleteMetadata() failed',
             JSON.serialize(errorDetails),
             'High'
           );
@@ -696,23 +658,19 @@ public with sharing class JT_MetadataCreator {
         }
       } else {
         result.success = false;
-        final String errorBody = response.getBody();
         result.errorMessage = String.format(
           Label.JT_MetadataCreator_failedDeleteMetadata,
-          new List<String>{
-            String.isNotBlank(errorBody) ? errorBody : 'Unknown error'
-          }
+          new List<String>{ 'No result returned from deleteMetadata()' }
         );
         Map<String, Object> errorDetails = new Map<String, Object>{
           'devName' => devName,
-          'responseBody' => response.getBody(),
-          'statusCode' => response.getStatusCode()
+          'fullName' => fullName
         };
         JT_ErrorLogger.logError(
           'Metadata Deletion Exception',
           result.errorMessage,
           null,
-          'JT_MetadataCreator.deleteMetadataViaApi - Deploy request failed',
+          'JT_MetadataCreator.deleteMetadataViaApi - No result returned',
           JSON.serialize(errorDetails),
           'High'
         );
@@ -764,7 +722,6 @@ public with sharing class JT_MetadataCreator {
     );
     Integer packageOffset = 0; // Offset of package.xml header in ZIP
     zipParts.add(packageHeader);
-    packageOffset = 0; // First entry starts at offset 0
     zipParts.add(packageBlob);
 
     // Entry 2: destructiveChanges.xml local file header + data
@@ -784,24 +741,50 @@ public with sharing class JT_MetadataCreator {
       destructiveHeader.size() +
       destructiveBlob.size();
 
+    System.debug(
+      LoggingLevel.INFO,
+      '📦 ZIP Structure: packageHeader=' +
+      packageHeader.size() +
+      ', packageData=' +
+      packageBlob.size() +
+      ', destructiveHeader=' +
+      destructiveHeader.size() +
+      ', destructiveData=' +
+      destructiveBlob.size() +
+      ', centralDirOffset=' +
+      centralDirOffset
+    );
+    System.debug(
+      LoggingLevel.INFO,
+      '📦 Offsets: packageOffset=' +
+      packageOffset +
+      ', destructiveOffset=' +
+      destructiveOffset
+    );
+
     // Central directory
     Blob centralDir = createZipCentralDirectoryBlob(
       'package.xml',
       packageBlob.size(),
       packageOffset
     );
-    centralDir = combineBlobs(
-      centralDir,
-      createZipCentralDirectoryBlob(
-        'destructiveChanges.xml',
-        destructiveBlob.size(),
-        destructiveOffset
-      )
+    Blob destructiveCentralDir = createZipCentralDirectoryBlob(
+      'destructiveChanges.xml',
+      destructiveBlob.size(),
+      destructiveOffset
     );
+    centralDir = combineBlobs(centralDir, destructiveCentralDir);
     zipParts.add(centralDir);
 
     // End of central directory
     Integer centralDirSize = centralDir.size();
+    System.debug(
+      LoggingLevel.INFO,
+      '📦 Central Directory: size=' +
+      centralDirSize +
+      ', offset=' +
+      centralDirOffset
+    );
     zipParts.add(
       createZipEndOfCentralDirectoryBlob(
         2,
@@ -812,9 +795,29 @@ public with sharing class JT_MetadataCreator {
 
     // Combine all parts into final ZIP
     Blob finalZip = zipParts[0];
+    Integer cumulativeSize = zipParts[0].size();
     for (Integer i = 1; i < zipParts.size(); i++) {
+      System.debug(
+        LoggingLevel.INFO,
+        '📦 Combining part ' +
+        i +
+        ': size=' +
+        zipParts[i].size() +
+        ', cumulative=' +
+        cumulativeSize
+      );
       finalZip = combineBlobs(finalZip, zipParts[i]);
+      cumulativeSize += zipParts[i].size();
     }
+
+    System.debug(
+      LoggingLevel.INFO,
+      '📦 Final ZIP size: ' +
+      finalZip.size() +
+      ' bytes (expected: ' +
+      cumulativeSize +
+      ')'
+    );
 
     return finalZip;
   }
@@ -826,11 +829,11 @@ public with sharing class JT_MetadataCreator {
    * @return Blob Combined blob
    **/
   private static Blob combineBlobs(Blob blob1, Blob blob2) {
-    // Combine blobs using base64 encoding (most reliable method in Apex)
-    String base64Part1 = EncodingUtil.base64Encode(blob1);
-    String base64Part2 = EncodingUtil.base64Encode(blob2);
-    String combinedBase64 = base64Part1 + base64Part2;
-    return EncodingUtil.base64Decode(combinedBase64);
+    // Combine blobs using hex encoding (more reliable than base64 concatenation)
+    String hex1 = EncodingUtil.convertToHex(blob1);
+    String hex2 = EncodingUtil.convertToHex(blob2);
+    String combinedHex = hex1 + hex2;
+    return EncodingUtil.convertFromHex(combinedHex);
   }
 
   /**
@@ -1114,20 +1117,18 @@ public with sharing class JT_MetadataCreator {
    **/
   private static Blob bytesToBlob(List<Integer> bytes) {
     // Convert bytes to hex string, then to Blob
+    // Use a more direct approach: convert each byte to 2-digit hex
     String hexString = '';
     Integer mask = 255; // 0xFF equivalent
+    String hexChars = '0123456789ABCDEF';
     for (Integer b : bytes) {
       // Ensure byte is in valid range (0-255)
       Integer byteValue = b & mask;
       // Convert to 2-digit hex string
-      String hex = EncodingUtil.convertToHex(Blob.valueOf(
-        String.fromCharArray(new List<Integer>{ byteValue })
-      ));
-      // Ensure 2 digits (pad with 0 if needed)
-      if (hex.length() == 1) {
-        hex = '0' + hex;
-      }
-      hexString += hex;
+      Integer highNibble = (byteValue >> 4) & 15;
+      Integer lowNibble = byteValue & 15;
+      hexString += hexChars.substring(highNibble, highNibble + 1);
+      hexString += hexChars.substring(lowNibble, lowNibble + 1);
     }
     return EncodingUtil.convertFromHex(hexString);
   }
@@ -1620,7 +1621,8 @@ public with sharing class JT_MetadataCreator {
         return status;
       }
 
-      // Check deployment status via Tooling API
+      // Check deployment status via Metadata API (not Tooling API)
+      // Note: Metadata API uses /services/data/vXX.X/metadata/deployRequest/ID
       final String endpointPath =
         '/services/data/' +
         JT_ToolingApiUtil.getApiVersion() +
@@ -1642,27 +1644,21 @@ public with sharing class JT_MetadataCreator {
           response.getBody()
         );
 
-        // Extract status from response
-        String deployStatus = (String) responseMap.get('status');
-        Boolean done = (Boolean) responseMap.get('done');
-        Boolean success = (Boolean) responseMap.get('success');
+        // Extract deployResult from response
+        Map<String, Object> deployResult = (Map<String, Object>) responseMap.get('deployResult');
 
-        status.put('status', deployStatus);
+        // Extract status, done, and success from deployResult
+        String deployStatus = deployResult != null ? (String) deployResult.get('status') : null;
+        Boolean done = deployResult != null ? (Boolean) deployResult.get('done') : null;
+        Boolean success = deployResult != null ? (Boolean) deployResult.get('success') : null;
+
+        status.put('status', deployStatus != null ? deployStatus : 'UNKNOWN');
         status.put('done', done != null ? done : false);
         status.put('success', success != null ? success : false);
 
-        // Log full response for debugging
-        System.debug('Deployment Status Response: ' + JSON.serialize(responseMap));
-
         // Extract error details if deployment failed
         if (done != null && done && success != null && !success) {
-          Map<String, Object> deployResult = (Map<String, Object>) responseMap.get(
-            'deployResult'
-          );
           if (deployResult != null) {
-            // Log deployResult for debugging
-            System.debug('Deploy Result: ' + JSON.serialize(deployResult));
-
             Map<String, Object> details = (Map<String, Object>) deployResult.get(
               'details'
             );
@@ -1677,13 +1673,6 @@ public with sharing class JT_MetadataCreator {
                 status.put('fullName', firstFailure.get('fullName'));
               }
 
-              // Also check for component successes to see what was deployed
-              List<Object> componentSuccesses = (List<Object>) details.get(
-                'componentSuccesses'
-              );
-              if (componentSuccesses != null && !componentSuccesses.isEmpty()) {
-                System.debug('Component Successes: ' + JSON.serialize(componentSuccesses));
-              }
             }
             String errorMessage = (String) deployResult.get('errorMessage');
             if (String.isNotBlank(errorMessage)) {
@@ -1691,19 +1680,12 @@ public with sharing class JT_MetadataCreator {
             }
           }
         } else if (done != null && done && success != null && success) {
-          // Deployment succeeded - log details
-          Map<String, Object> deployResult = (Map<String, Object>) responseMap.get(
-            'deployResult'
-          );
+          // Deployment succeeded
           if (deployResult != null) {
-            System.debug('Deployment succeeded. Deploy Result: ' + JSON.serialize(deployResult));
-
-            // Check number of components deployed
             Map<String, Object> details = (Map<String, Object>) deployResult.get('details');
             if (details != null) {
               List<Object> componentSuccesses = (List<Object>) details.get('componentSuccesses');
               if (componentSuccesses != null) {
-                System.debug('Number of components deployed: ' + componentSuccesses.size());
                 status.put('componentsDeployed', componentSuccesses.size());
               }
             }
@@ -1736,7 +1718,60 @@ public with sharing class JT_MetadataCreator {
       );
     }
 
+    // Log final status map before returning
     return status;
+  }
+
+  /**
+   * @description Parses error response from Metadata API
+   * @param errorBody Raw error response body
+   * @return String Parsed error message
+   **/
+  private static String parseErrorResponse(String errorBody) {
+    if (String.isBlank(errorBody)) {
+      return 'Unknown error: Empty response';
+    }
+
+    try {
+      // Try to parse as JSON array (common format: [{"message":"...","errorCode":"..."}])
+      Object parsed = JSON.deserializeUntyped(errorBody);
+      if (parsed instanceof List<Object>) {
+        List<Object> errors = (List<Object>) parsed;
+        List<String> errorMessages = new List<String>();
+        for (Object errorObj : errors) {
+          if (errorObj instanceof Map<String, Object>) {
+            Map<String, Object> errorMap = (Map<String, Object>) errorObj;
+            String message = (String) errorMap.get('message');
+            String errorCode = (String) errorMap.get('errorCode');
+            if (String.isNotBlank(message)) {
+              String fullMessage = message;
+              if (String.isNotBlank(errorCode)) {
+                fullMessage += ' (Error Code: ' + errorCode + ')';
+              }
+              errorMessages.add(fullMessage);
+            }
+          }
+        }
+        if (!errorMessages.isEmpty()) {
+          return String.join(errorMessages, '; ');
+        }
+      } else if (parsed instanceof Map<String, Object>) {
+        // Try as single object
+        Map<String, Object> errorMap = (Map<String, Object>) parsed;
+        String message = (String) errorMap.get('message');
+        if (String.isNotBlank(message)) {
+          return message;
+        }
+      }
+    } catch (Exception e) {
+      System.debug(
+        LoggingLevel.WARN,
+        '⚠️ Failed to parse error response: ' + e.getMessage()
+      );
+    }
+
+    // Fallback: return raw body if parsing fails
+    return errorBody;
   }
 
   /**

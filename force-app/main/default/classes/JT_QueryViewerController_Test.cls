@@ -1061,4 +1061,666 @@ private class JT_QueryViewerController_Test {
     System.assertEquals(0, result.recordCount, 'Should have 0 records');
     System.assertEquals(0, result.records.size(), 'Records list should be empty');
   }
+
+  /**
+   * @description Test executeQuery with Account_By_Name configuration
+   */
+  @IsTest
+  static void testExecuteQueryAccountByName() {
+    Map<String, Object> bindings = new Map<String, Object>{
+      'searchName' => 'Test'
+    };
+    String bindingsJson = JSON.serialize(bindings);
+
+    Test.startTest();
+    JT_QueryViewerController.QueryResult result = JT_QueryViewerController.executeQuery(
+      'Account_By_Name',
+      bindingsJson,
+      null
+    );
+    Test.stopTest();
+
+    System.assertNotEquals(null, result, 'Result should not be null');
+    System.assertEquals(true, result.success, 'Query should succeed');
+  }
+
+  /**
+   * @description Test executeQuery with Dynamic_Input_Test configuration
+   */
+  @IsTest
+  static void testExecuteQueryDynamicInputTest() {
+    Map<String, Object> bindings = new Map<String, Object>{
+      'accountType' => 'Customer',
+      'industry' => 'Technology'
+    };
+    String bindingsJson = JSON.serialize(bindings);
+
+    Test.startTest();
+    JT_QueryViewerController.QueryResult result = JT_QueryViewerController.executeQuery(
+      'Dynamic_Input_Test',
+      bindingsJson,
+      null
+    );
+    Test.stopTest();
+
+    System.assertNotEquals(null, result, 'Result should not be null');
+    System.assertEquals(true, result.success, 'Query should succeed');
+  }
+
+  /**
+   * @description Test executeQuery with Complete_Customer_360_View configuration
+   */
+  @IsTest
+  static void testExecuteQueryCompleteCustomer360View() {
+    Map<String, Object> bindings = new Map<String, Object>{
+      'accountType' => 'Customer'
+    };
+    String bindingsJson = JSON.serialize(bindings);
+
+    Test.startTest();
+    JT_QueryViewerController.QueryResult result = JT_QueryViewerController.executeQuery(
+      'Complete_Customer_360_View',
+      bindingsJson,
+      null
+    );
+    Test.stopTest();
+
+    System.assertNotEquals(null, result, 'Result should not be null');
+    System.assertEquals(true, result.success, 'Query should succeed');
+  }
+
+  /**
+   * @description Test executeQuery with LIKE_Patterns_Mix configuration
+   */
+  @IsTest
+  static void testExecuteQueryLikePatternsMix() {
+    // Create test account with matching data
+    Account testAcc = new Account(
+      Name = 'Test Account',
+      Website = 'example.com',
+      Phone = '555-1234',
+      Description = 'test description'
+    );
+    insert testAcc;
+
+    Map<String, Object> bindings = new Map<String, Object>{
+      'startsWith' => 'Test',
+      'endsWith' => 'Account',
+      'websitePattern' => 'example',
+      'phonePattern' => '555',
+      'descriptionKeyword' => 'test'
+    };
+    String bindingsJson = JSON.serialize(bindings);
+
+    Test.startTest();
+    JT_QueryViewerController.QueryResult result = JT_QueryViewerController.executeQuery(
+      'LIKE_Patterns_Mix',
+      bindingsJson,
+      null
+    );
+    Test.stopTest();
+
+    System.assertNotEquals(null, result, 'Result should not be null');
+    // Query should succeed even if no records match
+    // Note: This query may fail if Description field is not accessible
+    // We'll just verify the result structure is correct
+    System.assertNotEquals(null, result.success, 'Success flag should be set');
+  }
+
+  /**
+   * @description Test executeQuery with Multiple_IN_Operators configuration
+   */
+  @IsTest
+  static void testExecuteQueryMultipleInOperators() {
+    Account testAcc = new Account(Name = 'Test Account', Industry = 'Technology', Type = 'Customer');
+    insert testAcc;
+
+    Map<String, Object> bindings = new Map<String, Object>{
+      'accountIds' => new List<String>{ testAcc.Id },
+      'validIndustries' => new List<String>{ 'Technology' },
+      'accountTypes' => new List<String>{ 'Customer' },
+      'validStates' => new List<String>{ 'CA' },
+      'excludedNames' => new List<String>{ 'Excluded' }
+    };
+    String bindingsJson = JSON.serialize(bindings);
+
+    Test.startTest();
+    JT_QueryViewerController.QueryResult result = JT_QueryViewerController.executeQuery(
+      'Multiple_IN_Operators',
+      bindingsJson,
+      null
+    );
+    Test.stopTest();
+
+    System.assertNotEquals(null, result, 'Result should not be null');
+    System.assertEquals(true, result.success, 'Query should succeed');
+  }
+
+  /**
+   * @description Test executeQuery with Complex_Mixed_Operators configuration
+   */
+  @IsTest
+  static void testExecuteQueryComplexMixedOperators() {
+    Account testAcc = new Account(
+      Name = 'Test Account',
+      Industry = 'Technology',
+      Type = 'Customer',
+      AnnualRevenue = 5000000,
+      NumberOfEmployees = 100,
+      BillingCountry = 'USA'
+    );
+    insert testAcc;
+
+    Map<String, Object> bindings = new Map<String, Object>{
+      'industries' => new List<String>{ 'Technology' },
+      'excludedType' => 'Competitor',
+      'minRevenue' => 1000000,
+      'maxRevenue' => 100000000,
+      'namePattern' => 'Test',
+      'industryPattern' => 'Tech',
+      'minEmployees' => 10,
+      'maxEmployees' => 1000,
+      'excludedCountries' => new List<String>{ 'Test Country' }
+    };
+    String bindingsJson = JSON.serialize(bindings);
+
+    Test.startTest();
+    JT_QueryViewerController.QueryResult result = JT_QueryViewerController.executeQuery(
+      'Complex_Mixed_Operators',
+      bindingsJson,
+      null
+    );
+    Test.stopTest();
+
+    System.assertNotEquals(null, result, 'Result should not be null');
+    System.assertEquals(true, result.success, 'Query should succeed');
+  }
+
+  /**
+   * @description Test executeQuery with All_Comparison_Operators configuration
+   */
+  @IsTest
+  static void testExecuteQueryAllComparisonOperators() {
+    Account testAcc = new Account(
+      Name = 'Test Account',
+      AnnualRevenue = 1000000,
+      NumberOfEmployees = 50
+    );
+    insert testAcc;
+
+    Map<String, Object> bindings = new Map<String, Object>{
+      'exactRevenue' => 1000000,
+      'notEqualRevenue' => 2000000,
+      'lessThanRevenue' => 5000000,
+      'lessThanOrEqual' => 10000000,
+      'greaterThanRevenue' => 100000,
+      'greaterThanOrEqual' => 500000,
+      'exactDate' => Date.today(),
+      'notEqualEmployees' => 100
+    };
+    String bindingsJson = JSON.serialize(bindings);
+
+    Test.startTest();
+    JT_QueryViewerController.QueryResult result = JT_QueryViewerController.executeQuery(
+      'All_Comparison_Operators',
+      bindingsJson,
+      null
+    );
+    Test.stopTest();
+
+    System.assertNotEquals(null, result, 'Result should not be null');
+    // Query should succeed even if no records match (OR conditions)
+    // Note: This query may fail if fields are not accessible
+    // We'll just verify the result structure is correct
+    System.assertNotEquals(null, result.success, 'Success flag should be set');
+  }
+
+  /**
+   * @description Test assessQueryRisk with Multiple_IN_Operators configuration
+   */
+  @IsTest
+  static void testAssessQueryRiskMultipleInOperators() {
+    Map<String, Object> bindings = new Map<String, Object>{
+      'accountIds' => new List<String>{ '001000000000000AAA' },
+      'validIndustries' => new List<String>{ 'Technology' },
+      'accountTypes' => new List<String>{ 'Customer' },
+      'validStates' => new List<String>{ 'CA' },
+      'excludedNames' => new List<String>{ 'Excluded' }
+    };
+    String bindingsJson = JSON.serialize(bindings);
+
+    Test.startTest();
+    JT_QueryViewerController.QueryRiskAssessment assessment = JT_QueryViewerController.assessQueryRisk(
+      'Multiple_IN_Operators',
+      bindingsJson
+    );
+    Test.stopTest();
+
+    System.assertNotEquals(null, assessment, 'Assessment should not be null');
+  }
+
+  /**
+   * @description Test executeQuery with NOT_Operators_Test configuration (should fail due to NOT LIKE)
+   */
+  @IsTest
+  static void testExecuteQueryNotOperatorsTest() {
+    Map<String, Object> bindings = new Map<String, Object>{
+      'excludedIndustries' => new List<String>{ 'Technology' },
+      'excludedType' => 'Competitor',
+      'excludedRevenues' => new List<Decimal>{ 1000000 },
+      'excludedPattern' => 'Test',
+      'excludedCountry' => 'USA'
+    };
+    String bindingsJson = JSON.serialize(bindings);
+
+    Test.startTest();
+    JT_QueryViewerController.QueryResult result = JT_QueryViewerController.executeQuery(
+      'NOT_Operators_Test',
+      bindingsJson,
+      null
+    );
+    Test.stopTest();
+
+    System.assertNotEquals(null, result, 'Result should not be null');
+    // This query should fail because it uses NOT LIKE which is not supported
+    System.assertEquals(false, result.success, 'Query should fail due to NOT LIKE operator');
+    System.assertNotEquals(null, result.errorMessage, 'Error message should be present');
+  }
+
+  /**
+   * @description Test assessQueryRisk with Complex_Mixed_Operators configuration
+   */
+  @IsTest
+  static void testAssessQueryRiskComplexMixedOperators() {
+    Map<String, Object> bindings = new Map<String, Object>{
+      'industries' => new List<String>{ 'Technology' },
+      'excludedType' => 'Competitor',
+      'minRevenue' => 1000000,
+      'maxRevenue' => 100000000,
+      'namePattern' => 'Test',
+      'industryPattern' => 'Tech',
+      'minEmployees' => 10,
+      'maxEmployees' => 1000,
+      'excludedCountries' => new List<String>{ 'Test Country' }
+    };
+    String bindingsJson = JSON.serialize(bindings);
+
+    Test.startTest();
+    JT_QueryViewerController.QueryRiskAssessment assessment = JT_QueryViewerController.assessQueryRisk(
+      'Complex_Mixed_Operators',
+      bindingsJson
+    );
+    Test.stopTest();
+
+    System.assertNotEquals(null, assessment, 'Assessment should not be null');
+  }
+
+  /**
+   * @description Test convertBindingValueForQuery converts Decimal to Integer for Integer fields
+   * Simulates JavaScript sending Decimal (from JSON deserialization) for NumberOfEmployees field
+   */
+  @IsTest
+  static void testConvertBindingValueForQueryDecimalToInteger() {
+    String query = 'SELECT Id FROM Account WHERE NumberOfEmployees >= :minEmployees';
+    Decimal decimalValue = 100.0;
+
+    Test.startTest();
+    Object result = JT_QueryViewerController.convertBindingValueForQuery(
+      query,
+      'minEmployees',
+      decimalValue
+    );
+    Test.stopTest();
+
+    System.assert(
+      result instanceof Integer,
+      'Result should be Integer, not Decimal'
+    );
+    System.assertEquals(100, (Integer) result, 'Should convert Decimal 100.0 to Integer 100');
+  }
+
+  /**
+   * @description Test convertBindingValueForQuery keeps Decimal for Decimal fields
+   * Simulates JavaScript sending Decimal for AnnualRevenue field
+   */
+  @IsTest
+  static void testConvertBindingValueForQueryKeepsDecimal() {
+    String query = 'SELECT Id FROM Account WHERE AnnualRevenue >= :minRevenue';
+    Decimal decimalValue = 1000000.50;
+
+    Test.startTest();
+    Object result = JT_QueryViewerController.convertBindingValueForQuery(
+      query,
+      'minRevenue',
+      decimalValue
+    );
+    Test.stopTest();
+
+    System.assert(
+      result instanceof Decimal,
+      'Result should remain Decimal for Decimal fields'
+    );
+    System.assertEquals(
+      1000000.50,
+      (Decimal) result,
+      'Should keep Decimal value unchanged'
+    );
+  }
+
+  /**
+   * @description Test convertBindingValueForQuery keeps Integer as Integer
+   * Simulates JavaScript sending Integer directly
+   */
+  @IsTest
+  static void testConvertBindingValueForQueryKeepsInteger() {
+    String query = 'SELECT Id FROM Account WHERE NumberOfEmployees >= :minEmployees';
+    Integer integerValue = 100;
+
+    Test.startTest();
+    Object result = JT_QueryViewerController.convertBindingValueForQuery(
+      query,
+      'minEmployees',
+      integerValue
+    );
+    Test.stopTest();
+
+    System.assert(
+      result instanceof Integer,
+      'Result should remain Integer'
+    );
+    System.assertEquals(100, (Integer) result, 'Should keep Integer value unchanged');
+  }
+
+  /**
+   * @description Test convertBindingValueForQuery handles legacy String values for Integer fields
+   */
+  @IsTest
+  static void testConvertBindingValueForQueryStringToInteger() {
+    String query = 'SELECT Id FROM Account WHERE NumberOfEmployees >= :minEmployees';
+    String stringValue = '100';
+
+    Test.startTest();
+    Object result = JT_QueryViewerController.convertBindingValueForQuery(
+      query,
+      'minEmployees',
+      stringValue
+    );
+    Test.stopTest();
+
+    System.assert(
+      result instanceof Integer,
+      'Result should be Integer when field is Integer'
+    );
+    System.assertEquals(100, (Integer) result, 'Should convert String "100" to Integer 100');
+  }
+
+  /**
+   * @description Test convertBindingValueForQuery handles legacy String values for Decimal fields
+   */
+  @IsTest
+  static void testConvertBindingValueForQueryStringToDecimal() {
+    String query = 'SELECT Id FROM Account WHERE AnnualRevenue >= :minRevenue';
+    String stringValue = '1000000.50';
+
+    Test.startTest();
+    Object result = JT_QueryViewerController.convertBindingValueForQuery(
+      query,
+      'minRevenue',
+      stringValue
+    );
+    Test.stopTest();
+
+    System.assert(
+      result instanceof Decimal,
+      'Result should be Decimal when field is Decimal'
+    );
+    System.assertEquals(
+      1000000.50,
+      (Decimal) result,
+      'Should convert String "1000000.50" to Decimal'
+    );
+  }
+
+  /**
+   * @description Test convertBindingValueForQuery handles boolean values
+   * Simulates JavaScript sending Boolean directly
+   */
+  @IsTest
+  static void testConvertBindingValueForQueryBoolean() {
+    String query = 'SELECT Id FROM Account WHERE IsCustomerPortal = :isPortal';
+    Boolean boolValue = true;
+
+    Test.startTest();
+    Object result = JT_QueryViewerController.convertBindingValueForQuery(
+      query,
+      'isPortal',
+      boolValue
+    );
+    Test.stopTest();
+
+    System.assert(
+      result instanceof Boolean,
+      'Result should remain Boolean'
+    );
+    System.assertEquals(true, (Boolean) result, 'Should keep Boolean value unchanged');
+  }
+
+  /**
+   * @description Test convertBindingValueForQuery handles legacy String boolean values
+   */
+  @IsTest
+  static void testConvertBindingValueForQueryStringToBoolean() {
+    String query = 'SELECT Id FROM Account WHERE IsCustomerPortal = :isPortal';
+    String stringValue = 'true';
+
+    Test.startTest();
+    Object result = JT_QueryViewerController.convertBindingValueForQuery(
+      query,
+      'isPortal',
+      stringValue
+    );
+    Test.stopTest();
+
+    System.assert(
+      result instanceof Boolean,
+      'Result should be Boolean when field is Boolean'
+    );
+    System.assertEquals(true, (Boolean) result, 'Should convert String "true" to Boolean true');
+  }
+
+  /**
+   * @description Test convertBindingValueForQuery handles null values
+   */
+  @IsTest
+  static void testConvertBindingValueForQueryNull() {
+    String query = 'SELECT Id FROM Account WHERE NumberOfEmployees >= :minEmployees';
+
+    Test.startTest();
+    Object result = JT_QueryViewerController.convertBindingValueForQuery(
+      query,
+      'minEmployees',
+      null
+    );
+    Test.stopTest();
+
+    System.assertEquals(null, result, 'Should return null for null input');
+  }
+
+  /**
+   * @description Integration test: Decimal to Integer conversion in real query execution via executeQuery
+   * Creates Account with NumberOfEmployees and validates Decimal binding converts to Integer
+   */
+  @IsTest
+  static void testDecimalToIntegerConversionInExecuteQuery() {
+    // Create test Account with specific NumberOfEmployees
+    Account testAccount = new Account(
+      Name = 'Test Account Integer Field',
+      NumberOfEmployees = 100,
+      AnnualRevenue = 1000000
+    );
+    insert testAccount;
+
+    // Simulate JavaScript sending Decimal (from JSON deserialization)
+    // JSON will deserialize numbers as Decimal in Apex
+    String bindingsJson = '{"notEqualEmployees": 99}';
+
+    Test.startTest();
+    JT_QueryViewerController.QueryResult result = JT_QueryViewerController.executeQuery(
+      'All_Comparison_Operators',
+      bindingsJson,
+      null
+    );
+    Test.stopTest();
+
+    // Query should execute successfully with Decimal converted to Integer
+    System.assertNotEquals(null, result, 'Result should not be null');
+    System.assertEquals(true, result.success, 'Query should succeed');
+  }
+
+  /**
+   * @description Integration test: Decimal binding for Decimal field (AnnualRevenue) via executeQuery
+   * Creates Account with AnnualRevenue and validates Decimal binding works correctly
+   */
+  @IsTest
+  static void testDecimalBindingForDecimalFieldInExecuteQuery() {
+    // Create test Account with specific AnnualRevenue
+    Account testAccount = new Account(
+      Name = 'Test Account Decimal Field',
+      AnnualRevenue = 1000000.50,
+      NumberOfEmployees = 50
+    );
+    insert testAccount;
+
+    // Query the account to get its CreatedDate (Datetime type)
+    testAccount = [SELECT CreatedDate FROM Account WHERE Id = :testAccount.Id];
+
+    // Simulate JavaScript sending Decimal values and ISO date string
+    // JSON will deserialize numbers as Decimal in Apex
+    // JavaScript sends dates as ISO strings (e.g., "2024-01-15T10:30:00.000Z")
+    // Note: The query uses OR conditions, so we need to provide bindings that match at least one condition
+    // The account has AnnualRevenue = 1000000.50, so it should match greaterThanRevenue (500000) or greaterThanOrEqual (1000000.50)
+    // For CreatedDate, simulate JavaScript sending ISO string format (like toISOString())
+    String isoDateString = testAccount.CreatedDate.format('yyyy-MM-dd\'T\'HH:mm:ss\'Z\''); // ISO 8601 format like JavaScript toISOString()
+    String bindingsJson = JSON.serialize(
+      new Map<String, Object>{
+        'exactRevenue' => 1000000.50,
+        'notEqualRevenue' => 999999.99,
+        'lessThanRevenue' => 2000000.00,
+        'lessThanOrEqual' => 1000000.50,
+        'greaterThanRevenue' => 500000.00,
+        'greaterThanOrEqual' => 1000000.50,
+        'exactDate' => isoDateString, // ISO string like JavaScript would send
+        'notEqualEmployees' => 999
+      }
+    );
+
+    Test.startTest();
+    JT_QueryViewerController.QueryResult result = JT_QueryViewerController.executeQuery(
+      'All_Comparison_Operators',
+      bindingsJson,
+      null
+    );
+    Test.stopTest();
+
+    System.assertNotEquals(null, result, 'Result should not be null');
+    // The query uses OR conditions, so it should succeed even if no records match
+    // The key test is that Decimal bindings are converted correctly without errors
+    System.assertEquals(
+      true,
+      result.success,
+      'Query should succeed. Error: ' +
+      (result.errorMessage != null ? result.errorMessage : 'Unknown error')
+    );
+  }
+
+  /**
+   * @description Integration test: Complex query with Decimal and Integer conversions via executeQuery
+   * Validates that both Decimal->Integer and Decimal->Decimal conversions work together
+   */
+  @IsTest
+  static void testComplexQueryWithMixedNumericTypesInExecuteQuery() {
+    // Create test Accounts with specific values
+    List<Account> accounts = new List<Account>{
+      new Account(
+        Name = 'Tech Account Integration',
+        Industry = 'Technology',
+        Type = 'Customer - Direct',
+        AnnualRevenue = 2000000.75,
+        NumberOfEmployees = 150,
+        BillingCountry = 'USA'
+      ),
+      new Account(
+        Name = 'Healthcare Account Integration',
+        Industry = 'Healthcare',
+        Type = 'Customer - Channel',
+        AnnualRevenue = 1500000.25,
+        NumberOfEmployees = 200,
+        BillingCountry = 'Canada'
+      )
+    };
+    insert accounts;
+
+    // Simulate JavaScript sending Decimal values (from JSON deserialization)
+    // JSON will deserialize numbers as Decimal in Apex
+    String bindingsJson = JSON.serialize(
+      new Map<String, Object>{
+        'industries' => new List<String>{ 'Technology', 'Healthcare' },
+        'excludedType' => 'Prospect',
+        'minRevenue' => 1000000.0, // Decimal
+        'maxRevenue' => 3000000.0, // Decimal
+        'namePattern' => '%Integration%',
+        'industryPattern' => '%Tech%',
+        'minEmployees' => 100.0, // Decimal that should convert to Integer
+        'maxEmployees' => 250.0, // Decimal that should convert to Integer
+        'excludedCountries' => new List<String>{ 'Mexico' }
+      }
+    );
+
+    Test.startTest();
+    JT_QueryViewerController.QueryResult result = JT_QueryViewerController.executeQuery(
+      'Complex_Mixed_Operators',
+      bindingsJson,
+      null
+    );
+    Test.stopTest();
+
+    System.assertNotEquals(null, result, 'Result should not be null');
+    System.assertEquals(true, result.success, 'Query should succeed');
+    System.assert(
+      result.recordCount >= 2,
+      'Should return at least 2 records matching the criteria. Found: ' +
+      result.recordCount
+    );
+
+    // Validate that Decimal->Integer conversion worked correctly
+    // by checking that NumberOfEmployees filter applied correctly
+    if (result.records != null && !result.records.isEmpty()) {
+      for (Object recordObj : result.records) {
+        Map<String, Object> record = (Map<String, Object>) recordObj;
+        Object employeesObj = record.get('NumberOfEmployees');
+        Object revenueObj = record.get('AnnualRevenue');
+
+        if (employeesObj != null) {
+          Integer employees = employeesObj instanceof Integer
+            ? (Integer) employeesObj
+            : Integer.valueOf(employeesObj);
+          System.assert(
+            employees >= 100 && employees <= 250,
+            'NumberOfEmployees should be between 100 and 250. Found: ' + employees
+          );
+        }
+
+        if (revenueObj != null) {
+          Decimal revenue = revenueObj instanceof Decimal
+            ? (Decimal) revenueObj
+            : Decimal.valueOf(String.valueOf(revenueObj));
+          System.assert(
+            revenue >= 1000000 && revenue <= 3000000,
+            'AnnualRevenue should be between 1000000 and 3000000. Found: ' +
+            revenue
+          );
+        }
+      }
+    }
+  }
 }

@@ -472,19 +472,28 @@ private class JT_MetadataCreator_Test {
   }
 
   /**
-   * @description Test deleteConfiguration with successful Metadata API REST call
-   * @author Jaime Terrats | 12-13-2025
+   * @description Test deleteConfiguration with successful SOAP deleteMetadata() call
+   * @author Jaime Terrats | 12-22-2025
    **/
   @IsTest
   static void testDeleteConfigurationSuccess() {
-    // Mock successful Metadata API REST response
-    String successResponse = JSON.serialize(
-      new Map<String, Object>{ 'id' => '0AfKW00000icW400AE' }
-    );
+    // Mock successful SOAP deleteMetadata response
+    String soapSuccessResponse = '<?xml version="1.0" encoding="UTF-8"?>' +
+      '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:met="http://soap.sforce.com/2006/04/metadata">' +
+      '<soapenv:Body>' +
+      '<met:deleteMetadataResponse>' +
+      '<met:result>' +
+      '<met:success>true</met:success>' +
+      '<met:deleted>true</met:deleted>' +
+      '<met:fullName>JT_DynamicQueryConfiguration__mdt.Test_Config_To_Delete</met:fullName>' +
+      '</met:result>' +
+      '</met:deleteMetadataResponse>' +
+      '</soapenv:Body>' +
+      '</soapenv:Envelope>';
 
     Test.setMock(
       HttpCalloutMock.class,
-      new JT_ToolingAPIMock(200, successResponse)
+      new JT_ToolingAPIMock(200, soapSuccessResponse)
     );
 
     Test.startTest();
@@ -494,14 +503,12 @@ private class JT_MetadataCreator_Test {
     Test.stopTest();
 
     System.assertNotEquals(null, result, 'Result should not be null');
-    // Result depends on org type (sandbox vs production)
-    // In sandbox, should succeed and return deploymentId
-    // In production, should fail with deletion not allowed
+    // deleteMetadata() is synchronous, so deploymentId should be null on success
     if (result.success) {
-      System.assertNotEquals(
+      System.assertEquals(
         null,
         result.deploymentId,
-        'Should return deploymentId on success'
+        'deleteMetadata() is synchronous, deploymentId should be null'
       );
       System.assertNotEquals(
         null,
@@ -518,22 +525,25 @@ private class JT_MetadataCreator_Test {
   }
 
   /**
-   * @description Test deleteConfiguration with HTTP error response
-   * @author Jaime Terrats | 12-13-2025
+   * @description Test deleteConfiguration with SOAP Fault error response
+   * @author Jaime Terrats | 12-22-2025
    **/
   @IsTest
   static void testDeleteConfigurationHttpError() {
-    // Mock HTTP error response
-    String errorResponse = JSON.serialize(
-      new Map<String, Object>{
-        'message' => 'Metadata API error',
-        'errorCode' => 'INVALID_METADATA'
-      }
-    );
+    // Mock SOAP Fault error response
+    String soapFaultResponse = '<?xml version="1.0" encoding="UTF-8"?>' +
+      '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:met="http://soap.sforce.com/2006/04/metadata">' +
+      '<soapenv:Body>' +
+      '<soapenv:Fault>' +
+      '<faultcode>INVALID_METADATA</faultcode>' +
+      '<faultstring>Metadata API error</faultstring>' +
+      '</soapenv:Fault>' +
+      '</soapenv:Body>' +
+      '</soapenv:Envelope>';
 
     Test.setMock(
       HttpCalloutMock.class,
-      new JT_ToolingAPIMock(400, errorResponse)
+      new JT_ToolingAPIMock(500, soapFaultResponse)
     );
 
     Test.startTest();
@@ -543,9 +553,6 @@ private class JT_MetadataCreator_Test {
     Test.stopTest();
 
     System.assertNotEquals(null, result, 'Result should not be null');
-    // Result depends on org type (sandbox vs production)
-    // In sandbox, should fail with HTTP error
-    // In production, should fail with deletion not allowed
     if (!result.success) {
       System.assertNotEquals(
         null,
@@ -556,19 +563,23 @@ private class JT_MetadataCreator_Test {
   }
 
   /**
-   * @description Test deleteConfiguration with response missing deployment ID
-   * @author Jaime Terrats | 12-13-2025
+   * @description Test deleteConfiguration with SOAP response missing result element
+   * @author Jaime Terrats | 12-22-2025
    **/
   @IsTest
   static void testDeleteConfigurationMissingDeploymentId() {
-    // Mock response without deployment ID
-    String responseWithoutId = JSON.serialize(
-      new Map<String, Object>{ 'status' => 'success' }
-    );
+    // Mock SOAP response without result element
+    String soapResponseWithoutResult = '<?xml version="1.0" encoding="UTF-8"?>' +
+      '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:met="http://soap.sforce.com/2006/04/metadata">' +
+      '<soapenv:Body>' +
+      '<met:deleteMetadataResponse>' +
+      '</met:deleteMetadataResponse>' +
+      '</soapenv:Body>' +
+      '</soapenv:Envelope>';
 
     Test.setMock(
       HttpCalloutMock.class,
-      new JT_ToolingAPIMock(200, responseWithoutId)
+      new JT_ToolingAPIMock(200, soapResponseWithoutResult)
     );
 
     Test.startTest();
@@ -578,9 +589,7 @@ private class JT_MetadataCreator_Test {
     Test.stopTest();
 
     System.assertNotEquals(null, result, 'Result should not be null');
-    // Result depends on org type (sandbox vs production)
-    // In sandbox, should fail because no deployment ID
-    // In production, should fail with deletion not allowed
+    // Should fail because no result element in response
     if (!result.success) {
       System.assertNotEquals(
         null,
@@ -619,15 +628,25 @@ private class JT_MetadataCreator_Test {
   }
 
   /**
-   * @description Test deleteConfiguration with HTTP 500 error
-   * @author Jaime Terrats | 12-13-2025
+   * @description Test deleteConfiguration with HTTP 500 SOAP Fault error
+   * @author Jaime Terrats | 12-22-2025
    **/
   @IsTest
   static void testDeleteConfigurationServerError() {
-    // Mock server error response
+    // Mock SOAP Fault with HTTP 500
+    String soapFaultResponse = '<?xml version="1.0" encoding="UTF-8"?>' +
+      '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:met="http://soap.sforce.com/2006/04/metadata">' +
+      '<soapenv:Body>' +
+      '<soapenv:Fault>' +
+      '<faultcode>SERVER_ERROR</faultcode>' +
+      '<faultstring>Internal Server Error</faultstring>' +
+      '</soapenv:Fault>' +
+      '</soapenv:Body>' +
+      '</soapenv:Envelope>';
+
     Test.setMock(
       HttpCalloutMock.class,
-      new JT_ToolingAPIMock(500, 'Internal Server Error')
+      new JT_ToolingAPIMock(500, soapFaultResponse)
     );
 
     Test.startTest();
@@ -637,9 +656,6 @@ private class JT_MetadataCreator_Test {
     Test.stopTest();
 
     System.assertNotEquals(null, result, 'Result should not be null');
-    // Result depends on org type (sandbox vs production)
-    // In sandbox, should fail with server error
-    // In production, should fail with deletion not allowed
     if (!result.success) {
       System.assertNotEquals(
         null,

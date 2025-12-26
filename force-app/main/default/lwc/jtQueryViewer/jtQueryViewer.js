@@ -561,9 +561,15 @@ export default class JtQueryViewer extends LightningElement {
     const { data } = result;
 
     if (data) {
-      this.configurationOptions = data;
+      // Force new array reference to ensure reactivity in child components
+      this.configurationOptions = [...data];
       this.filteredConfigs = [...data]; // Initialize filtered list
       this.showError = false;
+
+      console.log(`📋 Configurations wire updated. Total: ${this.configurationOptions.length}`);
+    } else if (result.error) {
+      console.error('❌ Error loading configurations:', result.error);
+      this.showError = true;
     }
 
     // Mark configurations as loaded (even if error, we still show UI)
@@ -1130,14 +1136,12 @@ export default class JtQueryViewer extends LightningElement {
       });
   }
 
-  // Build bindings JSON helper
   buildBindingsJson() {
     if (this.hasBindings && !this.hasParameters) {
-      // Config has predefined bindings
       return this.bindings;
     } else if (this.hasParameters) {
-      // Has dynamic parameters
       const paramValues = this.parameterValues || {};
+
       const hasAnyValues = Object.keys(paramValues).some(
         (key) =>
           paramValues[key] !== "" &&
@@ -1145,18 +1149,175 @@ export default class JtQueryViewer extends LightningElement {
           paramValues[key] !== undefined
       );
 
-      // ⚠️ VALIDATION: Don't overwrite config bindings with empty values
       if (!hasAnyValues && this.hasBindings) {
-        // Parameters empty → Fall back to config bindings
         return this.bindings;
       } else if (!hasAnyValues) {
-        // No values at all → Empty JSON
         return JSON.stringify({});
       }
-      // Has values → Use them
-      return JSON.stringify(paramValues);
+
+      const processedValues = this.processParameterValues(paramValues);
+      return JSON.stringify(processedValues);
     }
     return null;
+  }
+
+  processParameterValues(paramValues) {
+    if (!this.baseQuery) {
+      return paramValues;
+    }
+
+    const normalizedQuery = this.baseQuery.toLowerCase();
+    const processed = { ...paramValues };
+
+    for (const key in processed) {
+      if (!processed.hasOwnProperty(key)) {
+        continue;
+      }
+
+      const value = processed[key];
+
+      if (!value || typeof value !== "string") {
+        delete processed[key];
+        continue;
+      }
+
+      const trimmedValue = value.trim();
+      if (trimmedValue === "") {
+        delete processed[key];
+        continue;
+      }
+
+      const bindingPattern = `:${key.toLowerCase()}`;
+      const inRegex = new RegExp(`\\bin\\s*${bindingPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+      const notInRegex = new RegExp(`\\bnot\\s+in\\s*${bindingPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+      const includesRegex = new RegExp(`\\bincludes\\s*${bindingPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+      const excludesRegex = new RegExp(`\\bexcludes\\s*${bindingPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+
+      const requiresList =
+        inRegex.test(normalizedQuery) ||
+        notInRegex.test(normalizedQuery) ||
+        includesRegex.test(normalizedQuery) ||
+        excludesRegex.test(normalizedQuery);
+
+      if (requiresList) {
+        if (trimmedValue.includes(",")) {
+          const arrayValue = trimmedValue
+            .split(",")
+            .map((item) => this.convertToTypedValue(item.trim()))
+            .filter((item) => item !== null && item !== undefined && item !== "");
+          if (arrayValue.length > 0) {
+            processed[key] = arrayValue;
+          } else {
+            delete processed[key];
+          }
+        } else {
+          const typedValue = this.convertToTypedValue(trimmedValue);
+          if (typedValue !== null && typedValue !== undefined && typedValue !== "") {
+            processed[key] = [typedValue];
+          } else {
+            delete processed[key];
+          }
+        }
+      } else {
+        const typedValue = this.convertToTypedValue(trimmedValue);
+        if (typedValue !== null && typedValue !== undefined && typedValue !== "") {
+          processed[key] = typedValue;
+        } else {
+          delete processed[key];
+        }
+      }
+    }
+
+    return processed;
+  }
+
+  /**
+   * Converts a string value to its appropriate JavaScript type
+   * @param {string} value - String value to convert
+   * @returns {string|number|boolean|null} Converted value with appropriate type
+   */
+  convertToTypedValue(value) {
+    if (!value || typeof value !== "string") {
+      return value;
+    }
+
+    const trimmed = value.trim();
+    if (trimmed === "") {
+      return null;
+    }
+
+    // Check for boolean values (case-insensitive)
+    const lowerTrimmed = trimmed.toLowerCase();
+    if (lowerTrimmed === "true") {
+      return true;
+    }
+    if (lowerTrimmed === "false") {
+      return false;
+    }
+
+    // Check for Salesforce ID (15 or 18 characters, alphanumeric)
+    // IDs start with letters and are typically 15 or 18 chars
+    const salesforceIdPattern = /^[a-zA-Z0-9]{15}$|^[a-zA-Z0-9]{18}$/;
+    if (salesforceIdPattern.test(trimmed)) {
+      // Keep as string - IDs should remain strings in SOQL
+      return trimmed;
+    }
+
+    // Check for date/datetime values
+    // ISO 8601 format: YYYY-MM-DD or YYYY-MM-DDTHH:mm:ss.sssZ
+    const isoDatePattern = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d{3})?(Z|[+-]\d{2}:\d{2})?)?$/;
+    if (isoDatePattern.test(trimmed)) {
+      const dateValue = new Date(trimmed);
+      if (!isNaN(dateValue.getTime())) {
+        // Return ISO string format for Apex to parse
+        // Apex expects ISO 8601 format for Date/Datetime
+        return dateValue.toISOString();
+      }
+    }
+
+    // Check for other common date formats (MM/DD/YYYY, DD/MM/YYYY, etc.)
+    // Try parsing as date - if valid, convert to ISO format
+    const dateValue = new Date(trimmed);
+    if (!isNaN(dateValue.getTime())) {
+      // Additional validation: check if it's a reasonable date (not just a number)
+      // Avoid converting pure numbers like "2024" to dates
+      const year = dateValue.getFullYear();
+      if (year >= 1900 && year <= 2100) {
+        // Check if the original string looks like a date (has separators or is ISO format)
+        if (
+          trimmed.includes("/") ||
+          trimmed.includes("-") ||
+          trimmed.includes("T") ||
+          isoDatePattern.test(trimmed)
+        ) {
+          return dateValue.toISOString();
+        }
+      }
+    }
+
+    // Check for numeric values (integers or decimals)
+    // Pattern: optional sign, digits, optional decimal point and digits
+    const numericPattern = /^-?\d+(\.\d+)?$/;
+    if (numericPattern.test(trimmed)) {
+      // Check if it's an integer (no decimal point)
+      if (trimmed.includes(".")) {
+        // Use parseFloat for decimal numbers
+        return parseFloat(trimmed);
+      } else {
+        // Use parseInt for integers
+        const num = parseInt(trimmed, 10);
+        // Check if it's within safe integer range
+        if (Number.isSafeInteger(num)) {
+          return num;
+        } else {
+          // For very large integers outside safe range, use parseFloat to preserve precision
+          return parseFloat(trimmed);
+        }
+      }
+    }
+
+    // Return as string if not numeric, boolean, date, or ID
+    return trimmed;
   }
 
   // Start polling for test results
@@ -1774,16 +1935,17 @@ export default class JtQueryViewer extends LightningElement {
       return;
     }
 
-    // Validate query syntax
     const queryValidationToCheck = modalQueryValidation || this.queryValidation;
-    const querySyntaxValidation = validateQuerySyntax(queryValidationToCheck);
-    if (!querySyntaxValidation.isValid) {
-      showErrorToast(
-        this,
-        this.labels.invalidQuery,
-        querySyntaxValidation.errorMessage
-      );
-      return;
+
+    if (!queryValidationToCheck || !queryValidationToCheck.isValid) {
+      if (!configToUse.baseQuery || configToUse.baseQuery.trim().length === 0) {
+        showErrorToast(
+          this,
+          this.labels.invalidQuery,
+          "Query is required. Please enter a valid SOQL query."
+        );
+        return;
+      }
     }
 
     this.isSaving = true;
@@ -1901,9 +2063,11 @@ export default class JtQueryViewer extends LightningElement {
 
     saveMethod
       .then((result) => {
+        console.log('💾 Save method result:', { success: result.success, deploymentId: result.deploymentId, actionLabel });
         if (result.success) {
           // Check if deployment is asynchronous (has deploymentId)
           if (result.deploymentId) {
+            console.log('⏳ Deployment is ASYNC, will poll for status');
             // Deployment is asynchronous - poll for status
             // Show info toast immediately to give user feedback
             showInfoToast(
@@ -1926,6 +2090,7 @@ export default class JtQueryViewer extends LightningElement {
           }
 
           // Deployment is synchronous (update) - refresh immediately
+          console.log('✅ Deployment is SYNC (update), refreshing immediately');
           showSuccessToast(
             this,
             result.message || this.labels.configurationActionSuccessfully.replace("{0}", actionLabel),
@@ -1938,14 +2103,10 @@ export default class JtQueryViewer extends LightningElement {
           this.handleCloseCreateModal();
 
           // Refresh the configurations list using refreshApex
-          return refreshApex(this.wiredConfigurationsResult).then(() => {
-            // Only show "List Updated" toast if the update was successful
-            showInfoToast(
-              this,
-              this.labels.listUpdated,
-              this.labels.configurationListRefreshed
-            );
-          });
+          // Note: Since getConfigurations is cacheable, we may need to wait a bit
+          // for metadata changes to propagate, then refresh
+          console.log('📝 About to call refreshConfigurationsWithRetry', { updatedDevName, updatedConfigData });
+          return this.refreshConfigurationsWithRetry(updatedDevName, updatedConfigData);
         }
         // Show error toast and don't refresh
         showErrorToast(
@@ -1972,16 +2133,59 @@ export default class JtQueryViewer extends LightningElement {
 
   // Start polling for deployment status
   startPollingDeploymentStatus(deploymentId, actionLabel, updatedConfigData = null, updatedDevName = null) {
+    console.log('🔄 Starting polling for deployment', { deploymentId, actionLabel });
     const stopPolling = pollUntilComplete(
       // Poll function
-      () => checkDeploymentStatus({ deploymentId }),
+      () => {
+        console.log('📡 Polling deployment status...', { deploymentId });
+        return checkDeploymentStatus({ deploymentId });
+      },
       // Check if complete
       (result) => {
-        // Deployment is complete if done is true
-        return result.done === true;
+        if (!result) {
+          console.log('⚠️ No result received from deployment status check');
+          return false;
+        }
+
+        // Check done flag (handle both boolean true and string "true")
+        const done = result.done === true || result.done === 'true' || result.rawDone === true;
+
+        // Check status field as fallback
+        const statusValue = result.status;
+        const isStatusComplete = statusValue && (
+          statusValue === 'Succeeded' ||
+          statusValue === 'Failed' ||
+          statusValue === 'Canceled' ||
+          statusValue === 'ERROR'
+        );
+
+        // Deployment is complete if done is true OR status indicates completion
+        const isComplete = done || isStatusComplete;
+
+        console.log('🔍 Checking if deployment is complete', {
+          done: result.done,
+          rawDone: result.rawDone,
+          success: result.success,
+          status: result.status,
+          isComplete: isComplete,
+          doneEvaluated: done,
+          statusEvaluated: isStatusComplete,
+          resultKeys: Object.keys(result),
+          fullResult: result
+        });
+
+        if (isComplete) {
+          console.log('✅ Deployment is complete!', {
+            done: done,
+            status: statusValue,
+            success: result.success
+          });
+        }
+        return isComplete;
       },
       // On complete
       (result) => {
+        console.log('🏁 Polling complete callback called', { result, actionLabel, updatedDevName, hasUpdatedConfigData: !!updatedConfigData });
         // Hide spinner for deletion (create/update use isSaving)
         if (actionLabel === "deleted") {
           this.isDeletingConfiguration = false;
@@ -1989,6 +2193,7 @@ export default class JtQueryViewer extends LightningElement {
 
         if (result.success === true) {
           // Deployment succeeded - show success toast and refresh list
+          console.log('✅ Async deployment completed successfully, refreshing configurations');
           showSuccessToast(
             this,
             this.labels.configurationActionSuccessfully.replace("{0}", actionLabel),
@@ -2025,14 +2230,11 @@ export default class JtQueryViewer extends LightningElement {
             this.updateSelectedConfigIfMatches(updatedDevName, updatedConfigData);
           }
 
-          // Refresh the configurations list using refreshApex
-          refreshApex(this.wiredConfigurationsResult).then(() => {
-            showInfoToast(
-              this,
-              this.labels.listUpdated,
-              this.labels.configurationListRefreshed
-            );
-          });
+          // Refresh the configurations list using refreshApex with retry logic
+          // Use longer delays for async deployments (metadata takes longer to propagate)
+          // Don't show toast here since we already showed the success toast above
+          console.log('📝 About to call refreshConfigurationsWithRetry (async)', { updatedDevName, updatedConfigData });
+          this.refreshConfigurationsWithRetry(updatedDevName, updatedConfigData, 4, 1000, false);
         } else {
           // Deployment failed - show error toast
           const errorMsg = result.error || this.labels.deploymentFailedCheckStatus;
@@ -2114,6 +2316,186 @@ export default class JtQueryViewer extends LightningElement {
         // We can trigger a config change event if needed
       }
     }
+  }
+
+  /**
+   * @description Refreshes configurations list with retry logic to handle cache propagation delays
+   * @param {string} devName - Developer name of the updated configuration
+   * @param {object} expectedData - Expected configuration data
+   * @param {number} maxRetries - Maximum number of retry attempts (default: 3)
+   * @param {number} initialDelay - Initial delay in ms before first refresh (default: 500)
+   * @returns {Promise} Resolves when refresh is successful or max retries reached
+   */
+  refreshConfigurationsWithRetry(devName, expectedData, maxRetries = 3, initialDelay = 500, showToast = true) {
+    console.log('🚀 refreshConfigurationsWithRetry called', { devName, maxRetries, initialDelay, showToast });
+    return new Promise((resolve) => {
+      let attempt = 0;
+
+      const attemptRefresh = () => {
+        attempt++;
+        const delay = initialDelay * attempt; // Exponential backoff: 500ms, 1000ms, 1500ms
+
+        setTimeout(() => {
+          console.log(`🔄 Refresh attempt ${attempt}/${maxRetries} for configuration "${devName}"`);
+
+          refreshApex(this.wiredConfigurationsResult).then(() => {
+            // Wait a bit for wire to update after refreshApex completes
+            return new Promise((innerResolve) => {
+              setTimeout(() => {
+                innerResolve();
+              }, 300);
+            });
+          }).then(() => {
+            // Validate that the update was reflected
+            return this.validateConfigurationUpdate(devName, expectedData);
+          }).then((isValid) => {
+            if (isValid) {
+              console.log(`✅ Configuration "${devName}" update validated after ${attempt} attempt(s)`);
+              if (showToast) {
+                showInfoToast(
+                  this,
+                  this.labels.listUpdated,
+                  this.labels.configurationListRefreshed
+                );
+              }
+              resolve();
+            } else if (attempt < maxRetries) {
+              console.warn(`⚠️ Configuration update not visible yet, retrying in ${delay}ms...`);
+              attemptRefresh();
+            } else {
+              console.warn(`⚠️ Configuration update not visible after ${maxRetries} attempts. Showing success message anyway.`);
+              // Show success message even if validation failed - the update likely succeeded server-side
+              if (showToast) {
+                showInfoToast(
+                  this,
+                  this.labels.listUpdated,
+                  this.labels.configurationListRefreshed + ' (Please refresh the page if changes are not visible)'
+                );
+              }
+              resolve();
+            }
+          }).catch((error) => {
+            console.error('❌ Error during configuration refresh:', error);
+            if (attempt < maxRetries) {
+              attemptRefresh();
+            } else {
+              if (showToast) {
+                showInfoToast(
+                  this,
+                  this.labels.listUpdated,
+                  this.labels.configurationListRefreshed
+                );
+              }
+              resolve();
+            }
+          });
+        }, delay);
+      };
+
+      // Start first attempt immediately
+      attemptRefresh();
+    });
+  }
+
+  /**
+   * @description Validates that a configuration update was reflected in the UI
+   * @param {string} devName - Developer name of the updated configuration
+   * @param {object} expectedData - Expected configuration data (baseQuery, bindings, etc.)
+   * @returns {Promise<boolean>} True if validation passes, false otherwise
+   */
+  validateConfigurationUpdate(devName, expectedData) {
+    return new Promise((resolve) => {
+      // Wait a bit for the wire to update
+      setTimeout(() => {
+        // Check wire status
+        if (this.wiredConfigurationsResult?.error) {
+          console.error('❌ Wire error:', this.wiredConfigurationsResult.error);
+          resolve(false);
+          return;
+        }
+
+        if (!this.configurationOptions || this.configurationOptions.length === 0) {
+          console.warn('⚠️ Configuration options not loaded yet');
+          console.log('Wire status:', {
+            data: this.wiredConfigurationsResult?.data,
+            loading: this.wiredConfigurationsResult?.loading,
+            error: this.wiredConfigurationsResult?.error
+          });
+          resolve(false);
+          return;
+        }
+
+        console.log(`🔍 Validating update for "${devName}". Total configs: ${this.configurationOptions.length}`);
+
+        // Find the updated configuration in the list
+        const updatedConfig = this.configurationOptions.find(
+          (config) => config.value === devName
+        );
+
+        if (!updatedConfig) {
+          console.warn(`⚠️ Updated configuration "${devName}" not found in list`);
+          console.log('Available configs:', this.configurationOptions.map(c => c.value));
+          resolve(false);
+          return;
+        }
+
+        // Validate that the data matches what we expect
+        let isValid = true;
+        const mismatches = [];
+
+        if (expectedData.baseQuery && updatedConfig.baseQuery !== expectedData.baseQuery) {
+          isValid = false;
+          mismatches.push('baseQuery');
+        }
+
+        // Normalize bindings: treat undefined, null, and empty string as equivalent
+        const normalizeBindings = (value) => {
+          if (value === undefined || value === null || value === '') {
+            return '';
+          }
+          return value;
+        };
+
+        const expectedBindings = normalizeBindings(expectedData.bindings);
+        const actualBindings = normalizeBindings(updatedConfig.bindings);
+
+        if (expectedBindings !== actualBindings) {
+          isValid = false;
+          mismatches.push('bindings');
+        }
+
+        if (
+          expectedData.objectName &&
+          updatedConfig.objectName !== expectedData.objectName
+        ) {
+          isValid = false;
+          mismatches.push('objectName');
+        }
+
+        if (isValid) {
+          console.log(`✅ Configuration "${devName}" update validated successfully`);
+          console.log('Updated config:', {
+            value: updatedConfig.value,
+            label: updatedConfig.label,
+            baseQuery: updatedConfig.baseQuery?.substring(0, 50) + '...',
+            bindings: updatedConfig.bindings,
+            objectName: updatedConfig.objectName
+          });
+        } else {
+          console.warn(
+            `⚠️ Configuration "${devName}" update validation failed. Mismatches: ${mismatches.join(', ')}`
+          );
+          console.log('Expected:', expectedData);
+          console.log('Actual:', {
+            baseQuery: updatedConfig.baseQuery,
+            bindings: updatedConfig.bindings,
+            objectName: updatedConfig.objectName
+          });
+        }
+
+        resolve(isValid);
+      }, 500); // Wait 500ms for wire to update
+    });
   }
 
   // Disconnect polling on component destroy

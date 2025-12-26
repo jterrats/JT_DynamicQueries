@@ -693,16 +693,21 @@ export function pollUntilComplete(
 
   const performPoll = () => {
     pollCount++;
+    console.log(`🔄 Poll attempt ${pollCount}`);
 
     pollFunction()
       .then((result) => {
+        console.log(`📊 Poll result (attempt ${pollCount}):`, result);
         // Call progress callback if provided
         if (onProgress) {
           onProgress(pollCount, result);
         }
 
         // Check if polling is complete
-        if (checkComplete(result)) {
+        const isComplete = checkComplete(result);
+        console.log(`✓ Check complete result: ${isComplete}`);
+        if (isComplete) {
+          console.log('✅ Polling complete, stopping and calling onComplete');
           stopPolling();
           onComplete(result);
           return;

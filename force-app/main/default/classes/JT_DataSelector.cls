@@ -281,6 +281,13 @@ public inherited sharing class JT_DataSelector {
         System.Label.JT_Error_NotLikeOperatorNotSupported
       );
     }
+
+    // Check for HAVING clause
+    if (normalizedQuery.contains(' having ')) {
+      throw new UnsupportedOperatorException(
+        System.Label.JT_Error_HavingClauseNotSupported
+      );
+    }
   }
 
   /**
@@ -310,35 +317,50 @@ public inherited sharing class JT_DataSelector {
 
     Map<String, Object> validatedBindings = new Map<String, Object>();
 
+    // Decode HTML entities that may come from metadata (e.g., &gt;= becomes >=, &lt;= becomes <=)
+    String decodedQuery = query.replace('&gt;', '>').replace('&lt;', '<').replace('&amp;', '&');
+    String normalizedQuery = decodedQuery.toLowerCase();
+
     for (String key : bindings.keySet()) {
       Object value = bindings.get(key);
 
-      // Auto-detect if this binding is used with IN operator
-      String normalizedQuery = query.toLowerCase();
       String bindingPattern = ':' + key.toLowerCase();
 
-      // Check if used with IN/INCLUDES/EXCLUDES (requires List)
+      // Check if used with IN/NOT IN/INCLUDES/EXCLUDES (requires List)
+      // Allow for optional spaces around the colon: " in :param", " in:param", " in : param"
+      Pattern inPattern = Pattern.compile('\\bin\\s*' + Pattern.quote(bindingPattern) + '\\b');
+      Pattern notInPattern = Pattern.compile('\\bnot\\s+in\\s*' + Pattern.quote(bindingPattern) + '\\b');
+      Pattern includesPattern = Pattern.compile('\\bincludes\\s*' + Pattern.quote(bindingPattern) + '\\b');
+      Pattern excludesPattern = Pattern.compile('\\bexcludes\\s*' + Pattern.quote(bindingPattern) + '\\b');
+
       Boolean requiresList =
-        normalizedQuery.contains('in ' + bindingPattern) ||
-        normalizedQuery.contains('includes ' + bindingPattern) ||
-        normalizedQuery.contains('excludes ' + bindingPattern);
+        inPattern.matcher(normalizedQuery).find() ||
+        notInPattern.matcher(normalizedQuery).find() ||
+        includesPattern.matcher(normalizedQuery).find() ||
+        excludesPattern.matcher(normalizedQuery).find();
 
       if (requiresList) {
-        // Convert to List<String> if not already a list
         if (!(value instanceof List<Object>)) {
-          validatedBindings.put(
-            key,
-            convertListToTypedList(new List<Object>{ value }, 'String')
-          );
-        } else {
-          validatedBindings.put(
-            key,
-            convertListToTypedList((List<Object>) value, 'String')
+          final String valueType = getValueTypeName(value);
+          throw new IllegalArgumentException(
+            String.format(
+              'Binding "{0}" requires a List for IN/NOT IN/INCLUDES/EXCLUDES operators, but received {1}',
+              new List<String>{ key, valueType }
+            )
           );
         }
+        validatedBindings.put(
+          key,
+          convertListToTypedList((List<Object>) value)
+        );
       } else {
-        // Pass through as-is for other operators
-        validatedBindings.put(key, value);
+        // Check if used in numeric comparison operators (>=, <=, >, <, =, !=)
+        Object convertedValue = convertNumericBindingValue(decodedQuery, key, value);
+
+        // Check for date/datetime comparisons and convert ISO strings
+        convertedValue = convertDateBindingValue(decodedQuery, key, convertedValue);
+
+        validatedBindings.put(key, convertedValue);
       }
     }
 
@@ -346,89 +368,510 @@ public inherited sharing class JT_DataSelector {
   }
 
   /**
-   * @description Converts List<Object> to properly typed list for Database.queryWithBinds
-   * @param values List of values
-   * @param innerType Type of elements (String, Id, Integer, etc.)
-   * @return Object Typed list
+   * @description Converts binding value to appropriate type based on query context
+   * Detects numeric comparisons and converts Decimal to Integer when field type requires it
+   * JavaScript already sends typed values (parseInt/parseFloat), so we only need to handle
+   * Decimal -> Integer conversion based on field type
+   * @param query The SOQL query string
+   * @param bindingKey The binding variable name
+   * @param value The binding value (may be Decimal from JSON deserialization or String for legacy)
+   * @return Object Converted value with appropriate type
    */
   @TestVisible
-  private static Object convertListToTypedList(
-    List<Object> values,
-    String innerType
+  private static Object convertNumericBindingValue(
+    String query,
+    String bindingKey,
+    Object value
   ) {
-    if (values == null || values.isEmpty()) {
-      return values;
+    if (value == null) {
+      return value;
     }
 
-    // Handle common types
-    if (innerType == 'String') {
-      List<String> typedList = new List<String>();
-      for (Object val : values) {
-        typedList.add(String.valueOf(val));
+    // If value is already Integer, no conversion needed
+    if (value instanceof Integer) {
+      return value;
+    }
+
+    // Check if this is a numeric comparison
+    String bindingPattern = ':' + bindingKey;
+    String normalizedQuery = query.toLowerCase();
+    Boolean isNumericComparison = false;
+    String escapedPattern = Pattern.quote(bindingPattern);
+
+    // Pattern 1: Field >= :binding or Field <= :binding or Field > :binding or Field < :binding
+    Pattern pattern1 = Pattern.compile('(?i)(?s)[a-z0-9_]+\\s+[>=<]+\\s*' + escapedPattern + '\\b');
+    Matcher matcher1 = pattern1.matcher(normalizedQuery);
+    if (matcher1.find()) {
+      isNumericComparison = true;
+    }
+
+    // Pattern 2: :binding >= Field or :binding <= Field or :binding > Field or :binding < Field
+    if (!isNumericComparison) {
+      Pattern pattern2 = Pattern.compile('(?i)(?s)\\b' + escapedPattern + '\\s*[>=<]+\\s+[a-z0-9_]+');
+      Matcher matcher2 = pattern2.matcher(normalizedQuery);
+      if (matcher2.find()) {
+        isNumericComparison = true;
       }
-      return typedList;
     }
 
-    if (innerType == 'Id') {
-      List<String> typedList = new List<String>();
-      for (Object val : values) {
-        typedList.add(String.valueOf(val));
+    // Pattern 3: Field = :binding or Field != :binding (only if value is numeric)
+    if (!isNumericComparison) {
+      Pattern pattern3 = Pattern.compile('(?i)(?s)[a-z0-9_]+\\s*[=!]+=\\s*' + escapedPattern + '\\b|\\b' + escapedPattern + '\\s*[=!]+=\\s+[a-z0-9_]+');
+      Matcher matcher3 = pattern3.matcher(normalizedQuery);
+      if (matcher3.find()) {
+        // Check if value is numeric (Decimal or numeric String)
+        if (value instanceof Decimal || value instanceof Integer) {
+          isNumericComparison = true;
+        } else if (value instanceof String) {
+          String stringValue = ((String) value).trim().replace(',', '');
+          if (isNumericString(stringValue)) {
+            isNumericComparison = true;
+          }
+        }
       }
-      return typedList;
     }
 
-    if (innerType == 'Integer') {
-      List<Integer> typedList = new List<Integer>();
-      for (Object val : values) {
-        typedList.add(
-          val instanceof Integer
-            ? (Integer) val
-            : Integer.valueOf(String.valueOf(val))
-        );
+    if (!isNumericComparison) {
+      return value;
+    }
+
+    // Handle Decimal -> Integer conversion based on field type
+    if (value instanceof Decimal) {
+      Boolean isIntegerField = isIntegerFieldBinding(query, bindingKey);
+      if (isIntegerField) {
+        return ((Decimal) value).intValue();
       }
-      return typedList;
+      return value; // Keep as Decimal
     }
 
-    if (innerType == 'Decimal') {
-      List<Decimal> typedList = new List<Decimal>();
-      for (Object val : values) {
-        typedList.add(
-          val instanceof Decimal
-            ? (Decimal) val
-            : Decimal.valueOf(String.valueOf(val))
-        );
+    // Legacy: Handle String values (shouldn't happen if JS sends typed values)
+    if (value instanceof String) {
+      String stringValue = ((String) value).trim().replace(',', '');
+      if (String.isBlank(stringValue)) {
+        return value;
       }
-      return typedList;
-    }
-
-    if (innerType == 'Date') {
-      List<Date> typedList = new List<Date>();
-      for (Object val : values) {
-        typedList.add(
-          val instanceof Date ? (Date) val : Date.valueOf(String.valueOf(val))
-        );
+      if (!isNumericString(stringValue)) {
+        return value;
       }
-      return typedList;
-    }
-
-    if (innerType == 'Datetime') {
-      List<Datetime> typedList = new List<Datetime>();
-      for (Object val : values) {
-        typedList.add(
-          val instanceof Datetime
-            ? (Datetime) val
-            : Datetime.valueOf(String.valueOf(val))
-        );
+      try {
+        Boolean isIntegerField = isIntegerFieldBinding(query, bindingKey);
+        if (isIntegerField) {
+          return Integer.valueOf(stringValue);
+        } else {
+          return Decimal.valueOf(stringValue);
+        }
+      } catch (Exception e) {
+        return value;
       }
-      return typedList;
     }
 
-    // Default: return as List<String> (safest for most cases)
-    List<String> defaultList = new List<String>();
+    return value;
+  }
+
+  /**
+   * @description Checks if a string represents a numeric value
+   * @param value String value to check
+   * @return Boolean True if the string can be converted to a number
+   */
+  @TestVisible
+  private static Boolean isNumericString(String value) {
+    if (String.isBlank(value)) {
+      return false;
+    }
+    // Remove commas and trim before checking
+    String trimmedValue = value.trim().replace(',', '');
+    if (String.isBlank(trimmedValue)) {
+      return false;
+    }
+    // Check if it matches a numeric pattern (digits, optional decimal point, optional sign)
+    Pattern numericPattern = Pattern.compile('^-?\\d+(\\.\\d+)?$');
+    Matcher matcher = numericPattern.matcher(trimmedValue);
+    return matcher.matches();
+  }
+
+  /**
+   * @description Checks if a binding is used with an Integer field
+   * Common Integer fields: NumberOfEmployees, etc.
+   * @param query The SOQL query string
+   * @param bindingKey The binding variable name
+   * @return Boolean True if the binding is likely used with an Integer field
+   */
+  @TestVisible
+  private static Boolean isIntegerFieldBinding(String query, String bindingKey) {
+    String bindingPattern = ':' + bindingKey;
+    String normalizedQuery = query.toLowerCase();
+    String escapedPattern = Pattern.quote(bindingPattern);
+
+    // Common Integer field names in Salesforce
+    List<String> integerFieldNames = new List<String>{
+      'numberofemployees',
+      'number_of_employees',
+      'employee_count',
+      'count',
+      'quantity',
+      'qty'
+    };
+
+    // Check if binding is used with any Integer field
+    for (String fieldName : integerFieldNames) {
+      // Pattern: fieldName >= :binding or fieldName <= :binding, etc.
+      Pattern pattern = Pattern.compile('(?i)(?s)\\b' + fieldName + '\\s+[>=<]+\\s*' + escapedPattern + '\\b|\\b' + escapedPattern + '\\s*[>=<]+\\s+' + fieldName + '\\b');
+      Matcher matcher = pattern.matcher(normalizedQuery);
+      if (matcher.find()) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * @description Converts ISO date/datetime strings to Date/Datetime objects
+   * Detects if binding is used with Date or Datetime fields and converts ISO strings accordingly
+   * @param query The SOQL query string
+   * @param bindingKey The binding variable name
+   * @param value The binding value (may be ISO string from JavaScript)
+   * @return Object Converted Date or Datetime, or original value if not a date/datetime binding
+   */
+  @TestVisible
+  private static Object convertDateBindingValue(
+    String query,
+    String bindingKey,
+    Object value
+  ) {
+    if (value == null || !(value instanceof String)) {
+      return value;
+    }
+
+    String stringValue = ((String) value).trim();
+    if (String.isBlank(stringValue)) {
+      return value;
+    }
+
+    Boolean isDateComparison = isDateFieldBinding(query, bindingKey);
+    Boolean isDatetimeComparison = isDatetimeFieldBinding(query, bindingKey);
+
+    if (!isDateComparison && !isDatetimeComparison) {
+      return value;
+    }
+
+    try {
+      if (isDatetimeComparison) {
+        // Convert ISO string to Datetime
+        // JavaScript toISOString() format: "2024-01-15T10:30:00.000Z" or "2024-01-15T10:30:00Z"
+        // DateTime.ValueofGmt() expects: "yyyy-MM-dd HH:mm:ss" in GMT
+        String normalizedDate = stringValue;
+        // Remove timezone offset if present (+HH:mm or -HH:mm)
+        normalizedDate = normalizedDate.replaceAll('[+-]\\d{2}:\\d{2}$', '');
+        // Replace 'T' with space (required for ValueofGmt)
+        normalizedDate = normalizedDate.replace('T', ' ');
+        // Remove 'Z' at the end
+        normalizedDate = normalizedDate.replace('Z', '');
+        // Remove milliseconds if present (.000) - must be at the end after removing Z
+        normalizedDate = normalizedDate.replaceAll('\\.\\d{1,3}$', '');
+        // Trim any trailing spaces
+        normalizedDate = normalizedDate.trim();
+        // Parse to Datetime using ValueofGmt
+        return DateTime.ValueofGmt(normalizedDate);
+      } else if (isDateComparison) {
+        // For Date fields, extract just the date part (YYYY-MM-DD)
+        String datePart = stringValue.split('T')[0];
+        return Date.valueOf(datePart);
+      }
+    } catch (Exception e) {
+      System.debug(LoggingLevel.WARN, 'Failed to parse date/datetime string "' + stringValue + '": ' + e.getMessage());
+      return value; // Return as-is if parsing fails
+    }
+
+    return value;
+  }
+
+  /**
+   * @description Checks if a binding is used with a Date field
+   * Common Date fields: CloseDate, StartDate, EndDate, etc.
+   * @param query The SOQL query string
+   * @param bindingKey The binding variable name
+   * @return Boolean True if the binding is likely used with a Date field
+   */
+  @TestVisible
+  private static Boolean isDateFieldBinding(String query, String bindingKey) {
+    String bindingPattern = ':' + bindingKey;
+    String normalizedQuery = query.toLowerCase();
+    String escapedPattern = Pattern.quote(bindingPattern);
+
+    // Common Date field names in Salesforce
+    List<String> dateFieldNames = new List<String>{
+      'closedate',
+      'startdate',
+      'enddate',
+      'duedate',
+      'activitydate',
+      'date'
+    };
+
+    // Check if binding is used with any Date field
+    for (String fieldName : dateFieldNames) {
+      Pattern pattern = Pattern.compile('(?i)(?s)\\b' + fieldName + '\\s*[=!<>]+\\s*' + escapedPattern + '\\b|\\b' + escapedPattern + '\\s*[=!<>]+\\s+' + fieldName + '\\b');
+      Matcher matcher = pattern.matcher(normalizedQuery);
+      if (matcher.find()) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * @description Checks if a binding is used with a Datetime field
+   * Common Datetime fields: CreatedDate, LastModifiedDate, etc.
+   * @param query The SOQL query string
+   * @param bindingKey The binding variable name
+   * @return Boolean True if the binding is likely used with a Datetime field
+   */
+  @TestVisible
+  private static Boolean isDatetimeFieldBinding(String query, String bindingKey) {
+    String bindingPattern = ':' + bindingKey;
+    String normalizedQuery = query.toLowerCase();
+    String escapedPattern = Pattern.quote(bindingPattern);
+
+    // Common Datetime field names in Salesforce
+    List<String> datetimeFieldNames = new List<String>{
+      'createddate',
+      'lastmodifieddate',
+      'systemmodstamp',
+      'lastactivitydate',
+      'lastvieweddate',
+      'lastreferenceddate',
+      'datetime',
+      'timestamp'
+    };
+
+    // Check if binding is used with any Datetime field
+    for (String fieldName : datetimeFieldNames) {
+      Pattern pattern = Pattern.compile('(?i)(?s)\\b' + fieldName + '\\s*[=!<>]+\\s*' + escapedPattern + '\\b|\\b' + escapedPattern + '\\s*[=!<>]+\\s+' + fieldName + '\\b');
+      Matcher matcher = pattern.matcher(normalizedQuery);
+      if (matcher.find()) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * @description Gets the type name of a value for error messages
+   * @param value Value to get type name for
+   * @return String Type name
+   */
+  @TestVisible
+  private static String getValueTypeName(Object value) {
+    if (value instanceof String) {
+      return 'String';
+    }
+    if (value instanceof Integer) {
+      return 'Integer';
+    }
+    if (value instanceof Decimal) {
+      return 'Decimal';
+    }
+    if (value instanceof Boolean) {
+      return 'Boolean';
+    }
+    if (value instanceof Date) {
+      return 'Date';
+    }
+    if (value instanceof Datetime) {
+      return 'Datetime';
+    }
+    return 'Object';
+  }
+
+  /**
+   * @description Converts List<Object> to properly typed list for Database.queryWithBinds
+   * Automatically detects the type based on the first non-null element
+   * @param values List of values to convert
+   * @return Object Typed list (List<String>, List<Integer>, List<Decimal>, etc.)
+   */
+  @TestVisible
+  private static Object convertListToTypedList(List<Object> values) {
+    if (values == null) {
+      return new List<String>(); // Return empty List<String> instead of null
+    }
+    if (values.isEmpty()) {
+      return new List<String>(); // Return empty List<String> instead of List<Object>
+    }
+
+    // Find first non-null element to determine type
+    Object firstNonNull = null;
     for (Object val : values) {
-      defaultList.add(String.valueOf(val));
+      if (val != null) {
+        firstNonNull = val;
+        break;
+      }
     }
-    return defaultList;
+
+    // If all elements are null, return as List<String> (safest default)
+    if (firstNonNull == null) {
+      return convertToStringList(values);
+    }
+
+    // Detect type from first non-null element
+    // Note: JSON deserialized values from JavaScript may not be recognized by instanceof
+    // For IN/NOT IN operators with String columns, we default to List<String>
+    // unless we can definitively prove the type is something else
+
+    // First check for explicit types (from Apex code, not JSON)
+    if (firstNonNull instanceof Integer) {
+      return convertToIntegerList(values);
+    }
+    if (firstNonNull instanceof Decimal) {
+      return convertToDecimalList(values);
+    }
+    if (firstNonNull instanceof Date) {
+      return convertToDateList(values);
+    }
+    if (firstNonNull instanceof Datetime) {
+      return convertToDatetimeList(values);
+    }
+    if (firstNonNull instanceof String || firstNonNull instanceof Id) {
+      return convertToStringList(values);
+    }
+
+    // For JSON-deserialized values, try to determine type by attempting conversion
+    // Check if all values can be converted to Integer (must be ALL integers)
+    Boolean allIntegers = true;
+    for (Object val : values) {
+      if (val != null) {
+        try {
+          Integer.valueOf(String.valueOf(val));
+        } catch (Exception e) {
+          allIntegers = false;
+          break;
+        }
+      }
+    }
+    if (allIntegers && values.size() > 0) {
+      return convertToIntegerList(values);
+    }
+
+    // Check if all values can be converted to Decimal (must be ALL decimals)
+    Boolean allDecimals = true;
+    for (Object val : values) {
+      if (val != null) {
+        try {
+          Decimal.valueOf(String.valueOf(val));
+        } catch (Exception e) {
+          allDecimals = false;
+          break;
+        }
+      }
+    }
+    if (allDecimals && values.size() > 0) {
+      return convertToDecimalList(values);
+    }
+
+    // Default: return as List<String> (safest for most cases, especially for JSON-deserialized values)
+    // This handles cases where JSON deserializes strings as generic objects
+    // String.valueOf() will handle the conversion properly
+    // For IN/NOT IN operators with String columns, this is the correct type
+    return convertToStringList(values);
+  }
+
+  /**
+   * @description Converts List<Object> to List<Date>
+   * @param values List of values to convert
+   * @return List<Date> Converted list
+   */
+  @TestVisible
+  private static List<Date> convertToDateList(List<Object> values) {
+    List<Date> typedList = new List<Date>();
+    for (Object val : values) {
+      if (val instanceof Date) {
+        typedList.add((Date) val);
+      } else {
+        typedList.add(Date.valueOf(String.valueOf(val)));
+      }
+    }
+    return typedList;
+  }
+
+  /**
+   * @description Converts List<Object> to List<Datetime>
+   * @param values List of values to convert
+   * @return List<Datetime> Converted list
+   */
+  @TestVisible
+  private static List<Datetime> convertToDatetimeList(List<Object> values) {
+    List<Datetime> typedList = new List<Datetime>();
+    for (Object val : values) {
+      if (val instanceof Datetime) {
+        typedList.add((Datetime) val);
+      } else {
+        typedList.add(Datetime.valueOf(String.valueOf(val)));
+      }
+    }
+    return typedList;
+  }
+
+  /**
+   * @description Converts List<Object> to List<String>
+   * @param values List of values to convert
+   * @return List<String> Converted list
+   */
+  @TestVisible
+  private static List<String> convertToStringList(List<Object> values) {
+    List<String> typedList = new List<String>();
+    for (Object val : values) {
+      if (val == null) {
+        typedList.add(null);
+      } else if (val instanceof String) {
+        typedList.add((String) val);
+      } else if (val instanceof Id) {
+        typedList.add((String) val);
+      } else {
+        // For JSON-deserialized values that don't pass instanceof checks,
+        // String.valueOf() will convert them to strings
+        String strValue = String.valueOf(val);
+        typedList.add(strValue);
+      }
+    }
+    return typedList;
+  }
+
+  /**
+   * @description Converts List<Object> to List<Integer>
+   * @param values List of values to convert
+   * @return List<Integer> Converted list
+   */
+  @TestVisible
+  private static List<Integer> convertToIntegerList(List<Object> values) {
+    List<Integer> typedList = new List<Integer>();
+    for (Object val : values) {
+      if (val instanceof Integer) {
+        typedList.add((Integer) val);
+      } else {
+        typedList.add(Integer.valueOf(String.valueOf(val)));
+      }
+    }
+    return typedList;
+  }
+
+  /**
+   * @description Converts List<Object> to List<Decimal>
+   * @param values List of values to convert
+   * @return List<Decimal> Converted list
+   */
+  @TestVisible
+  private static List<Decimal> convertToDecimalList(List<Object> values) {
+    List<Decimal> typedList = new List<Decimal>();
+    for (Object val : values) {
+      if (val instanceof Decimal) {
+        typedList.add((Decimal) val);
+      } else {
+        typedList.add(Decimal.valueOf(String.valueOf(val)));
+      }
+    }
+    return typedList;
   }
 
   /**
@@ -481,6 +924,152 @@ public inherited sharing class JT_DataSelector {
     }
 
     return totalProcessed;
+  }
+
+  /**
+   * @description Builds a dynamic SOQL query by removing WHERE conditions for empty/missing bindings
+   * This ensures Database.queryWithBinds only receives bindings that exist in the query
+   * @param baseQuery The original SOQL query string
+   * @param bindings Map of binding variables
+   * @return String Dynamic query with conditions removed for empty/missing bindings
+   */
+  @TestVisible
+  private static String buildDynamicQuery(
+    String baseQuery,
+    Map<String, Object> bindings
+  ) {
+    if (String.isBlank(baseQuery)) {
+      return baseQuery;
+    }
+
+    String result = baseQuery;
+
+    // Find all bindings referenced in the query
+    Pattern bindingPattern = Pattern.compile(':\\b(\\w+)\\b');
+    Matcher matcher = bindingPattern.matcher(baseQuery);
+    Set<String> referencedBindings = new Set<String>();
+    while (matcher.find()) {
+      referencedBindings.add(matcher.group(1));
+    }
+
+    // Remove conditions for bindings that don't exist or are empty
+    for (String bindingKey : referencedBindings) {
+      Boolean shouldRemove = false;
+
+      if (bindings == null || !bindings.containsKey(bindingKey)) {
+        shouldRemove = true;
+      } else {
+        Object value = bindings.get(bindingKey);
+        Boolean isEmpty = value == null ||
+          (value instanceof String && String.isBlank((String) value)) ||
+          (value instanceof List<Object> && ((List<Object>) value).isEmpty());
+
+        if (isEmpty) {
+          shouldRemove = true;
+        }
+      }
+
+      if (shouldRemove) {
+        result = removeConditionForBinding(result, bindingKey);
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * @description Removes a WHERE condition for a binding that doesn't exist or is empty
+   * @param query The SOQL query string
+   * @param bindingKey The binding variable name (without colon)
+   * @return String Query with condition removed
+   */
+  @TestVisible
+  private static String removeConditionForBinding(String query, String bindingKey) {
+    if (String.isBlank(query) || String.isBlank(bindingKey)) {
+      return query;
+    }
+
+    String result = query;
+    String bindingPattern = ':' + bindingKey;
+
+    // Match condition with optional AND/OR before and after
+    // Use negative lookahead to avoid capturing OR from ORDER BY
+    // Pattern: (AND|OR)? Field (IN|NOT IN|...) :binding (AND|OR)?
+    // But don't capture OR if it's part of ORDER BY
+    Pattern conditionPattern = Pattern.compile(
+      '(?i)(?s)(?:\\s+(?:AND|OR))?\\s+[a-z0-9_]+\\s+(?:IN|NOT\\s+IN|INCLUDES|EXCLUDES|[=<>!]+)\\s*' +
+      Pattern.quote(bindingPattern) + '\\b(?=\\s+(?:AND|OR|ORDER|LIMIT|GROUP|HAVING|$)|$)'
+    );
+
+    Matcher matcher = conditionPattern.matcher(result);
+    if (matcher.find()) {
+      String matchedCondition = matcher.group(0);
+
+      // Check if there's AND/OR after the binding that we need to remove
+      String afterMatch = result.substring(matcher.end());
+      Pattern trailingAndOrPattern = Pattern.compile('(?i)^\\s+(AND|OR)\\s+(?![a-z])');
+      Matcher trailingMatcher = trailingAndOrPattern.matcher(afterMatch);
+      Integer additionalLength = 0;
+      if (trailingMatcher.find()) {
+        String trailing = trailingMatcher.group(0);
+        // Only remove trailing AND/OR if it's not followed by ORDER, LIMIT, etc.
+        if (!Pattern.compile('(?i)^\\s+(AND|OR)\\s+(ORDER|LIMIT|GROUP|HAVING)').matcher(afterMatch).find()) {
+          additionalLength = trailing.length();
+        }
+      }
+
+      result = result.substring(0, matcher.start()) + result.substring(matcher.end() + additionalLength);
+
+      // Clean up any double AND/OR that might result
+      result = result.replaceAll('(?i)\\s+AND\\s+AND\\s+', ' AND ');
+      result = result.replaceAll('(?i)\\s+OR\\s+OR\\s+', ' OR ');
+      result = result.replaceAll('(?i)\\s+AND\\s+OR\\s+', ' AND ');
+      result = result.replaceAll('(?i)\\s+OR\\s+AND\\s+', ' AND ');
+
+      // Clean up WHERE with nothing after it or with AND/OR immediately after
+      result = result.replaceAll('(?i)\\s+WHERE\\s+(?:AND|OR)\\s+', ' WHERE ');
+      result = result.replaceAll('(?i)\\s+WHERE\\s*$', '');
+
+      // Clean up trailing AND/OR before ORDER BY, LIMIT, etc.
+      result = result.replaceAll('(?i)\\s+(?:AND|OR)\\s+(?=ORDER\\s+BY|LIMIT|GROUP\\s+BY|HAVING|$)', ' ');
+    }
+
+    return result;
+  }
+
+  /**
+   * @description Filters bindings map to only include bindings referenced in the query
+   * This prevents "Key does not exist in bindMap" errors with Database.queryWithBinds
+   * @param bindings Map of all bindings
+   * @param query The SOQL query string
+   * @return Map<String, Object> Filtered bindings map containing only referenced bindings
+   */
+  @TestVisible
+  private static Map<String, Object> filterBindingsForQuery(
+    Map<String, Object> bindings,
+    String query
+  ) {
+    if (bindings == null || bindings.isEmpty() || String.isBlank(query)) {
+      return bindings != null ? bindings : new Map<String, Object>();
+    }
+
+    // Find all bindings referenced in the query
+    Pattern bindingPattern = Pattern.compile(':\\b(\\w+)\\b');
+    Matcher matcher = bindingPattern.matcher(query);
+    Set<String> referencedBindings = new Set<String>();
+    while (matcher.find()) {
+      referencedBindings.add(matcher.group(1));
+    }
+
+    // Filter bindings to only include referenced ones
+    Map<String, Object> filteredBindings = new Map<String, Object>();
+    for (String key : bindings.keySet()) {
+      if (referencedBindings.contains(key)) {
+        filteredBindings.put(key, bindings.get(key));
+      }
+    }
+
+    return filteredBindings;
   }
 
   /**
@@ -588,18 +1177,28 @@ public inherited sharing class JT_DataSelector {
     // Check if query uses unsupported operators and throw descriptive error
     validateSupportedOperators(config.JT_BaseQuery__c);
 
+    // Build dynamic query removing conditions for empty/missing bindings
+    String dynamicQuery = buildDynamicQuery(config.JT_BaseQuery__c, bindings);
+
     // Validate and convert bindings (auto-detect types from query patterns)
+    // Only include bindings that are actually used in the dynamic query
     Map<String, Object> validatedBindings = validateAndConvertBindings(
       bindings,
-      config.JT_BaseQuery__c
+      dynamicQuery
+    );
+
+    // Filter bindings to only include those referenced in the dynamic query
+    Map<String, Object> filteredBindings = filterBindingsForQuery(
+      validatedBindings,
+      dynamicQuery
     );
 
     // Use appropriate access level
     AccessLevel accessMode = getAccessLevel(enforceSecurity);
 
     return Database.queryWithBinds(
-      config.JT_BaseQuery__c,
-      validatedBindings,
+      dynamicQuery,
+      filteredBindings,
       accessMode
     );
   }

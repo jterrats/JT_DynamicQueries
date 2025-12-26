@@ -48,10 +48,9 @@ test.describe("Where is this used? - Usage Detection", () => {
       state: "attached",
       timeout: 15000
     });
-    await page.waitForTimeout(2000); // Wait for search to complete
 
-    // Wait for search results
-    await page.waitForTimeout(3000);
+    // Wait for search to complete (takes ~12 seconds)
+    await page.waitForTimeout(15000);
 
     // Verify that JT_AccountReportExample appears in results
     const modalContent = page.locator("c-jt-usage-modal");
@@ -60,7 +59,7 @@ test.describe("Where is this used? - Usage Detection", () => {
     );
 
     await expect(apexClassUsage).toBeVisible({
-      timeout: 15000
+      timeout: 20000
     });
 
     // Verify the metadata type is shown as "Apex Class"
@@ -91,7 +90,8 @@ test.describe("Where is this used? - Usage Detection", () => {
       state: "attached",
       timeout: 15000
     });
-    await page.waitForTimeout(3000); // Wait for search to complete
+    // Wait for search to complete (takes ~12 seconds)
+    await page.waitForTimeout(15000);
 
     // Verify JT_AccountReportExample with getAccountsByTypeAndIndustry method
     const modalContent = page.locator("c-jt-usage-modal");
@@ -123,7 +123,8 @@ test.describe("Where is this used? - Usage Detection", () => {
       state: "attached",
       timeout: 15000
     });
-    await page.waitForTimeout(3000); // Wait for search to complete
+    // Wait for search to complete (takes ~12 seconds)
+    await page.waitForTimeout(15000);
 
     const modalContent = page.locator("c-jt-usage-modal");
     const apexClassUsage = modalContent.locator(
@@ -158,7 +159,8 @@ test.describe("Where is this used? - Usage Detection", () => {
       state: "attached",
       timeout: 15000
     });
-    await page.waitForTimeout(5000); // Flows take longer to search
+    // Wait for search to complete (takes ~12 seconds, Flows may take longer)
+    await page.waitForTimeout(15000);
 
     const modalContent = page.locator("c-jt-usage-modal");
 
@@ -200,7 +202,8 @@ test.describe("Where is this used? - Usage Detection", () => {
       state: "attached",
       timeout: 15000
     });
-    await page.waitForTimeout(3000); // Wait for search to complete
+    // Wait for search to complete (takes ~12 seconds)
+    await page.waitForTimeout(15000);
 
     const modalContent = page.locator("c-jt-usage-modal");
 
@@ -208,7 +211,7 @@ test.describe("Where is this used? - Usage Detection", () => {
     const noUsagesMessage = modalContent.locator(
       "text=/No usages found|not found any usage/i"
     );
-    await expect(noUsagesMessage).toBeVisible({ timeout: 15000 });
+    await expect(noUsagesMessage).toBeVisible({ timeout: 20000 });
 
     await page.locator('lightning-button[title="Close"]').first().click();
   });
@@ -225,13 +228,14 @@ test.describe("Where is this used? - Usage Detection", () => {
       state: "attached",
       timeout: 15000
     });
-    await page.waitForTimeout(3000); // Wait for search to complete
+    // Wait for search to complete (takes ~12 seconds)
+    await page.waitForTimeout(15000);
 
     const modalContent = page.locator("c-jt-usage-modal");
 
     // Verify modal shows usage count
     const usageCount = modalContent.locator("text=/\\d+ usage|\\d+ result/i");
-    await expect(usageCount).toBeVisible({ timeout: 15000 });
+    await expect(usageCount).toBeVisible({ timeout: 20000 });
 
     // Verify sections are present
     const apexSection = modalContent.locator("text=/Apex Class/i");

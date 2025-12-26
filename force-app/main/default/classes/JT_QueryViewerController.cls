@@ -551,29 +551,90 @@ public with sharing class JT_QueryViewerController {
 
       // Build COUNT query (replace SELECT ... FROM with SELECT COUNT() FROM)
       // Use [\s\S]*? to match across multiple lines (including newlines)
-      String countQuery = config.JT_BaseQuery__c
+      // Decode HTML entities that may come from metadata
+      String baseQuery = config.JT_BaseQuery__c.replace('&gt;', '>').replace('&lt;', '<').replace('&amp;', '&');
+      String countQuery = baseQuery
         .replaceAll('(?i)SELECT[\\s\\S]+?FROM', 'SELECT COUNT() FROM')
         .replaceAll('(?i)ORDER\\s+BY[\\s\\S]*$', '') // Remove ORDER BY
         .replaceAll('(?i)LIMIT\\s+\\d+[\\s\\S]*$', ''); // Remove LIMIT
 
+
       // Execute count query with timeout protection
       Integer estimatedCount = 0;
+      String finalCountQuery = null;
       try {
         // Replace bind variables in COUNT query (countQuery() doesn't support bindings)
-        final String finalCountQuery = replaceBindVariables(
+        finalCountQuery = replaceBindVariables(
           countQuery,
           countBindings
         );
 
+        // Remove Long Text Area field conditions that cannot be filtered in COUNT queries
+        finalCountQuery = removeLongTextAreaConditions(finalCountQuery);
+
+        System.debug(
+          LoggingLevel.DEBUG,
+          'COUNT query: ' + finalCountQuery
+        );
+        System.debug(
+          LoggingLevel.DEBUG,
+          'COUNT bindings: ' + JSON.serialize(countBindings)
+        );
+
         // Use countQuery() instead of queryWithBinds for COUNT queries
         estimatedCount = Database.countQuery(finalCountQuery);
-      } catch (Exception e) {
-        // If count fails, assume it's risky
+
         System.debug(
-          LoggingLevel.ERROR,
-          'COUNT query failed: ' + e.getMessage()
+          LoggingLevel.DEBUG,
+          'COUNT result: ' + estimatedCount
         );
-        estimatedCount = 99999;
+      } catch (Exception e) {
+        // If count fails, check if it's a Long Text Area field error and retry without it
+        if (e.getMessage() != null && e.getMessage().contains('can not be filtered in a query call')) {
+          System.debug(
+            LoggingLevel.WARN,
+            'COUNT query failed due to unfilterable field, retrying without Long Text Area conditions: ' + e.getMessage()
+          );
+          try {
+            // Remove Long Text Area conditions and retry
+            finalCountQuery = removeLongTextAreaConditions(finalCountQuery);
+            estimatedCount = Database.countQuery(finalCountQuery);
+            System.debug(
+              LoggingLevel.DEBUG,
+              'COUNT result after removing Long Text Area conditions: ' + estimatedCount
+            );
+          } catch (Exception retryException) {
+            // If retry also fails, log and assume risky
+            System.debug(
+              LoggingLevel.ERROR,
+              'COUNT query failed after retry: ' + retryException.getMessage()
+            );
+            estimatedCount = 99999;
+          }
+        } else {
+          // If count fails for other reasons, log detailed error and assume it's risky
+          System.debug(
+            LoggingLevel.ERROR,
+            'COUNT query failed: ' + e.getMessage()
+          );
+          System.debug(
+            LoggingLevel.ERROR,
+            'COUNT query that failed: ' + (finalCountQuery != null ? finalCountQuery : 'null')
+          );
+          System.debug(
+            LoggingLevel.ERROR,
+            'COUNT bindings that failed: ' + JSON.serialize(countBindings)
+          );
+          System.debug(
+            LoggingLevel.ERROR,
+            'Exception type: ' + e.getTypeName()
+          );
+          System.debug(
+            LoggingLevel.ERROR,
+            'Exception stack trace: ' + e.getStackTraceString()
+          );
+          estimatedCount = 99999;
+        }
       }
 
       final QueryRiskAssessment assessment = new QueryRiskAssessment();
@@ -620,42 +681,612 @@ public with sharing class JT_QueryViewerController {
     String query,
     Map<String, Object> bindings
   ) {
-    if (String.isBlank(query) || bindings == null || bindings.isEmpty()) {
+    if (String.isBlank(query)) {
       return query;
     }
 
     String result = query;
-    for (String key : bindings.keySet()) {
-      Object value = bindings.get(key);
-      String escapedValue = '';
 
-      if (value == null) {
-        escapedValue = 'null';
-      } else if (value instanceof String) {
-        // Escape single quotes and wrap in quotes
-        escapedValue =
-          '\'' +
-          String.valueOf(value).replace('\'', '\\\'') +
-          '\'';
-      } else if (
-        value instanceof Boolean ||
-        value instanceof Integer ||
-        value instanceof Decimal
-      ) {
-        escapedValue = String.valueOf(value);
+    // First, find all bindings referenced in the query
+    Pattern bindingPattern = Pattern.compile(':\\b(\\w+)\\b');
+    Matcher matcher = bindingPattern.matcher(query);
+    Set<String> referencedBindings = new Set<String>();
+    while (matcher.find()) {
+      referencedBindings.add(matcher.group(1));
+    }
+
+    // Remove conditions for bindings that don't exist or are empty
+    for (String bindingKey : referencedBindings) {
+      Boolean shouldRemove = false;
+
+      if (bindings == null || !bindings.containsKey(bindingKey)) {
+        // Binding not provided - remove the condition
+        shouldRemove = true;
       } else {
-        // For other types, use string representation
-        escapedValue =
-          '\'' +
-          String.valueOf(value).replace('\'', '\\\'') +
-          '\'';
+        Object value = bindings.get(bindingKey);
+        // Check if value is empty/null
+        Boolean isEmpty = value == null ||
+          (value instanceof String && String.isBlank((String) value)) ||
+          (value instanceof List<Object> && ((List<Object>) value).isEmpty());
+
+        if (isEmpty) {
+          // Binding is empty - remove the condition
+          shouldRemove = true;
+        }
       }
 
-      // Replace :bindVar with actual value
-      result = result.replaceAll(':' + key + '\\b', escapedValue);
+      if (shouldRemove) {
+        result = removeConditionForBinding(result, bindingKey);
+      }
+    }
+
+    // Now replace remaining bindings with their values
+    if (bindings != null && !bindings.isEmpty()) {
+      for (String key : bindings.keySet()) {
+        final Object value = bindings.get(key);
+
+        // Skip empty strings and null values
+        if (value == null) {
+          continue;
+        }
+
+        if (value instanceof String && String.isBlank((String) value)) {
+          continue;
+        }
+
+        if (value instanceof List<Object>) {
+          List<Object> listValue = (List<Object>) value;
+          if (listValue.isEmpty()) {
+            continue;
+          }
+        }
+
+        final Object convertedValue = convertBindingValueForQuery(result, key, value);
+        final String escapedValue = escapeBindingValue(convertedValue);
+
+        result = result.replaceAll(':' + key + '\\b', escapedValue);
+      }
     }
 
     return result;
+  }
+
+  /**
+   * @description Removes WHERE conditions for Text Area and Long Text Area fields that cannot be filtered in COUNT queries
+   * @param query The SOQL query string
+   * @return String Query with Text Area and Long Text Area conditions removed
+   */
+  @TestVisible
+  private static String removeLongTextAreaConditions(String query) {
+    if (String.isBlank(query)) {
+      return query;
+    }
+
+    String result = query;
+
+    // Common Text Area and Long Text Area field names that cannot be filtered in COUNT queries
+    // These field types cannot be used in WHERE clauses for COUNT queries in Salesforce
+    List<String> textAreaFields = new List<String>{
+      'Description',
+      'Body',
+      'Content',
+      'LongTextArea',
+      'RichTextArea',
+      'TextArea',
+      'CommentBody',
+      'MessageBody',
+      'HtmlValue',
+      'PlainTextBody'
+    };
+
+    // Remove conditions for each Text Area and Long Text Area field
+    for (String fieldName : textAreaFields) {
+      // Pattern: (AND|OR)? FieldName LIKE 'value' (AND|OR)?
+      // Match field name case-insensitively and capture the entire condition including quoted values
+      // This handles both bindings (:binding) and already-replaced values ('value')
+      Pattern conditionPattern = Pattern.compile(
+        '(?i)(?s)(?:\\s+(?:AND|OR))?\\s+' + Pattern.quote(fieldName) + '\\s+(?:LIKE|IN|NOT\\s+IN|INCLUDES|EXCLUDES|[=<>!]+)\\s+(?:\'[^\']*\'|\\([^)]+\\)|:[a-zA-Z0-9_]+|\\S+)(?:\\s+(?:AND|OR))?(?=\\s+(?:AND|OR|ORDER|LIMIT|GROUP|HAVING|$)|$)'
+      );
+
+      Matcher matcher = conditionPattern.matcher(result);
+      if (matcher.find()) {
+        String matchedCondition = matcher.group(0);
+
+        // Check if there's AND/OR after the condition that we need to remove
+        String afterMatch = result.substring(matcher.end());
+        Pattern trailingAndOrPattern = Pattern.compile('(?i)^\\s+(AND|OR)\\s+(?![a-z])');
+        Matcher trailingMatcher = trailingAndOrPattern.matcher(afterMatch);
+        Integer additionalLength = 0;
+        if (trailingMatcher.find()) {
+          String trailing = trailingMatcher.group(0);
+          // Only remove trailing AND/OR if it's not followed by ORDER, LIMIT, etc.
+          if (!Pattern.compile('(?i)^\\s+(AND|OR)\\s+(ORDER|LIMIT|GROUP|HAVING)').matcher(afterMatch).find()) {
+            additionalLength = trailing.length();
+          }
+        }
+
+        result = result.substring(0, matcher.start()) + result.substring(matcher.end() + additionalLength);
+
+        // Clean up any double AND/OR that might result
+        result = result.replaceAll('(?i)\\s+AND\\s+AND\\s+', ' AND ');
+        result = result.replaceAll('(?i)\\s+OR\\s+OR\\s+', ' OR ');
+        result = result.replaceAll('(?i)\\s+AND\\s+OR\\s+', ' AND ');
+        result = result.replaceAll('(?i)\\s+OR\\s+AND\\s+', ' AND ');
+
+        // Clean up WHERE with nothing after it or with AND/OR immediately after
+        result = result.replaceAll('(?i)\\s+WHERE\\s+(?:AND|OR)\\s+', ' WHERE ');
+        result = result.replaceAll('(?i)\\s+WHERE\\s*$', '');
+
+        // Clean up trailing AND/OR before ORDER BY, LIMIT, etc.
+        result = result.replaceAll('(?i)\\s+(?:AND|OR)\\s+(?=ORDER\\s+BY|LIMIT|GROUP\\s+BY|HAVING|$)', ' ');
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * @description Removes a WHERE condition for a binding that doesn't exist or is empty
+   * @param query The SOQL query string
+   * @param bindingKey The binding variable name (without colon)
+   * @return String Query with condition removed
+   */
+  @TestVisible
+  private static String removeConditionForBinding(String query, String bindingKey) {
+    if (String.isBlank(query) || String.isBlank(bindingKey)) {
+      return query;
+    }
+
+    String result = query;
+    String bindingPattern = ':' + bindingKey;
+
+    // Match condition with optional AND/OR before and after
+    // Use negative lookahead to avoid capturing OR from ORDER BY
+    // Pattern: (AND|OR)? Field (IN|NOT IN|...) :binding (AND|OR)?
+    // But don't capture OR if it's part of ORDER BY
+    Pattern conditionPattern = Pattern.compile(
+      '(?i)(?s)(?:\\s+(?:AND|OR))?\\s+[a-z0-9_]+\\s+(?:IN|NOT\\s+IN|INCLUDES|EXCLUDES|[=<>!]+)\\s*' +
+      Pattern.quote(bindingPattern) + '\\b(?=\\s+(?:AND|OR|ORDER|LIMIT|GROUP|HAVING|$)|$)'
+    );
+
+    Matcher matcher = conditionPattern.matcher(result);
+    if (matcher.find()) {
+      String matchedCondition = matcher.group(0);
+
+      // Check if there's AND/OR after the binding that we need to remove
+      String afterMatch = result.substring(matcher.end());
+      Pattern trailingAndOrPattern = Pattern.compile('(?i)^\\s+(AND|OR)\\s+(?![a-z])');
+      Matcher trailingMatcher = trailingAndOrPattern.matcher(afterMatch);
+      Integer additionalLength = 0;
+      if (trailingMatcher.find()) {
+        String trailing = trailingMatcher.group(0);
+        // Only remove trailing AND/OR if it's not followed by ORDER, LIMIT, etc.
+        if (!Pattern.compile('(?i)^\\s+(AND|OR)\\s+(ORDER|LIMIT|GROUP|HAVING)').matcher(afterMatch).find()) {
+          additionalLength = trailing.length();
+        }
+      }
+
+      result = result.substring(0, matcher.start()) + result.substring(matcher.end() + additionalLength);
+
+      // Clean up any double AND/OR that might result
+      result = result.replaceAll('(?i)\\s+AND\\s+AND\\s+', ' AND ');
+      result = result.replaceAll('(?i)\\s+OR\\s+OR\\s+', ' OR ');
+      result = result.replaceAll('(?i)\\s+AND\\s+OR\\s+', ' AND ');
+      result = result.replaceAll('(?i)\\s+OR\\s+AND\\s+', ' AND ');
+
+      // Clean up WHERE with nothing after it or with AND/OR immediately after
+      result = result.replaceAll('(?i)\\s+WHERE\\s+(?:AND|OR)\\s+', ' WHERE ');
+      result = result.replaceAll('(?i)\\s+WHERE\\s*$', '');
+
+      // Clean up trailing AND/OR before ORDER BY, LIMIT, etc.
+      result = result.replaceAll('(?i)\\s+(?:AND|OR)\\s+(?=ORDER\\s+BY|LIMIT|GROUP\\s+BY|HAVING|$)', ' ');
+    }
+
+    return result;
+  }
+
+  /**
+   * @description Gets the type name of a value for debug messages
+   * @param value Value to get type name for
+   * @return String Type name
+   */
+  @TestVisible
+  private static String getValueTypeName(Object value) {
+    if (value == null) {
+      return 'null';
+    }
+    if (value instanceof String) {
+      return 'String';
+    }
+    if (value instanceof Integer) {
+      return 'Integer';
+    }
+    if (value instanceof Decimal) {
+      return 'Decimal';
+    }
+    if (value instanceof Boolean) {
+      return 'Boolean';
+    }
+    if (value instanceof Date) {
+      return 'Date';
+    }
+    if (value instanceof Datetime) {
+      return 'Datetime';
+    }
+    if (value instanceof List<Object>) {
+      return 'List<Object>';
+    }
+    return 'Object';
+  }
+
+  /**
+   * @description Converts binding value to appropriate type based on query context
+   * Detects numeric comparisons and converts string values to Decimal/Integer
+   * @param query The SOQL query string
+   * @param bindingKey The binding variable name
+   * @param value The binding value (may be String from JSON)
+   * @return Object Converted value with appropriate type
+   */
+  @TestVisible
+  private static Object convertBindingValueForQuery(
+    String query,
+    String bindingKey,
+    Object value
+  ) {
+    if (value == null) {
+      return value;
+    }
+
+    // Decode HTML entities that may come from metadata (e.g., &gt;= becomes >=, &lt;= becomes <=)
+    String decodedQuery = query.replace('&gt;', '>').replace('&lt;', '<').replace('&amp;', '&');
+    String normalizedQuery = decodedQuery.toLowerCase();
+    String bindingPattern = ':' + bindingKey;
+    String escapedPattern = Pattern.quote(bindingPattern);
+
+    // Check if binding is used in numeric comparison operators
+    Boolean isNumericComparison = false;
+    Pattern pattern1 = Pattern.compile('(?i)(?s)[a-z0-9_]+\\s+[>=<]+\\s*' + escapedPattern + '\\b');
+    Matcher matcher1 = pattern1.matcher(normalizedQuery);
+    if (matcher1.find()) {
+      isNumericComparison = true;
+    }
+
+    if (!isNumericComparison) {
+      Pattern pattern2 = Pattern.compile('(?i)(?s)\\b' + escapedPattern + '\\s*[>=<]+\\s+[a-z0-9_]+');
+      Matcher matcher2 = pattern2.matcher(normalizedQuery);
+      if (matcher2.find()) {
+        isNumericComparison = true;
+      }
+    }
+
+    // Check for boolean comparisons first (before numeric, to avoid false positives)
+    Boolean isBooleanComparison = false;
+    Pattern boolPattern1 = Pattern.compile('[a-z0-9_]+\\s*[=!]?=\\s*' + Pattern.quote(bindingPattern) + '\\b');
+    Matcher boolMatcher1 = boolPattern1.matcher(normalizedQuery);
+    if (boolMatcher1.find()) {
+      isBooleanComparison = true;
+    }
+
+    if (!isBooleanComparison) {
+      Pattern boolPattern2 = Pattern.compile('\\b' + Pattern.quote(bindingPattern) + '\\s*[=!]?=\\s*[a-z0-9_]+');
+      Matcher boolMatcher2 = boolPattern2.matcher(normalizedQuery);
+      if (boolMatcher2.find()) {
+        isBooleanComparison = true;
+      }
+    }
+
+    // Handle boolean values (JavaScript already sends Boolean, but handle String legacy)
+    if (isBooleanComparison) {
+      if (value instanceof Boolean) {
+        return value; // Already boolean from JavaScript
+      } else if (value instanceof String) {
+        String trimmedValue = ((String) value).trim().toLowerCase();
+        if (trimmedValue == 'true') {
+          return true;
+        } else if (trimmedValue == 'false') {
+          return false;
+        }
+        // If string is not "true" or "false", return as-is (might be field name or other value)
+        return value;
+      }
+    }
+
+    if (!isNumericComparison) {
+      Pattern pattern3 = Pattern.compile('(?i)(?s)[a-z0-9_]+\\s*[=!]+=\\s*' + escapedPattern + '\\b|\\b' + escapedPattern + '\\s*[=!]+=\\s+[a-z0-9_]+');
+      Matcher matcher3 = pattern3.matcher(normalizedQuery);
+      if (matcher3.find()) {
+        // Check if value is numeric (Decimal, Integer, or numeric String)
+        // Skip if we already handled as boolean
+        if (!isBooleanComparison) {
+          if (value instanceof Decimal || value instanceof Integer) {
+            isNumericComparison = true;
+          } else if (value instanceof String) {
+            String trimmedValue = ((String) value).trim().replace(',', '');
+            if (isNumericString(trimmedValue)) {
+              isNumericComparison = true;
+            }
+          }
+        }
+      }
+    }
+
+    if (isNumericComparison) {
+      // If value is already Integer, no conversion needed
+      if (value instanceof Integer) {
+        return value;
+      }
+
+      // Handle Decimal -> Integer conversion based on field type
+      if (value instanceof Decimal) {
+        Boolean isIntegerField = isIntegerFieldBinding(decodedQuery, bindingKey);
+        if (isIntegerField) {
+          return ((Decimal) value).intValue();
+        }
+        return value; // Keep as Decimal
+      }
+
+      // Legacy: Handle String values (shouldn't happen if JS sends typed values)
+      if (value instanceof String) {
+        String stringValue = ((String) value).trim().replace(',', '');
+        if (String.isBlank(stringValue)) {
+          return value;
+        }
+        if (!isNumericString(stringValue)) {
+          return value;
+        }
+        try {
+          Boolean isIntegerField = isIntegerFieldBinding(decodedQuery, bindingKey);
+          if (isIntegerField) {
+            return Integer.valueOf(stringValue);
+          } else {
+            return Decimal.valueOf(stringValue);
+          }
+        } catch (Exception e) {
+          return value;
+        }
+      }
+    }
+
+    // Check for date/datetime comparisons and convert ISO strings
+    Boolean isDateComparison = isDateFieldBinding(decodedQuery, bindingKey);
+    Boolean isDatetimeComparison = isDatetimeFieldBinding(decodedQuery, bindingKey);
+
+    String valueTypeName = value instanceof String ? 'String' : value instanceof Integer ? 'Integer' : value instanceof Decimal ? 'Decimal' : value instanceof Boolean ? 'Boolean' : value instanceof Date ? 'Date' : value instanceof Datetime ? 'Datetime' : value != null ? 'Object' : 'null';
+    System.debug(LoggingLevel.DEBUG, 'convertBindingValueForQuery: bindingKey=' + bindingKey + ', value type=' + valueTypeName + ', isDateComparison=' + isDateComparison + ', isDatetimeComparison=' + isDatetimeComparison);
+
+    if ((isDateComparison || isDatetimeComparison) && value instanceof String) {
+      String stringValue = ((String) value).trim();
+      if (!String.isBlank(stringValue)) {
+        try {
+          // Try to parse ISO 8601 format (from JavaScript toISOString())
+          // Format: YYYY-MM-DDTHH:mm:ss.sssZ or YYYY-MM-DDTHH:mm:ssZ
+          if (isDatetimeComparison) {
+            // Convert ISO string to Datetime
+            // JavaScript toISOString() format: "2024-01-15T10:30:00.000Z" or "2024-01-15T10:30:00Z"
+            // DateTime.ValueofGmt() expects: "yyyy-MM-dd HH:mm:ss" in GMT
+            String normalizedDate = stringValue;
+            // Remove timezone offset if present (+HH:mm or -HH:mm)
+            normalizedDate = normalizedDate.replaceAll('[+-]\\d{2}:\\d{2}$', '');
+            // Replace 'T' with space (required for ValueofGmt)
+            normalizedDate = normalizedDate.replace('T', ' ');
+            // Remove 'Z' at the end
+            normalizedDate = normalizedDate.replace('Z', '');
+            // Remove milliseconds if present (.000) - must be at the end after removing Z
+            normalizedDate = normalizedDate.replaceAll('\\.\\d{1,3}$', '');
+            // Trim any trailing spaces
+            normalizedDate = normalizedDate.trim();
+            // Parse to Datetime using ValueofGmt (handles ISO format better than valueOf)
+            System.debug(LoggingLevel.DEBUG, 'Converting ISO date string: "' + stringValue + '" to "' + normalizedDate + '"');
+            Datetime dt = DateTime.ValueofGmt(normalizedDate);
+            System.debug(LoggingLevel.DEBUG, 'Converted to Datetime: ' + dt);
+            return dt;
+          } else if (isDateComparison) {
+            // For Date fields, extract just the date part (YYYY-MM-DD)
+            String datePart = stringValue.split('T')[0];
+            return Date.valueOf(datePart);
+          }
+        } catch (Exception e) {
+          System.debug(LoggingLevel.WARN, 'Failed to parse date/datetime string "' + stringValue + '": ' + e.getMessage());
+          return value; // Return as-is if parsing fails
+        }
+      }
+    }
+
+    return value;
+  }
+
+  /**
+   * @description Checks if a binding is used with a Date field
+   * Common Date fields: CloseDate, StartDate, EndDate, etc.
+   * @param query The SOQL query string
+   * @param bindingKey The binding variable name
+   * @return Boolean True if the binding is likely used with a Date field
+   */
+  @TestVisible
+  private static Boolean isDateFieldBinding(String query, String bindingKey) {
+    String bindingPattern = ':' + bindingKey;
+    String normalizedQuery = query.toLowerCase();
+    String escapedPattern = Pattern.quote(bindingPattern);
+
+    // Common Date field names in Salesforce
+    List<String> dateFieldNames = new List<String>{
+      'closedate',
+      'startdate',
+      'enddate',
+      'birthdate',
+      'hiredate',
+      'terminationdate',
+      'date'
+    };
+
+    // Check if binding is used with any Date field
+    for (String fieldName : dateFieldNames) {
+      // Pattern: fieldName = :binding or fieldName != :binding, etc.
+      Pattern pattern = Pattern.compile('(?i)(?s)\\b' + fieldName + '\\s*[=!<>]+\\s*' + escapedPattern + '\\b|\\b' + escapedPattern + '\\s*[=!<>]+\\s+' + fieldName + '\\b');
+      Matcher matcher = pattern.matcher(normalizedQuery);
+      if (matcher.find()) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * @description Checks if a binding is used with a Datetime field
+   * Common Datetime fields: CreatedDate, LastModifiedDate, etc.
+   * @param query The SOQL query string
+   * @param bindingKey The binding variable name
+   * @return Boolean True if the binding is likely used with a Datetime field
+   */
+  @TestVisible
+  private static Boolean isDatetimeFieldBinding(String query, String bindingKey) {
+    String bindingPattern = ':' + bindingKey;
+    String normalizedQuery = query.toLowerCase();
+    String escapedPattern = Pattern.quote(bindingPattern);
+
+    // Common Datetime field names in Salesforce
+    List<String> datetimeFieldNames = new List<String>{
+      'createddate',
+      'lastmodifieddate',
+      'systemmodstamp',
+      'lastactivitydate',
+      'lastvieweddate',
+      'lastreferenceddate',
+      'datetime',
+      'timestamp'
+    };
+
+    // Check if binding is used with any Datetime field
+    for (String fieldName : datetimeFieldNames) {
+      // Pattern: fieldName = :binding or fieldName != :binding, etc.
+      Pattern pattern = Pattern.compile('(?i)(?s)\\b' + fieldName + '\\s*[=!<>]+\\s*' + escapedPattern + '\\b|\\b' + escapedPattern + '\\s*[=!<>]+\\s+' + fieldName + '\\b');
+      Matcher matcher = pattern.matcher(normalizedQuery);
+      if (matcher.find()) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * @description Checks if a binding is used with an Integer field
+   * Common Integer fields: NumberOfEmployees, etc.
+   * @param query The SOQL query string
+   * @param bindingKey The binding variable name
+   * @return Boolean True if the binding is likely used with an Integer field
+   */
+  @TestVisible
+  private static Boolean isIntegerFieldBinding(String query, String bindingKey) {
+    String bindingPattern = ':' + bindingKey;
+    String normalizedQuery = query.toLowerCase();
+    String escapedPattern = Pattern.quote(bindingPattern);
+
+    // Common Integer field names in Salesforce
+    List<String> integerFieldNames = new List<String>{
+      'numberofemployees',
+      'number_of_employees',
+      'employee_count',
+      'count',
+      'quantity',
+      'qty'
+    };
+
+    // Check if binding is used with any Integer field
+    for (String fieldName : integerFieldNames) {
+      // Pattern: fieldName >= :binding or fieldName <= :binding, etc.
+      Pattern pattern = Pattern.compile('(?i)(?s)\\b' + fieldName + '\\s+[>=<]+\\s*' + escapedPattern + '\\b|\\b' + escapedPattern + '\\s*[>=<]+\\s+' + fieldName + '\\b');
+      Matcher matcher = pattern.matcher(normalizedQuery);
+      if (matcher.find()) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * @description Checks if a string represents a numeric value
+   * @param value String value to check
+   * @return Boolean True if the string can be converted to a number
+   */
+  @TestVisible
+  private static Boolean isNumericString(String value) {
+    if (String.isBlank(value)) {
+      return false;
+    }
+    // Remove commas and trim before checking
+    String trimmedValue = value.trim().replace(',', '');
+    if (String.isBlank(trimmedValue)) {
+      return false;
+    }
+    // Check if it matches a numeric pattern (digits, optional decimal point, optional sign)
+    Pattern numericPattern = Pattern.compile('^-?\\d+(\\.\\d+)?$');
+    Matcher matcher = numericPattern.matcher(trimmedValue);
+    return matcher.matches();
+  }
+
+  /**
+   * @description Escapes a binding value for use in SOQL query string replacement
+   * @param value Value to escape
+   * @return String Escaped value ready for SOQL
+   */
+  @TestVisible
+  private static String escapeBindingValue(Object value) {
+    if (value == null) {
+      return 'null';
+    }
+
+    if (value instanceof List<Object>) {
+      return escapeListValue((List<Object>) value);
+    }
+
+    return escapeScalarValue(value);
+  }
+
+  /**
+   * @description Escapes a list value for use in IN/NOT IN clauses
+   * @param listValue List to escape
+   * @return String Escaped list format: (value1, value2, ...)
+   */
+  @TestVisible
+  private static String escapeListValue(List<Object> listValue) {
+    List<String> escapedValues = new List<String>();
+    for (Object item : listValue) {
+      escapedValues.add(escapeScalarValue(item));
+    }
+    return '(' + String.join(escapedValues, ',') + ')';
+  }
+
+  /**
+   * @description Escapes a scalar value for use in SOQL
+   * @param value Scalar value to escape
+   * @return String Escaped value
+   */
+  @TestVisible
+  private static String escapeScalarValue(Object value) {
+    if (value == null) {
+      return 'null';
+    }
+
+    if (value instanceof String) {
+      return '\'' + String.escapeSingleQuotes((String) value) + '\'';
+    }
+
+    if (value instanceof Boolean || value instanceof Integer || value instanceof Decimal) {
+      return String.valueOf(value);
+    }
+
+    if (value instanceof Date) {
+      return String.valueOf((Date) value);
+    }
+
+    if (value instanceof Datetime) {
+      return ((Datetime) value).format('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'');
+    }
+
+    return '\'' + String.escapeSingleQuotes(String.valueOf(value)) + '\'';
   }
 
   /**

@@ -1284,6 +1284,24 @@ Please use one of these alternatives:
   2. Apex filtering after query execution</value>
     </labels>
     <labels>
+        <fullName>JT_Error_HavingClauseNotSupported</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription
+    >Error - HAVING clause not supported</shortDescription>
+        <value>HAVING clause is not supported in Salesforce SOQL.
+
+SOQL does not support the HAVING clause, which is used to filter aggregated results in SQL.
+
+Instead of:
+  SELECT Field, COUNT() FROM Object GROUP BY Field HAVING COUNT() &gt; :minCount
+
+Please use one of these alternatives:
+  1. Filter aggregated results in Apex after query execution
+  2. Use WHERE clause to filter before aggregation (if possible)
+  3. Consider using Data Cloud SQL Query APIs for complex aggregations with HAVING</value>
+    </labels>
+    <labels>
         <fullName>JT_Error_UnsupportedOperatorGeneric</fullName>
         <language>en_US</language>
         <protected>false</protected>

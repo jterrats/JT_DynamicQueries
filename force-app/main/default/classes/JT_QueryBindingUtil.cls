@@ -22,7 +22,8 @@ public class JT_QueryBindingUtil {
       return;
     }
 
-    Pattern likePattern = Pattern.compile('(?i)\\bLIKE\\s+:(\\w+)');
+    // Allow for optional spaces around the colon: "LIKE :param", "LIKE:param", "LIKE : param"
+    Pattern likePattern = Pattern.compile('(?i)\\bLIKE\\s*:(\\w+)');
     Matcher matcher = likePattern.matcher(query);
 
     while (matcher.find()) {

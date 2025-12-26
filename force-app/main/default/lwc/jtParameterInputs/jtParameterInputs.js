@@ -25,6 +25,7 @@ export default class JtParameterInputs extends LightningElement {
   // Public API - Parameters from parent
   @track _parameters = [];
   @track _values = {};
+  @api baseQuery = ""; // Query string to detect IN/NOT IN/INCLUDES/EXCLUDES operators
 
   // Custom Labels
   labels = {
@@ -54,12 +55,53 @@ export default class JtParameterInputs extends LightningElement {
     return this._parameters && this._parameters.length > 0;
   }
 
+  /**
+   * Detects if a parameter is used with IN/NOT IN/INCLUDES/EXCLUDES operators
+   * @param {string} paramName - Parameter name
+   * @returns {boolean} True if parameter requires list values
+   */
+  requiresListValue(paramName) {
+    if (!this.baseQuery || !paramName) {
+      return false;
+    }
+
+    const normalizedQuery = this.baseQuery.toLowerCase();
+    const paramNameLower = paramName.toLowerCase();
+
+    // Create regex patterns to match the binding variable
+    // Match patterns like: IN :paramName, NOT IN :paramName, INCLUDES :paramName, EXCLUDES :paramName
+    // Also handle cases with/without spaces: IN:paramName, NOT IN:paramName, etc.
+    const patterns = [
+      new RegExp(`\\bin\\s+:${paramNameLower}\\b`, 'i'),
+      new RegExp(`\\bnot\\s+in\\s+:${paramNameLower}\\b`, 'i'),
+      new RegExp(`\\bincludes\\s+:${paramNameLower}\\b`, 'i'),
+      new RegExp(`\\bexcludes\\s+:${paramNameLower}\\b`, 'i')
+    ];
+
+    return patterns.some(pattern => pattern.test(normalizedQuery));
+  }
+
+  /**
+   * Generates help text for a parameter
+   * @param {Object} param - Parameter object
+   * @returns {string} Help text with additional info for list operators
+   */
+  getHelpText(param) {
+    let helpText = this.labels.helpText.replace("{0}", param.name);
+
+    if (this.requiresListValue(param.name)) {
+      helpText += " Separate multiple values with commas (e.g., 'Value1, Value2, Value3').";
+    }
+
+    return helpText;
+  }
+
   get parametersWithValues() {
     // Merge parameters with current values and add helpful tooltips + semantic attributes
     return this._parameters.map((param) => ({
       ...param,
       value: this._values[param.name] || "",
-      helpText: this.labels.helpText.replace("{0}", param.name),
+      helpText: this.getHelpText(param),
       // Semantic HTML attributes for E2E testing
       testId: `query-parameter-${param.name}`,
       inputName: `query-parameter-${param.name}`,

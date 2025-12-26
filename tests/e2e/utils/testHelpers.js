@@ -32,10 +32,22 @@ async function setupTestContext(page, session, options = {}) {
     const navigated = await navigateToApp(page, TARGET_APP_NAME);
 
     if (navigated) {
+      // Wait for any modal spinner to disappear before clicking tab
+      const modalSpinner = page.locator('.forceModalSpinner, .modal-glass');
+      await modalSpinner.waitFor({ state: 'hidden', timeout: 10000 }).catch(() => {
+        // If spinner doesn't exist or already hidden, that's fine
+      });
+
       // Click on target tab
       const tabLink = page.locator(SELECTORS.tabLink(targetTab)).first();
+      await tabLink.waitFor({ state: 'visible', timeout: 10000 });
       await tabLink.click({ timeout: 5000 });
       await page.waitForLoadState("domcontentloaded");
+
+      // Wait for modal spinner to disappear after navigation
+      await modalSpinner.waitFor({ state: 'hidden', timeout: 10000 }).catch(() => {
+        // If spinner doesn't exist or already hidden, that's fine
+      });
     }
 
     // Step 3: Wait for component to load

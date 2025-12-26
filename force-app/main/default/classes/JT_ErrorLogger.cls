@@ -62,12 +62,37 @@ public class JT_ErrorLogger {
       // Get org info
       Organization org = JT_SystemSelector.getOrganizationType();
 
+      // Truncate error message to 255 characters (field limit)
+      // Store full message in additionalDetails if it exceeds limit
+      String errorMessage = String.isNotBlank(params.errorMessage)
+        ? params.errorMessage
+        : 'Unknown error';
+      String truncatedMessage = errorMessage.length() > 255
+        ? errorMessage.substring(0, 252) + '...'
+        : errorMessage;
+
+      // If message was truncated, ensure full message is in additionalDetails
+      String fullAdditionalDetails = params.additionalDetails;
+      if (errorMessage.length() > 255) {
+        Map<String, Object> detailsMap = new Map<String, Object>();
+        if (String.isNotBlank(fullAdditionalDetails)) {
+          try {
+            detailsMap = (Map<String, Object>) JSON.deserializeUntyped(
+              fullAdditionalDetails
+            );
+          } catch (Exception e) {
+            // If parsing fails, create new map
+            detailsMap = new Map<String, Object>();
+          }
+        }
+        detailsMap.put('fullErrorMessage', errorMessage);
+        fullAdditionalDetails = JSON.serialize(detailsMap);
+      }
+
       // Build error log record
       JT_ErrorLog__c errorLog = new JT_ErrorLog__c(
         JT_ErrorType__c = params.errorType,
-        JT_ErrorMessage__c = String.isNotBlank(params.errorMessage)
-          ? params.errorMessage
-          : 'Unknown error',
+        JT_ErrorMessage__c = truncatedMessage,
         JT_ExceptionType__c = params.ex != null
           ? params.ex.getTypeName()
           : null,
@@ -75,7 +100,7 @@ public class JT_ErrorLogger {
           ? params.ex.getStackTraceString()
           : null,
         JT_Context__c = params.context,
-        JT_AdditionalDetails__c = params.additionalDetails,
+        JT_AdditionalDetails__c = fullAdditionalDetails,
         JT_Severity__c = String.isNotBlank(params.severity)
           ? params.severity
           : 'Medium',

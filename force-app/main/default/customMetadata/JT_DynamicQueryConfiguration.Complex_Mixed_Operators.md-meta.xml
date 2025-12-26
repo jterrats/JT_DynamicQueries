@@ -10,13 +10,15 @@
         <field>JT_BaseQuery__c</field>
         <value
       xsi:type="xsd:string"
-    >SELECT Id, Name, Industry, AnnualRevenue, Type, NumberOfEmployees
-FROM Account 
-WHERE Industry IN :industries 
+    >SELECT Id, Name, Industry, AnnualRevenue, Type, NumberOfEmployees, BillingCountry
+FROM Account
+WHERE Industry IN :industries
   AND Type != :excludedType
   AND AnnualRevenue &gt;= :minRevenue
+  AND AnnualRevenue &lt;= :maxRevenue
   AND (Name LIKE :namePattern OR Industry LIKE :industryPattern)
-  AND NumberOfEmployees BETWEEN :minEmployees AND :maxEmployees
+  AND NumberOfEmployees &gt;= :minEmployees
+  AND NumberOfEmployees &lt;= :maxEmployees
   AND BillingCountry NOT IN :excludedCountries
 ORDER BY AnnualRevenue DESC</value>
     </values>

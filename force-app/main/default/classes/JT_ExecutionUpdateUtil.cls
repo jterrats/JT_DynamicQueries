@@ -6,6 +6,7 @@
  * @group Dynamic Queries
  * @date 2025-12-14
  */
+@SuppressWarnings('PMD.ApexCRUDViolation')
 public without sharing class JT_ExecutionUpdateUtil {
   /**
    * @description Maximum length for error messages in JT_RunAsTest_Execution__c.Error_Message__c field

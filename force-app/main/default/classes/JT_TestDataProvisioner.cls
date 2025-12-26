@@ -335,7 +335,10 @@ public inherited sharing class JT_TestDataProvisioner {
         } else {
           for (Database.Error error : result.getErrors()) {
             if (error.getStatusCode() != StatusCode.DUPLICATES_DETECTED) {
-              System.debug(LoggingLevel.WARN, 'Error inserting account: ' + error.getMessage());
+              System.debug(
+                LoggingLevel.WARN,
+                'Error inserting account: ' + error.getMessage()
+              );
             }
           }
         }
@@ -439,4 +442,3 @@ public inherited sharing class JT_TestDataProvisioner {
     delete accountsToDelete;
   }
 }
-

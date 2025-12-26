@@ -72,13 +72,13 @@ export default class JtParameterInputs extends LightningElement {
     // Match patterns like: IN :paramName, NOT IN :paramName, INCLUDES :paramName, EXCLUDES :paramName
     // Also handle cases with/without spaces: IN:paramName, NOT IN:paramName, etc.
     const patterns = [
-      new RegExp(`\\bin\\s+:${paramNameLower}\\b`, 'i'),
-      new RegExp(`\\bnot\\s+in\\s+:${paramNameLower}\\b`, 'i'),
-      new RegExp(`\\bincludes\\s+:${paramNameLower}\\b`, 'i'),
-      new RegExp(`\\bexcludes\\s+:${paramNameLower}\\b`, 'i')
+      new RegExp(`\\bin\\s+:${paramNameLower}\\b`, "i"),
+      new RegExp(`\\bnot\\s+in\\s+:${paramNameLower}\\b`, "i"),
+      new RegExp(`\\bincludes\\s+:${paramNameLower}\\b`, "i"),
+      new RegExp(`\\bexcludes\\s+:${paramNameLower}\\b`, "i")
     ];
 
-    return patterns.some(pattern => pattern.test(normalizedQuery));
+    return patterns.some((pattern) => pattern.test(normalizedQuery));
   }
 
   /**
@@ -90,7 +90,8 @@ export default class JtParameterInputs extends LightningElement {
     let helpText = this.labels.helpText.replace("{0}", param.name);
 
     if (this.requiresListValue(param.name)) {
-      helpText += " Separate multiple values with commas (e.g., 'Value1, Value2, Value3').";
+      helpText +=
+        " Separate multiple values with commas (e.g., 'Value1, Value2, Value3').";
     }
 
     return helpText;

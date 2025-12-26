@@ -88,7 +88,8 @@ public with sharing class JT_UsageFinderQueueable implements Queueable {
   private void sendCompletionEmail(
     JT_UsageFinder.AggregatedUsageResponse result
   ) {
-    String subject = 'Dynamic Queries - Usage Search Complete: ' + configurationDevName;
+    String subject =
+      'Dynamic Queries - Usage Search Complete: ' + configurationDevName;
     String body = buildEmailBody(result);
     sendEmail(subject, body);
   }
@@ -162,7 +163,8 @@ public with sharing class JT_UsageFinderQueueable implements Queueable {
    * @param e Exception that occurred
    */
   private void sendErrorEmail(Exception e) {
-    String subject = 'Dynamic Queries - Usage Search Failed: ' + configurationDevName;
+    String subject =
+      'Dynamic Queries - Usage Search Failed: ' + configurationDevName;
     String body = '<html><body style="font-family: Arial, sans-serif;">';
     body += '<h2>Usage Search Failed</h2>';
     body +=
@@ -199,8 +201,13 @@ public with sharing class JT_UsageFinderQueueable implements Queueable {
    * @param userId User ID who initiated the search
    * @return String Cache key for Platform Cache
    */
-  private static String buildCacheKey(String configurationDevName, String userId) {
-    String sanitizedConfigName = JT_ToolingApiUtil.toAlphanumeric(configurationDevName);
+  private static String buildCacheKey(
+    String configurationDevName,
+    String userId
+  ) {
+    String sanitizedConfigName = JT_ToolingApiUtil.toAlphanumeric(
+      configurationDevName
+    );
     String sanitizedUserId = JT_ToolingApiUtil.toAlphanumeric(userId);
     return 'UsageSearch' + sanitizedConfigName + sanitizedUserId;
   }

@@ -44,9 +44,9 @@ private class JT_DataSelector_Test {
 
   /**
    * @description This test setup creates a mock account record and user with limited access
-* @author Jaime Terrats | 06-18-2025
-**/
-@testSetup
+   * @author Jaime Terrats | 06-18-2025
+   **/
+  @testSetup
   static void setupTestData() {
     insert new Account(Name = 'Test Account');
 
@@ -70,9 +70,9 @@ private class JT_DataSelector_Test {
   }
 
   /**
-  * @description validates configurable bindings in user access mode
-  * @author Jaime Terrats | 06-18-2025
-  **/
+   * @description validates configurable bindings in user access mode
+   * @author Jaime Terrats | 06-18-2025
+   **/
   @IsTest
   static void testGetRecordsUserAccessMode() {
     Test.startTest();
@@ -92,9 +92,9 @@ private class JT_DataSelector_Test {
   }
 
   /**
-  * @description validates configurable bindings in system access mode
-  * @author Jaime Terrats | 06-18-2025
-  **/
+   * @description validates configurable bindings in system access mode
+   * @author Jaime Terrats | 06-18-2025
+   **/
   @IsTest
   static void testGetRecordsSystemAccessMode() {
     Test.startTest();
@@ -114,9 +114,9 @@ private class JT_DataSelector_Test {
   }
 
   /**
-  * @description validates system access mode using dynamic bindings from apex or js context
-  * @author Jaime Terrats | 06-18-2025
-  **/
+   * @description validates system access mode using dynamic bindings from apex or js context
+   * @author Jaime Terrats | 06-18-2025
+   **/
   @IsTest
   static void testGetRecordsOverloadBindingsSA() {
     Test.startTest();
@@ -140,9 +140,9 @@ private class JT_DataSelector_Test {
   }
 
   /**
-  * @description validates user acces mode using dynamic bindings from apex or js context
-  * @author Jaime Terrats | 06-18-2025
-  **/
+   * @description validates user acces mode using dynamic bindings from apex or js context
+   * @author Jaime Terrats | 06-18-2025
+   **/
   @IsTest
   static void testGetRecordsOverloadBindingsUAM() {
     Test.startTest();
@@ -166,23 +166,23 @@ private class JT_DataSelector_Test {
   }
 
   /**
-  * @description validates exception to check if user has access to the custom metadata
-  * @author Jaime Terrats | 06-18-2025
-  **/
+   * @description validates exception to check if user has access to the custom metadata
+   * @author Jaime Terrats | 06-18-2025
+   **/
   @IsTest
   static void testException() {
     User testUser = [SELECT Id FROM User WHERE Name = 'John Doe'];
     System.runAs(testUser) {
       Test.startTest();
-        try {
-            JT_DataSelector.getRecords(
+      try {
+        JT_DataSelector.getRecords(
           'Test_Record',
           true,
           new Map<String, Object>{ 'name' => 'Test Account' }
-            );
+        );
       } catch (Exception e) {
-            System.Assert.isTrue(e instanceof AuraHandledException);
-        }
+        System.Assert.isTrue(e instanceof AuraHandledException);
+      }
       Test.stopTest();
     }
   }
@@ -411,7 +411,11 @@ private class JT_DataSelector_Test {
     Test.stopTest();
 
     System.assertEquals('Test_Record', params.devName, 'devName should match');
-    System.assertEquals(true, params.enforceSecurity, 'enforceSecurity should match');
+    System.assertEquals(
+      true,
+      params.enforceSecurity,
+      'enforceSecurity should match'
+    );
     System.assertEquals(200, params.batchSize, 'batchSize should match');
   }
 
@@ -445,7 +449,11 @@ private class JT_DataSelector_Test {
     Test.stopTest();
 
     System.assertEquals('Test_Record', params.devName, 'devName should match');
-    System.assertEquals(true, params.enforceSecurity, 'enforceSecurity should match');
+    System.assertEquals(
+      true,
+      params.enforceSecurity,
+      'enforceSecurity should match'
+    );
     System.assertEquals(50000, params.threshold, 'threshold should match');
   }
 
@@ -772,7 +780,11 @@ private class JT_DataSelector_Test {
     Test.stopTest();
 
     System.assertNotEquals(null, instance1, 'Instance should not be null');
-    System.assertNotEquals(null, instance2, 'Second instance should not be null');
+    System.assertNotEquals(
+      null,
+      instance2,
+      'Second instance should not be null'
+    );
     System.assertEquals(
       instance1,
       instance2,
@@ -871,7 +883,11 @@ private class JT_DataSelector_Test {
     System.assertNotEquals(null, results, 'Results should not be null');
     System.assertEquals(2, results.size(), 'Should return two results');
     System.assertEquals(true, results[0].success, 'First should be successful');
-    System.assertEquals(true, results[1].success, 'Second should be successful');
+    System.assertEquals(
+      true,
+      results[1].success,
+      'Second should be successful'
+    );
   }
 
   /**
@@ -910,7 +926,8 @@ private class JT_DataSelector_Test {
       System.assert(
         qe.getMessage().contains('does not exist') ||
         qe.getMessage().contains('Variable'),
-        'Expected QueryException for missing bindings. Actual: ' + qe.getMessage()
+        'Expected QueryException for missing bindings. Actual: ' +
+        qe.getMessage()
       );
     }
     Test.stopTest();
@@ -957,7 +974,8 @@ private class JT_DataSelector_Test {
       System.assert(
         qe.getMessage().contains('does not exist') ||
         qe.getMessage().contains('Variable'),
-        'Expected QueryException for missing bindings. Actual: ' + qe.getMessage()
+        'Expected QueryException for missing bindings. Actual: ' +
+        qe.getMessage()
       );
     }
     Test.stopTest();
@@ -1322,11 +1340,7 @@ private class JT_DataSelector_Test {
   static void testCountRecordsForConfigInvalidConfig() {
     Test.startTest();
     try {
-      JT_DataSelector.countRecordsForConfig(
-        'Invalid_Config_12345',
-        null,
-        true
-      );
+      JT_DataSelector.countRecordsForConfig('Invalid_Config_12345', null, true);
       System.assert(false, 'Should have thrown exception');
     } catch (Exception e) {
       System.assert(true, 'Exception thrown as expected');
@@ -1589,7 +1603,9 @@ private class JT_DataSelector_Test {
 
     // Simulate JSON deserialization from LWC (JSON.deserializeUntyped returns List<Object>)
     String jsonString = '{"industries":["Technology","Finance"],"excludedCountries":["USA","Canada"]}';
-    Map<String, Object> bindings = (Map<String, Object>) JSON.deserializeUntyped(jsonString);
+    Map<String, Object> bindings = (Map<String, Object>) JSON.deserializeUntyped(
+      jsonString
+    );
 
     Test.startTest();
     Map<String, Object> result = JT_DataSelector.validateAndConvertBindings(
@@ -1611,8 +1627,16 @@ private class JT_DataSelector_Test {
     // Verify values are correct
     List<String> industries = (List<String>) result.get('industries');
     System.assertEquals(2, industries.size(), 'Should have 2 industries');
-    System.assertEquals('Technology', industries[0], 'First industry should be Technology');
-    System.assertEquals('Finance', industries[1], 'Second industry should be Finance');
+    System.assertEquals(
+      'Technology',
+      industries[0],
+      'First industry should be Technology'
+    );
+    System.assertEquals(
+      'Finance',
+      industries[1],
+      'Second industry should be Finance'
+    );
   }
 
   /**
@@ -1636,7 +1660,11 @@ private class JT_DataSelector_Test {
       result instanceof Integer,
       'Result should be Integer, not Decimal'
     );
-    System.assertEquals(100, (Integer) result, 'Should convert Decimal 100.0 to Integer 100');
+    System.assertEquals(
+      100,
+      (Integer) result,
+      'Should convert Decimal 100.0 to Integer 100'
+    );
   }
 
   /**
@@ -1684,11 +1712,12 @@ private class JT_DataSelector_Test {
     );
     Test.stopTest();
 
-    System.assert(
-      result instanceof Integer,
-      'Result should remain Integer'
+    System.assert(result instanceof Integer, 'Result should remain Integer');
+    System.assertEquals(
+      100,
+      (Integer) result,
+      'Should keep Integer value unchanged'
     );
-    System.assertEquals(100, (Integer) result, 'Should keep Integer value unchanged');
   }
 
   /**
@@ -1711,7 +1740,11 @@ private class JT_DataSelector_Test {
       result instanceof Integer,
       'Result should be Integer when field is Integer'
     );
-    System.assertEquals(100, (Integer) result, 'Should convert String "100" to Integer 100');
+    System.assertEquals(
+      100,
+      (Integer) result,
+      'Should convert String "100" to Integer 100'
+    );
   }
 
   /**
@@ -1761,7 +1794,11 @@ private class JT_DataSelector_Test {
       result instanceof String,
       'Result should remain String for non-numeric comparisons'
     );
-    System.assertEquals('Test Account', (String) result, 'Should keep String value unchanged');
+    System.assertEquals(
+      'Test Account',
+      (String) result,
+      'Should keep String value unchanged'
+    );
   }
 
   /**

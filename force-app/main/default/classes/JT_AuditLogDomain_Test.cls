@@ -182,7 +182,11 @@ private class JT_AuditLogDomain_Test {
   @SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs')
   static void testDeleteOldLogsNoLogs() {
     // Ensure no old logs exist
-    delete [SELECT Id FROM JT_SettingsAuditLog__c WHERE CreatedDate < :DateTime.now().addDays(-30)];
+    delete [
+      SELECT Id
+      FROM JT_SettingsAuditLog__c
+      WHERE CreatedDate < :DateTime.now().addDays(-30)
+    ];
 
     Test.startTest();
     Integer deletedCount = JT_AuditLogDomain.deleteOldLogs(30);

@@ -79,10 +79,7 @@ public class JT_MetadataDeployCallback implements Metadata.DeployCallback {
       for (Metadata.DeployMessage failure : result.details.componentFailures) {
         System.debug(
           LoggingLevel.ERROR,
-          'Component failure: ' +
-          failure.fullName +
-          ' - ' +
-          failure.problem
+          'Component failure: ' + failure.fullName + ' - ' + failure.problem
         );
       }
     }
@@ -114,10 +111,7 @@ public class JT_MetadataDeployCallback implements Metadata.DeployCallback {
    * @TestVisible
    **/
   @TestVisible
-  private void logDeploymentFailure(
-    Metadata.DeployMessage failure,
-    Id jobId
-  ) {
+  private void logDeploymentFailure(Metadata.DeployMessage failure, Id jobId) {
     String errorMsg = 'Deployment failed: ' + failure.fullName;
     if (String.isNotBlank(failure.problem)) {
       errorMsg += ' - ' + failure.problem;
@@ -165,13 +159,9 @@ public class JT_MetadataDeployCallback implements Metadata.DeployCallback {
     System.debug(
       LoggingLevel.INFO,
       'Metadata deployment in progress. Status: ' +
-      result.status +
-      ', Job ID: ' +
-      jobId
+        result.status +
+        ', Job ID: ' +
+        jobId
     );
   }
 }
-
-
-
-

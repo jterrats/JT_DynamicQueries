@@ -407,7 +407,9 @@ public without sharing class JT_SystemSelector {
    * @param executionId The execution record ID
    * @return JT_RunAsTest_Execution__c The execution record with all fields, or null if not found
    */
-  public static JT_RunAsTest_Execution__c getExecutionWithAllFields(Id executionId) {
+  public static JT_RunAsTest_Execution__c getExecutionWithAllFields(
+    Id executionId
+  ) {
     List<JT_RunAsTest_Execution__c> executions = [
       SELECT
         Id,

@@ -292,7 +292,8 @@ export function getNestedFieldValue(obj, fieldPath) {
 function formatFieldValue(value) {
   if (value == null) return "";
   if (typeof value === "string") return value;
-  if (typeof value === "number" || typeof value === "boolean") return String(value);
+  if (typeof value === "number" || typeof value === "boolean")
+    return String(value);
   if (typeof value === "object") {
     // If it's an object with Name property, use that
     if (value.Name !== undefined) return String(value.Name);
@@ -707,7 +708,7 @@ export function pollUntilComplete(
         const isComplete = checkComplete(result);
         console.log(`✓ Check complete result: ${isComplete}`);
         if (isComplete) {
-          console.log('✅ Polling complete, stopping and calling onComplete');
+          console.log("✅ Polling complete, stopping and calling onComplete");
           stopPolling();
           onComplete(result);
           return;

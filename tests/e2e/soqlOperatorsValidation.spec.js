@@ -65,11 +65,17 @@ test.describe("SOQL Operators Validation", () => {
     await executeQuery(page);
 
     // Check for risk warning modal (>50k records) - should NOT appear
-    const riskModal = page.locator('section[role="dialog"]:has-text("Query Risk Warning")');
-    const riskModalVisible = await riskModal.isVisible({ timeout: 3000 }).catch(() => false);
+    const riskModal = page.locator(
+      'section[role="dialog"]:has-text("Query Risk Warning")'
+    );
+    const riskModalVisible = await riskModal
+      .isVisible({ timeout: 3000 })
+      .catch(() => false);
     if (riskModalVisible) {
       const modalText = await riskModal.textContent();
-      throw new Error(`Query Risk Warning appeared unexpectedly - query would return >50,000 records. Modal: ${modalText}`);
+      throw new Error(
+        `Query Risk Warning appeared unexpectedly - query would return >50,000 records. Modal: ${modalText}`
+      );
     }
 
     // ✅ Validate results table appears
@@ -137,22 +143,38 @@ test.describe("SOQL Operators Validation", () => {
     await executeQuery(page);
 
     // Check for risk warning modal (>50k records) - should NOT appear
-    const riskModal = page.locator('section[role="dialog"]:has-text("Query Risk Warning")');
-    const riskModalVisible = await riskModal.isVisible({ timeout: 3000 }).catch(() => false);
+    const riskModal = page.locator(
+      'section[role="dialog"]:has-text("Query Risk Warning")'
+    );
+    const riskModalVisible = await riskModal
+      .isVisible({ timeout: 3000 })
+      .catch(() => false);
     if (riskModalVisible) {
       const modalText = await riskModal.textContent();
-      throw new Error(`Query Risk Warning appeared unexpectedly - query would return >50,000 records. Modal: ${modalText}`);
+      throw new Error(
+        `Query Risk Warning appeared unexpectedly - query would return >50,000 records. Modal: ${modalText}`
+      );
     }
 
     // Check for error message (toast or banner)
-    const errorToast = page.locator('lightning-toast[class*="error"], .slds-notify--error, .slds-alert_error');
-    const hasError = await errorToast.first().isVisible({ timeout: 3000 }).catch(() => false);
+    const errorToast = page.locator(
+      'lightning-toast[class*="error"], .slds-notify--error, .slds-alert_error'
+    );
+    const hasError = await errorToast
+      .first()
+      .isVisible({ timeout: 3000 })
+      .catch(() => false);
     if (hasError) {
       const errorText = await errorToast.first().textContent();
       // Description field cannot be filtered - this is a known limitation
       // The query should be updated to remove Description filtering
-      if (errorText.toLowerCase().includes("description") && errorText.toLowerCase().includes("can not be filtered")) {
-        console.warn('⚠️  Query contains Description field which cannot be filtered - this is expected');
+      if (
+        errorText.toLowerCase().includes("description") &&
+        errorText.toLowerCase().includes("can not be filtered")
+      ) {
+        console.warn(
+          "⚠️  Query contains Description field which cannot be filtered - this is expected"
+        );
         // Skip this test as the configuration needs to be updated
         return;
       }
@@ -165,11 +187,17 @@ test.describe("SOQL Operators Validation", () => {
     );
     const noResultsMessage = page.locator('text="No records found"');
 
-    const tableVisible = await resultsTable.isVisible({ timeout: TIMEOUTS.component }).catch(() => false);
-    const noResultsVisible = await noResultsMessage.isVisible({ timeout: TIMEOUTS.component }).catch(() => false);
+    const tableVisible = await resultsTable
+      .isVisible({ timeout: TIMEOUTS.component })
+      .catch(() => false);
+    const noResultsVisible = await noResultsMessage
+      .isVisible({ timeout: TIMEOUTS.component })
+      .catch(() => false);
 
     if (!tableVisible && !noResultsVisible) {
-      throw new Error('Neither results table nor "No records found" message appeared');
+      throw new Error(
+        'Neither results table nor "No records found" message appeared'
+      );
     }
 
     // If no results, that's acceptable - skip table validation
@@ -247,31 +275,50 @@ test.describe("SOQL Operators Validation", () => {
     await executeQuery(page, { waitTime: 8000 });
 
     // Check for risk warning modal (should NOT appear with provisioned data - only ~4 accounts)
-    const riskModal = page.locator('section[role="dialog"]:has-text("Query Risk Warning")');
-    const riskModalVisible = await riskModal.isVisible({ timeout: 3000 }).catch(() => false);
+    const riskModal = page.locator(
+      'section[role="dialog"]:has-text("Query Risk Warning")'
+    );
+    const riskModalVisible = await riskModal
+      .isVisible({ timeout: 3000 })
+      .catch(() => false);
 
     // ❌ ERROR: If risk modal appears (>50k records), something is wrong with the query or data
     if (riskModalVisible) {
       const modalText = await riskModal.textContent();
       console.error(`❌ ERROR: Risk warning modal appeared unexpectedly!`);
       console.error(`   Modal text: ${modalText}`);
-      console.error(`   This indicates the query would return >50,000 records, which should not happen with provisioned test data.`);
-      throw new Error(`Query Risk Warning appeared unexpectedly - query would return >50,000 records. This indicates a problem with the query or test data. Modal text: ${modalText}`);
+      console.error(
+        `   This indicates the query would return >50,000 records, which should not happen with provisioned test data.`
+      );
+      throw new Error(
+        `Query Risk Warning appeared unexpectedly - query would return >50,000 records. This indicates a problem with the query or test data. Modal text: ${modalText}`
+      );
     }
 
     // Check for errors
-    const errorToast = page.locator(".slds-notify--error, lightning-toast[class*='error']");
-    const errorVisible = await errorToast.isVisible({ timeout: 5000 }).catch(() => false);
+    const errorToast = page.locator(
+      ".slds-notify--error, lightning-toast[class*='error']"
+    );
+    const errorVisible = await errorToast
+      .isVisible({ timeout: 5000 })
+      .catch(() => false);
 
     if (errorVisible) {
       const errorText = await errorToast.textContent();
       // Check if error mentions >50k records or cursor processing (this is an error!)
-      if (errorText.includes("50,000") || errorText.includes("50000") ||
-          errorText.toLowerCase().includes("exceed") ||
-          errorText.toLowerCase().includes("cursor")) {
-        console.error(`❌ ERROR: Query indicates >50,000 records would be returned!`);
+      if (
+        errorText.includes("50,000") ||
+        errorText.includes("50000") ||
+        errorText.toLowerCase().includes("exceed") ||
+        errorText.toLowerCase().includes("cursor")
+      ) {
+        console.error(
+          `❌ ERROR: Query indicates >50,000 records would be returned!`
+        );
         console.error(`   Error text: ${errorText}`);
-        throw new Error(`Query would return >50,000 records - this should not happen with provisioned test data. Error: ${errorText}`);
+        throw new Error(
+          `Query would return >50,000 records - this should not happen with provisioned test data. Error: ${errorText}`
+        );
       }
       // Don't fail if it's a "no records" message - that's acceptable
       if (!errorText.toLowerCase().includes("no records")) {
@@ -283,9 +330,15 @@ test.describe("SOQL Operators Validation", () => {
     const resultsTable = page.locator(
       `${SELECTORS.queryResults} ${SELECTORS.resultsTable}`
     );
-    const hasResults = await resultsTable.isVisible({ timeout: TIMEOUTS.component }).catch(() => false);
-    const noResultsMessage = page.locator("text=No records found, text=no records");
-    const hasNoResultsMessage = await noResultsMessage.isVisible({ timeout: 5000 }).catch(() => false);
+    const hasResults = await resultsTable
+      .isVisible({ timeout: TIMEOUTS.component })
+      .catch(() => false);
+    const noResultsMessage = page.locator(
+      "text=No records found, text=no records"
+    );
+    const hasNoResultsMessage = await noResultsMessage
+      .isVisible({ timeout: 5000 })
+      .catch(() => false);
 
     // Either results table or "no results" message should appear
     expect(hasResults || hasNoResultsMessage).toBe(true);
@@ -309,10 +362,19 @@ test.describe("SOQL Operators Validation", () => {
         expect(nameText.trim().length).toBeGreaterThan(0);
 
         // Validate that results match expected provisioned accounts
-        const expectedNames = ["Acme Technology Solutions", "Acme Healthcare Systems", "Tech Innovations Inc", "Healthcare Tech Solutions"];
-        const foundExpectedName = expectedNames.some(name => nameText.includes(name));
+        const expectedNames = [
+          "Acme Technology Solutions",
+          "Acme Healthcare Systems",
+          "Tech Innovations Inc",
+          "Healthcare Tech Solutions"
+        ];
+        const foundExpectedName = expectedNames.some((name) =>
+          nameText.includes(name)
+        );
         if (!foundExpectedName && rowCount > 0) {
-          console.warn(`⚠️  Warning: Expected to find one of: ${expectedNames.join(", ")}, but found: ${nameText}`);
+          console.warn(
+            `⚠️  Warning: Expected to find one of: ${expectedNames.join(", ")}, but found: ${nameText}`
+          );
         }
       }
     }
@@ -333,22 +395,25 @@ test.describe("SOQL Operators Validation", () => {
     // Try multiple selectors for Lightning toast and error banner
     const errorSelectors = [
       'lightning-toast[class*="error"]',
-      'lightning-toast .slds-notify--error',
-      '.slds-notify--error',
-      '.slds-alert_error',
-      '.slds-notify.slds-notify_alert.slds-alert_error',
-      'c-jt-query-viewer .slds-alert_error',
-      'c-jt-query-viewer .slds-notify--error',
-      'c-jt-query-viewer .slds-notify.slds-notify_alert.slds-alert_error'
+      "lightning-toast .slds-notify--error",
+      ".slds-notify--error",
+      ".slds-alert_error",
+      ".slds-notify.slds-notify_alert.slds-alert_error",
+      "c-jt-query-viewer .slds-alert_error",
+      "c-jt-query-viewer .slds-notify--error",
+      "c-jt-query-viewer .slds-notify.slds-notify_alert.slds-alert_error"
     ];
 
     let errorFound = false;
-    let errorText = '';
+    let errorText = "";
 
     // Try each selector with longer timeout
     for (const selector of errorSelectors) {
       const errorElement = page.locator(selector);
-      const isVisible = await errorElement.first().isVisible({ timeout: 5000 }).catch(() => false);
+      const isVisible = await errorElement
+        .first()
+        .isVisible({ timeout: 5000 })
+        .catch(() => false);
       if (isVisible) {
         errorText = await errorElement.first().textContent();
         errorFound = true;
@@ -360,18 +425,20 @@ test.describe("SOQL Operators Validation", () => {
 
     // If still no error found, check the query viewer component specifically
     if (!errorFound) {
-      const queryViewer = page.locator('c-jt-query-viewer');
-      const viewerContent = await queryViewer.textContent().catch(() => '');
-      if (viewerContent && viewerContent.toLowerCase().includes('not like')) {
+      const queryViewer = page.locator("c-jt-query-viewer");
+      const viewerContent = await queryViewer.textContent().catch(() => "");
+      if (viewerContent && viewerContent.toLowerCase().includes("not like")) {
         // Extract just the error message part
-        const errorMatch = viewerContent.match(/not like[^.]*(?:is not supported|not supported|unsupported)[^.]*/i);
+        const errorMatch = viewerContent.match(
+          /not like[^.]*(?:is not supported|not supported|unsupported)[^.]*/i
+        );
         if (errorMatch) {
           errorText = errorMatch[0];
         } else {
           errorText = viewerContent;
         }
         errorFound = true;
-        console.log('✅ Error found in query viewer component');
+        console.log("✅ Error found in query viewer component");
       }
     }
 
@@ -418,11 +485,17 @@ test.describe("SOQL Operators Validation", () => {
     await executeQuery(page);
 
     // Check for risk warning modal (>50k records) - should NOT appear
-    const riskModal = page.locator('section[role="dialog"]:has-text("Query Risk Warning")');
-    const riskModalVisible = await riskModal.isVisible({ timeout: 3000 }).catch(() => false);
+    const riskModal = page.locator(
+      'section[role="dialog"]:has-text("Query Risk Warning")'
+    );
+    const riskModalVisible = await riskModal
+      .isVisible({ timeout: 3000 })
+      .catch(() => false);
     if (riskModalVisible) {
       const modalText = await riskModal.textContent();
-      throw new Error(`Query Risk Warning appeared unexpectedly - query would return >50,000 records. Modal: ${modalText}`);
+      throw new Error(
+        `Query Risk Warning appeared unexpectedly - query would return >50,000 records. Modal: ${modalText}`
+      );
     }
 
     // ✅ Validate results table appears

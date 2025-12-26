@@ -29,7 +29,11 @@ private class JT_ExecutionUpdateUtil_Test {
     String result = JT_ExecutionUpdateUtil.truncateErrorMessage('Short error');
     Test.stopTest();
 
-    System.assertEquals('Short error', result, 'Should not truncate short message');
+    System.assertEquals(
+      'Short error',
+      result,
+      'Should not truncate short message'
+    );
   }
 
   /**
@@ -42,7 +46,11 @@ private class JT_ExecutionUpdateUtil_Test {
     String result = JT_ExecutionUpdateUtil.truncateErrorMessage(longMessage);
     Test.stopTest();
 
-    System.assertEquals(255, result.length(), 'Should truncate to 255 characters');
+    System.assertEquals(
+      255,
+      result.length(),
+      'Should truncate to 255 characters'
+    );
     System.assert(result.endsWith('...'), 'Should end with ...');
   }
 
@@ -56,7 +64,11 @@ private class JT_ExecutionUpdateUtil_Test {
     String result = JT_ExecutionUpdateUtil.truncateErrorMessage(message, 50);
     Test.stopTest();
 
-    System.assertEquals(50, result.length(), 'Should truncate to custom length');
+    System.assertEquals(
+      50,
+      result.length(),
+      'Should truncate to custom length'
+    );
     System.assert(result.endsWith('...'), 'Should end with ...');
   }
 
@@ -105,7 +117,11 @@ private class JT_ExecutionUpdateUtil_Test {
       FROM JT_RunAsTest_Execution__c
       WHERE Id = :execution.Id
     ];
-    System.assertEquals('Failed', updated.Test_Status__c, 'Status should be updated');
+    System.assertEquals(
+      'Failed',
+      updated.Test_Status__c,
+      'Status should be updated'
+    );
   }
 
   /**
@@ -128,7 +144,10 @@ private class JT_ExecutionUpdateUtil_Test {
     JT_RunAsTest_Execution__c execution = JT_SystemSelector.getTestExecution();
 
     Test.startTest();
-    Boolean result = JT_ExecutionUpdateUtil.updateStatusOnly(execution.Id, null);
+    Boolean result = JT_ExecutionUpdateUtil.updateStatusOnly(
+      execution.Id,
+      null
+    );
     Test.stopTest();
 
     System.assertEquals(false, result, 'Should fail with null status');
@@ -156,8 +175,16 @@ private class JT_ExecutionUpdateUtil_Test {
       FROM JT_RunAsTest_Execution__c
       WHERE Id = :execution.Id
     ];
-    System.assertEquals('Failed', updated.Test_Status__c, 'Status should be Failed');
-    System.assertEquals('Test error message', updated.Error_Message__c, 'Error message should be set');
+    System.assertEquals(
+      'Failed',
+      updated.Test_Status__c,
+      'Status should be Failed'
+    );
+    System.assertEquals(
+      'Test error message',
+      updated.Error_Message__c,
+      'Error message should be set'
+    );
   }
 
   /**
@@ -216,8 +243,15 @@ private class JT_ExecutionUpdateUtil_Test {
       FROM JT_RunAsTest_Execution__c
       WHERE Id = :execution.Id
     ];
-    System.assertEquals(255, updated.Error_Message__c.length(), 'Message should be truncated');
-    System.assert(updated.Error_Message__c.endsWith('...'), 'Should end with ...');
+    System.assertEquals(
+      255,
+      updated.Error_Message__c.length(),
+      'Message should be truncated'
+    );
+    System.assert(
+      updated.Error_Message__c.endsWith('...'),
+      'Should end with ...'
+    );
   }
 
   /**
@@ -259,7 +293,11 @@ private class JT_ExecutionUpdateUtil_Test {
     Test.stopTest();
 
     // Should use default max length when zero, but message is shorter so no truncation
-    System.assertEquals(message.length(), result.length(), 'Should not truncate short message');
+    System.assertEquals(
+      message.length(),
+      result.length(),
+      'Should not truncate short message'
+    );
     System.assertEquals(message, result, 'Should return original message');
   }
 
@@ -274,7 +312,11 @@ private class JT_ExecutionUpdateUtil_Test {
     Test.stopTest();
 
     // Should use default max length when negative, but message is shorter so no truncation
-    System.assertEquals(message.length(), result.length(), 'Should not truncate short message');
+    System.assertEquals(
+      message.length(),
+      result.length(),
+      'Should not truncate short message'
+    );
     System.assertEquals(message, result, 'Should return original message');
   }
 
@@ -288,7 +330,11 @@ private class JT_ExecutionUpdateUtil_Test {
     String result = JT_ExecutionUpdateUtil.truncateErrorMessage(message);
     Test.stopTest();
 
-    System.assertEquals(255, result.length(), 'Should not truncate exact length');
+    System.assertEquals(
+      255,
+      result.length(),
+      'Should not truncate exact length'
+    );
     System.assertEquals(message, result, 'Should return original message');
   }
 
@@ -302,7 +348,11 @@ private class JT_ExecutionUpdateUtil_Test {
     String result = JT_ExecutionUpdateUtil.truncateErrorMessage(message, 50);
     Test.stopTest();
 
-    System.assertEquals(50, result.length(), 'Should truncate to specified length');
+    System.assertEquals(
+      50,
+      result.length(),
+      'Should truncate to specified length'
+    );
     System.assert(result.endsWith('...'), 'Should end with ...');
   }
 
@@ -544,7 +594,11 @@ private class JT_ExecutionUpdateUtil_Test {
       updated.Error_Message__c.contains('Processing Error'),
       'Should include processing error prefix'
     );
-    System.assertEquals(255, updated.Error_Message__c.length(), 'Should be truncated');
+    System.assertEquals(
+      255,
+      updated.Error_Message__c.length(),
+      'Should be truncated'
+    );
   }
 
   /**
@@ -572,7 +626,11 @@ private class JT_ExecutionUpdateUtil_Test {
     Test.stopTest();
 
     // Message is 253 chars, which is less than 255, so should not truncate
-    System.assertEquals(253, result.length(), 'Should not truncate message shorter than max');
+    System.assertEquals(
+      253,
+      result.length(),
+      'Should not truncate message shorter than max'
+    );
     System.assertEquals(message, result, 'Should return original message');
   }
 
@@ -610,7 +668,11 @@ private class JT_ExecutionUpdateUtil_Test {
         execution.Id,
         status
       );
-      System.assertEquals(true, result, 'Should succeed with status: ' + status);
+      System.assertEquals(
+        true,
+        result,
+        'Should succeed with status: ' + status
+      );
     }
     Test.stopTest();
   }
@@ -634,4 +696,3 @@ private class JT_ExecutionUpdateUtil_Test {
     System.assertEquals(true, result, 'Should succeed with long context');
   }
 }
-

@@ -356,7 +356,11 @@ private class JT_DataCleanupUtil_Test {
     Integer deletedCount = JT_DataCleanupUtil.cleanupExecutionRecords(null);
     Test.stopTest();
 
-    System.assertEquals(0, deletedCount, 'Should return 0 when no records exist');
+    System.assertEquals(
+      0,
+      deletedCount,
+      'Should return 0 when no records exist'
+    );
   }
 
   /**
@@ -371,7 +375,11 @@ private class JT_DataCleanupUtil_Test {
     Integer deletedCount = JT_DataCleanupUtil.cleanupAuditLogs(null);
     Test.stopTest();
 
-    System.assertEquals(0, deletedCount, 'Should return 0 when no records exist');
+    System.assertEquals(
+      0,
+      deletedCount,
+      'Should return 0 when no records exist'
+    );
   }
 
   /**
@@ -389,9 +397,17 @@ private class JT_DataCleanupUtil_Test {
 
     System.assertNotEquals(null, stats, 'Statistics should not be null');
     System.assertEquals(0, stats.get('oldExecutionRecords'), 'Should return 0');
-    System.assertEquals(0, stats.get('stuckExecutionRecords'), 'Should return 0');
+    System.assertEquals(
+      0,
+      stats.get('stuckExecutionRecords'),
+      'Should return 0'
+    );
     System.assertEquals(0, stats.get('oldAuditLogs'), 'Should return 0');
-    System.assertEquals(0, stats.get('totalDeletableRecords'), 'Should return 0');
+    System.assertEquals(
+      0,
+      stats.get('totalDeletableRecords'),
+      'Should return 0'
+    );
   }
 
   /**
@@ -420,7 +436,10 @@ private class JT_DataCleanupUtil_Test {
   @IsTest
   static void testPerformFullCleanupNegativeDays() {
     Test.startTest();
-    Map<String, Object> results = JT_DataCleanupUtil.performFullCleanup(-5, -10);
+    Map<String, Object> results = JT_DataCleanupUtil.performFullCleanup(
+      -5,
+      -10
+    );
     Test.stopTest();
 
     System.assertEquals(true, results.get('success'), 'Should succeed');

@@ -131,7 +131,11 @@ private class JT_UsageFinder_Test {
     Test.stopTest();
 
     System.assertNotEquals(null, response, 'Response should not be null');
-    System.assertNotEquals(null, response.serviceName, 'Service name should not be null');
+    System.assertNotEquals(
+      null,
+      response.serviceName,
+      'Service name should not be null'
+    );
     System.assertNotEquals(null, response.data, 'Data should not be null');
   }
 
@@ -147,7 +151,11 @@ private class JT_UsageFinder_Test {
     Test.stopTest();
 
     System.assertNotEquals(null, response, 'Response should not be null');
-    System.assertEquals(true, response.success, 'Should succeed even with no results');
+    System.assertEquals(
+      true,
+      response.success,
+      'Should succeed even with no results'
+    );
   }
 
   /**
@@ -162,7 +170,11 @@ private class JT_UsageFinder_Test {
     Test.stopTest();
 
     System.assertNotEquals(null, response, 'Response should not be null');
-    System.assertNotEquals(null, response.serviceName, 'Service name should not be null');
+    System.assertNotEquals(
+      null,
+      response.serviceName,
+      'Service name should not be null'
+    );
     System.assertNotEquals(null, response.data, 'Data should not be null');
     // Flow search may fail if Tooling API is not available, but should not throw exception
   }
@@ -179,9 +191,21 @@ private class JT_UsageFinder_Test {
     Test.stopTest();
 
     System.assertNotEquals(null, response, 'Response should not be null');
-    System.assertNotEquals(null, response.apexService, 'Apex service should not be null');
-    System.assertNotEquals(null, response.flowService, 'Flow service should not be null');
-    System.assertNotEquals(null, response.allResults, 'All results should not be null');
+    System.assertNotEquals(
+      null,
+      response.apexService,
+      'Apex service should not be null'
+    );
+    System.assertNotEquals(
+      null,
+      response.flowService,
+      'Flow service should not be null'
+    );
+    System.assertNotEquals(
+      null,
+      response.allResults,
+      'All results should not be null'
+    );
   }
 
   /**
@@ -196,8 +220,16 @@ private class JT_UsageFinder_Test {
     Test.stopTest();
 
     System.assertNotEquals(null, response, 'Response should not be null');
-    System.assertNotEquals(null, response.apexService, 'Apex service should not be null');
-    System.assertNotEquals(null, response.flowService, 'Flow service should not be null');
+    System.assertNotEquals(
+      null,
+      response.apexService,
+      'Apex service should not be null'
+    );
+    System.assertNotEquals(
+      null,
+      response.flowService,
+      'Flow service should not be null'
+    );
   }
 
   /**
@@ -244,11 +276,17 @@ private class JT_UsageFinder_Test {
   @IsTest
   static void testFindInFlowsServiceNullConfig() {
     Test.startTest();
-    JT_UsageFinder.ServiceResponse response = JT_UsageFinder.findInFlowsService(null);
+    JT_UsageFinder.ServiceResponse response = JT_UsageFinder.findInFlowsService(
+      null
+    );
     Test.stopTest();
 
     System.assertNotEquals(null, response, 'Response should not be null');
-    System.assertNotEquals(null, response.serviceName, 'Service name should not be null');
+    System.assertNotEquals(
+      null,
+      response.serviceName,
+      'Service name should not be null'
+    );
   }
 
   /**
@@ -257,7 +295,9 @@ private class JT_UsageFinder_Test {
   @IsTest
   static void testFindInFlowsServiceEmptyConfig() {
     Test.startTest();
-    JT_UsageFinder.ServiceResponse response = JT_UsageFinder.findInFlowsService('');
+    JT_UsageFinder.ServiceResponse response = JT_UsageFinder.findInFlowsService(
+      ''
+    );
     Test.stopTest();
 
     System.assertNotEquals(null, response, 'Response should not be null');
@@ -303,8 +343,16 @@ private class JT_UsageFinder_Test {
     Test.stopTest();
 
     System.assertNotEquals(null, response, 'Response should not be null');
-    System.assertNotEquals(null, response.apexService, 'Apex service should not be null');
-    System.assertNotEquals(null, response.flowService, 'Flow service should not be null');
+    System.assertNotEquals(
+      null,
+      response.apexService,
+      'Apex service should not be null'
+    );
+    System.assertNotEquals(
+      null,
+      response.flowService,
+      'Flow service should not be null'
+    );
   }
 
   /**
@@ -319,8 +367,16 @@ private class JT_UsageFinder_Test {
     Test.stopTest();
 
     System.assertNotEquals(null, response, 'Response should not be null');
-    System.assertNotEquals(null, response.apexService, 'Apex service should not be null');
-    System.assertNotEquals(null, response.flowService, 'Flow service should not be null');
+    System.assertNotEquals(
+      null,
+      response.apexService,
+      'Apex service should not be null'
+    );
+    System.assertNotEquals(
+      null,
+      response.flowService,
+      'Flow service should not be null'
+    );
   }
 
   /**
@@ -347,7 +403,9 @@ private class JT_UsageFinder_Test {
   @IsTest
   static void testFindConfigurationUsageEmptyConfig() {
     Test.startTest();
-    List<JT_UsageFinder.UsageResult> results = JT_UsageFinder.findConfigurationUsage('');
+    List<JT_UsageFinder.UsageResult> results = JT_UsageFinder.findConfigurationUsage(
+      ''
+    );
     Test.stopTest();
 
     System.assertNotEquals(null, results, 'Results should not be null');
@@ -435,7 +493,11 @@ private class JT_UsageFinder_Test {
     Test.startTest();
     for (String configName : configNames) {
       List<JT_UsageFinder.UsageResult> results = JT_UsageFinder.findAllUsages();
-      System.assertNotEquals(null, results, 'Results should not be null for: ' + configName);
+      System.assertNotEquals(
+        null,
+        results,
+        'Results should not be null for: ' + configName
+      );
     }
     Test.stopTest();
   }
@@ -472,7 +534,11 @@ private class JT_UsageFinder_Test {
     Test.stopTest();
 
     System.assertNotEquals(null, response, 'Response should not be null');
-    System.assertNotEquals(null, response.serviceName, 'Service name should not be null');
+    System.assertNotEquals(
+      null,
+      response.serviceName,
+      'Service name should not be null'
+    );
   }
 
   /**
@@ -488,7 +554,11 @@ private class JT_UsageFinder_Test {
     Test.stopTest();
 
     System.assertNotEquals(null, response, 'Response should not be null');
-    System.assertNotEquals(null, response.serviceName, 'Service name should not be null');
+    System.assertNotEquals(
+      null,
+      response.serviceName,
+      'Service name should not be null'
+    );
   }
 
   /**
@@ -503,9 +573,21 @@ private class JT_UsageFinder_Test {
     Test.stopTest();
 
     System.assertNotEquals(null, response, 'Response should not be null');
-    System.assertNotEquals(null, response.apexService, 'Apex service should not be null');
-    System.assertNotEquals(null, response.flowService, 'Flow service should not be null');
-    System.assertEquals(false, response.hasPartialResults, 'Should not have partial results if both fail');
+    System.assertNotEquals(
+      null,
+      response.apexService,
+      'Apex service should not be null'
+    );
+    System.assertNotEquals(
+      null,
+      response.flowService,
+      'Flow service should not be null'
+    );
+    System.assertEquals(
+      false,
+      response.hasPartialResults,
+      'Should not have partial results if both fail'
+    );
   }
 
   /**
@@ -520,8 +602,16 @@ private class JT_UsageFinder_Test {
     Test.stopTest();
 
     System.assertNotEquals(null, response, 'Response should not be null');
-    System.assertNotEquals(null, response.apexService, 'Apex service should not be null');
-    System.assertNotEquals(null, response.flowService, 'Flow service should not be null');
+    System.assertNotEquals(
+      null,
+      response.apexService,
+      'Apex service should not be null'
+    );
+    System.assertNotEquals(
+      null,
+      response.flowService,
+      'Flow service should not be null'
+    );
     // May have partial results if one service succeeds and one fails
   }
 
@@ -537,8 +627,16 @@ private class JT_UsageFinder_Test {
     Test.stopTest();
 
     System.assertNotEquals(null, response, 'Response should not be null');
-    System.assertNotEquals(null, response.apexService, 'Apex service should not be null');
-    System.assertNotEquals(null, response.flowService, 'Flow service should not be null');
+    System.assertNotEquals(
+      null,
+      response.apexService,
+      'Apex service should not be null'
+    );
+    System.assertNotEquals(
+      null,
+      response.flowService,
+      'Flow service should not be null'
+    );
     // May have partial results if one service succeeds and one fails
   }
 
@@ -554,9 +652,21 @@ private class JT_UsageFinder_Test {
     Test.stopTest();
 
     System.assertNotEquals(null, response, 'Response should not be null');
-    System.assertNotEquals(null, response.apexService, 'Apex service should not be null');
-    System.assertNotEquals(null, response.flowService, 'Flow service should not be null');
-    System.assertEquals(false, response.hasPartialResults, 'Should not have partial results if both succeed');
+    System.assertNotEquals(
+      null,
+      response.apexService,
+      'Apex service should not be null'
+    );
+    System.assertNotEquals(
+      null,
+      response.flowService,
+      'Flow service should not be null'
+    );
+    System.assertEquals(
+      false,
+      response.hasPartialResults,
+      'Should not have partial results if both succeed'
+    );
   }
 
   /**
@@ -581,11 +691,31 @@ private class JT_UsageFinder_Test {
     JT_UsageFinder.AggregatedUsageResponse aggregated = new JT_UsageFinder.AggregatedUsageResponse();
     Test.stopTest();
 
-    System.assertNotEquals(null, aggregated.allResults, 'All results should be initialized');
-    System.assertEquals(0, aggregated.totalFlowsFound, 'Total flows found should be 0');
-    System.assertEquals(0, aggregated.flowsProcessed, 'Flows processed should be 0');
-    System.assertEquals(false, aggregated.hasMoreFlows, 'Has more flows should be false');
-    System.assertNotEquals(null, aggregated.pendingFlowIds, 'Pending flow IDs should be initialized');
+    System.assertNotEquals(
+      null,
+      aggregated.allResults,
+      'All results should be initialized'
+    );
+    System.assertEquals(
+      0,
+      aggregated.totalFlowsFound,
+      'Total flows found should be 0'
+    );
+    System.assertEquals(
+      0,
+      aggregated.flowsProcessed,
+      'Flows processed should be 0'
+    );
+    System.assertEquals(
+      false,
+      aggregated.hasMoreFlows,
+      'Has more flows should be false'
+    );
+    System.assertNotEquals(
+      null,
+      aggregated.pendingFlowIds,
+      'Pending flow IDs should be initialized'
+    );
   }
 
   /**

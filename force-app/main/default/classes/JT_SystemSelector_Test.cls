@@ -117,7 +117,11 @@ private class JT_SystemSelector_Test {
     );
     Test.stopTest();
 
-    System.assertEquals(null, apexClass, 'Should return null for non-existent class');
+    System.assertEquals(
+      null,
+      apexClass,
+      'Should return null for non-existent class'
+    );
   }
 
   /**
@@ -142,7 +146,11 @@ private class JT_SystemSelector_Test {
     Test.stopTest();
 
     System.assertNotEquals(null, user, 'User should not be null');
-    System.assertEquals(UserInfo.getUserId(), user.Id, 'Should return correct user');
+    System.assertEquals(
+      UserInfo.getUserId(),
+      user.Id,
+      'Should return correct user'
+    );
   }
 
   /**
@@ -183,7 +191,11 @@ private class JT_SystemSelector_Test {
     Test.stopTest();
 
     System.assertNotEquals(null, profile, 'Profile should not be null');
-    System.assertEquals(UserInfo.getProfileId(), profile.Id, 'Should return current user profile');
+    System.assertEquals(
+      UserInfo.getProfileId(),
+      profile.Id,
+      'Should return current user profile'
+    );
   }
 
   /**
@@ -197,7 +209,11 @@ private class JT_SystemSelector_Test {
     );
     Test.stopTest();
 
-    System.assertNotEquals(null, assignments, 'Assignments list should not be null');
+    System.assertNotEquals(
+      null,
+      assignments,
+      'Assignments list should not be null'
+    );
   }
 
   /**
@@ -220,7 +236,9 @@ private class JT_SystemSelector_Test {
   @IsTest
   static void testGetSystemSettings() {
     Test.startTest();
-    JT_SystemSettings__mdt settings = JT_SystemSelector.getSystemSettings('Default');
+    JT_SystemSettings__mdt settings = JT_SystemSelector.getSystemSettings(
+      'Default'
+    );
     Test.stopTest();
 
     System.assertNotEquals(null, settings, 'Settings should not be null');
@@ -261,7 +279,11 @@ private class JT_SystemSelector_Test {
     User currentUser = JT_SystemSelector.getCurrentUser();
     Test.stopTest();
 
-    System.assertNotEquals(null, currentUser, 'Current user should not be null');
+    System.assertNotEquals(
+      null,
+      currentUser,
+      'Current user should not be null'
+    );
     System.assertEquals(
       UserInfo.getUserId(),
       currentUser.Id,
@@ -323,7 +345,11 @@ private class JT_SystemSelector_Test {
     );
     Test.stopTest();
 
-    System.assertEquals(null, execution, 'Should return null for non-existent ID');
+    System.assertEquals(
+      null,
+      execution,
+      'Should return null for non-existent ID'
+    );
   }
 
   /**

@@ -21,7 +21,10 @@ private class JT_TestDataProvisioner_Test {
       WITH USER_MODE
       LIMIT 100
     ];
-    System.assert(accounts.size() >= count, 'Should have created the expected number of accounts');
+    System.assert(
+      accounts.size() >= count,
+      'Should have created the expected number of accounts'
+    );
   }
 
   @IsTest
@@ -31,7 +34,11 @@ private class JT_TestDataProvisioner_Test {
     Test.stopTest();
 
     System.assertNotEquals(0, accounts.size(), 'Should create accounts');
-    System.assertEquals(4, accounts.size(), 'Should create exactly 4 accounts for Complex Mixed Operators');
+    System.assertEquals(
+      4,
+      accounts.size(),
+      'Should create exactly 4 accounts for Complex Mixed Operators'
+    );
 
     // Verify accounts match the query criteria
     for (Account acc : accounts) {
@@ -39,12 +46,32 @@ private class JT_TestDataProvisioner_Test {
         acc.Industry == 'Technology' || acc.Industry == 'Healthcare',
         'Industry should be Technology or Healthcare'
       );
-      System.assertNotEquals('Competitor', acc.Type, 'Type should not be Competitor');
-      System.assert(acc.AnnualRevenue >= 100000, 'AnnualRevenue should be >= 100000');
-      System.assert(acc.AnnualRevenue <= 100000000, 'AnnualRevenue should be <= 100000000');
-      System.assert(acc.NumberOfEmployees >= 10, 'NumberOfEmployees should be >= 10');
-      System.assert(acc.NumberOfEmployees <= 100, 'NumberOfEmployees should be <= 100');
-      System.assertNotEquals('Test Country', acc.BillingCountry, 'BillingCountry should not be Test Country');
+      System.assertNotEquals(
+        'Competitor',
+        acc.Type,
+        'Type should not be Competitor'
+      );
+      System.assert(
+        acc.AnnualRevenue >= 100000,
+        'AnnualRevenue should be >= 100000'
+      );
+      System.assert(
+        acc.AnnualRevenue <= 100000000,
+        'AnnualRevenue should be <= 100000000'
+      );
+      System.assert(
+        acc.NumberOfEmployees >= 10,
+        'NumberOfEmployees should be >= 10'
+      );
+      System.assert(
+        acc.NumberOfEmployees <= 100,
+        'NumberOfEmployees should be <= 100'
+      );
+      System.assertNotEquals(
+        'Test Country',
+        acc.BillingCountry,
+        'BillingCountry should not be Test Country'
+      );
     }
   }
 
@@ -58,7 +85,9 @@ private class JT_TestDataProvisioner_Test {
     insert testAccounts;
 
     Test.startTest();
-    JT_TestDataProvisioner.cleanupTestData(new List<String>{ 'Test Account 1', 'Test Account 2' });
+    JT_TestDataProvisioner.cleanupTestData(
+      new List<String>{ 'Test Account 1', 'Test Account 2' }
+    );
     Test.stopTest();
 
     List<Account> remainingAccounts = [
@@ -67,7 +96,10 @@ private class JT_TestDataProvisioner_Test {
       WHERE Name IN ('Test Account 1', 'Test Account 2')
       WITH USER_MODE
     ];
-    System.assertEquals(0, remainingAccounts.size(), 'Test accounts should be deleted');
+    System.assertEquals(
+      0,
+      remainingAccounts.size(),
+      'Test accounts should be deleted'
+    );
   }
 }
-

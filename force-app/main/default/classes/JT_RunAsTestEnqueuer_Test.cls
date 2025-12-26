@@ -348,8 +348,7 @@ private class JT_RunAsTestEnqueuer_Test {
     );
 
     // Mock Apex Log content response with markers
-    String resultJson =
-      '{"success":true,"recordCount":5,"executionTime":100,"runAsUserName":"Test User"}';
+    String resultJson = '{"success":true,"recordCount":5,"executionTime":100,"runAsUserName":"Test User"}';
     String logContent =
       '***QUERY_RESULT_START_' +
       execution.Id +
@@ -665,10 +664,7 @@ private class JT_RunAsTestEnqueuer_Test {
     );
 
     // Mock empty log content response
-    Test.setMock(
-      HttpCalloutMock.class,
-      new JT_ToolingAPIMock(200, '')
-    );
+    Test.setMock(HttpCalloutMock.class, new JT_ToolingAPIMock(200, ''));
 
     Test.startTest();
     System.enqueueJob(new JT_RunAsTestEnqueuer(execution.Id));
@@ -973,10 +969,7 @@ private class JT_RunAsTestEnqueuer_Test {
       }
     );
 
-    Test.setMock(
-      HttpCalloutMock.class,
-      new JT_ToolingAPIMock(200, response)
-    );
+    Test.setMock(HttpCalloutMock.class, new JT_ToolingAPIMock(200, response));
 
     Test.startTest();
     System.enqueueJob(new JT_RunAsTestEnqueuer(execution.Id));
@@ -1037,8 +1030,16 @@ private class JT_RunAsTestEnqueuer_Test {
       WHERE Id = :execution.Id
     ];
 
-    System.assertEquals('Failed', updatedExecution.Test_Status__c, 'Status should be Failed');
-    System.assertNotEquals(null, updatedExecution.Error_Message__c, 'Error message should be set');
+    System.assertEquals(
+      'Failed',
+      updatedExecution.Test_Status__c,
+      'Status should be Failed'
+    );
+    System.assertNotEquals(
+      null,
+      updatedExecution.Error_Message__c,
+      'Error message should be set'
+    );
   }
 
   /**
@@ -1082,8 +1083,16 @@ private class JT_RunAsTestEnqueuer_Test {
       WHERE Id = :execution.Id
     ];
 
-    System.assertEquals('Failed', updatedExecution.Test_Status__c, 'Status should be Failed');
-    System.assertNotEquals(null, updatedExecution.Error_Message__c, 'Error message should be set');
+    System.assertEquals(
+      'Failed',
+      updatedExecution.Test_Status__c,
+      'Status should be Failed'
+    );
+    System.assertNotEquals(
+      null,
+      updatedExecution.Error_Message__c,
+      'Error message should be set'
+    );
   }
 
   /**
@@ -1127,8 +1136,16 @@ private class JT_RunAsTestEnqueuer_Test {
       WHERE Id = :execution.Id
     ];
 
-    System.assertEquals('Failed', updatedExecution.Test_Status__c, 'Status should be Failed');
-    System.assertNotEquals(null, updatedExecution.Error_Message__c, 'Error message should be set');
+    System.assertEquals(
+      'Failed',
+      updatedExecution.Test_Status__c,
+      'Status should be Failed'
+    );
+    System.assertNotEquals(
+      null,
+      updatedExecution.Error_Message__c,
+      'Error message should be set'
+    );
   }
 
   /**
@@ -1172,7 +1189,15 @@ private class JT_RunAsTestEnqueuer_Test {
       WHERE Id = :execution.Id
     ];
 
-    System.assertEquals('Failed', updatedExecution.Test_Status__c, 'Status should be Failed');
-    System.assertNotEquals(null, updatedExecution.Error_Message__c, 'Error message should be set');
+    System.assertEquals(
+      'Failed',
+      updatedExecution.Test_Status__c,
+      'Status should be Failed'
+    );
+    System.assertNotEquals(
+      null,
+      updatedExecution.Error_Message__c,
+      'Error message should be set'
+    );
   }
 }

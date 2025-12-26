@@ -1808,7 +1808,7 @@ Create standard Reports and Dashboard for usage analytics:
 
 **8 points** (1 sprint)
 
-```
+````
 
 ---
 
@@ -1851,22 +1851,24 @@ Currently, `JT_UsageFinderQueueable` supports email notifications, but there's n
 
 ## 🎨 UI Mockup
 
-```
+````
+
 ┌─────────────────────────────────────────────┐
-│ Where is this used? - "Account_Summary"    │
+│ Where is this used? - "Account_Summary" │
 ├─────────────────────────────────────────────┤
-│                                             │
-│  [Searching...]                            │
-│                                             │
-│  ☑ Send email notification when complete   │
-│  📧 Email: [admin@company.com        ]     │
-│                                             │
-│  ℹ️ Large searches run in background.      │
-│     You'll receive an email when complete. │
-│                                             │
-│  [Cancel]                                   │
+│ │
+│ [Searching...] │
+│ │
+│ ☑ Send email notification when complete │
+│ 📧 Email: [admin@company.com ] │
+│ │
+│ ℹ️ Large searches run in background. │
+│ You'll receive an email when complete. │
+│ │
+│ [Cancel] │
 └─────────────────────────────────────────────┘
-```
+
+````
 
 ## 🔧 Technical Implementation
 
@@ -1884,7 +1886,7 @@ handleEmailToggle(event) {
 handleEmailChange(event) {
   this.userEmail = event.target.value;
 }
-```
+````
 
 **Apex Controller Enhancement:**
 
@@ -1957,6 +1959,7 @@ public static String findAllUsagesWithEmailOption(
 - Backward compatible: if email not provided, current behavior maintained
 - Email field validates format before submission
 - Defaults to current user's email for convenience
+
 ```
 
 ---

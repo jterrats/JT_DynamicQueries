@@ -596,8 +596,7 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
     execution.Log_Messages__c =
       (String.isNotBlank(execution.Log_Messages__c)
         ? execution.Log_Messages__c + '\n'
-        : '') +
-      message;
+        : '') + message;
   }
 
   /**
@@ -655,5 +654,4 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
       }
     }
   }
-
 }

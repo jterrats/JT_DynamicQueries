@@ -478,7 +478,8 @@ private class JT_MetadataCreator_Test {
   @IsTest
   static void testDeleteConfigurationSuccess() {
     // Mock successful SOAP deleteMetadata response
-    String soapSuccessResponse = '<?xml version="1.0" encoding="UTF-8"?>' +
+    String soapSuccessResponse =
+      '<?xml version="1.0" encoding="UTF-8"?>' +
       '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:met="http://soap.sforce.com/2006/04/metadata">' +
       '<soapenv:Body>' +
       '<met:deleteMetadataResponse>' +
@@ -531,7 +532,8 @@ private class JT_MetadataCreator_Test {
   @IsTest
   static void testDeleteConfigurationHttpError() {
     // Mock SOAP Fault error response
-    String soapFaultResponse = '<?xml version="1.0" encoding="UTF-8"?>' +
+    String soapFaultResponse =
+      '<?xml version="1.0" encoding="UTF-8"?>' +
       '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:met="http://soap.sforce.com/2006/04/metadata">' +
       '<soapenv:Body>' +
       '<soapenv:Fault>' +
@@ -569,7 +571,8 @@ private class JT_MetadataCreator_Test {
   @IsTest
   static void testDeleteConfigurationMissingDeploymentId() {
     // Mock SOAP response without result element
-    String soapResponseWithoutResult = '<?xml version="1.0" encoding="UTF-8"?>' +
+    String soapResponseWithoutResult =
+      '<?xml version="1.0" encoding="UTF-8"?>' +
       '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:met="http://soap.sforce.com/2006/04/metadata">' +
       '<soapenv:Body>' +
       '<met:deleteMetadataResponse>' +
@@ -634,7 +637,8 @@ private class JT_MetadataCreator_Test {
   @IsTest
   static void testDeleteConfigurationServerError() {
     // Mock SOAP Fault with HTTP 500
-    String soapFaultResponse = '<?xml version="1.0" encoding="UTF-8"?>' +
+    String soapFaultResponse =
+      '<?xml version="1.0" encoding="UTF-8"?>' +
       '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:met="http://soap.sforce.com/2006/04/metadata">' +
       '<soapenv:Body>' +
       '<soapenv:Fault>' +
@@ -931,8 +935,16 @@ private class JT_MetadataCreator_Test {
     Test.stopTest();
 
     System.assertNotEquals(null, result, 'Result should not be null');
-    System.assertEquals('ERROR', result.get('status'), 'Should return ERROR status');
-    System.assertNotEquals(null, result.get('error'), 'Should have error message');
+    System.assertEquals(
+      'ERROR',
+      result.get('status'),
+      'Should return ERROR status'
+    );
+    System.assertNotEquals(
+      null,
+      result.get('error'),
+      'Should have error message'
+    );
   }
 
   /**
@@ -946,8 +958,16 @@ private class JT_MetadataCreator_Test {
     Test.stopTest();
 
     System.assertNotEquals(null, result, 'Result should not be null');
-    System.assertEquals('ERROR', result.get('status'), 'Should return ERROR status');
-    System.assertNotEquals(null, result.get('error'), 'Should have error message');
+    System.assertEquals(
+      'ERROR',
+      result.get('status'),
+      'Should return ERROR status'
+    );
+    System.assertNotEquals(
+      null,
+      result.get('error'),
+      'Should have error message'
+    );
   }
 
   /**
@@ -957,13 +977,18 @@ private class JT_MetadataCreator_Test {
   @IsTest
   static void testCheckDeploymentStatusInvalidId() {
     Test.startTest();
-    Map<String, Object> result = JT_MetadataCreator.checkDeploymentStatus('0AfInvalid');
+    Map<String, Object> result = JT_MetadataCreator.checkDeploymentStatus(
+      '0AfInvalid'
+    );
     Test.stopTest();
 
     System.assertNotEquals(null, result, 'Result should not be null');
     // May return ERROR or attempt to check (depends on Tooling API response)
     System.assert(result.containsKey('status'), 'Should have status field');
-    System.assert(result.containsKey('deploymentId'), 'Should have deploymentId field');
+    System.assert(
+      result.containsKey('deploymentId'),
+      'Should have deploymentId field'
+    );
   }
 
   /**
@@ -977,8 +1002,16 @@ private class JT_MetadataCreator_Test {
     );
     Test.stopTest();
 
-    System.assertEquals(false, result.success, 'Should fail with null configJson');
-    System.assertNotEquals(null, result.errorMessage, 'Should have error message');
+    System.assertEquals(
+      false,
+      result.success,
+      'Should fail with null configJson'
+    );
+    System.assertNotEquals(
+      null,
+      result.errorMessage,
+      'Should have error message'
+    );
   }
 
   /**
@@ -1021,7 +1054,11 @@ private class JT_MetadataCreator_Test {
     Test.stopTest();
 
     System.assertEquals(false, result.success, 'Should fail with invalid JSON');
-    System.assertNotEquals(null, result.errorMessage, 'Should have error message');
+    System.assertNotEquals(
+      null,
+      result.errorMessage,
+      'Should have error message'
+    );
   }
 
   /**
@@ -1042,8 +1079,16 @@ private class JT_MetadataCreator_Test {
     );
     Test.stopTest();
 
-    System.assertEquals(false, result.success, 'Should fail with blank dev name');
-    System.assertNotEquals(null, result.errorMessage, 'Should have error message');
+    System.assertEquals(
+      false,
+      result.success,
+      'Should fail with blank dev name'
+    );
+    System.assertNotEquals(
+      null,
+      result.errorMessage,
+      'Should have error message'
+    );
   }
 
   /**
@@ -1057,8 +1102,16 @@ private class JT_MetadataCreator_Test {
     );
     Test.stopTest();
 
-    System.assertEquals(false, result.success, 'Should fail with null configJson');
-    System.assertNotEquals(null, result.errorMessage, 'Should have error message');
+    System.assertEquals(
+      false,
+      result.success,
+      'Should fail with null configJson'
+    );
+    System.assertNotEquals(
+      null,
+      result.errorMessage,
+      'Should have error message'
+    );
   }
 
   /**
@@ -1075,7 +1128,11 @@ private class JT_MetadataCreator_Test {
     Test.stopTest();
 
     System.assertEquals(false, result.success, 'Should fail with invalid JSON');
-    System.assertNotEquals(null, result.errorMessage, 'Should have error message');
+    System.assertNotEquals(
+      null,
+      result.errorMessage,
+      'Should have error message'
+    );
   }
 
   /**
@@ -1095,8 +1152,16 @@ private class JT_MetadataCreator_Test {
     );
     Test.stopTest();
 
-    System.assertEquals(false, result.success, 'Should fail without originalDevName');
-    System.assertNotEquals(null, result.errorMessage, 'Should have error message');
+    System.assertEquals(
+      false,
+      result.success,
+      'Should fail without originalDevName'
+    );
+    System.assertNotEquals(
+      null,
+      result.errorMessage,
+      'Should have error message'
+    );
   }
 
   /**
@@ -1184,10 +1249,7 @@ private class JT_MetadataCreator_Test {
   static void testCheckDeploymentStatusInProgress() {
     // Mock in-progress deployment status response
     String inProgressResponse = JSON.serialize(
-      new Map<String, Object>{
-        'done' => false,
-        'status' => 'InProgress'
-      }
+      new Map<String, Object>{ 'done' => false, 'status' => 'InProgress' }
     );
 
     Test.setMock(
@@ -1253,7 +1315,9 @@ private class JT_MetadataCreator_Test {
   @IsTest
   static void testValidateQueryEmpty() {
     Test.startTest();
-    JT_MetadataCreator.ValidationResult result = JT_MetadataCreator.validateQuery('');
+    JT_MetadataCreator.ValidationResult result = JT_MetadataCreator.validateQuery(
+      ''
+    );
     Test.stopTest();
 
     System.assertEquals(false, result.isValid, 'Empty query should be invalid');
@@ -1266,10 +1330,16 @@ private class JT_MetadataCreator_Test {
   @IsTest
   static void testValidateQueryWhitespaceOnly() {
     Test.startTest();
-    JT_MetadataCreator.ValidationResult result = JT_MetadataCreator.validateQuery('   ');
+    JT_MetadataCreator.ValidationResult result = JT_MetadataCreator.validateQuery(
+      '   '
+    );
     Test.stopTest();
 
-    System.assertEquals(false, result.isValid, 'Whitespace-only query should be invalid');
+    System.assertEquals(
+      false,
+      result.isValid,
+      'Whitespace-only query should be invalid'
+    );
     System.assertNotEquals(null, result.message, 'Should have error message');
   }
 
@@ -1403,8 +1473,16 @@ private class JT_MetadataCreator_Test {
     );
     Test.stopTest();
 
-    System.assertEquals(false, result.success, 'Should fail with missing originalDevName');
-    System.assertNotEquals(null, result.errorMessage, 'Should have error message');
+    System.assertEquals(
+      false,
+      result.success,
+      'Should fail with missing originalDevName'
+    );
+    System.assertNotEquals(
+      null,
+      result.errorMessage,
+      'Should have error message'
+    );
   }
 
   /**
@@ -1424,8 +1502,16 @@ private class JT_MetadataCreator_Test {
     );
     Test.stopTest();
 
-    System.assertEquals(false, result.success, 'Should fail with missing label');
-    System.assertNotEquals(null, result.errorMessage, 'Should have error message');
+    System.assertEquals(
+      false,
+      result.success,
+      'Should fail with missing label'
+    );
+    System.assertNotEquals(
+      null,
+      result.errorMessage,
+      'Should have error message'
+    );
   }
 
   /**
@@ -1445,8 +1531,16 @@ private class JT_MetadataCreator_Test {
     );
     Test.stopTest();
 
-    System.assertEquals(false, result.success, 'Should fail with missing baseQuery');
-    System.assertNotEquals(null, result.errorMessage, 'Should have error message');
+    System.assertEquals(
+      false,
+      result.success,
+      'Should fail with missing baseQuery'
+    );
+    System.assertNotEquals(
+      null,
+      result.errorMessage,
+      'Should have error message'
+    );
   }
 
   /**

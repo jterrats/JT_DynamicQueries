@@ -65,7 +65,9 @@ const toggleSetMembership = (set, item) => {
 };
 
 const createCSVRow = (columns) => (row) =>
-  columns.map((col) => escapeCSV(getNestedFieldValue(row, col.fieldName))).join(",");
+  columns
+    .map((col) => escapeCSV(getNestedFieldValue(row, col.fieldName)))
+    .join(",");
 
 const createJSONMetadata = (recordCount, columns) => ({
   totalRecords: recordCount,

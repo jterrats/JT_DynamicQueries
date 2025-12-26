@@ -700,7 +700,7 @@ private class JT_RunAsTestExecutor_Test {
     );
     System.assert(
       result.errorMessage != null &&
-        result.errorMessage.contains('Too many test executions'),
+      result.errorMessage.contains('Too many test executions'),
       'Should have rate limiting error message. Actual: ' +
       (result.errorMessage != null ? result.errorMessage : 'null')
     );
@@ -718,8 +718,7 @@ private class JT_RunAsTestExecutor_Test {
       Test_Status__c = 'Completed',
       User_To_Impersonate__c = currentUser.Id,
       Config_Name__c = 'Test_Record',
-      Results_Json__c =
-        '{"success":true,"recordCount":5,"executionTime":100,"runAsUserName":"Test User","fields":[],"records":[]}',
+      Results_Json__c = '{"success":true,"recordCount":5,"executionTime":100,"runAsUserName":"Test User","fields":[],"records":[]}',
       Record_Count__c = 5,
       Execution_Time__c = 100,
       Run_As_User_Name__c = 'Test User',
@@ -735,7 +734,11 @@ private class JT_RunAsTestExecutor_Test {
 
     System.assertEquals(true, result.success, 'Should return success');
     System.assertEquals(5, result.recordCount, 'Should return record count');
-    System.assertNotEquals(null, result.queryResults, 'Should have query results');
+    System.assertNotEquals(
+      null,
+      result.queryResults,
+      'Should have query results'
+    );
   }
 
   /**
@@ -797,7 +800,11 @@ private class JT_RunAsTestExecutor_Test {
     Test.stopTest();
 
     System.assertEquals(false, result.success, 'Should return false');
-    System.assertEquals('Test failed', result.errorMessage, 'Should have error message');
+    System.assertEquals(
+      'Test failed',
+      result.errorMessage,
+      'Should have error message'
+    );
   }
 
   /**
@@ -828,7 +835,11 @@ private class JT_RunAsTestExecutor_Test {
     Test.stopTest();
 
     // Should return pending status
-    System.assertEquals(false, result.success, 'Should return false for pending');
+    System.assertEquals(
+      false,
+      result.success,
+      'Should return false for pending'
+    );
     System.assertNotEquals(null, result.message, 'Should have message');
   }
 
@@ -850,12 +861,22 @@ private class JT_RunAsTestExecutor_Test {
     insert execution;
 
     Test.startTest();
-    Map<String, Object> status = JT_RunAsTestExecutor.getTestStatus(execution.Id);
+    Map<String, Object> status = JT_RunAsTestExecutor.getTestStatus(
+      execution.Id
+    );
     Test.stopTest();
 
     System.assertEquals('FAILED', status.get('status'), 'Should be FAILED');
-    System.assertEquals(false, status.get('hasResults'), 'Should not have results');
-    System.assertEquals('Test failed', status.get('error'), 'Should have error');
+    System.assertEquals(
+      false,
+      status.get('hasResults'),
+      'Should not have results'
+    );
+    System.assertEquals(
+      'Test failed',
+      status.get('error'),
+      'Should have error'
+    );
   }
 
   /**
@@ -875,11 +896,17 @@ private class JT_RunAsTestExecutor_Test {
     insert execution;
 
     Test.startTest();
-    Map<String, Object> status = JT_RunAsTestExecutor.getTestStatus(execution.Id);
+    Map<String, Object> status = JT_RunAsTestExecutor.getTestStatus(
+      execution.Id
+    );
     Test.stopTest();
 
     System.assertEquals('PENDING', status.get('status'), 'Should be PENDING');
-    System.assertEquals(false, status.get('hasResults'), 'Should not have results');
+    System.assertEquals(
+      false,
+      status.get('hasResults'),
+      'Should not have results'
+    );
   }
 
   /**
@@ -899,11 +926,17 @@ private class JT_RunAsTestExecutor_Test {
     insert execution;
 
     Test.startTest();
-    Map<String, Object> status = JT_RunAsTestExecutor.getTestStatus(execution.Id);
+    Map<String, Object> status = JT_RunAsTestExecutor.getTestStatus(
+      execution.Id
+    );
     Test.stopTest();
 
     System.assertEquals('PENDING', status.get('status'), 'Should be PENDING');
-    System.assertEquals(false, status.get('hasResults'), 'Should not have results');
+    System.assertEquals(
+      false,
+      status.get('hasResults'),
+      'Should not have results'
+    );
   }
 
   /**
@@ -924,11 +957,21 @@ private class JT_RunAsTestExecutor_Test {
     insert execution;
 
     Test.startTest();
-    Map<String, Object> status = JT_RunAsTestExecutor.getTestStatus(execution.Id);
+    Map<String, Object> status = JT_RunAsTestExecutor.getTestStatus(
+      execution.Id
+    );
     Test.stopTest();
 
-    System.assertEquals('COMPLETED', status.get('status'), 'Should be COMPLETED');
-    System.assertEquals(false, status.get('hasResults'), 'Should not have results');
+    System.assertEquals(
+      'COMPLETED',
+      status.get('status'),
+      'Should be COMPLETED'
+    );
+    System.assertEquals(
+      false,
+      status.get('hasResults'),
+      'Should not have results'
+    );
     System.assert(
       status.containsKey('warning'),
       'Should have warning about no results'
@@ -982,7 +1025,8 @@ private class JT_RunAsTestExecutor_Test {
       Email = 'testuser@example.com',
       Username = 'testuser' + System.now().getTime() + '@example.com',
       Alias = 'tuser',
-      ProfileId = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1].Id,
+      ProfileId = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1]
+      .Id,
       TimeZoneSidKey = 'America/New_York',
       LocaleSidKey = 'en_US',
       EmailEncodingKey = 'UTF-8',
@@ -999,8 +1043,16 @@ private class JT_RunAsTestExecutor_Test {
         'Test_Record',
         null
       );
-      System.assertEquals(false, result.success, 'Should fail without permissions');
-      System.assertNotEquals(null, result.errorMessage, 'Should have error message');
+      System.assertEquals(
+        false,
+        result.success,
+        'Should fail without permissions'
+      );
+      System.assertNotEquals(
+        null,
+        result.errorMessage,
+        'Should have error message'
+      );
     }
     Test.stopTest();
   }
@@ -1077,7 +1129,11 @@ private class JT_RunAsTestExecutor_Test {
     Test.stopTest();
 
     // Should return pending status
-    System.assertEquals(false, result.success, 'Should return false for pending');
+    System.assertEquals(
+      false,
+      result.success,
+      'Should return false for pending'
+    );
     System.assertNotEquals(null, result.message, 'Should have message');
   }
 
@@ -1105,7 +1161,11 @@ private class JT_RunAsTestExecutor_Test {
     Test.stopTest();
 
     // Should return pending status
-    System.assertEquals(false, result.success, 'Should return false for pending');
+    System.assertEquals(
+      false,
+      result.success,
+      'Should return false for pending'
+    );
     System.assertNotEquals(null, result.message, 'Should have message');
   }
 
@@ -1146,9 +1206,21 @@ private class JT_RunAsTestExecutor_Test {
 
     System.assertEquals(true, result.success, 'Should return success');
     System.assertEquals(10, result.recordCount, 'Should return record count');
-    System.assertEquals(150, result.executionTime, 'Should return execution time');
-    System.assertEquals('Test User', result.runAsUserName, 'Should return user name');
-    System.assertNotEquals(null, result.assertMessage, 'Should have assert message');
+    System.assertEquals(
+      150,
+      result.executionTime,
+      'Should return execution time'
+    );
+    System.assertEquals(
+      'Test User',
+      result.runAsUserName,
+      'Should return user name'
+    );
+    System.assertNotEquals(
+      null,
+      result.assertMessage,
+      'Should have assert message'
+    );
   }
 
   /**
@@ -1183,7 +1255,11 @@ private class JT_RunAsTestExecutor_Test {
     Test.stopTest();
 
     System.assertEquals(false, result.success, 'Should return false');
-    System.assertEquals('Query failed', result.errorMessage, 'Should have error message');
+    System.assertEquals(
+      'Query failed',
+      result.errorMessage,
+      'Should have error message'
+    );
   }
 
   /**
@@ -1231,10 +1307,16 @@ private class JT_RunAsTestExecutor_Test {
     insert execution;
 
     Test.startTest();
-    Map<String, Object> status = JT_RunAsTestExecutor.getTestStatus(execution.Id);
+    Map<String, Object> status = JT_RunAsTestExecutor.getTestStatus(
+      execution.Id
+    );
     Test.stopTest();
 
-    System.assertEquals('COMPLETED', status.get('status'), 'Should be COMPLETED');
+    System.assertEquals(
+      'COMPLETED',
+      status.get('status'),
+      'Should be COMPLETED'
+    );
     System.assertEquals(true, status.get('hasResults'), 'Should have results');
   }
 
@@ -1255,11 +1337,17 @@ private class JT_RunAsTestExecutor_Test {
     insert execution;
 
     Test.startTest();
-    Map<String, Object> status = JT_RunAsTestExecutor.getTestStatus(execution.Id);
+    Map<String, Object> status = JT_RunAsTestExecutor.getTestStatus(
+      execution.Id
+    );
     Test.stopTest();
 
     System.assertNotEquals(null, status.get('status'), 'Should have status');
-    System.assertEquals(false, status.get('hasResults'), 'Should not have results');
+    System.assertEquals(
+      false,
+      status.get('hasResults'),
+      'Should not have results'
+    );
   }
 
   /**
@@ -1354,7 +1442,11 @@ private class JT_RunAsTestExecutor_Test {
     Test.stopTest();
 
     System.assertNotEquals(null, status, 'Status should not be null');
-    System.assertEquals('NOT_FOUND', status.get('status'), 'Should be NOT_FOUND');
+    System.assertEquals(
+      'NOT_FOUND',
+      status.get('status'),
+      'Should be NOT_FOUND'
+    );
   }
 
   /**
@@ -1667,7 +1759,9 @@ private class JT_RunAsTestExecutor_Test {
     insert execution;
 
     Test.startTest();
-    Map<String, Object> status = JT_RunAsTestExecutor.getTestStatus(execution.Id);
+    Map<String, Object> status = JT_RunAsTestExecutor.getTestStatus(
+      execution.Id
+    );
     Test.stopTest();
 
     System.assertNotEquals(null, status, 'Status should not be null');
@@ -1692,12 +1786,18 @@ private class JT_RunAsTestExecutor_Test {
     insert execution;
 
     Test.startTest();
-    Map<String, Object> status = JT_RunAsTestExecutor.getTestStatus(execution.Id);
+    Map<String, Object> status = JT_RunAsTestExecutor.getTestStatus(
+      execution.Id
+    );
     Test.stopTest();
 
     System.assertNotEquals(null, status, 'Status should not be null');
     System.assertEquals('FAILED', status.get('status'), 'Should be FAILED');
-    System.assertNotEquals(null, status.get('error'), 'Should have error message');
+    System.assertNotEquals(
+      null,
+      status.get('error'),
+      'Should have error message'
+    );
   }
 
   /**

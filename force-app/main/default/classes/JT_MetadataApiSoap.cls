@@ -50,9 +50,9 @@ public class JT_MetadataApiSoap {
     public String endpoint_x {
       get {
         if (endpoint_x == null) {
-          String apiVersion = JT_ToolingApiUtil.getApiVersion()
-            .substring(1); // Remove 'v' prefix
-          endpoint_x = URL.getOrgDomainUrl().toExternalForm() +
+          String apiVersion = JT_ToolingApiUtil.getApiVersion().substring(1); // Remove 'v' prefix
+          endpoint_x =
+            URL.getOrgDomainUrl().toExternalForm() +
             '/services/Soap/m/' +
             apiVersion;
         }
@@ -101,14 +101,22 @@ public class JT_MetadataApiSoap {
 
       // Always parse SOAP response, even if HTTP status is not 200
       // SOAP Faults are returned in the body with HTTP 500, but can be parsed
-      JT_MetadataApiSoap.AsyncResult parsedResult = parseDeployResponse(res.getBody());
+      JT_MetadataApiSoap.AsyncResult parsedResult = parseDeployResponse(
+        res.getBody()
+      );
 
       // If parsing failed or HTTP status is not 200, include status code in message
       if (res.getStatusCode() != 200 && String.isBlank(parsedResult.message)) {
         parsedResult.message = 'HTTP Error: ' + res.getStatusCode();
-      } else if (res.getStatusCode() != 200 && String.isNotBlank(parsedResult.message)) {
+      } else if (
+        res.getStatusCode() != 200 && String.isNotBlank(parsedResult.message)
+      ) {
         // Prepend HTTP status to parsed fault message
-        parsedResult.message = 'HTTP ' + res.getStatusCode() + ': ' + parsedResult.message;
+        parsedResult.message =
+          'HTTP ' +
+          res.getStatusCode() +
+          ': ' +
+          parsedResult.message;
       }
 
       return parsedResult;
@@ -117,13 +125,16 @@ public class JT_MetadataApiSoap {
     /**
      * @description Builds SOAP request XML
      */
-    private String buildSoapRequest(JT_MetadataApiSoap.deploy_element request_x) {
+    private String buildSoapRequest(
+      JT_MetadataApiSoap.deploy_element request_x
+    ) {
       String soapBody = '<?xml version="1.0" encoding="UTF-8"?>';
       soapBody += '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:met="http://soap.sforce.com/2006/04/metadata">';
       soapBody += '<soapenv:Header>';
       if (this.SessionHeader != null) {
         soapBody += '<met:SessionHeader>';
-        soapBody += '<met:sessionId>' +
+        soapBody +=
+          '<met:sessionId>' +
           String.valueOf(this.SessionHeader.sessionId).escapeXml() +
           '</met:sessionId>';
         soapBody += '</met:SessionHeader>';
@@ -131,65 +142,82 @@ public class JT_MetadataApiSoap {
       soapBody += '</soapenv:Header>';
       soapBody += '<soapenv:Body>';
       soapBody += '<met:deploy>';
-      soapBody += '<met:ZipFile>' +
+      soapBody +=
+        '<met:ZipFile>' +
         EncodingUtil.base64Encode(request_x.zipFile) +
         '</met:ZipFile>';
       if (request_x.DeployOptions != null) {
         soapBody += '<met:DeployOptions>';
         if (request_x.DeployOptions.allowMissingFiles != null) {
-          soapBody += '<met:allowMissingFiles>' +
+          soapBody +=
+            '<met:allowMissingFiles>' +
             request_x.DeployOptions.allowMissingFiles +
             '</met:allowMissingFiles>';
         }
         if (request_x.DeployOptions.autoUpdatePackage != null) {
-          soapBody += '<met:autoUpdatePackage>' +
+          soapBody +=
+            '<met:autoUpdatePackage>' +
             request_x.DeployOptions.autoUpdatePackage +
             '</met:autoUpdatePackage>';
         }
         if (request_x.DeployOptions.checkOnly != null) {
-          soapBody += '<met:checkOnly>' +
+          soapBody +=
+            '<met:checkOnly>' +
             request_x.DeployOptions.checkOnly +
             '</met:checkOnly>';
         }
         if (request_x.DeployOptions.ignoreWarnings != null) {
-          soapBody += '<met:ignoreWarnings>' +
+          soapBody +=
+            '<met:ignoreWarnings>' +
             request_x.DeployOptions.ignoreWarnings +
             '</met:ignoreWarnings>';
         }
         if (request_x.DeployOptions.performRetrieve != null) {
-          soapBody += '<met:performRetrieve>' +
+          soapBody +=
+            '<met:performRetrieve>' +
             request_x.DeployOptions.performRetrieve +
             '</met:performRetrieve>';
         }
         if (request_x.DeployOptions.purgeOnDelete != null) {
-          soapBody += '<met:purgeOnDelete>' +
+          soapBody +=
+            '<met:purgeOnDelete>' +
             request_x.DeployOptions.purgeOnDelete +
             '</met:purgeOnDelete>';
         }
         if (request_x.DeployOptions.rollbackOnError != null) {
-          soapBody += '<met:rollbackOnError>' +
+          soapBody +=
+            '<met:rollbackOnError>' +
             request_x.DeployOptions.rollbackOnError +
             '</met:rollbackOnError>';
         }
         if (request_x.DeployOptions.runAllTests != null) {
-          soapBody += '<met:runAllTests>' +
+          soapBody +=
+            '<met:runAllTests>' +
             request_x.DeployOptions.runAllTests +
             '</met:runAllTests>';
         }
-        if (request_x.DeployOptions.runTests != null && request_x.DeployOptions.runTests.size() > 0) {
+        if (
+          request_x.DeployOptions.runTests != null &&
+          request_x.DeployOptions.runTests.size() > 0
+        ) {
           soapBody += '<met:runTests>';
           for (String test : request_x.DeployOptions.runTests) {
-            soapBody += '<met:runTests>' + String.valueOf(test).escapeXml() + '</met:runTests>';
+            soapBody +=
+              '<met:runTests>' +
+              String.valueOf(test).escapeXml() +
+              '</met:runTests>';
           }
           soapBody += '</met:runTests>';
         }
         if (request_x.DeployOptions.singlePackage != null) {
-          soapBody += '<met:singlePackage>' +
+          soapBody +=
+            '<met:singlePackage>' +
             request_x.DeployOptions.singlePackage +
             '</met:singlePackage>';
         }
         if (request_x.DeployOptions.testLevel != null) {
-          soapBody += '<met:testLevel>' +
+          soapBody +=
+            '<met:testLevel>' +
             String.valueOf(request_x.DeployOptions.testLevel).escapeXml() +
             '</met:testLevel>';
         }
@@ -204,7 +232,9 @@ public class JT_MetadataApiSoap {
     /**
      * @description Parses SOAP response XML using Dom.Document
      */
-    private JT_MetadataApiSoap.AsyncResult parseDeployResponse(String soapResponse) {
+    private JT_MetadataApiSoap.AsyncResult parseDeployResponse(
+      String soapResponse
+    ) {
       JT_MetadataApiSoap.AsyncResult result = new JT_MetadataApiSoap.AsyncResult();
 
       try {
@@ -215,9 +245,9 @@ public class JT_MetadataApiSoap {
         System.debug(
           LoggingLevel.INFO,
           '📋 Root element: ' +
-          envelope.getName() +
-          ', namespace: ' +
-          envelope.getNamespace()
+            envelope.getName() +
+            ', namespace: ' +
+            envelope.getNamespace()
         );
 
         // Check for SOAP Fault - it's inside Body, not directly in Envelope
@@ -235,10 +265,17 @@ public class JT_MetadataApiSoap {
           if (fault != null) {
             // Extract faultcode and faultstring
             Dom.XmlNode faultCode = fault.getChildElement('faultcode', null);
-            Dom.XmlNode faultString = fault.getChildElement('faultstring', null);
+            Dom.XmlNode faultString = fault.getChildElement(
+              'faultstring',
+              null
+            );
 
-            String faultCodeText = faultCode != null ? faultCode.getText() : 'UNKNOWN';
-            String faultStringText = faultString != null ? faultString.getText() : 'Unknown SOAP fault';
+            String faultCodeText = faultCode != null
+              ? faultCode.getText()
+              : 'UNKNOWN';
+            String faultStringText = faultString != null
+              ? faultString.getText()
+              : 'Unknown SOAP fault';
 
             // Extract just the error code and message (remove namespace prefix if present)
             String errorCode = faultCodeText.contains(':')
@@ -247,7 +284,8 @@ public class JT_MetadataApiSoap {
 
             // Extract just the main error message (before colon if present)
             String errorMessage = faultStringText.contains(':')
-              ? faultStringText.substring(faultStringText.indexOf(':') + 1).trim()
+              ? faultStringText.substring(faultStringText.indexOf(':') + 1)
+                  .trim()
               : faultStringText;
 
             result.message = errorCode + ': ' + errorMessage;
@@ -303,8 +341,7 @@ public class JT_MetadataApiSoap {
         Dom.XmlNode resultNode = null;
         for (Dom.XmlNode child : deployResponse.getChildElements()) {
           if (
-            child.getName() == 'result' ||
-            child.getName().endsWith(':result')
+            child.getName() == 'result' || child.getName().endsWith(':result')
           ) {
             resultNode = child;
             break;
@@ -340,9 +377,9 @@ public class JT_MetadataApiSoap {
         System.debug(
           LoggingLevel.ERROR,
           '📋 Error parsing SOAP response: ' +
-          e.getMessage() +
-          '\nStack trace: ' +
-          e.getStackTraceString()
+            e.getMessage() +
+            '\nStack trace: ' +
+            e.getStackTraceString()
         );
         result.message = 'Error parsing SOAP response: ' + e.getMessage();
       }
@@ -380,7 +417,8 @@ public class JT_MetadataApiSoap {
       soapBody += '<soapenv:Header>';
       if (this.SessionHeader != null) {
         soapBody += '<met:SessionHeader>';
-        soapBody += '<met:sessionId>' +
+        soapBody +=
+          '<met:sessionId>' +
           String.valueOf(this.SessionHeader.sessionId).escapeXml() +
           '</met:sessionId>';
         soapBody += '</met:SessionHeader>';
@@ -388,10 +426,16 @@ public class JT_MetadataApiSoap {
       soapBody += '</soapenv:Header>';
       soapBody += '<soapenv:Body>';
       soapBody += '<met:deleteMetadata>';
-      soapBody += '<met:type>' + String.valueOf(metadataType).escapeXml() + '</met:type>';
+      soapBody +=
+        '<met:type>' +
+        String.valueOf(metadataType).escapeXml() +
+        '</met:type>';
       if (fullNames != null) {
         for (String fullName : fullNames) {
-          soapBody += '<met:fullNames>' + String.valueOf(fullName).escapeXml() + '</met:fullNames>';
+          soapBody +=
+            '<met:fullNames>' +
+            String.valueOf(fullName).escapeXml() +
+            '</met:fullNames>';
         }
       }
       soapBody += '</met:deleteMetadata>';
@@ -457,8 +501,12 @@ public class JT_MetadataApiSoap {
           Dom.XmlNode faultCode = fault.getChildElement('faultcode', null);
           Dom.XmlNode faultString = fault.getChildElement('faultstring', null);
 
-          String faultCodeText = faultCode != null ? faultCode.getText() : 'UNKNOWN';
-          String faultStringText = faultString != null ? faultString.getText() : 'Unknown SOAP fault';
+          String faultCodeText = faultCode != null
+            ? faultCode.getText()
+            : 'UNKNOWN';
+          String faultStringText = faultString != null
+            ? faultString.getText()
+            : 'Unknown SOAP fault';
 
           String errorCode = faultCodeText.contains(':')
             ? faultCodeText.substring(faultCodeText.indexOf(':') + 1)
@@ -470,7 +518,13 @@ public class JT_MetadataApiSoap {
           JT_MetadataApiSoap.DeleteResult errorResult = new JT_MetadataApiSoap.DeleteResult();
           errorResult.success = false;
           errorResult.deleted = false;
-          errorResult.errorMessage = 'HTTP ' + statusCode + ': ' + errorCode + ': ' + errorMessage;
+          errorResult.errorMessage =
+            'HTTP ' +
+            statusCode +
+            ': ' +
+            errorCode +
+            ': ' +
+            errorMessage;
           errorResult.errorStatusCode = String.valueOf(statusCode);
           results.add(errorResult);
           return results;
@@ -482,9 +536,9 @@ public class JT_MetadataApiSoap {
           System.debug(
             LoggingLevel.INFO,
             '📋 Body child: ' +
-            child.getName() +
-            ', namespace: ' +
-            child.getNamespace()
+              child.getName() +
+              ', namespace: ' +
+              child.getNamespace()
           );
           if (
             child.getName() == 'deleteMetadataResponse' ||
@@ -513,8 +567,7 @@ public class JT_MetadataApiSoap {
         Dom.XmlNode resultNode = null;
         for (Dom.XmlNode child : deleteResponse.getChildElements()) {
           if (
-            child.getName() == 'result' ||
-            child.getName().endsWith(':result')
+            child.getName() == 'result' || child.getName().endsWith(':result')
           ) {
             resultNode = child;
             break;
@@ -537,10 +590,12 @@ public class JT_MetadataApiSoap {
 
         // Parse result - result can be a single element or array
         List<Dom.XmlNode> resultNodes = new List<Dom.XmlNode>();
-        
+
         // Check if resultNode has nested result elements
         for (Dom.XmlNode child : resultNode.getChildElements()) {
-          if (child.getName() == 'result' || child.getName().endsWith(':result')) {
+          if (
+            child.getName() == 'result' || child.getName().endsWith(':result')
+          ) {
             resultNodes.add(child);
           }
         }
@@ -570,30 +625,34 @@ public class JT_MetadataApiSoap {
                 if (errorMsg != null) {
                   deleteResult.errorMessage = errorMsg.getText();
                 }
-                Dom.XmlNode errorCode = error.getChildElement('statusCode', null);
+                Dom.XmlNode errorCode = error.getChildElement(
+                  'statusCode',
+                  null
+                );
                 if (errorCode != null) {
                   deleteResult.errorStatusCode = errorCode.getText();
                 }
               }
             }
           }
-          
+
           results.add(deleteResult);
         }
       } catch (Exception e) {
         System.debug(
           LoggingLevel.ERROR,
           '📋 Error parsing deleteMetadata SOAP response: ' +
-          e.getMessage() +
-          '\nStack trace: ' +
-          e.getStackTraceString() +
-          '\nRaw response: ' +
-          soapResponse
+            e.getMessage() +
+            '\nStack trace: ' +
+            e.getStackTraceString() +
+            '\nRaw response: ' +
+            soapResponse
         );
         JT_MetadataApiSoap.DeleteResult errorResult = new JT_MetadataApiSoap.DeleteResult();
         errorResult.success = false;
         errorResult.deleted = false;
-        errorResult.errorMessage = 'Error parsing SOAP response: ' + e.getMessage();
+        errorResult.errorMessage =
+          'Error parsing SOAP response: ' + e.getMessage();
         results.add(errorResult);
       }
 
@@ -642,4 +701,3 @@ public class JT_MetadataApiSoap {
     public JT_MetadataApiSoap.DeleteResult[] result;
   }
 }
-

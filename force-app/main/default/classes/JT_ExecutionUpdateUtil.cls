@@ -27,7 +27,8 @@ public without sharing class JT_ExecutionUpdateUtil {
       return errorMessage;
     }
 
-    Integer effectiveMaxLength = maxLength != null && maxLength > 0
+    Integer effectiveMaxLength = maxLength != null &&
+      maxLength > 0
       ? maxLength
       : MAX_ERROR_MESSAGE_LENGTH;
 
@@ -147,9 +148,7 @@ public without sharing class JT_ExecutionUpdateUtil {
         String.isNotBlank(context)
           ? context + '.updateExecutionWithError (Strategy 2)'
           : 'JT_ExecutionUpdateUtil.updateExecutionWithError (Strategy 2)',
-        JSON.serialize(
-          new Map<String, Object>{ 'executionId' => executionId }
-        ),
+        JSON.serialize(new Map<String, Object>{ 'executionId' => executionId }),
         'Critical'
       );
     } catch (Exception updateEx) {
@@ -229,6 +228,3 @@ public without sharing class JT_ExecutionUpdateUtil {
     return updateExecutionWithProcessingError(executionId, errorMessage, null);
   }
 }
-
-
-

@@ -59,7 +59,10 @@ public with sharing class JT_MetadataCreator {
       // If the string appears to be double-encoded JSON, try to fix it
       if (configJsonString.startsWith('"') && configJsonString.endsWith('"')) {
         try {
-          configJsonString = (String) JSON.deserialize(configJsonString, String.class);
+          configJsonString = (String) JSON.deserialize(
+            configJsonString,
+            String.class
+          );
         } catch (Exception e) {
           // If deserialization fails, use original string
           // This handles the case where it's a normal JSON string that happens to start/end with quotes
@@ -75,10 +78,12 @@ public with sharing class JT_MetadataCreator {
       }
 
       // CRITICAL: Only allow in development/test environments
-      if (!validateSandboxOrScratch(
-        result,
-        Label.JT_MetadataCreator_creationNotAllowed
-      )) {
+      if (
+        !validateSandboxOrScratch(
+          result,
+          Label.JT_MetadataCreator_creationNotAllowed
+        )
+      ) {
         return result;
       }
 
@@ -161,10 +166,12 @@ public with sharing class JT_MetadataCreator {
 
     try {
       // CRITICAL: Only allow in development/test environments
-      if (!validateSandboxOrScratch(
-        result,
-        Label.JT_MetadataCreator_deletionNotAllowed
-      )) {
+      if (
+        !validateSandboxOrScratch(
+          result,
+          Label.JT_MetadataCreator_deletionNotAllowed
+        )
+      ) {
         return result;
       }
 
@@ -225,10 +232,12 @@ public with sharing class JT_MetadataCreator {
       }
 
       // CRITICAL: Only allow in sandbox/scratch
-      if (!validateSandboxOrScratch(
-        result,
-        Label.JT_MetadataCreator_editingNotAllowed
-      )) {
+      if (
+        !validateSandboxOrScratch(
+          result,
+          Label.JT_MetadataCreator_editingNotAllowed
+        )
+      ) {
         return result;
       }
 
@@ -237,11 +246,11 @@ public with sharing class JT_MetadataCreator {
       System.debug(
         LoggingLevel.DEBUG,
         'UpdateConfiguration - originalDevName: ' +
-        config.originalDevName +
-        ', label: ' +
-        config.label +
-        ', baseQuery: ' +
-        (String.isNotBlank(config.baseQuery) ? 'present' : 'blank')
+          config.originalDevName +
+          ', label: ' +
+          config.label +
+          ', baseQuery: ' +
+          (String.isNotBlank(config.baseQuery) ? 'present' : 'blank')
       );
 
       if (
@@ -553,15 +562,25 @@ public with sharing class JT_MetadataCreator {
     // Part 1: JSON deployment options
     // Format matches successful examples: Content-Disposition and Content-Type on separate lines
     // Using "json" as field name (matches successful curl examples and Ruby examples)
-    String jsonPart = '--' + boundary + crlf +
-      'Content-Disposition: form-data; name="json"' + crlf +
-      'Content-Type: application/json' + crlf + crlf +
-      deploymentOptionsJson + crlf;
+    String jsonPart =
+      '--' +
+      boundary +
+      crlf +
+      'Content-Disposition: form-data; name="json"' +
+      crlf +
+      'Content-Type: application/json' +
+      crlf +
+      crlf +
+      deploymentOptionsJson +
+      crlf;
 
     // Part 2: ZIP file
     // Using "upload" as field name (matches successful curl examples from Stack Overflow)
     // Order: Content-Disposition first, then Content-Type
-    String filePartHeader = '--' + boundary + crlf +
+    String filePartHeader =
+      '--' +
+      boundary +
+      crlf +
       'Content-Disposition: form-data; name="upload"; filename="deploy.zip"' +
       crlf +
       'Content-Type: application/zip' +
@@ -736,7 +755,8 @@ public with sharing class JT_MetadataCreator {
 
     // Calculate central directory offset
     // Sum of: package header + package data + destructive header + destructive data
-    Integer centralDirOffset = packageHeader.size() +
+    Integer centralDirOffset =
+      packageHeader.size() +
       packageBlob.size() +
       destructiveHeader.size() +
       destructiveBlob.size();
@@ -744,22 +764,22 @@ public with sharing class JT_MetadataCreator {
     System.debug(
       LoggingLevel.INFO,
       '📦 ZIP Structure: packageHeader=' +
-      packageHeader.size() +
-      ', packageData=' +
-      packageBlob.size() +
-      ', destructiveHeader=' +
-      destructiveHeader.size() +
-      ', destructiveData=' +
-      destructiveBlob.size() +
-      ', centralDirOffset=' +
-      centralDirOffset
+        packageHeader.size() +
+        ', packageData=' +
+        packageBlob.size() +
+        ', destructiveHeader=' +
+        destructiveHeader.size() +
+        ', destructiveData=' +
+        destructiveBlob.size() +
+        ', centralDirOffset=' +
+        centralDirOffset
     );
     System.debug(
       LoggingLevel.INFO,
       '📦 Offsets: packageOffset=' +
-      packageOffset +
-      ', destructiveOffset=' +
-      destructiveOffset
+        packageOffset +
+        ', destructiveOffset=' +
+        destructiveOffset
     );
 
     // Central directory
@@ -781,16 +801,12 @@ public with sharing class JT_MetadataCreator {
     System.debug(
       LoggingLevel.INFO,
       '📦 Central Directory: size=' +
-      centralDirSize +
-      ', offset=' +
-      centralDirOffset
+        centralDirSize +
+        ', offset=' +
+        centralDirOffset
     );
     zipParts.add(
-      createZipEndOfCentralDirectoryBlob(
-        2,
-        centralDirSize,
-        centralDirOffset
-      )
+      createZipEndOfCentralDirectoryBlob(2, centralDirSize, centralDirOffset)
     );
 
     // Combine all parts into final ZIP
@@ -800,11 +816,11 @@ public with sharing class JT_MetadataCreator {
       System.debug(
         LoggingLevel.INFO,
         '📦 Combining part ' +
-        i +
-        ': size=' +
-        zipParts[i].size() +
-        ', cumulative=' +
-        cumulativeSize
+          i +
+          ': size=' +
+          zipParts[i].size() +
+          ', cumulative=' +
+          cumulativeSize
       );
       finalZip = combineBlobs(finalZip, zipParts[i]);
       cumulativeSize += zipParts[i].size();
@@ -813,10 +829,10 @@ public with sharing class JT_MetadataCreator {
     System.debug(
       LoggingLevel.INFO,
       '📦 Final ZIP size: ' +
-      finalZip.size() +
-      ' bytes (expected: ' +
-      cumulativeSize +
-      ')'
+        finalZip.size() +
+        ' bytes (expected: ' +
+        cumulativeSize +
+        ')'
     );
 
     return finalZip;
@@ -902,10 +918,7 @@ public with sharing class JT_MetadataCreator {
     headerBytes.addAll(sizeBytes);
 
     // Filename length (little endian, 2 bytes)
-    List<Integer> nameLenBytes = intToLittleEndianBytes(
-      fileName.length(),
-      2
-    );
+    List<Integer> nameLenBytes = intToLittleEndianBytes(fileName.length(), 2);
     headerBytes.addAll(nameLenBytes);
 
     // Extra field length (0)
@@ -1245,7 +1258,9 @@ public with sharing class JT_MetadataCreator {
           configMap = (Map<String, Object>) deserialized;
         } else if (deserialized instanceof String) {
           // If it's a String, try to deserialize again (double-encoded case)
-          Object innerDeserialized = JSON.deserializeUntyped((String) deserialized);
+          Object innerDeserialized = JSON.deserializeUntyped(
+            (String) deserialized
+          );
           if (innerDeserialized instanceof Map<String, Object>) {
             configMap = (Map<String, Object>) innerDeserialized;
           } else {
@@ -1253,7 +1268,9 @@ public with sharing class JT_MetadataCreator {
               LoggingLevel.ERROR,
               String.format(
                 Label.JT_MetadataCreator_invalidJsonFormat,
-                new List<String>{ 'Expected Map but got: ' + String.valueOf(innerDeserialized) }
+                new List<String>{
+                  'Expected Map but got: ' + String.valueOf(innerDeserialized)
+                }
               )
             );
             return null;
@@ -1263,7 +1280,9 @@ public with sharing class JT_MetadataCreator {
             LoggingLevel.ERROR,
             String.format(
               Label.JT_MetadataCreator_invalidJsonFormat,
-              new List<String>{ 'Expected Map but got: ' + String.valueOf(deserialized) }
+              new List<String>{
+                'Expected Map but got: ' + String.valueOf(deserialized)
+              }
             )
           );
           return null;
@@ -1520,7 +1539,10 @@ public with sharing class JT_MetadataCreator {
    * @param result Result object to update
    * @param e Exception that occurred
    **/
-  private static void setErrorResult(MetadataCreationResult result, Exception e) {
+  private static void setErrorResult(
+    MetadataCreationResult result,
+    Exception e
+  ) {
     String errorMsg = e.getMessage();
     if (String.isBlank(errorMsg)) {
       errorMsg = String.format(
@@ -1645,12 +1667,20 @@ public with sharing class JT_MetadataCreator {
         );
 
         // Extract deployResult from response
-        Map<String, Object> deployResult = (Map<String, Object>) responseMap.get('deployResult');
+        Map<String, Object> deployResult = (Map<String, Object>) responseMap.get(
+          'deployResult'
+        );
 
         // Extract status, done, and success from deployResult
-        String deployStatus = deployResult != null ? (String) deployResult.get('status') : null;
-        Boolean done = deployResult != null ? (Boolean) deployResult.get('done') : null;
-        Boolean success = deployResult != null ? (Boolean) deployResult.get('success') : null;
+        String deployStatus = deployResult != null
+          ? (String) deployResult.get('status')
+          : null;
+        Boolean done = deployResult != null
+          ? (Boolean) deployResult.get('done')
+          : null;
+        Boolean success = deployResult != null
+          ? (Boolean) deployResult.get('success')
+          : null;
 
         status.put('status', deployStatus != null ? deployStatus : 'UNKNOWN');
         status.put('done', done != null ? done : false);
@@ -1672,7 +1702,6 @@ public with sharing class JT_MetadataCreator {
                 status.put('error', problem);
                 status.put('fullName', firstFailure.get('fullName'));
               }
-
             }
             String errorMessage = (String) deployResult.get('errorMessage');
             if (String.isNotBlank(errorMessage)) {
@@ -1682,9 +1711,13 @@ public with sharing class JT_MetadataCreator {
         } else if (done != null && done && success != null && success) {
           // Deployment succeeded
           if (deployResult != null) {
-            Map<String, Object> details = (Map<String, Object>) deployResult.get('details');
+            Map<String, Object> details = (Map<String, Object>) deployResult.get(
+              'details'
+            );
             if (details != null) {
-              List<Object> componentSuccesses = (List<Object>) details.get('componentSuccesses');
+              List<Object> componentSuccesses = (List<Object>) details.get(
+                'componentSuccesses'
+              );
               if (componentSuccesses != null) {
                 status.put('componentsDeployed', componentSuccesses.size());
               }
@@ -1693,13 +1726,17 @@ public with sharing class JT_MetadataCreator {
         }
       } else {
         status.put('status', 'ERROR');
-        status.put('error', 'Failed to check deployment status: ' + response.getBody());
+        status.put(
+          'error',
+          'Failed to check deployment status: ' + response.getBody()
+        );
       }
     } catch (Exception e) {
       status.put('status', 'ERROR');
       String errorMsg = e.getMessage();
       if (String.isBlank(errorMsg)) {
-        errorMsg = 'Unexpected error checking deployment status: ' + e.getTypeName();
+        errorMsg =
+          'Unexpected error checking deployment status: ' + e.getTypeName();
       }
       status.put('error', errorMsg);
 

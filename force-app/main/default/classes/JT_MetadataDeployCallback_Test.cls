@@ -52,7 +52,11 @@ private class JT_MetadataDeployCallback_Test {
         mdContainer,
         callback
       );
-      System.assertNotEquals(null, deployRequestId, 'Deployment should be enqueued');
+      System.assertNotEquals(
+        null,
+        deployRequestId,
+        'Deployment should be enqueued'
+      );
     } catch (Exception e) {
       // Deployment may fail in test context, but callback instantiation should work
       System.assert(true, 'Callback can be used in deployment context');

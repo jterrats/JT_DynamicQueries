@@ -172,7 +172,9 @@ private class JT_SetupWizardController_Test {
     String successResponse = JSON.serialize(
       new Map<String, Object>{
         'size' => 1,
-        'records' => new List<Object>{ new Map<String, Object>{ 'Id' => '01p000000000000AAA' } }
+        'records' => new List<Object>{
+          new Map<String, Object>{ 'Id' => '01p000000000000AAA' }
+        }
       }
     );
 
@@ -185,7 +187,11 @@ private class JT_SetupWizardController_Test {
     Boolean connectionWorks = JT_SetupWizardController.testToolingAPIConnection();
     Test.stopTest();
 
-    System.assertEquals(true, connectionWorks, 'Should return true for HTTP 200');
+    System.assertEquals(
+      true,
+      connectionWorks,
+      'Should return true for HTTP 200'
+    );
   }
 
   /**
@@ -210,7 +216,11 @@ private class JT_SetupWizardController_Test {
     Boolean connectionWorks = JT_SetupWizardController.testToolingAPIConnection();
     Test.stopTest();
 
-    System.assertEquals(false, connectionWorks, 'Should return false for HTTP error');
+    System.assertEquals(
+      false,
+      connectionWorks,
+      'Should return false for HTTP error'
+    );
   }
 
   /**
@@ -228,7 +238,11 @@ private class JT_SetupWizardController_Test {
     Boolean connectionWorks = JT_SetupWizardController.testToolingAPIConnection();
     Test.stopTest();
 
-    System.assertEquals(false, connectionWorks, 'Should return false for server error');
+    System.assertEquals(
+      false,
+      connectionWorks,
+      'Should return false for server error'
+    );
   }
 
   /**
@@ -243,7 +257,11 @@ private class JT_SetupWizardController_Test {
     Boolean connectionWorks = JT_SetupWizardController.testToolingAPIConnection();
     Test.stopTest();
 
-    System.assertEquals(false, connectionWorks, 'Should return false on callout exception');
+    System.assertEquals(
+      false,
+      connectionWorks,
+      'Should return false on callout exception'
+    );
   }
 
   /**
@@ -266,8 +284,16 @@ private class JT_SetupWizardController_Test {
     System.assertEquals(1, status.steps.size(), 'Should have one step');
 
     JT_SetupWizardController.SetupStepStatus toolingStep = status.steps[0];
-    System.assertEquals(false, toolingStep.isComplete, 'Step should be incomplete');
-    System.assertEquals(false, status.allStepsComplete, 'All steps should not be complete');
+    System.assertEquals(
+      false,
+      toolingStep.isComplete,
+      'Step should be incomplete'
+    );
+    System.assertEquals(
+      false,
+      status.allStepsComplete,
+      'All steps should not be complete'
+    );
     System.assertNotEquals(
       null,
       toolingStep.statusMessage,

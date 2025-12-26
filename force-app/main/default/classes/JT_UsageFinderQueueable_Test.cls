@@ -383,7 +383,8 @@ private class JT_UsageFinderQueueable_Test {
   @IsTest
   static void testQueueableExecutionWithEmailZeroResults() {
     // Use a config name that likely won't be found
-    String configDevName = 'NonExistentConfig_' + String.valueOf(Math.random()).substring(2, 10);
+    String configDevName =
+      'NonExistentConfig_' + String.valueOf(Math.random()).substring(2, 10);
     String testEmail = 'test@example.com';
 
     Test.startTest();

@@ -318,7 +318,9 @@ public inherited sharing class JT_DataSelector {
     Map<String, Object> validatedBindings = new Map<String, Object>();
 
     // Decode HTML entities that may come from metadata (e.g., &gt;= becomes >=, &lt;= becomes <=)
-    String decodedQuery = query.replace('&gt;', '>').replace('&lt;', '<').replace('&amp;', '&');
+    String decodedQuery = query.replace('&gt;', '>')
+      .replace('&lt;', '<')
+      .replace('&amp;', '&');
     String normalizedQuery = decodedQuery.toLowerCase();
 
     for (String key : bindings.keySet()) {
@@ -328,10 +330,18 @@ public inherited sharing class JT_DataSelector {
 
       // Check if used with IN/NOT IN/INCLUDES/EXCLUDES (requires List)
       // Allow for optional spaces around the colon: " in :param", " in:param", " in : param"
-      Pattern inPattern = Pattern.compile('\\bin\\s*' + Pattern.quote(bindingPattern) + '\\b');
-      Pattern notInPattern = Pattern.compile('\\bnot\\s+in\\s*' + Pattern.quote(bindingPattern) + '\\b');
-      Pattern includesPattern = Pattern.compile('\\bincludes\\s*' + Pattern.quote(bindingPattern) + '\\b');
-      Pattern excludesPattern = Pattern.compile('\\bexcludes\\s*' + Pattern.quote(bindingPattern) + '\\b');
+      Pattern inPattern = Pattern.compile(
+        '\\bin\\s*' + Pattern.quote(bindingPattern) + '\\b'
+      );
+      Pattern notInPattern = Pattern.compile(
+        '\\bnot\\s+in\\s*' + Pattern.quote(bindingPattern) + '\\b'
+      );
+      Pattern includesPattern = Pattern.compile(
+        '\\bincludes\\s*' + Pattern.quote(bindingPattern) + '\\b'
+      );
+      Pattern excludesPattern = Pattern.compile(
+        '\\bexcludes\\s*' + Pattern.quote(bindingPattern) + '\\b'
+      );
 
       Boolean requiresList =
         inPattern.matcher(normalizedQuery).find() ||
@@ -355,10 +365,18 @@ public inherited sharing class JT_DataSelector {
         );
       } else {
         // Check if used in numeric comparison operators (>=, <=, >, <, =, !=)
-        Object convertedValue = convertNumericBindingValue(decodedQuery, key, value);
+        Object convertedValue = convertNumericBindingValue(
+          decodedQuery,
+          key,
+          value
+        );
 
         // Check for date/datetime comparisons and convert ISO strings
-        convertedValue = convertDateBindingValue(decodedQuery, key, convertedValue);
+        convertedValue = convertDateBindingValue(
+          decodedQuery,
+          key,
+          convertedValue
+        );
 
         validatedBindings.put(key, convertedValue);
       }
@@ -399,7 +417,9 @@ public inherited sharing class JT_DataSelector {
     String escapedPattern = Pattern.quote(bindingPattern);
 
     // Pattern 1: Field >= :binding or Field <= :binding or Field > :binding or Field < :binding
-    Pattern pattern1 = Pattern.compile('(?i)(?s)[a-z0-9_]+\\s+[>=<]+\\s*' + escapedPattern + '\\b');
+    Pattern pattern1 = Pattern.compile(
+      '(?i)(?s)[a-z0-9_]+\\s+[>=<]+\\s*' + escapedPattern + '\\b'
+    );
     Matcher matcher1 = pattern1.matcher(normalizedQuery);
     if (matcher1.find()) {
       isNumericComparison = true;
@@ -407,7 +427,9 @@ public inherited sharing class JT_DataSelector {
 
     // Pattern 2: :binding >= Field or :binding <= Field or :binding > Field or :binding < Field
     if (!isNumericComparison) {
-      Pattern pattern2 = Pattern.compile('(?i)(?s)\\b' + escapedPattern + '\\s*[>=<]+\\s+[a-z0-9_]+');
+      Pattern pattern2 = Pattern.compile(
+        '(?i)(?s)\\b' + escapedPattern + '\\s*[>=<]+\\s+[a-z0-9_]+'
+      );
       Matcher matcher2 = pattern2.matcher(normalizedQuery);
       if (matcher2.find()) {
         isNumericComparison = true;
@@ -416,7 +438,13 @@ public inherited sharing class JT_DataSelector {
 
     // Pattern 3: Field = :binding or Field != :binding (only if value is numeric)
     if (!isNumericComparison) {
-      Pattern pattern3 = Pattern.compile('(?i)(?s)[a-z0-9_]+\\s*[=!]+=\\s*' + escapedPattern + '\\b|\\b' + escapedPattern + '\\s*[=!]+=\\s+[a-z0-9_]+');
+      Pattern pattern3 = Pattern.compile(
+        '(?i)(?s)[a-z0-9_]+\\s*[=!]+=\\s*' +
+          escapedPattern +
+          '\\b|\\b' +
+          escapedPattern +
+          '\\s*[=!]+=\\s+[a-z0-9_]+'
+      );
       Matcher matcher3 = pattern3.matcher(normalizedQuery);
       if (matcher3.find()) {
         // Check if value is numeric (Decimal or numeric String)
@@ -497,7 +525,10 @@ public inherited sharing class JT_DataSelector {
    * @return Boolean True if the binding is likely used with an Integer field
    */
   @TestVisible
-  private static Boolean isIntegerFieldBinding(String query, String bindingKey) {
+  private static Boolean isIntegerFieldBinding(
+    String query,
+    String bindingKey
+  ) {
     String bindingPattern = ':' + bindingKey;
     String normalizedQuery = query.toLowerCase();
     String escapedPattern = Pattern.quote(bindingPattern);
@@ -515,7 +546,17 @@ public inherited sharing class JT_DataSelector {
     // Check if binding is used with any Integer field
     for (String fieldName : integerFieldNames) {
       // Pattern: fieldName >= :binding or fieldName <= :binding, etc.
-      Pattern pattern = Pattern.compile('(?i)(?s)\\b' + fieldName + '\\s+[>=<]+\\s*' + escapedPattern + '\\b|\\b' + escapedPattern + '\\s*[>=<]+\\s+' + fieldName + '\\b');
+      Pattern pattern = Pattern.compile(
+        '(?i)(?s)\\b' +
+          fieldName +
+          '\\s+[>=<]+\\s*' +
+          escapedPattern +
+          '\\b|\\b' +
+          escapedPattern +
+          '\\s*[>=<]+\\s+' +
+          fieldName +
+          '\\b'
+      );
       Matcher matcher = pattern.matcher(normalizedQuery);
       if (matcher.find()) {
         return true;
@@ -579,7 +620,13 @@ public inherited sharing class JT_DataSelector {
         return Date.valueOf(datePart);
       }
     } catch (Exception e) {
-      System.debug(LoggingLevel.WARN, 'Failed to parse date/datetime string "' + stringValue + '": ' + e.getMessage());
+      System.debug(
+        LoggingLevel.WARN,
+        'Failed to parse date/datetime string "' +
+          stringValue +
+          '": ' +
+          e.getMessage()
+      );
       return value; // Return as-is if parsing fails
     }
 
@@ -611,7 +658,17 @@ public inherited sharing class JT_DataSelector {
 
     // Check if binding is used with any Date field
     for (String fieldName : dateFieldNames) {
-      Pattern pattern = Pattern.compile('(?i)(?s)\\b' + fieldName + '\\s*[=!<>]+\\s*' + escapedPattern + '\\b|\\b' + escapedPattern + '\\s*[=!<>]+\\s+' + fieldName + '\\b');
+      Pattern pattern = Pattern.compile(
+        '(?i)(?s)\\b' +
+          fieldName +
+          '\\s*[=!<>]+\\s*' +
+          escapedPattern +
+          '\\b|\\b' +
+          escapedPattern +
+          '\\s*[=!<>]+\\s+' +
+          fieldName +
+          '\\b'
+      );
       Matcher matcher = pattern.matcher(normalizedQuery);
       if (matcher.find()) {
         return true;
@@ -629,7 +686,10 @@ public inherited sharing class JT_DataSelector {
    * @return Boolean True if the binding is likely used with a Datetime field
    */
   @TestVisible
-  private static Boolean isDatetimeFieldBinding(String query, String bindingKey) {
+  private static Boolean isDatetimeFieldBinding(
+    String query,
+    String bindingKey
+  ) {
     String bindingPattern = ':' + bindingKey;
     String normalizedQuery = query.toLowerCase();
     String escapedPattern = Pattern.quote(bindingPattern);
@@ -648,7 +708,17 @@ public inherited sharing class JT_DataSelector {
 
     // Check if binding is used with any Datetime field
     for (String fieldName : datetimeFieldNames) {
-      Pattern pattern = Pattern.compile('(?i)(?s)\\b' + fieldName + '\\s*[=!<>]+\\s*' + escapedPattern + '\\b|\\b' + escapedPattern + '\\s*[=!<>]+\\s+' + fieldName + '\\b');
+      Pattern pattern = Pattern.compile(
+        '(?i)(?s)\\b' +
+          fieldName +
+          '\\s*[=!<>]+\\s*' +
+          escapedPattern +
+          '\\b|\\b' +
+          escapedPattern +
+          '\\s*[=!<>]+\\s+' +
+          fieldName +
+          '\\b'
+      );
       Matcher matcher = pattern.matcher(normalizedQuery);
       if (matcher.find()) {
         return true;
@@ -960,7 +1030,8 @@ public inherited sharing class JT_DataSelector {
         shouldRemove = true;
       } else {
         Object value = bindings.get(bindingKey);
-        Boolean isEmpty = value == null ||
+        Boolean isEmpty =
+          value == null ||
           (value instanceof String && String.isBlank((String) value)) ||
           (value instanceof List<Object> && ((List<Object>) value).isEmpty());
 
@@ -984,7 +1055,10 @@ public inherited sharing class JT_DataSelector {
    * @return String Query with condition removed
    */
   @TestVisible
-  private static String removeConditionForBinding(String query, String bindingKey) {
+  private static String removeConditionForBinding(
+    String query,
+    String bindingKey
+  ) {
     if (String.isBlank(query) || String.isBlank(bindingKey)) {
       return query;
     }
@@ -998,7 +1072,8 @@ public inherited sharing class JT_DataSelector {
     // But don't capture OR if it's part of ORDER BY
     Pattern conditionPattern = Pattern.compile(
       '(?i)(?s)(?:\\s+(?:AND|OR))?\\s+[a-z0-9_]+\\s+(?:IN|NOT\\s+IN|INCLUDES|EXCLUDES|[=<>!]+)\\s*' +
-      Pattern.quote(bindingPattern) + '\\b(?=\\s+(?:AND|OR|ORDER|LIMIT|GROUP|HAVING|$)|$)'
+        Pattern.quote(bindingPattern) +
+        '\\b(?=\\s+(?:AND|OR|ORDER|LIMIT|GROUP|HAVING|$)|$)'
     );
 
     Matcher matcher = conditionPattern.matcher(result);
@@ -1007,18 +1082,26 @@ public inherited sharing class JT_DataSelector {
 
       // Check if there's AND/OR after the binding that we need to remove
       String afterMatch = result.substring(matcher.end());
-      Pattern trailingAndOrPattern = Pattern.compile('(?i)^\\s+(AND|OR)\\s+(?![a-z])');
+      Pattern trailingAndOrPattern = Pattern.compile(
+        '(?i)^\\s+(AND|OR)\\s+(?![a-z])'
+      );
       Matcher trailingMatcher = trailingAndOrPattern.matcher(afterMatch);
       Integer additionalLength = 0;
       if (trailingMatcher.find()) {
         String trailing = trailingMatcher.group(0);
         // Only remove trailing AND/OR if it's not followed by ORDER, LIMIT, etc.
-        if (!Pattern.compile('(?i)^\\s+(AND|OR)\\s+(ORDER|LIMIT|GROUP|HAVING)').matcher(afterMatch).find()) {
+        if (
+          !Pattern.compile('(?i)^\\s+(AND|OR)\\s+(ORDER|LIMIT|GROUP|HAVING)')
+            .matcher(afterMatch)
+            .find()
+        ) {
           additionalLength = trailing.length();
         }
       }
 
-      result = result.substring(0, matcher.start()) + result.substring(matcher.end() + additionalLength);
+      result =
+        result.substring(0, matcher.start()) +
+        result.substring(matcher.end() + additionalLength);
 
       // Clean up any double AND/OR that might result
       result = result.replaceAll('(?i)\\s+AND\\s+AND\\s+', ' AND ');
@@ -1031,7 +1114,10 @@ public inherited sharing class JT_DataSelector {
       result = result.replaceAll('(?i)\\s+WHERE\\s*$', '');
 
       // Clean up trailing AND/OR before ORDER BY, LIMIT, etc.
-      result = result.replaceAll('(?i)\\s+(?:AND|OR)\\s+(?=ORDER\\s+BY|LIMIT|GROUP\\s+BY|HAVING|$)', ' ');
+      result = result.replaceAll(
+        '(?i)\\s+(?:AND|OR)\\s+(?=ORDER\\s+BY|LIMIT|GROUP\\s+BY|HAVING|$)',
+        ' '
+      );
     }
 
     return result;
@@ -1196,11 +1282,7 @@ public inherited sharing class JT_DataSelector {
     // Use appropriate access level
     AccessLevel accessMode = getAccessLevel(enforceSecurity);
 
-    return Database.queryWithBinds(
-      dynamicQuery,
-      filteredBindings,
-      accessMode
-    );
+    return Database.queryWithBinds(dynamicQuery, filteredBindings, accessMode);
   }
 
   /**
@@ -1237,7 +1319,10 @@ public inherited sharing class JT_DataSelector {
 
     // Merge config bindings with custom bindings
     Map<String, Object> configBindings = getConfigBindings(config);
-    Map<String, Object> mergedBindings = mergeBindings(configBindings, bindings);
+    Map<String, Object> mergedBindings = mergeBindings(
+      configBindings,
+      bindings
+    );
 
     return countRecordsInternal(
       config.JT_BaseQuery__c,
@@ -1342,7 +1427,10 @@ public inherited sharing class JT_DataSelector {
 
     // Merge config bindings with custom bindings
     Map<String, Object> configBindings = getConfigBindings(config);
-    Map<String, Object> mergedBindings = mergeBindings(configBindings, bindings);
+    Map<String, Object> mergedBindings = mergeBindings(
+      configBindings,
+      bindings
+    );
 
     // Set threshold (default 50,000)
     Integer effectiveThreshold = threshold != null &&

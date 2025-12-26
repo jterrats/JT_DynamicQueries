@@ -218,7 +218,9 @@ public with sharing class JT_QueryViewerController {
         baseQuery = queryOverride;
       } else {
         // Get the configuration to modify query with LIMIT
-        JT_DynamicQueryConfiguration__mdt config = getConfigWithObjectName(devName);
+        JT_DynamicQueryConfiguration__mdt config = getConfigWithObjectName(
+          devName
+        );
         baseQuery = config.JT_BaseQuery__c;
       }
 
@@ -524,7 +526,9 @@ public with sharing class JT_QueryViewerController {
       Map<String, Object> bindings = deserializeBindings(bindingsJson);
 
       // Get config
-      JT_DynamicQueryConfiguration__mdt config = getConfigWithAllFields(devName);
+      JT_DynamicQueryConfiguration__mdt config = getConfigWithAllFields(
+        devName
+      );
 
       // Merge bindings
       Map<String, Object> configBindings = String.isNotBlank(
@@ -552,30 +556,25 @@ public with sharing class JT_QueryViewerController {
       // Build COUNT query (replace SELECT ... FROM with SELECT COUNT() FROM)
       // Use [\s\S]*? to match across multiple lines (including newlines)
       // Decode HTML entities that may come from metadata
-      String baseQuery = config.JT_BaseQuery__c.replace('&gt;', '>').replace('&lt;', '<').replace('&amp;', '&');
+      String baseQuery = config.JT_BaseQuery__c.replace('&gt;', '>')
+        .replace('&lt;', '<')
+        .replace('&amp;', '&');
       String countQuery = baseQuery
         .replaceAll('(?i)SELECT[\\s\\S]+?FROM', 'SELECT COUNT() FROM')
         .replaceAll('(?i)ORDER\\s+BY[\\s\\S]*$', '') // Remove ORDER BY
         .replaceAll('(?i)LIMIT\\s+\\d+[\\s\\S]*$', ''); // Remove LIMIT
-
 
       // Execute count query with timeout protection
       Integer estimatedCount = 0;
       String finalCountQuery = null;
       try {
         // Replace bind variables in COUNT query (countQuery() doesn't support bindings)
-        finalCountQuery = replaceBindVariables(
-          countQuery,
-          countBindings
-        );
+        finalCountQuery = replaceBindVariables(countQuery, countBindings);
 
         // Remove Long Text Area field conditions that cannot be filtered in COUNT queries
         finalCountQuery = removeLongTextAreaConditions(finalCountQuery);
 
-        System.debug(
-          LoggingLevel.DEBUG,
-          'COUNT query: ' + finalCountQuery
-        );
+        System.debug(LoggingLevel.DEBUG, 'COUNT query: ' + finalCountQuery);
         System.debug(
           LoggingLevel.DEBUG,
           'COUNT bindings: ' + JSON.serialize(countBindings)
@@ -584,16 +583,17 @@ public with sharing class JT_QueryViewerController {
         // Use countQuery() instead of queryWithBinds for COUNT queries
         estimatedCount = Database.countQuery(finalCountQuery);
 
-        System.debug(
-          LoggingLevel.DEBUG,
-          'COUNT result: ' + estimatedCount
-        );
+        System.debug(LoggingLevel.DEBUG, 'COUNT result: ' + estimatedCount);
       } catch (Exception e) {
         // If count fails, check if it's a Long Text Area field error and retry without it
-        if (e.getMessage() != null && e.getMessage().contains('can not be filtered in a query call')) {
+        if (
+          e.getMessage() != null &&
+          e.getMessage().contains('can not be filtered in a query call')
+        ) {
           System.debug(
             LoggingLevel.WARN,
-            'COUNT query failed due to unfilterable field, retrying without Long Text Area conditions: ' + e.getMessage()
+            'COUNT query failed due to unfilterable field, retrying without Long Text Area conditions: ' +
+            e.getMessage()
           );
           try {
             // Remove Long Text Area conditions and retry
@@ -601,7 +601,8 @@ public with sharing class JT_QueryViewerController {
             estimatedCount = Database.countQuery(finalCountQuery);
             System.debug(
               LoggingLevel.DEBUG,
-              'COUNT result after removing Long Text Area conditions: ' + estimatedCount
+              'COUNT result after removing Long Text Area conditions: ' +
+              estimatedCount
             );
           } catch (Exception retryException) {
             // If retry also fails, log and assume risky
@@ -619,7 +620,8 @@ public with sharing class JT_QueryViewerController {
           );
           System.debug(
             LoggingLevel.ERROR,
-            'COUNT query that failed: ' + (finalCountQuery != null ? finalCountQuery : 'null')
+            'COUNT query that failed: ' +
+            (finalCountQuery != null ? finalCountQuery : 'null')
           );
           System.debug(
             LoggingLevel.ERROR,
@@ -705,7 +707,8 @@ public with sharing class JT_QueryViewerController {
       } else {
         Object value = bindings.get(bindingKey);
         // Check if value is empty/null
-        Boolean isEmpty = value == null ||
+        Boolean isEmpty =
+          value == null ||
           (value instanceof String && String.isBlank((String) value)) ||
           (value instanceof List<Object> && ((List<Object>) value).isEmpty());
 
@@ -741,7 +744,11 @@ public with sharing class JT_QueryViewerController {
           }
         }
 
-        final Object convertedValue = convertBindingValueForQuery(result, key, value);
+        final Object convertedValue = convertBindingValueForQuery(
+          result,
+          key,
+          value
+        );
         final String escapedValue = escapeBindingValue(convertedValue);
 
         result = result.replaceAll(':' + key + '\\b', escapedValue);
@@ -785,7 +792,9 @@ public with sharing class JT_QueryViewerController {
       // Match field name case-insensitively and capture the entire condition including quoted values
       // This handles both bindings (:binding) and already-replaced values ('value')
       Pattern conditionPattern = Pattern.compile(
-        '(?i)(?s)(?:\\s+(?:AND|OR))?\\s+' + Pattern.quote(fieldName) + '\\s+(?:LIKE|IN|NOT\\s+IN|INCLUDES|EXCLUDES|[=<>!]+)\\s+(?:\'[^\']*\'|\\([^)]+\\)|:[a-zA-Z0-9_]+|\\S+)(?:\\s+(?:AND|OR))?(?=\\s+(?:AND|OR|ORDER|LIMIT|GROUP|HAVING|$)|$)'
+        '(?i)(?s)(?:\\s+(?:AND|OR))?\\s+' +
+          Pattern.quote(fieldName) +
+          '\\s+(?:LIKE|IN|NOT\\s+IN|INCLUDES|EXCLUDES|[=<>!]+)\\s+(?:\'[^\']*\'|\\([^)]+\\)|:[a-zA-Z0-9_]+|\\S+)(?:\\s+(?:AND|OR))?(?=\\s+(?:AND|OR|ORDER|LIMIT|GROUP|HAVING|$)|$)'
       );
 
       Matcher matcher = conditionPattern.matcher(result);
@@ -794,18 +803,26 @@ public with sharing class JT_QueryViewerController {
 
         // Check if there's AND/OR after the condition that we need to remove
         String afterMatch = result.substring(matcher.end());
-        Pattern trailingAndOrPattern = Pattern.compile('(?i)^\\s+(AND|OR)\\s+(?![a-z])');
+        Pattern trailingAndOrPattern = Pattern.compile(
+          '(?i)^\\s+(AND|OR)\\s+(?![a-z])'
+        );
         Matcher trailingMatcher = trailingAndOrPattern.matcher(afterMatch);
         Integer additionalLength = 0;
         if (trailingMatcher.find()) {
           String trailing = trailingMatcher.group(0);
           // Only remove trailing AND/OR if it's not followed by ORDER, LIMIT, etc.
-          if (!Pattern.compile('(?i)^\\s+(AND|OR)\\s+(ORDER|LIMIT|GROUP|HAVING)').matcher(afterMatch).find()) {
+          if (
+            !Pattern.compile('(?i)^\\s+(AND|OR)\\s+(ORDER|LIMIT|GROUP|HAVING)')
+              .matcher(afterMatch)
+              .find()
+          ) {
             additionalLength = trailing.length();
           }
         }
 
-        result = result.substring(0, matcher.start()) + result.substring(matcher.end() + additionalLength);
+        result =
+          result.substring(0, matcher.start()) +
+          result.substring(matcher.end() + additionalLength);
 
         // Clean up any double AND/OR that might result
         result = result.replaceAll('(?i)\\s+AND\\s+AND\\s+', ' AND ');
@@ -814,11 +831,17 @@ public with sharing class JT_QueryViewerController {
         result = result.replaceAll('(?i)\\s+OR\\s+AND\\s+', ' AND ');
 
         // Clean up WHERE with nothing after it or with AND/OR immediately after
-        result = result.replaceAll('(?i)\\s+WHERE\\s+(?:AND|OR)\\s+', ' WHERE ');
+        result = result.replaceAll(
+          '(?i)\\s+WHERE\\s+(?:AND|OR)\\s+',
+          ' WHERE '
+        );
         result = result.replaceAll('(?i)\\s+WHERE\\s*$', '');
 
         // Clean up trailing AND/OR before ORDER BY, LIMIT, etc.
-        result = result.replaceAll('(?i)\\s+(?:AND|OR)\\s+(?=ORDER\\s+BY|LIMIT|GROUP\\s+BY|HAVING|$)', ' ');
+        result = result.replaceAll(
+          '(?i)\\s+(?:AND|OR)\\s+(?=ORDER\\s+BY|LIMIT|GROUP\\s+BY|HAVING|$)',
+          ' '
+        );
       }
     }
 
@@ -832,7 +855,10 @@ public with sharing class JT_QueryViewerController {
    * @return String Query with condition removed
    */
   @TestVisible
-  private static String removeConditionForBinding(String query, String bindingKey) {
+  private static String removeConditionForBinding(
+    String query,
+    String bindingKey
+  ) {
     if (String.isBlank(query) || String.isBlank(bindingKey)) {
       return query;
     }
@@ -846,7 +872,8 @@ public with sharing class JT_QueryViewerController {
     // But don't capture OR if it's part of ORDER BY
     Pattern conditionPattern = Pattern.compile(
       '(?i)(?s)(?:\\s+(?:AND|OR))?\\s+[a-z0-9_]+\\s+(?:IN|NOT\\s+IN|INCLUDES|EXCLUDES|[=<>!]+)\\s*' +
-      Pattern.quote(bindingPattern) + '\\b(?=\\s+(?:AND|OR|ORDER|LIMIT|GROUP|HAVING|$)|$)'
+        Pattern.quote(bindingPattern) +
+        '\\b(?=\\s+(?:AND|OR|ORDER|LIMIT|GROUP|HAVING|$)|$)'
     );
 
     Matcher matcher = conditionPattern.matcher(result);
@@ -855,18 +882,26 @@ public with sharing class JT_QueryViewerController {
 
       // Check if there's AND/OR after the binding that we need to remove
       String afterMatch = result.substring(matcher.end());
-      Pattern trailingAndOrPattern = Pattern.compile('(?i)^\\s+(AND|OR)\\s+(?![a-z])');
+      Pattern trailingAndOrPattern = Pattern.compile(
+        '(?i)^\\s+(AND|OR)\\s+(?![a-z])'
+      );
       Matcher trailingMatcher = trailingAndOrPattern.matcher(afterMatch);
       Integer additionalLength = 0;
       if (trailingMatcher.find()) {
         String trailing = trailingMatcher.group(0);
         // Only remove trailing AND/OR if it's not followed by ORDER, LIMIT, etc.
-        if (!Pattern.compile('(?i)^\\s+(AND|OR)\\s+(ORDER|LIMIT|GROUP|HAVING)').matcher(afterMatch).find()) {
+        if (
+          !Pattern.compile('(?i)^\\s+(AND|OR)\\s+(ORDER|LIMIT|GROUP|HAVING)')
+            .matcher(afterMatch)
+            .find()
+        ) {
           additionalLength = trailing.length();
         }
       }
 
-      result = result.substring(0, matcher.start()) + result.substring(matcher.end() + additionalLength);
+      result =
+        result.substring(0, matcher.start()) +
+        result.substring(matcher.end() + additionalLength);
 
       // Clean up any double AND/OR that might result
       result = result.replaceAll('(?i)\\s+AND\\s+AND\\s+', ' AND ');
@@ -879,7 +914,10 @@ public with sharing class JT_QueryViewerController {
       result = result.replaceAll('(?i)\\s+WHERE\\s*$', '');
 
       // Clean up trailing AND/OR before ORDER BY, LIMIT, etc.
-      result = result.replaceAll('(?i)\\s+(?:AND|OR)\\s+(?=ORDER\\s+BY|LIMIT|GROUP\\s+BY|HAVING|$)', ' ');
+      result = result.replaceAll(
+        '(?i)\\s+(?:AND|OR)\\s+(?=ORDER\\s+BY|LIMIT|GROUP\\s+BY|HAVING|$)',
+        ' '
+      );
     }
 
     return result;
@@ -938,21 +976,27 @@ public with sharing class JT_QueryViewerController {
     }
 
     // Decode HTML entities that may come from metadata (e.g., &gt;= becomes >=, &lt;= becomes <=)
-    String decodedQuery = query.replace('&gt;', '>').replace('&lt;', '<').replace('&amp;', '&');
+    String decodedQuery = query.replace('&gt;', '>')
+      .replace('&lt;', '<')
+      .replace('&amp;', '&');
     String normalizedQuery = decodedQuery.toLowerCase();
     String bindingPattern = ':' + bindingKey;
     String escapedPattern = Pattern.quote(bindingPattern);
 
     // Check if binding is used in numeric comparison operators
     Boolean isNumericComparison = false;
-    Pattern pattern1 = Pattern.compile('(?i)(?s)[a-z0-9_]+\\s+[>=<]+\\s*' + escapedPattern + '\\b');
+    Pattern pattern1 = Pattern.compile(
+      '(?i)(?s)[a-z0-9_]+\\s+[>=<]+\\s*' + escapedPattern + '\\b'
+    );
     Matcher matcher1 = pattern1.matcher(normalizedQuery);
     if (matcher1.find()) {
       isNumericComparison = true;
     }
 
     if (!isNumericComparison) {
-      Pattern pattern2 = Pattern.compile('(?i)(?s)\\b' + escapedPattern + '\\s*[>=<]+\\s+[a-z0-9_]+');
+      Pattern pattern2 = Pattern.compile(
+        '(?i)(?s)\\b' + escapedPattern + '\\s*[>=<]+\\s+[a-z0-9_]+'
+      );
       Matcher matcher2 = pattern2.matcher(normalizedQuery);
       if (matcher2.find()) {
         isNumericComparison = true;
@@ -961,14 +1005,18 @@ public with sharing class JT_QueryViewerController {
 
     // Check for boolean comparisons first (before numeric, to avoid false positives)
     Boolean isBooleanComparison = false;
-    Pattern boolPattern1 = Pattern.compile('[a-z0-9_]+\\s*[=!]?=\\s*' + Pattern.quote(bindingPattern) + '\\b');
+    Pattern boolPattern1 = Pattern.compile(
+      '[a-z0-9_]+\\s*[=!]?=\\s*' + Pattern.quote(bindingPattern) + '\\b'
+    );
     Matcher boolMatcher1 = boolPattern1.matcher(normalizedQuery);
     if (boolMatcher1.find()) {
       isBooleanComparison = true;
     }
 
     if (!isBooleanComparison) {
-      Pattern boolPattern2 = Pattern.compile('\\b' + Pattern.quote(bindingPattern) + '\\s*[=!]?=\\s*[a-z0-9_]+');
+      Pattern boolPattern2 = Pattern.compile(
+        '\\b' + Pattern.quote(bindingPattern) + '\\s*[=!]?=\\s*[a-z0-9_]+'
+      );
       Matcher boolMatcher2 = boolPattern2.matcher(normalizedQuery);
       if (boolMatcher2.find()) {
         isBooleanComparison = true;
@@ -992,7 +1040,13 @@ public with sharing class JT_QueryViewerController {
     }
 
     if (!isNumericComparison) {
-      Pattern pattern3 = Pattern.compile('(?i)(?s)[a-z0-9_]+\\s*[=!]+=\\s*' + escapedPattern + '\\b|\\b' + escapedPattern + '\\s*[=!]+=\\s+[a-z0-9_]+');
+      Pattern pattern3 = Pattern.compile(
+        '(?i)(?s)[a-z0-9_]+\\s*[=!]+=\\s*' +
+          escapedPattern +
+          '\\b|\\b' +
+          escapedPattern +
+          '\\s*[=!]+=\\s+[a-z0-9_]+'
+      );
       Matcher matcher3 = pattern3.matcher(normalizedQuery);
       if (matcher3.find()) {
         // Check if value is numeric (Decimal, Integer, or numeric String)
@@ -1018,7 +1072,10 @@ public with sharing class JT_QueryViewerController {
 
       // Handle Decimal -> Integer conversion based on field type
       if (value instanceof Decimal) {
-        Boolean isIntegerField = isIntegerFieldBinding(decodedQuery, bindingKey);
+        Boolean isIntegerField = isIntegerFieldBinding(
+          decodedQuery,
+          bindingKey
+        );
         if (isIntegerField) {
           return ((Decimal) value).intValue();
         }
@@ -1035,7 +1092,10 @@ public with sharing class JT_QueryViewerController {
           return value;
         }
         try {
-          Boolean isIntegerField = isIntegerFieldBinding(decodedQuery, bindingKey);
+          Boolean isIntegerField = isIntegerFieldBinding(
+            decodedQuery,
+            bindingKey
+          );
           if (isIntegerField) {
             return Integer.valueOf(stringValue);
           } else {
@@ -1049,10 +1109,35 @@ public with sharing class JT_QueryViewerController {
 
     // Check for date/datetime comparisons and convert ISO strings
     Boolean isDateComparison = isDateFieldBinding(decodedQuery, bindingKey);
-    Boolean isDatetimeComparison = isDatetimeFieldBinding(decodedQuery, bindingKey);
+    Boolean isDatetimeComparison = isDatetimeFieldBinding(
+      decodedQuery,
+      bindingKey
+    );
 
-    String valueTypeName = value instanceof String ? 'String' : value instanceof Integer ? 'Integer' : value instanceof Decimal ? 'Decimal' : value instanceof Boolean ? 'Boolean' : value instanceof Date ? 'Date' : value instanceof Datetime ? 'Datetime' : value != null ? 'Object' : 'null';
-    System.debug(LoggingLevel.DEBUG, 'convertBindingValueForQuery: bindingKey=' + bindingKey + ', value type=' + valueTypeName + ', isDateComparison=' + isDateComparison + ', isDatetimeComparison=' + isDatetimeComparison);
+    String valueTypeName = value instanceof String
+      ? 'String'
+      : value instanceof Integer
+          ? 'Integer'
+          : value instanceof Decimal
+              ? 'Decimal'
+              : value instanceof Boolean
+                  ? 'Boolean'
+                  : value instanceof Date
+                      ? 'Date'
+                      : value instanceof Datetime
+                          ? 'Datetime'
+                          : value != null ? 'Object' : 'null';
+    System.debug(
+      LoggingLevel.DEBUG,
+      'convertBindingValueForQuery: bindingKey=' +
+        bindingKey +
+        ', value type=' +
+        valueTypeName +
+        ', isDateComparison=' +
+        isDateComparison +
+        ', isDatetimeComparison=' +
+        isDatetimeComparison
+    );
 
     if ((isDateComparison || isDatetimeComparison) && value instanceof String) {
       String stringValue = ((String) value).trim();
@@ -1066,7 +1151,10 @@ public with sharing class JT_QueryViewerController {
             // DateTime.ValueofGmt() expects: "yyyy-MM-dd HH:mm:ss" in GMT
             String normalizedDate = stringValue;
             // Remove timezone offset if present (+HH:mm or -HH:mm)
-            normalizedDate = normalizedDate.replaceAll('[+-]\\d{2}:\\d{2}$', '');
+            normalizedDate = normalizedDate.replaceAll(
+              '[+-]\\d{2}:\\d{2}$',
+              ''
+            );
             // Replace 'T' with space (required for ValueofGmt)
             normalizedDate = normalizedDate.replace('T', ' ');
             // Remove 'Z' at the end
@@ -1076,7 +1164,14 @@ public with sharing class JT_QueryViewerController {
             // Trim any trailing spaces
             normalizedDate = normalizedDate.trim();
             // Parse to Datetime using ValueofGmt (handles ISO format better than valueOf)
-            System.debug(LoggingLevel.DEBUG, 'Converting ISO date string: "' + stringValue + '" to "' + normalizedDate + '"');
+            System.debug(
+              LoggingLevel.DEBUG,
+              'Converting ISO date string: "' +
+                stringValue +
+                '" to "' +
+                normalizedDate +
+                '"'
+            );
             Datetime dt = DateTime.ValueofGmt(normalizedDate);
             System.debug(LoggingLevel.DEBUG, 'Converted to Datetime: ' + dt);
             return dt;
@@ -1086,7 +1181,13 @@ public with sharing class JT_QueryViewerController {
             return Date.valueOf(datePart);
           }
         } catch (Exception e) {
-          System.debug(LoggingLevel.WARN, 'Failed to parse date/datetime string "' + stringValue + '": ' + e.getMessage());
+          System.debug(
+            LoggingLevel.WARN,
+            'Failed to parse date/datetime string "' +
+              stringValue +
+              '": ' +
+              e.getMessage()
+          );
           return value; // Return as-is if parsing fails
         }
       }
@@ -1122,7 +1223,17 @@ public with sharing class JT_QueryViewerController {
     // Check if binding is used with any Date field
     for (String fieldName : dateFieldNames) {
       // Pattern: fieldName = :binding or fieldName != :binding, etc.
-      Pattern pattern = Pattern.compile('(?i)(?s)\\b' + fieldName + '\\s*[=!<>]+\\s*' + escapedPattern + '\\b|\\b' + escapedPattern + '\\s*[=!<>]+\\s+' + fieldName + '\\b');
+      Pattern pattern = Pattern.compile(
+        '(?i)(?s)\\b' +
+          fieldName +
+          '\\s*[=!<>]+\\s*' +
+          escapedPattern +
+          '\\b|\\b' +
+          escapedPattern +
+          '\\s*[=!<>]+\\s+' +
+          fieldName +
+          '\\b'
+      );
       Matcher matcher = pattern.matcher(normalizedQuery);
       if (matcher.find()) {
         return true;
@@ -1140,7 +1251,10 @@ public with sharing class JT_QueryViewerController {
    * @return Boolean True if the binding is likely used with a Datetime field
    */
   @TestVisible
-  private static Boolean isDatetimeFieldBinding(String query, String bindingKey) {
+  private static Boolean isDatetimeFieldBinding(
+    String query,
+    String bindingKey
+  ) {
     String bindingPattern = ':' + bindingKey;
     String normalizedQuery = query.toLowerCase();
     String escapedPattern = Pattern.quote(bindingPattern);
@@ -1160,7 +1274,17 @@ public with sharing class JT_QueryViewerController {
     // Check if binding is used with any Datetime field
     for (String fieldName : datetimeFieldNames) {
       // Pattern: fieldName = :binding or fieldName != :binding, etc.
-      Pattern pattern = Pattern.compile('(?i)(?s)\\b' + fieldName + '\\s*[=!<>]+\\s*' + escapedPattern + '\\b|\\b' + escapedPattern + '\\s*[=!<>]+\\s+' + fieldName + '\\b');
+      Pattern pattern = Pattern.compile(
+        '(?i)(?s)\\b' +
+          fieldName +
+          '\\s*[=!<>]+\\s*' +
+          escapedPattern +
+          '\\b|\\b' +
+          escapedPattern +
+          '\\s*[=!<>]+\\s+' +
+          fieldName +
+          '\\b'
+      );
       Matcher matcher = pattern.matcher(normalizedQuery);
       if (matcher.find()) {
         return true;
@@ -1178,7 +1302,10 @@ public with sharing class JT_QueryViewerController {
    * @return Boolean True if the binding is likely used with an Integer field
    */
   @TestVisible
-  private static Boolean isIntegerFieldBinding(String query, String bindingKey) {
+  private static Boolean isIntegerFieldBinding(
+    String query,
+    String bindingKey
+  ) {
     String bindingPattern = ':' + bindingKey;
     String normalizedQuery = query.toLowerCase();
     String escapedPattern = Pattern.quote(bindingPattern);
@@ -1196,7 +1323,17 @@ public with sharing class JT_QueryViewerController {
     // Check if binding is used with any Integer field
     for (String fieldName : integerFieldNames) {
       // Pattern: fieldName >= :binding or fieldName <= :binding, etc.
-      Pattern pattern = Pattern.compile('(?i)(?s)\\b' + fieldName + '\\s+[>=<]+\\s*' + escapedPattern + '\\b|\\b' + escapedPattern + '\\s*[>=<]+\\s+' + fieldName + '\\b');
+      Pattern pattern = Pattern.compile(
+        '(?i)(?s)\\b' +
+          fieldName +
+          '\\s+[>=<]+\\s*' +
+          escapedPattern +
+          '\\b|\\b' +
+          escapedPattern +
+          '\\s*[>=<]+\\s+' +
+          fieldName +
+          '\\b'
+      );
       Matcher matcher = pattern.matcher(normalizedQuery);
       if (matcher.find()) {
         return true;
@@ -1274,7 +1411,11 @@ public with sharing class JT_QueryViewerController {
       return '\'' + String.escapeSingleQuotes((String) value) + '\'';
     }
 
-    if (value instanceof Boolean || value instanceof Integer || value instanceof Decimal) {
+    if (
+      value instanceof Boolean ||
+      value instanceof Integer ||
+      value instanceof Decimal
+    ) {
       return String.valueOf(value);
     }
 

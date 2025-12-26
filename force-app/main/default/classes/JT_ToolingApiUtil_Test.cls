@@ -218,7 +218,11 @@ private class JT_ToolingApiUtil_Test {
     String result = JT_ToolingApiUtil.toAlphanumeric('abc123XYZ');
     Test.stopTest();
 
-    System.assertEquals('abc123XYZ', result, 'Should return alphanumeric string');
+    System.assertEquals(
+      'abc123XYZ',
+      result,
+      'Should return alphanumeric string'
+    );
   }
 
   /**
@@ -230,7 +234,11 @@ private class JT_ToolingApiUtil_Test {
     String result = JT_ToolingApiUtil.toAlphanumeric('abc-123_XYZ!@#');
     Test.stopTest();
 
-    System.assertEquals('abc123XYZ', result, 'Should remove special characters');
+    System.assertEquals(
+      'abc123XYZ',
+      result,
+      'Should remove special characters'
+    );
   }
 
   /**
@@ -391,7 +399,9 @@ private class JT_ToolingApiUtil_Test {
     String successResponse = JSON.serialize(
       new Map<String, Object>{
         'size' => 1,
-        'records' => new List<Object>{ new Map<String, Object>{ 'Id' => '01p000000000000AAA' } }
+        'records' => new List<Object>{
+          new Map<String, Object>{ 'Id' => '01p000000000000AAA' }
+        }
       }
     );
     Test.setMock(
@@ -466,7 +476,11 @@ private class JT_ToolingApiUtil_Test {
     String result = JT_ToolingApiUtil.toAlphanumeric('abc123!@#XYZ456');
     Test.stopTest();
 
-    System.assertEquals('abc123XYZ456', result, 'Should keep only alphanumeric');
+    System.assertEquals(
+      'abc123XYZ456',
+      result,
+      'Should keep only alphanumeric'
+    );
   }
 
   /**
@@ -521,7 +535,13 @@ private class JT_ToolingApiUtil_Test {
    */
   @IsTest
   static void testCreateToolingApiRestRequestDifferentMethods() {
-    List<String> methods = new List<String>{ 'GET', 'POST', 'PUT', 'PATCH', 'DELETE' };
+    List<String> methods = new List<String>{
+      'GET',
+      'POST',
+      'PUT',
+      'PATCH',
+      'DELETE'
+    };
 
     Test.startTest();
     for (String method : methods) {
@@ -530,7 +550,11 @@ private class JT_ToolingApiUtil_Test {
         method
       );
       System.assertNotEquals(null, request, 'Request should not be null');
-      System.assertEquals(method, request.getMethod(), 'Method should be ' + method);
+      System.assertEquals(
+        method,
+        request.getMethod(),
+        'Method should be ' + method
+      );
     }
     Test.stopTest();
   }
@@ -884,7 +908,9 @@ private class JT_ToolingApiUtil_Test {
   @IsTest
   static void testToAlphanumericLettersOnly() {
     Test.startTest();
-    String result = JT_ToolingApiUtil.toAlphanumeric('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
+    String result = JT_ToolingApiUtil.toAlphanumeric(
+      'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    );
     Test.stopTest();
 
     System.assertEquals(

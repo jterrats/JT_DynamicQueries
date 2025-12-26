@@ -23,6 +23,7 @@ ORDER BY AnnualRevenue DESC
 **Nota**: Originalmente tenía `BETWEEN`, pero fue corregido para usar `>=` y `<=` que sí están soportados.
 
 **Bindings requeridos**:
+
 - `industries` (List<String>)
 - `excludedType` (String)
 - `minRevenue` (Decimal)
@@ -48,6 +49,7 @@ ORDER BY Name
 ```
 
 **Bindings requeridos**:
+
 - `accountIds` (List<Id>)
 - `validIndustries` (List<String>)
 - `accountTypes` (List<String>)
@@ -73,6 +75,7 @@ LIMIT 100
 ```
 
 **Bindings requeridos**:
+
 - `exactRevenue` (Decimal)
 - `notEqualRevenue` (Decimal)
 - `lessThanRevenue` (Decimal)
@@ -98,6 +101,7 @@ LIMIT 50
 ```
 
 **Bindings requeridos**:
+
 - `startsWith` (String) - se agregan wildcards automáticamente
 - `endsWith` (String) - se agregan wildcards automáticamente
 - `websitePattern` (String) - se agregan wildcards automáticamente
@@ -122,6 +126,7 @@ ORDER BY Name
 **Problema**: Usa `NOT LIKE` que no está soportado por la validación.
 
 **Bindings requeridos**:
+
 - `excludedIndustries` (List<String>)
 - `excludedType` (String)
 - `excludedRevenues` (List<Decimal>)
@@ -151,6 +156,7 @@ LIMIT 100
 ```
 
 **Bindings de ejemplo (que devuelven resultados)**:
+
 ```json
 {
   "industries": ["Technology", "Finance", "Healthcare"],
@@ -187,6 +193,7 @@ LIMIT 200
 ```
 
 **Bindings de ejemplo**:
+
 ```json
 {
   "accountIds": ["001000000000000AAA", "001000000000000BBB"],
@@ -200,6 +207,7 @@ LIMIT 200
 ```
 
 **Nota**: Si no tienes Account IDs específicos, puedes usar una subquery:
+
 ```sql
 WHERE AccountId IN (SELECT Id FROM Account WHERE Industry IN :accountIndustries)
 ```
@@ -224,6 +232,7 @@ LIMIT 100
 ```
 
 **Bindings de ejemplo**:
+
 ```json
 {
   "minAmount": 10000,
@@ -258,6 +267,7 @@ LIMIT 150
 ```
 
 **Bindings de ejemplo**:
+
 ```json
 {
   "industries": ["Technology", "Finance", "Healthcare"],
@@ -294,6 +304,7 @@ LIMIT 50
 ```
 
 **Bindings de ejemplo**:
+
 ```json
 {
   "industries": ["Technology", "Finance"],
@@ -356,6 +367,7 @@ LIMIT 50
 ## Ejemplos de Bindings JSON
 
 ### Para Account con múltiples operadores:
+
 ```json
 {
   "industries": ["Technology", "Finance", "Healthcare"],
@@ -372,6 +384,7 @@ LIMIT 50
 ```
 
 ### Para Contact con relaciones:
+
 ```json
 {
   "accountIds": ["001000000000000AAA"],
@@ -385,6 +398,7 @@ LIMIT 50
 ```
 
 ### Para Opportunity con fechas y montos:
+
 ```json
 {
   "minAmount": 10000,
@@ -414,4 +428,3 @@ LIMIT 50
 - [Salesforce SOQL Documentation](https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/)
 - [JT_DataSelector.cls](../force-app/main/default/classes/JT_DataSelector.cls) - Clase principal para ejecutar queries
 - [JT_QueryBindingUtil.cls](../force-app/main/default/classes/JT_QueryBindingUtil.cls) - Utilidades para procesar bindings
-

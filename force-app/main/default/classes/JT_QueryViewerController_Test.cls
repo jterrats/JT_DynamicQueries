@@ -716,7 +716,9 @@ private class JT_QueryViewerController_Test {
     Test.startTest();
     try {
       // Using a query that might cause issues
-      List<String> params = JT_QueryViewerController.extractParameters('SELECT');
+      List<String> params = JT_QueryViewerController.extractParameters(
+        'SELECT'
+      );
       System.assertNotEquals(null, params, 'Should return list even on error');
     } catch (Exception e) {
       // Exception is acceptable - method should handle it
@@ -851,9 +853,7 @@ private class JT_QueryViewerController_Test {
    */
   @IsTest
   static void testAssessQueryRiskInvalidConfig() {
-    Map<String, Object> bindings = new Map<String, Object>{
-      'name' => 'Test'
-    };
+    Map<String, Object> bindings = new Map<String, Object>{ 'name' => 'Test' };
     String bindingsJson = JSON.serialize(bindings);
 
     Test.startTest();
@@ -865,7 +865,11 @@ private class JT_QueryViewerController_Test {
 
     System.assertNotEquals(null, assessment, 'Assessment should not be null');
     // Should return UNKNOWN risk level on error
-    System.assertNotEquals(null, assessment.riskLevel, 'Should have risk level');
+    System.assertNotEquals(
+      null,
+      assessment.riskLevel,
+      'Should have risk level'
+    );
   }
 
   /**
@@ -905,9 +909,7 @@ private class JT_QueryViewerController_Test {
    */
   @IsTest
   static void testExecuteQueryWithBatchProcessingInvalidConfig() {
-    Map<String, Object> bindings = new Map<String, Object>{
-      'name' => 'Test'
-    };
+    Map<String, Object> bindings = new Map<String, Object>{ 'name' => 'Test' };
     String bindingsJson = JSON.serialize(bindings);
 
     Test.startTest();
@@ -935,10 +937,7 @@ private class JT_QueryViewerController_Test {
     Test.stopTest();
 
     // Verify wildcards were added
-    System.assert(
-      bindings.containsKey('name'),
-      'Binding should exist'
-    );
+    System.assert(bindings.containsKey('name'), 'Binding should exist');
     // The actual wildcard addition is tested in JT_QueryBindingUtil tests
   }
 
@@ -990,7 +989,11 @@ private class JT_QueryViewerController_Test {
     Test.stopTest();
 
     System.assertNotEquals(null, result, 'Result should not be null');
-    System.assertEquals(true, result.success, 'Should succeed with queryOverride');
+    System.assertEquals(
+      true,
+      result.success,
+      'Should succeed with queryOverride'
+    );
   }
 
   /**
@@ -1033,8 +1036,16 @@ private class JT_QueryViewerController_Test {
     Test.stopTest();
 
     System.assertNotEquals(null, result, 'Result should not be null');
-    System.assertEquals(false, result.success, 'Should fail with invalid query');
-    System.assertNotEquals(null, result.errorMessage, 'Should have error message');
+    System.assertEquals(
+      false,
+      result.success,
+      'Should fail with invalid query'
+    );
+    System.assertNotEquals(
+      null,
+      result.errorMessage,
+      'Should have error message'
+    );
   }
 
   /**
@@ -1057,9 +1068,17 @@ private class JT_QueryViewerController_Test {
     Test.stopTest();
 
     System.assertNotEquals(null, result, 'Result should not be null');
-    System.assertEquals(true, result.success, 'Should succeed even with no records');
+    System.assertEquals(
+      true,
+      result.success,
+      'Should succeed even with no records'
+    );
     System.assertEquals(0, result.recordCount, 'Should have 0 records');
-    System.assertEquals(0, result.records.size(), 'Records list should be empty');
+    System.assertEquals(
+      0,
+      result.records.size(),
+      'Records list should be empty'
+    );
   }
 
   /**
@@ -1172,7 +1191,11 @@ private class JT_QueryViewerController_Test {
    */
   @IsTest
   static void testExecuteQueryMultipleInOperators() {
-    Account testAcc = new Account(Name = 'Test Account', Industry = 'Technology', Type = 'Customer');
+    Account testAcc = new Account(
+      Name = 'Test Account',
+      Industry = 'Technology',
+      Type = 'Customer'
+    );
     insert testAcc;
 
     Map<String, Object> bindings = new Map<String, Object>{
@@ -1323,8 +1346,16 @@ private class JT_QueryViewerController_Test {
 
     System.assertNotEquals(null, result, 'Result should not be null');
     // This query should fail because it uses NOT LIKE which is not supported
-    System.assertEquals(false, result.success, 'Query should fail due to NOT LIKE operator');
-    System.assertNotEquals(null, result.errorMessage, 'Error message should be present');
+    System.assertEquals(
+      false,
+      result.success,
+      'Query should fail due to NOT LIKE operator'
+    );
+    System.assertNotEquals(
+      null,
+      result.errorMessage,
+      'Error message should be present'
+    );
   }
 
   /**
@@ -1376,7 +1407,11 @@ private class JT_QueryViewerController_Test {
       result instanceof Integer,
       'Result should be Integer, not Decimal'
     );
-    System.assertEquals(100, (Integer) result, 'Should convert Decimal 100.0 to Integer 100');
+    System.assertEquals(
+      100,
+      (Integer) result,
+      'Should convert Decimal 100.0 to Integer 100'
+    );
   }
 
   /**
@@ -1424,11 +1459,12 @@ private class JT_QueryViewerController_Test {
     );
     Test.stopTest();
 
-    System.assert(
-      result instanceof Integer,
-      'Result should remain Integer'
+    System.assert(result instanceof Integer, 'Result should remain Integer');
+    System.assertEquals(
+      100,
+      (Integer) result,
+      'Should keep Integer value unchanged'
     );
-    System.assertEquals(100, (Integer) result, 'Should keep Integer value unchanged');
   }
 
   /**
@@ -1451,7 +1487,11 @@ private class JT_QueryViewerController_Test {
       result instanceof Integer,
       'Result should be Integer when field is Integer'
     );
-    System.assertEquals(100, (Integer) result, 'Should convert String "100" to Integer 100');
+    System.assertEquals(
+      100,
+      (Integer) result,
+      'Should convert String "100" to Integer 100'
+    );
   }
 
   /**
@@ -1498,11 +1538,12 @@ private class JT_QueryViewerController_Test {
     );
     Test.stopTest();
 
-    System.assert(
-      result instanceof Boolean,
-      'Result should remain Boolean'
+    System.assert(result instanceof Boolean, 'Result should remain Boolean');
+    System.assertEquals(
+      true,
+      (Boolean) result,
+      'Should keep Boolean value unchanged'
     );
-    System.assertEquals(true, (Boolean) result, 'Should keep Boolean value unchanged');
   }
 
   /**
@@ -1525,7 +1566,11 @@ private class JT_QueryViewerController_Test {
       result instanceof Boolean,
       'Result should be Boolean when field is Boolean'
     );
-    System.assertEquals(true, (Boolean) result, 'Should convert String "true" to Boolean true');
+    System.assertEquals(
+      true,
+      (Boolean) result,
+      'Should convert String "true" to Boolean true'
+    );
   }
 
   /**
@@ -1600,7 +1645,9 @@ private class JT_QueryViewerController_Test {
     // Note: The query uses OR conditions, so we need to provide bindings that match at least one condition
     // The account has AnnualRevenue = 1000000.50, so it should match greaterThanRevenue (500000) or greaterThanOrEqual (1000000.50)
     // For CreatedDate, simulate JavaScript sending ISO string format (like toISOString())
-    String isoDateString = testAccount.CreatedDate.format('yyyy-MM-dd\'T\'HH:mm:ss\'Z\''); // ISO 8601 format like JavaScript toISOString()
+    String isoDateString = testAccount.CreatedDate.format(
+      'yyyy-MM-dd\'T\'HH:mm:ss\'Z\''
+    ); // ISO 8601 format like JavaScript toISOString()
     String bindingsJson = JSON.serialize(
       new Map<String, Object>{
         'exactRevenue' => 1000000.50,
@@ -1706,7 +1753,8 @@ private class JT_QueryViewerController_Test {
             : Integer.valueOf(employeesObj);
           System.assert(
             employees >= 100 && employees <= 250,
-            'NumberOfEmployees should be between 100 and 250. Found: ' + employees
+            'NumberOfEmployees should be between 100 and 250. Found: ' +
+            employees
           );
         }
 

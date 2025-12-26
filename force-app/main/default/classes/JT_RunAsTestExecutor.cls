@@ -21,7 +21,11 @@ public with sharing class JT_RunAsTestExecutor {
   ) {
     String sanitizedUserId = JT_ToolingApiUtil.toAlphanumeric(userId);
     String cacheKey = 'RunAsTestResult' + sanitizedUserId;
-    Cache.Org.put(cacheKey, JSON.serialize(resultData), ttl != null ? ttl : 300);
+    Cache.Org.put(
+      cacheKey,
+      JSON.serialize(resultData),
+      ttl != null ? ttl : 300
+    );
   }
 
   /**
@@ -305,8 +309,7 @@ public with sharing class JT_RunAsTestExecutor {
       String exceptionMsg = e.getMessage();
       String errorMsg;
       if (
-        exceptionMsg != null &&
-        exceptionMsg.contains('STORAGE_LIMIT_EXCEEDED')
+        exceptionMsg != null && exceptionMsg.contains('STORAGE_LIMIT_EXCEEDED')
       ) {
         errorMsg = Label.JT_RunAsTestExecutor_storageLimitExceeded;
       } else {

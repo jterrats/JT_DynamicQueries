@@ -1287,8 +1287,7 @@ Please use one of these alternatives:
         <fullName>JT_Error_HavingClauseNotSupported</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription
-    >Error - HAVING clause not supported</shortDescription>
+        <shortDescription>Error - HAVING clause not supported</shortDescription>
         <value>HAVING clause is not supported in Salesforce SOQL.
 
 SOQL does not support the HAVING clause, which is used to filter aggregated results in SQL.
@@ -3142,8 +3141,10 @@ Y bueno...&lt;br /&gt;&lt;br /&gt;</value>
         <fullName>JT_jtQueryViewer_confirmDeleteConfiguration</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - confirmDeleteConfiguration</shortDescription>
-        <value>Are you sure you want to delete "{0}"? This action cannot be undone.</value>
+        <shortDescription
+    >jtQueryViewer - confirmDeleteConfiguration</shortDescription>
+        <value
+    >Are you sure you want to delete "{0}"? This action cannot be undone.</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_confirmDeleteTitle</fullName>
@@ -4488,14 +4489,16 @@ Y bueno...&lt;br /&gt;&lt;br /&gt;</value>
         <fullName>JT_jtQueryViewer_deploymentDeletionInProgress</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - deploymentDeletionInProgress</shortDescription>
+        <shortDescription
+    >jtQueryViewer - deploymentDeletionInProgress</shortDescription>
         <value>Configuration deletion is in progress. Please wait...</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_deploymentInProgress</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - deploymentInProgress</shortDescription>
+        <shortDescription
+    >jtQueryViewer - deploymentInProgress</shortDescription>
         <value>Deployment in Progress</value>
     </labels>
     <labels>
@@ -4509,14 +4512,16 @@ Y bueno...&lt;br /&gt;&lt;br /&gt;</value>
         <fullName>JT_jtQueryViewer_configurationActionSuccessfully</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - configurationActionSuccessfully</shortDescription>
+        <shortDescription
+    >jtQueryViewer - configurationActionSuccessfully</shortDescription>
         <value>Configuration {0} successfully</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_metadataDeploymentCompleted</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - metadataDeploymentCompleted</shortDescription>
+        <shortDescription
+    >jtQueryViewer - metadataDeploymentCompleted</shortDescription>
         <value>Metadata deployment completed.</value>
     </labels>
     <labels>
@@ -4530,14 +4535,16 @@ Y bueno...&lt;br /&gt;&lt;br /&gt;</value>
         <fullName>JT_jtQueryViewer_configurationListRefreshed</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - configurationListRefreshed</shortDescription>
+        <shortDescription
+    >jtQueryViewer - configurationListRefreshed</shortDescription>
         <value>Configuration list has been refreshed.</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_deploymentFailedCheckStatus</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - deploymentFailedCheckStatus</shortDescription>
+        <shortDescription
+    >jtQueryViewer - deploymentFailedCheckStatus</shortDescription>
         <value>Deployment failed. Please check the deployment status.</value>
     </labels>
     <labels>
@@ -4551,14 +4558,16 @@ Y bueno...&lt;br /&gt;&lt;br /&gt;</value>
         <fullName>JT_jtQueryViewer_deploymentStatusCheckFailed</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - deploymentStatusCheckFailed</shortDescription>
+        <shortDescription
+    >jtQueryViewer - deploymentStatusCheckFailed</shortDescription>
         <value>Deployment Status Check Failed</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_failedToCheckDeploymentStatus</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - failedToCheckDeploymentStatus</shortDescription>
+        <shortDescription
+    >jtQueryViewer - failedToCheckDeploymentStatus</shortDescription>
         <value>Failed to check deployment status</value>
     </labels>
     <labels>
@@ -4572,7 +4581,9 @@ Y bueno...&lt;br /&gt;&lt;br /&gt;</value>
         <fullName>JT_jtQueryViewer_deploymentTimeoutMessage</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>jtQueryViewer - deploymentTimeoutMessage</shortDescription>
-        <value>Deployment {0} is taking longer than expected. The deployment may still be in progress. Please check the deployment status in Setup → Deploy → Deployment Status.</value>
+        <shortDescription
+    >jtQueryViewer - deploymentTimeoutMessage</shortDescription>
+        <value
+    >Deployment {0} is taking longer than expected. The deployment may still be in progress. Please check the deployment status in Setup → Deploy → Deployment Status.</value>
     </labels>
 </CustomLabels>

@@ -583,7 +583,8 @@ public class JT_GenericRunAsTest {
         ];
         if (!executions.isEmpty()) {
           executions[0].Test_Status__c = 'Failed';
-          executions[0].Error_Message__c = JT_ExecutionUpdateUtil.truncateErrorMessage(
+          executions[0]
+            .Error_Message__c = JT_ExecutionUpdateUtil.truncateErrorMessage(
             errorMessage
           );
           executions[0].Log_Messages__c =
@@ -599,7 +600,8 @@ public class JT_GenericRunAsTest {
         // If full update fails, use utility fallback strategy
         System.debug(
           LoggingLevel.ERROR,
-          'Full update failed, using fallback strategy: ' + updateEx.getMessage()
+          'Full update failed, using fallback strategy: ' +
+          updateEx.getMessage()
         );
       }
 

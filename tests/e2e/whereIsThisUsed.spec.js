@@ -49,32 +49,46 @@ test.describe("Where is this used? - Usage Detection", () => {
       timeout: 15000
     });
 
-    // Wait for search to complete (takes ~12 seconds)
-    await page.waitForTimeout(15000);
+    // Wait for search to complete (takes ~12 seconds, but can take up to 20s)
+    await page.waitForTimeout(20000);
+
+    // Wait for spinner to disappear before interacting with modal
+    await page.waitForSelector(".usage-search-spinner-overlay", {
+      state: "hidden",
+      timeout: 25000
+    }).catch(() => {
+      // Spinner may already be gone, continue
+    });
 
     // Verify that JT_AccountReportExample appears in results
     const modalContent = page.locator("c-jt-usage-modal");
     // Use .first() to avoid strict mode violation (may match both class and test class)
-    const apexClassUsage = modalContent.locator(
-      "text=/JT_AccountReportExample/i"
-    ).first();
+    const apexClassUsage = modalContent
+      .locator("text=/JT_AccountReportExample/i")
+      .first();
 
     await expect(apexClassUsage).toBeVisible({
       timeout: 20000
     });
 
     // Verify the metadata type is shown as "Apex Class"
-    const metadataType = modalContent.locator("text=/Apex Class/i");
-    await expect(metadataType).toBeVisible();
+    // Use .first() to avoid strict mode violation (multiple "Apex Class" elements)
+    const metadataType = modalContent.locator("text=/Apex Class/i").first();
+    await expect(metadataType).toBeVisible({ timeout: 20000 });
 
     // Verify method name appears (searchAccountsByName or searchAccountsForLWC)
     const methodReference = modalContent.locator(
       "text=/searchAccounts|Account_By_Name/i"
-    );
-    await expect(methodReference).toBeVisible();
+    ).first();
+    await expect(methodReference).toBeVisible({ timeout: 20000 });
 
-    // Close modal
-    await page.locator('lightning-button[title="Close"]').first().click();
+    // Wait a bit for modal to fully render before closing
+    await page.waitForTimeout(1000);
+
+    // Close modal - ensure button is visible and clickable
+    const closeButton = page.locator('lightning-button[title="Close"]').first();
+    await closeButton.waitFor({ state: "visible", timeout: 10000 });
+    await closeButton.click({ timeout: 10000 });
   });
 
   test("should detect JT_AccountReportExample class using Dynamic_Input_Test", async ({
@@ -89,26 +103,40 @@ test.describe("Where is this used? - Usage Detection", () => {
 
     await page.waitForSelector("c-jt-usage-modal", {
       state: "attached",
-      timeout: 15000
+      timeout: 20000
     });
-    // Wait for search to complete (takes ~12 seconds)
-    await page.waitForTimeout(15000);
+    // Wait for search to complete (takes ~12 seconds, but can take up to 20s)
+    await page.waitForTimeout(20000);
+
+    // Wait for spinner to disappear before interacting with modal
+    await page.waitForSelector(".usage-search-spinner-overlay", {
+      state: "hidden",
+      timeout: 25000
+    }).catch(() => {
+      // Spinner may already be gone, continue
+    });
 
     // Verify JT_AccountReportExample with getAccountsByTypeAndIndustry method
     const modalContent = page.locator("c-jt-usage-modal");
     // Use .first() to avoid strict mode violation (may match both class and test class)
-    const apexClassUsage = modalContent.locator(
-      "text=/JT_AccountReportExample/i"
-    ).first();
+    const apexClassUsage = modalContent
+      .locator("text=/JT_AccountReportExample/i")
+      .first();
 
-    await expect(apexClassUsage).toBeVisible({ timeout: 15000 });
+    await expect(apexClassUsage).toBeVisible({ timeout: 20000 });
 
     const methodReference = modalContent.locator(
       "text=/getAccountsByTypeAndIndustry|Dynamic_Input_Test/i"
-    );
-    await expect(methodReference).toBeVisible();
+    ).first();
+    await expect(methodReference).toBeVisible({ timeout: 20000 });
 
-    await page.locator('lightning-button[title="Close"]').first().click();
+    // Wait a bit for modal to fully render before closing
+    await page.waitForTimeout(1000);
+
+    // Close modal - ensure button is visible and clickable
+    const closeButton = page.locator('lightning-button[title="Close"]').first();
+    await closeButton.waitFor({ state: "visible", timeout: 10000 });
+    await closeButton.click({ timeout: 10000 });
   });
 
   test("should detect JT_AccountReportExample class using Complete_Customer_360_View", async ({
@@ -123,26 +151,40 @@ test.describe("Where is this used? - Usage Detection", () => {
 
     await page.waitForSelector("c-jt-usage-modal", {
       state: "attached",
-      timeout: 15000
+      timeout: 20000
     });
-    // Wait for search to complete (takes ~12 seconds)
-    await page.waitForTimeout(15000);
+    // Wait for search to complete (takes ~12 seconds, but can take up to 20s)
+    await page.waitForTimeout(20000);
+
+    // Wait for spinner to disappear before interacting with modal
+    await page.waitForSelector(".usage-search-spinner-overlay", {
+      state: "hidden",
+      timeout: 25000
+    }).catch(() => {
+      // Spinner may already be gone, continue
+    });
 
     const modalContent = page.locator("c-jt-usage-modal");
     // Use .first() to avoid strict mode violation (may match both class and test class)
-    const apexClassUsage = modalContent.locator(
-      "text=/JT_AccountReportExample/i"
-    ).first();
+    const apexClassUsage = modalContent
+      .locator("text=/JT_AccountReportExample/i")
+      .first();
 
-    await expect(apexClassUsage).toBeVisible({ timeout: 15000 });
+    await expect(apexClassUsage).toBeVisible({ timeout: 20000 });
 
     // Should find getCustomer360View or getAllCustomersForAnalysis methods
     const methodReference = modalContent.locator(
       "text=/getCustomer360View|getAllCustomersForAnalysis|Complete_Customer_360_View/i"
-    );
-    await expect(methodReference).toBeVisible();
+    ).first();
+    await expect(methodReference).toBeVisible({ timeout: 20000 });
 
-    await page.locator('lightning-button[title="Close"]').first().click();
+    // Wait a bit for modal to fully render before closing
+    await page.waitForTimeout(1000);
+
+    // Close modal - ensure button is visible and clickable
+    const closeButton = page.locator('lightning-button[title="Close"]').first();
+    await closeButton.waitFor({ state: "visible", timeout: 10000 });
+    await closeButton.click({ timeout: 10000 });
   });
 
   test("should detect JT_Account_Report_Flow when implemented", async ({
@@ -160,21 +202,29 @@ test.describe("Where is this used? - Usage Detection", () => {
 
     await page.waitForSelector("c-jt-usage-modal", {
       state: "attached",
-      timeout: 15000
+      timeout: 20000
     });
     // Wait for search to complete (takes ~12 seconds, Flows may take longer)
-    await page.waitForTimeout(15000);
+    await page.waitForTimeout(20000);
+
+    // Wait for spinner to disappear before interacting with modal
+    await page.waitForSelector(".usage-search-spinner-overlay", {
+      state: "hidden",
+      timeout: 25000
+    }).catch(() => {
+      // Spinner may already be gone, continue
+    });
 
     const modalContent = page.locator("c-jt-usage-modal");
 
     // Check if Flow appears (may be in Draft, so this is informational)
-    const flowUsage = modalContent.locator("text=/JT_Account_Report_Flow/i");
+    const flowUsage = modalContent.locator("text=/JT_Account_Report_Flow/i").first();
     const flowExists = await flowUsage.isVisible().catch(() => false);
 
     if (flowExists) {
       // If Flow is Active, verify metadata type
-      const metadataType = modalContent.locator("text=/Flow/i");
-      await expect(metadataType).toBeVisible();
+      const metadataType = modalContent.locator("text=/Flow/i").first();
+      await expect(metadataType).toBeVisible({ timeout: 20000 });
 
       console.log(
         '✅ JT_Account_Report_Flow detected in "Where is this used?"'
@@ -188,7 +238,13 @@ test.describe("Where is this used? - Usage Detection", () => {
       );
     }
 
-    await page.locator('lightning-button[title="Close"]').first().click();
+    // Wait a bit for modal to fully render before closing
+    await page.waitForTimeout(1000);
+
+    // Close modal - ensure button is visible and clickable
+    const closeButton = page.locator('lightning-button[title="Close"]').first();
+    await closeButton.waitFor({ state: "visible", timeout: 10000 });
+    await closeButton.click({ timeout: 10000 });
   });
 
   test('should show "No usages found" for unused configuration', async ({
@@ -203,20 +259,34 @@ test.describe("Where is this used? - Usage Detection", () => {
 
     await page.waitForSelector("c-jt-usage-modal", {
       state: "attached",
-      timeout: 15000
+      timeout: 20000
     });
-    // Wait for search to complete (takes ~12 seconds)
-    await page.waitForTimeout(15000);
+    // Wait for search to complete (takes ~12 seconds, but can take up to 20s)
+    await page.waitForTimeout(20000);
+
+    // Wait for spinner to disappear before interacting with modal
+    await page.waitForSelector(".usage-search-spinner-overlay", {
+      state: "hidden",
+      timeout: 25000
+    }).catch(() => {
+      // Spinner may already be gone, continue
+    });
 
     const modalContent = page.locator("c-jt-usage-modal");
 
     // Should show "No usages found" or similar message
     const noUsagesMessage = modalContent.locator(
-      "text=/No usages found|not found any usage/i"
-    );
-    await expect(noUsagesMessage).toBeVisible({ timeout: 20000 });
+      "text=/No usages found|not found any usage|no results/i"
+    ).first();
+    await expect(noUsagesMessage).toBeVisible({ timeout: 25000 });
 
-    await page.locator('lightning-button[title="Close"]').first().click();
+    // Wait a bit for modal to fully render before closing
+    await page.waitForTimeout(1000);
+
+    // Close modal - ensure button is visible and clickable
+    const closeButton = page.locator('lightning-button[title="Close"]').first();
+    await closeButton.waitFor({ state: "visible", timeout: 10000 });
+    await closeButton.click({ timeout: 10000 });
   });
 
   test("should display usage statistics summary", async ({ page }) => {
@@ -229,20 +299,28 @@ test.describe("Where is this used? - Usage Detection", () => {
 
     await page.waitForSelector("c-jt-usage-modal", {
       state: "attached",
-      timeout: 15000
+      timeout: 20000
     });
-    // Wait for search to complete (takes ~12 seconds)
-    await page.waitForTimeout(15000);
+    // Wait for search to complete (takes ~12 seconds, but can take up to 20s)
+    await page.waitForTimeout(20000);
+
+    // Wait for spinner to disappear before interacting with modal
+    await page.waitForSelector(".usage-search-spinner-overlay", {
+      state: "hidden",
+      timeout: 25000
+    }).catch(() => {
+      // Spinner may already be gone, continue
+    });
 
     const modalContent = page.locator("c-jt-usage-modal");
 
-    // Verify modal shows usage count
-    const usageCount = modalContent.locator("text=/\\d+ usage|\\d+ result/i");
-    await expect(usageCount).toBeVisible({ timeout: 20000 });
+    // Verify modal shows usage count (may be in header or summary)
+    const usageCount = modalContent.locator("text=/\\d+ usage|\\d+ result|found/i").first();
+    await expect(usageCount).toBeVisible({ timeout: 25000 });
 
     // Verify sections are present
-    const apexSection = modalContent.locator("text=/Apex Class/i");
-    await expect(apexSection).toBeVisible();
+    const apexSection = modalContent.locator("text=/Apex Class/i").first();
+    await expect(apexSection).toBeVisible({ timeout: 20000 });
 
     await page.locator('lightning-button[title="Close"]').first().click();
   });

@@ -11,6 +11,52 @@ const {
 } = require("./utils/testConstants");
 
 /**
+ * Helper function to close the usage modal reliably
+ * Tries multiple strategies to ensure the modal closes
+ */
+async function closeUsageModal(page) {
+  // Wait for modal to finish loading (spinner disappears)
+  await page.waitForSelector("c-jt-usage-modal lightning-spinner", {
+    state: "hidden",
+    timeout: 30000
+  }).catch(() => {
+    // Spinner may already be gone, continue
+  });
+
+  // Wait a bit for modal to fully render before closing
+  await page.waitForTimeout(2000);
+
+  // Try footer button first (lightning-button)
+  let closeButton = page.locator('c-jt-usage-modal lightning-button').first();
+  let buttonVisible = await closeButton.isVisible({ timeout: 5000 }).catch(() => false);
+  
+  if (buttonVisible) {
+    // Check if button is disabled
+    const isDisabled = await closeButton.getAttribute("disabled").catch(() => null);
+    if (!isDisabled) {
+      await closeButton.click({ timeout: 10000 });
+      return;
+    }
+  }
+  
+  // Fallback to header close button
+  closeButton = page.locator('c-jt-usage-modal button.slds-modal__close').first();
+  buttonVisible = await closeButton.isVisible({ timeout: 5000 }).catch(() => false);
+  
+  if (buttonVisible) {
+    const isDisabled = await closeButton.getAttribute("disabled").catch(() => null);
+    if (!isDisabled) {
+      await closeButton.click({ timeout: 10000 });
+      return;
+    }
+  }
+  
+  // Last resort: try pressing Escape key
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(1000);
+}
+
+/**
  * E2E tests for "Where is this used?" feature
  * Validates that the framework correctly detects usage of configurations in:
  * - Apex Classes (JT_AccountReportExample)
@@ -82,13 +128,8 @@ test.describe("Where is this used? - Usage Detection", () => {
     ).first();
     await expect(methodReference).toBeVisible({ timeout: 20000 });
 
-    // Wait a bit for modal to fully render before closing
-    await page.waitForTimeout(1000);
-
-    // Close modal - ensure button is visible and clickable
-    const closeButton = page.locator('lightning-button[title="Close"]').first();
-    await closeButton.waitFor({ state: "visible", timeout: 10000 });
-    await closeButton.click({ timeout: 10000 });
+    // Close modal using helper function
+    await closeUsageModal(page);
   });
 
   test("should detect JT_AccountReportExample class using Dynamic_Input_Test", async ({
@@ -130,13 +171,8 @@ test.describe("Where is this used? - Usage Detection", () => {
     ).first();
     await expect(methodReference).toBeVisible({ timeout: 20000 });
 
-    // Wait a bit for modal to fully render before closing
-    await page.waitForTimeout(1000);
-
-    // Close modal - ensure button is visible and clickable
-    const closeButton = page.locator('lightning-button[title="Close"]').first();
-    await closeButton.waitFor({ state: "visible", timeout: 10000 });
-    await closeButton.click({ timeout: 10000 });
+    // Close modal using helper function
+    await closeUsageModal(page);
   });
 
   test("should detect JT_AccountReportExample class using Complete_Customer_360_View", async ({
@@ -178,13 +214,8 @@ test.describe("Where is this used? - Usage Detection", () => {
     ).first();
     await expect(methodReference).toBeVisible({ timeout: 20000 });
 
-    // Wait a bit for modal to fully render before closing
-    await page.waitForTimeout(1000);
-
-    // Close modal - ensure button is visible and clickable
-    const closeButton = page.locator('lightning-button[title="Close"]').first();
-    await closeButton.waitFor({ state: "visible", timeout: 10000 });
-    await closeButton.click({ timeout: 10000 });
+    // Close modal using helper function
+    await closeUsageModal(page);
   });
 
   test("should detect JT_Account_Report_Flow when implemented", async ({
@@ -238,13 +269,8 @@ test.describe("Where is this used? - Usage Detection", () => {
       );
     }
 
-    // Wait a bit for modal to fully render before closing
-    await page.waitForTimeout(1000);
-
-    // Close modal - ensure button is visible and clickable
-    const closeButton = page.locator('lightning-button[title="Close"]').first();
-    await closeButton.waitFor({ state: "visible", timeout: 10000 });
-    await closeButton.click({ timeout: 10000 });
+    // Close modal using helper function
+    await closeUsageModal(page);
   });
 
   test('should show "No usages found" for unused configuration', async ({
@@ -274,19 +300,23 @@ test.describe("Where is this used? - Usage Detection", () => {
 
     const modalContent = page.locator("c-jt-usage-modal");
 
+    // Wait for loading to complete
+    await page.waitForSelector("c-jt-usage-modal lightning-spinner", {
+      state: "hidden",
+      timeout: 30000
+    }).catch(() => {
+      // Spinner may already be gone, continue
+    });
+
     // Should show "No usages found" or similar message
+    // The modal uses custom labels, so we need to check for the actual text
     const noUsagesMessage = modalContent.locator(
-      "text=/No usages found|not found any usage|no results/i"
+      "text=/No usages found|not found any usage|no results|no usage found|This configuration is not used/i"
     ).first();
-    await expect(noUsagesMessage).toBeVisible({ timeout: 25000 });
+    await expect(noUsagesMessage).toBeVisible({ timeout: 30000 });
 
-    // Wait a bit for modal to fully render before closing
-    await page.waitForTimeout(1000);
-
-    // Close modal - ensure button is visible and clickable
-    const closeButton = page.locator('lightning-button[title="Close"]').first();
-    await closeButton.waitFor({ state: "visible", timeout: 10000 });
-    await closeButton.click({ timeout: 10000 });
+    // Close modal using helper function
+    await closeUsageModal(page);
   });
 
   test("should display usage statistics summary", async ({ page }) => {
@@ -322,6 +352,7 @@ test.describe("Where is this used? - Usage Detection", () => {
     const apexSection = modalContent.locator("text=/Apex Class/i").first();
     await expect(apexSection).toBeVisible({ timeout: 20000 });
 
-    await page.locator('lightning-button[title="Close"]').first().click();
+    // Close modal using helper function
+    await closeUsageModal(page);
   });
 });

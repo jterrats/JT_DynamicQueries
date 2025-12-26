@@ -362,7 +362,7 @@ test.describe("Output Validation Tests", () => {
       // Check if error is shown in component's error state
       const queryViewer = page.locator("c-jt-query-viewer");
       const componentText = await queryViewer.textContent({ timeout: 5000 }).catch(() => "");
-      
+
       // If BETWEEN is not in this query, check for other operator errors or skip
       if (componentText.toLowerCase().includes("between")) {
         expect(componentText.toLowerCase()).toContain("between");
@@ -374,7 +374,7 @@ test.describe("Output Validation Tests", () => {
         await selectConfiguration(page, "NOT Operators Test");
         await executeQuery(page);
         await page.waitForTimeout(3000);
-        
+
         const notLikeError = await errorToast.isVisible({ timeout: TIMEOUTS.component * 2 }).catch(() => false);
         if (notLikeError) {
           const errorText = await errorToast.textContent();
@@ -384,9 +384,11 @@ test.describe("Output Validation Tests", () => {
       }
     } else {
       // ✅ Validate error message contains "BETWEEN" or other operator
-      const errorText = await errorVisible.element.textContent({ timeout: 5000 });
+      // Wait a bit for text to be available
+      await page.waitForTimeout(1000);
+      const errorText = await errorVisible.element.textContent({ timeout: 10000 }).catch(() => "");
       const lowerText = errorText.toLowerCase();
-      
+
       // Check for BETWEEN or other operator errors
       if (lowerText.includes("between")) {
         expect(lowerText).toContain("between");

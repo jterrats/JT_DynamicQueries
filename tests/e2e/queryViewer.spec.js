@@ -849,9 +849,10 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
       .locator("a.slds-tabs_default__link")
       .filter({ hasText: /API Reference/i });
     await apiTab.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(1000); // Increased wait time for content to load
 
     // Verify key API methods are documented
+    // Methods are inside <code> tags within table cells
     const apiMethods = [
       "getRecords",
       "countRecordsForConfig",
@@ -860,10 +861,31 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     ];
 
     for (const method of apiMethods) {
-      const methodElement = page.getByText(method, { exact: false });
-      const isPresent = await methodElement
+      // Try multiple selectors to find the method
+      // 1. Look for code element containing the method (most specific)
+      let methodElement = page
+        .locator(`code`)
+        .filter({ hasText: method })
+        .first();
+      let isPresent = await methodElement
         .isVisible({ timeout: 2000 })
         .catch(() => false);
+
+      // 2. Fallback: Look for text in table cells
+      if (!isPresent) {
+        methodElement = page.locator(`td`).filter({ hasText: method }).first();
+        isPresent = await methodElement
+          .isVisible({ timeout: 2000 })
+          .catch(() => false);
+      }
+
+      // 3. Fallback: Generic text search (original approach)
+      if (!isPresent) {
+        methodElement = page.getByText(method, { exact: false }).first();
+        isPresent = await methodElement
+          .isVisible({ timeout: 2000 })
+          .catch(() => false);
+      }
 
       expect(isPresent).toBe(true);
       console.log(`   ✅ ${method} documented`);

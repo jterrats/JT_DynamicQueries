@@ -54,9 +54,10 @@ test.describe("Where is this used? - Usage Detection", () => {
 
     // Verify that JT_AccountReportExample appears in results
     const modalContent = page.locator("c-jt-usage-modal");
+    // Use .first() to avoid strict mode violation (may match both class and test class)
     const apexClassUsage = modalContent.locator(
       "text=/JT_AccountReportExample/i"
-    );
+    ).first();
 
     await expect(apexClassUsage).toBeVisible({
       timeout: 20000
@@ -95,9 +96,10 @@ test.describe("Where is this used? - Usage Detection", () => {
 
     // Verify JT_AccountReportExample with getAccountsByTypeAndIndustry method
     const modalContent = page.locator("c-jt-usage-modal");
+    // Use .first() to avoid strict mode violation (may match both class and test class)
     const apexClassUsage = modalContent.locator(
       "text=/JT_AccountReportExample/i"
-    );
+    ).first();
 
     await expect(apexClassUsage).toBeVisible({ timeout: 15000 });
 
@@ -127,9 +129,10 @@ test.describe("Where is this used? - Usage Detection", () => {
     await page.waitForTimeout(15000);
 
     const modalContent = page.locator("c-jt-usage-modal");
+    // Use .first() to avoid strict mode violation (may match both class and test class)
     const apexClassUsage = modalContent.locator(
       "text=/JT_AccountReportExample/i"
-    );
+    ).first();
 
     await expect(apexClassUsage).toBeVisible({ timeout: 15000 });
 

@@ -565,10 +565,6 @@ export default class JtQueryViewer extends LightningElement {
       this.configurationOptions = [...data];
       this.filteredConfigs = [...data]; // Initialize filtered list
       this.showError = false;
-
-      console.log(
-        `📋 Configurations wire updated. Total: ${this.configurationOptions.length}`
-      );
     } else if (result.error) {
       console.error("❌ Error loading configurations:", result.error);
       this.showError = true;
@@ -2023,17 +2019,6 @@ export default class JtQueryViewer extends LightningElement {
       configDataForApex = configData;
     }
 
-    // Debug: Log originalDevName to help diagnose issues
-    if (modeFromEvent === "edit") {
-      console.log(
-        "UpdateConfiguration - originalDevName:",
-        this.originalDevName,
-        "configData.developerName:",
-        configData.developerName,
-        "configDataForApex:",
-        configDataForApex
-      );
-    }
 
     // Ensure configDataForApex is a plain object (not already a string)
     if (typeof configDataForApex === "string") {
@@ -2092,15 +2077,9 @@ export default class JtQueryViewer extends LightningElement {
 
     saveMethod
       .then((result) => {
-        console.log("💾 Save method result:", {
-          success: result.success,
-          deploymentId: result.deploymentId,
-          actionLabel
-        });
         if (result.success) {
           // Check if deployment is asynchronous (has deploymentId)
           if (result.deploymentId) {
-            console.log("⏳ Deployment is ASYNC, will poll for status");
             // Deployment is asynchronous - poll for status
             // Show info toast immediately to give user feedback
             showInfoToast(
@@ -2123,7 +2102,6 @@ export default class JtQueryViewer extends LightningElement {
           }
 
           // Deployment is synchronous (update) - refresh immediately
-          console.log("✅ Deployment is SYNC (update), refreshing immediately");
           showSuccessToast(
             this,
             result.message ||
@@ -2145,10 +2123,6 @@ export default class JtQueryViewer extends LightningElement {
           // Refresh the configurations list using refreshApex
           // Note: Since getConfigurations is cacheable, we may need to wait a bit
           // for metadata changes to propagate, then refresh
-          console.log("📝 About to call refreshConfigurationsWithRetry", {
-            updatedDevName,
-            updatedConfigData
-          });
           return this.refreshConfigurationsWithRetry(
             updatedDevName,
             updatedConfigData
@@ -2184,20 +2158,14 @@ export default class JtQueryViewer extends LightningElement {
     updatedConfigData = null,
     updatedDevName = null
   ) {
-    console.log("🔄 Starting polling for deployment", {
-      deploymentId,
-      actionLabel
-    });
     const stopPolling = pollUntilComplete(
       // Poll function
       () => {
-        console.log("📡 Polling deployment status...", { deploymentId });
         return checkDeploymentStatus({ deploymentId });
       },
       // Check if complete
       (result) => {
         if (!result) {
-          console.log("⚠️ No result received from deployment status check");
           return false;
         }
 
@@ -2218,36 +2186,10 @@ export default class JtQueryViewer extends LightningElement {
 
         // Deployment is complete if done is true OR status indicates completion
         const isComplete = done || isStatusComplete;
-
-        console.log("🔍 Checking if deployment is complete", {
-          done: result.done,
-          rawDone: result.rawDone,
-          success: result.success,
-          status: result.status,
-          isComplete: isComplete,
-          doneEvaluated: done,
-          statusEvaluated: isStatusComplete,
-          resultKeys: Object.keys(result),
-          fullResult: result
-        });
-
-        if (isComplete) {
-          console.log("✅ Deployment is complete!", {
-            done: done,
-            status: statusValue,
-            success: result.success
-          });
-        }
         return isComplete;
       },
       // On complete
       (result) => {
-        console.log("🏁 Polling complete callback called", {
-          result,
-          actionLabel,
-          updatedDevName,
-          hasUpdatedConfigData: !!updatedConfigData
-        });
         // Hide spinner for deletion (create/update use isSaving)
         if (actionLabel === "deleted") {
           this.isDeletingConfiguration = false;
@@ -2255,9 +2197,6 @@ export default class JtQueryViewer extends LightningElement {
 
         if (result.success === true) {
           // Deployment succeeded - show success toast and refresh list
-          console.log(
-            "✅ Async deployment completed successfully, refreshing configurations"
-          );
           showSuccessToast(
             this,
             this.labels.configurationActionSuccessfully.replace(
@@ -2303,10 +2242,6 @@ export default class JtQueryViewer extends LightningElement {
           // Refresh the configurations list using refreshApex with retry logic
           // Use longer delays for async deployments (metadata takes longer to propagate)
           // Don't show toast here since we already showed the success toast above
-          console.log(
-            "📝 About to call refreshConfigurationsWithRetry (async)",
-            { updatedDevName, updatedConfigData }
-          );
           this.refreshConfigurationsWithRetry(
             updatedDevName,
             updatedConfigData,
@@ -2413,12 +2348,6 @@ export default class JtQueryViewer extends LightningElement {
     initialDelay = 500,
     showToast = true
   ) {
-    console.log("🚀 refreshConfigurationsWithRetry called", {
-      devName,
-      maxRetries,
-      initialDelay,
-      showToast
-    });
     return new Promise((resolve) => {
       let attempt = 0;
 
@@ -2427,9 +2356,6 @@ export default class JtQueryViewer extends LightningElement {
         const delay = initialDelay * attempt; // Exponential backoff: 500ms, 1000ms, 1500ms
 
         setTimeout(() => {
-          console.log(
-            `🔄 Refresh attempt ${attempt}/${maxRetries} for configuration "${devName}"`
-          );
 
           refreshApex(this.wiredConfigurationsResult)
             .then(() => {
@@ -2446,9 +2372,6 @@ export default class JtQueryViewer extends LightningElement {
             })
             .then((isValid) => {
               if (isValid) {
-                console.log(
-                  `✅ Configuration "${devName}" update validated after ${attempt} attempt(s)`
-                );
                 if (showToast) {
                   showInfoToast(
                     this,
@@ -2522,19 +2445,9 @@ export default class JtQueryViewer extends LightningElement {
           !this.configurationOptions ||
           this.configurationOptions.length === 0
         ) {
-          console.warn("⚠️ Configuration options not loaded yet");
-          console.log("Wire status:", {
-            data: this.wiredConfigurationsResult?.data,
-            loading: this.wiredConfigurationsResult?.loading,
-            error: this.wiredConfigurationsResult?.error
-          });
           resolve(false);
           return;
         }
-
-        console.log(
-          `🔍 Validating update for "${devName}". Total configs: ${this.configurationOptions.length}`
-        );
 
         // Find the updated configuration in the list
         const updatedConfig = this.configurationOptions.find(
@@ -2544,10 +2457,6 @@ export default class JtQueryViewer extends LightningElement {
         if (!updatedConfig) {
           console.warn(
             `⚠️ Updated configuration "${devName}" not found in list`
-          );
-          console.log(
-            "Available configs:",
-            this.configurationOptions.map((c) => c.value)
           );
           resolve(false);
           return;
@@ -2590,26 +2499,11 @@ export default class JtQueryViewer extends LightningElement {
         }
 
         if (isValid) {
-          console.log(
-            `✅ Configuration "${devName}" update validated successfully`
-          );
-          console.log("Updated config:", {
-            value: updatedConfig.value,
-            label: updatedConfig.label,
-            baseQuery: updatedConfig.baseQuery?.substring(0, 50) + "...",
-            bindings: updatedConfig.bindings,
-            objectName: updatedConfig.objectName
-          });
+          // Configuration validated successfully
         } else {
           console.warn(
             `⚠️ Configuration "${devName}" update validation failed. Mismatches: ${mismatches.join(", ")}`
           );
-          console.log("Expected:", expectedData);
-          console.log("Actual:", {
-            baseQuery: updatedConfig.baseQuery,
-            bindings: updatedConfig.bindings,
-            objectName: updatedConfig.objectName
-          });
         }
 
         resolve(isValid);
@@ -2826,18 +2720,24 @@ export default class JtQueryViewer extends LightningElement {
         if (result.success) {
           this.processQueryResults(result);
           // Success toast removed - results are already displayed in the table
+          // Use setTimeout to ensure LWC reactivity processes the state changes
+          // This forces a re-render cycle after data is set
+          setTimeout(() => {
+            // CRITICAL: Set isLoading to false AFTER processQueryResults
+            // This ensures showResults getter returns true
+            this.isLoading = false;
+          }, 0);
         } else {
           this.showError = true;
           this.errorMessage = result.errorMessage;
           showErrorToast(this, this.labels.queryError, result.errorMessage);
+          this.isLoading = false;
         }
       })
       .catch((error) => {
         this.showError = true;
         this.errorMessage = error.body?.message || this.labels.unknownError;
         showErrorToast(this, this.labels.executionError, this.errorMessage);
-      })
-      .finally(() => {
         this.isLoading = false;
       });
   }
@@ -2858,18 +2758,24 @@ export default class JtQueryViewer extends LightningElement {
       .then((result) => {
         if (result.success) {
           this.processQueryResults(result);
+          // Use setTimeout to ensure LWC reactivity processes the state changes
+          // This forces a re-render cycle after data is set
+          setTimeout(() => {
+            // CRITICAL: Set isLoading to false AFTER processQueryResults
+            // This ensures showResults getter returns true
+            this.isLoading = false;
+          }, 0);
         } else {
           this.showError = true;
           this.errorMessage = result.errorMessage;
           showErrorToast(this, this.labels.queryError, result.errorMessage);
+          this.isLoading = false;
         }
       })
       .catch((error) => {
         this.showError = true;
         this.errorMessage = error.body?.message || this.labels.unknownError;
         showErrorToast(this, this.labels.executionError, this.errorMessage);
-      })
-      .finally(() => {
         this.isLoading = false;
       });
   }

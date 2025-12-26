@@ -77,20 +77,10 @@ public with sharing class JT_QueryViewerController {
         LIMIT 1
       ];
 
-      System.debug(
-        LoggingLevel.FINE,
-        '🔍 Execution bindings BEFORE wildcards: ' + JSON.serialize(bindings)
-      );
-
       // Auto-add wildcards for LIKE queries using centralized utility
       JT_QueryBindingUtil.addWildcardsForLikeBindings(
         config.JT_BaseQuery__c,
         bindings
-      );
-
-      System.debug(
-        LoggingLevel.FINE,
-        '✅ Execution bindings AFTER wildcards: ' + JSON.serialize(bindings)
       );
 
       List<SObject> sobjectRecords = JT_DataSelector.getRecords(
@@ -981,7 +971,9 @@ public with sharing class JT_QueryViewerController {
       .replace('&amp;', '&');
     String normalizedQuery = decodedQuery.toLowerCase();
     String bindingPattern = ':' + bindingKey;
-    String escapedPattern = Pattern.quote(bindingPattern);
+    // Normalize binding pattern for regex matching (query is normalized to lowercase)
+    String normalizedBindingPattern = ':' + bindingKey.toLowerCase();
+    String escapedPattern = Pattern.quote(normalizedBindingPattern);
 
     // Check if binding is used in numeric comparison operators
     Boolean isNumericComparison = false;
@@ -1004,9 +996,10 @@ public with sharing class JT_QueryViewerController {
     }
 
     // Check for boolean comparisons first (before numeric, to avoid false positives)
+    // Handle both "Field = :binding" and "Field =: binding" (with optional space after =)
     Boolean isBooleanComparison = false;
     Pattern boolPattern1 = Pattern.compile(
-      '[a-z0-9_]+\\s*[=!]?=\\s*' + Pattern.quote(bindingPattern) + '\\b'
+      '[a-z0-9_]+\\s*[=!]?=\\s*' + escapedPattern + '\\b'
     );
     Matcher boolMatcher1 = boolPattern1.matcher(normalizedQuery);
     if (boolMatcher1.find()) {
@@ -1015,10 +1008,24 @@ public with sharing class JT_QueryViewerController {
 
     if (!isBooleanComparison) {
       Pattern boolPattern2 = Pattern.compile(
-        '\\b' + Pattern.quote(bindingPattern) + '\\s*[=!]?=\\s*[a-z0-9_]+'
+        '\\b' + escapedPattern + '\\s*[=!]?=\\s*[a-z0-9_]+'
       );
       Matcher boolMatcher2 = boolPattern2.matcher(normalizedQuery);
       if (boolMatcher2.find()) {
+        isBooleanComparison = true;
+      }
+    }
+
+    // Also check if the field name suggests it's a boolean field (starts with Is, Has, Can, etc.)
+    // Handle both "Field = :binding" and "Field =: binding" (with optional space after =)
+    if (!isBooleanComparison) {
+      // Pattern to match field names that suggest boolean (Is*, Has*, Can*, etc.)
+      // Match: iscustomerportal = :isportal or iscustomerportal=:isportal
+      Pattern boolFieldPattern = Pattern.compile(
+        '\\b(is|has|can|should|will|was|were|did|does|contains|includes|enabled|disabled|active|inactive|visible|hidden|required|optional)[a-z0-9_]*\\s*[=!]?=\\s*' + escapedPattern + '\\b'
+      );
+      Matcher boolFieldMatcher = boolFieldPattern.matcher(normalizedQuery);
+      if (boolFieldMatcher.find()) {
         isBooleanComparison = true;
       }
     }
@@ -1029,13 +1036,34 @@ public with sharing class JT_QueryViewerController {
         return value; // Already boolean from JavaScript
       } else if (value instanceof String) {
         String trimmedValue = ((String) value).trim().toLowerCase();
-        if (trimmedValue == 'true') {
+        if (trimmedValue == 'true' || trimmedValue == '1' || trimmedValue == 'yes') {
           return true;
-        } else if (trimmedValue == 'false') {
+        } else if (trimmedValue == 'false' || trimmedValue == '0' || trimmedValue == 'no') {
           return false;
         }
         // If string is not "true" or "false", return as-is (might be field name or other value)
         return value;
+      }
+    }
+
+    // If not detected as boolean comparison but value is string "true"/"false" and field suggests boolean,
+    // still try to convert (fallback for edge cases)
+    // This handles cases where the pattern didn't match but we know it's a boolean field
+    if (!isBooleanComparison && value instanceof String) {
+      String trimmedValue = ((String) value).trim().toLowerCase();
+      // Check if field name suggests boolean (starts with Is, Has, Can, etc.)
+      // Look for field name before the binding in the WHERE clause
+      Pattern boolFieldCheck = Pattern.compile(
+        '\\b(is|has|can|should|will|was|were|did|does|contains|includes|enabled|disabled|active|inactive|visible|hidden|required|optional)[a-z0-9_]*\\s*[=!]?=\\s*' + escapedPattern + '\\b'
+      );
+      Matcher boolFieldCheckMatcher = boolFieldCheck.matcher(normalizedQuery);
+      if (boolFieldCheckMatcher.find()) {
+        // Field name suggests boolean, convert string to boolean
+        if (trimmedValue == 'true' || trimmedValue == '1' || trimmedValue == 'yes') {
+          return true;
+        } else if (trimmedValue == 'false' || trimmedValue == '0' || trimmedValue == 'no') {
+          return false;
+        }
       }
     }
 
@@ -1207,7 +1235,9 @@ public with sharing class JT_QueryViewerController {
   private static Boolean isDateFieldBinding(String query, String bindingKey) {
     String bindingPattern = ':' + bindingKey;
     String normalizedQuery = query.toLowerCase();
-    String escapedPattern = Pattern.quote(bindingPattern);
+    // Normalize binding pattern for regex matching (query is normalized to lowercase)
+    String normalizedBindingPattern = ':' + bindingKey.toLowerCase();
+    String escapedPattern = Pattern.quote(normalizedBindingPattern);
 
     // Common Date field names in Salesforce
     List<String> dateFieldNames = new List<String>{
@@ -1257,7 +1287,9 @@ public with sharing class JT_QueryViewerController {
   ) {
     String bindingPattern = ':' + bindingKey;
     String normalizedQuery = query.toLowerCase();
-    String escapedPattern = Pattern.quote(bindingPattern);
+    // Normalize binding pattern for regex matching (query is normalized to lowercase)
+    String normalizedBindingPattern = ':' + bindingKey.toLowerCase();
+    String escapedPattern = Pattern.quote(normalizedBindingPattern);
 
     // Common Datetime field names in Salesforce
     List<String> datetimeFieldNames = new List<String>{
@@ -1308,7 +1340,9 @@ public with sharing class JT_QueryViewerController {
   ) {
     String bindingPattern = ':' + bindingKey;
     String normalizedQuery = query.toLowerCase();
-    String escapedPattern = Pattern.quote(bindingPattern);
+    // Normalize binding pattern for regex matching (query is normalized to lowercase)
+    String normalizedBindingPattern = ':' + bindingKey.toLowerCase();
+    String escapedPattern = Pattern.quote(normalizedBindingPattern);
 
     // Common Integer field names in Salesforce
     List<String> integerFieldNames = new List<String>{

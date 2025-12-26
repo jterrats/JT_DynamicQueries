@@ -242,13 +242,6 @@ public class JT_MetadataApiSoap {
         doc.load(soapResponse);
 
         Dom.XmlNode envelope = doc.getRootElement();
-        System.debug(
-          LoggingLevel.INFO,
-          '📋 Root element: ' +
-            envelope.getName() +
-            ', namespace: ' +
-            envelope.getNamespace()
-        );
 
         // Check for SOAP Fault - it's inside Body, not directly in Envelope
         Dom.XmlNode body = envelope.getChildElement(
@@ -289,9 +282,16 @@ public class JT_MetadataApiSoap {
               : faultStringText;
 
             result.message = errorCode + ': ' + errorMessage;
-            System.debug(
-              LoggingLevel.ERROR,
-              '📋 SOAP Fault: ' + result.message
+            JT_ErrorLogger.logError(
+              'SOAP Fault',
+              result.message,
+              null,
+              'JT_MetadataApiSoap.parseDeployResponse',
+              JSON.serialize(new Map<String, Object>{
+                'faultCode' => faultCodeText,
+                'faultString' => faultStringText
+              }),
+              'High'
             );
             return result;
           }
@@ -306,12 +306,18 @@ public class JT_MetadataApiSoap {
         }
 
         if (body == null) {
-          System.debug(
-            LoggingLevel.ERROR,
-            '📋 Body element not found. Available children: ' +
-            getChildElementNames(envelope)
+          String errorMsg = 'SOAP Body element not found';
+          JT_ErrorLogger.logError(
+            'SOAP Parse Error',
+            errorMsg,
+            null,
+            'JT_MetadataApiSoap.parseDeployResponse',
+            JSON.serialize(new Map<String, Object>{
+              'availableChildren' => getChildElementNames(envelope)
+            }),
+            'High'
           );
-          result.message = 'SOAP Body element not found';
+          result.message = errorMsg;
           return result;
         }
 
@@ -328,12 +334,18 @@ public class JT_MetadataApiSoap {
         }
 
         if (deployResponse == null) {
-          System.debug(
-            LoggingLevel.ERROR,
-            '📋 deployResponse element not found. Available children: ' +
-            getChildElementNames(body)
+          String errorMsg = 'deployResponse element not found in SOAP Body';
+          JT_ErrorLogger.logError(
+            'SOAP Parse Error',
+            errorMsg,
+            null,
+            'JT_MetadataApiSoap.parseDeployResponse',
+            JSON.serialize(new Map<String, Object>{
+              'availableChildren' => getChildElementNames(body)
+            }),
+            'High'
           );
-          result.message = 'deployResponse element not found in SOAP Body';
+          result.message = errorMsg;
           return result;
         }
 
@@ -349,12 +361,18 @@ public class JT_MetadataApiSoap {
         }
 
         if (resultNode == null) {
-          System.debug(
-            LoggingLevel.ERROR,
-            '📋 result element not found. Available children: ' +
-            getChildElementNames(deployResponse)
+          String errorMsg = 'result element not found in deployResponse';
+          JT_ErrorLogger.logError(
+            'SOAP Parse Error',
+            errorMsg,
+            null,
+            'JT_MetadataApiSoap.parseDeployResponse',
+            JSON.serialize(new Map<String, Object>{
+              'availableChildren' => getChildElementNames(deployResponse)
+            }),
+            'High'
           );
-          result.message = 'result element not found in deployResponse';
+          result.message = errorMsg;
           return result;
         }
 
@@ -374,14 +392,16 @@ public class JT_MetadataApiSoap {
           }
         }
       } catch (Exception e) {
-        System.debug(
-          LoggingLevel.ERROR,
-          '📋 Error parsing SOAP response: ' +
-            e.getMessage() +
-            '\nStack trace: ' +
-            e.getStackTraceString()
+        String errorMsg = 'Error parsing SOAP response: ' + e.getMessage();
+        JT_ErrorLogger.logError(
+          'SOAP Parse Exception',
+          errorMsg,
+          e,
+          'JT_MetadataApiSoap.parseDeployResponse',
+          null,
+          'High'
         );
-        result.message = 'Error parsing SOAP response: ' + e.getMessage();
+        result.message = errorMsg;
       }
 
       return result;
@@ -479,15 +499,22 @@ public class JT_MetadataApiSoap {
         );
 
         if (body == null) {
-          System.debug(
-            LoggingLevel.ERROR,
-            '📋 Body element not found. Available children: ' +
-            getChildElementNames(envelope)
+          String errorMsg = 'SOAP Body element not found';
+          JT_ErrorLogger.logError(
+            'SOAP Parse Error',
+            errorMsg,
+            null,
+            'JT_MetadataApiSoap.parseDeleteMetadataResponse',
+            JSON.serialize(new Map<String, Object>{
+              'availableChildren' => getChildElementNames(envelope),
+              'statusCode' => statusCode
+            }),
+            'High'
           );
           JT_MetadataApiSoap.DeleteResult errorResult = new JT_MetadataApiSoap.DeleteResult();
           errorResult.success = false;
           errorResult.deleted = false;
-          errorResult.errorMessage = 'SOAP Body element not found';
+          errorResult.errorMessage = errorMsg;
           results.add(errorResult);
           return results;
         }
@@ -533,13 +560,6 @@ public class JT_MetadataApiSoap {
         // Parse successful response - look for deleteMetadataResponse
         Dom.XmlNode deleteResponse = null;
         for (Dom.XmlNode child : body.getChildElements()) {
-          System.debug(
-            LoggingLevel.INFO,
-            '📋 Body child: ' +
-              child.getName() +
-              ', namespace: ' +
-              child.getNamespace()
-          );
           if (
             child.getName() == 'deleteMetadataResponse' ||
             child.getName().endsWith(':deleteMetadataResponse')
@@ -550,15 +570,22 @@ public class JT_MetadataApiSoap {
         }
 
         if (deleteResponse == null) {
-          System.debug(
-            LoggingLevel.ERROR,
-            '📋 deleteMetadataResponse element not found. Available children: ' +
-            getChildElementNames(body)
+          String errorMsg = 'deleteMetadataResponse element not found in SOAP Body';
+          JT_ErrorLogger.logError(
+            'SOAP Parse Error',
+            errorMsg,
+            null,
+            'JT_MetadataApiSoap.parseDeleteMetadataResponse',
+            JSON.serialize(new Map<String, Object>{
+              'availableChildren' => getChildElementNames(body),
+              'statusCode' => statusCode
+            }),
+            'High'
           );
           JT_MetadataApiSoap.DeleteResult errorResult = new JT_MetadataApiSoap.DeleteResult();
           errorResult.success = false;
           errorResult.deleted = false;
-          errorResult.errorMessage = 'deleteMetadataResponse element not found in SOAP Body';
+          errorResult.errorMessage = errorMsg;
           results.add(errorResult);
           return results;
         }
@@ -575,15 +602,22 @@ public class JT_MetadataApiSoap {
         }
 
         if (resultNode == null) {
-          System.debug(
-            LoggingLevel.ERROR,
-            '📋 result element not found. Available children: ' +
-            getChildElementNames(deleteResponse)
+          String errorMsg = 'result element not found in deleteMetadataResponse';
+          JT_ErrorLogger.logError(
+            'SOAP Parse Error',
+            errorMsg,
+            null,
+            'JT_MetadataApiSoap.parseDeleteMetadataResponse',
+            JSON.serialize(new Map<String, Object>{
+              'availableChildren' => getChildElementNames(deleteResponse),
+              'statusCode' => statusCode
+            }),
+            'High'
           );
           JT_MetadataApiSoap.DeleteResult errorResult = new JT_MetadataApiSoap.DeleteResult();
           errorResult.success = false;
           errorResult.deleted = false;
-          errorResult.errorMessage = 'result element not found in deleteMetadataResponse';
+          errorResult.errorMessage = errorMsg;
           results.add(errorResult);
           return results;
         }
@@ -639,20 +673,22 @@ public class JT_MetadataApiSoap {
           results.add(deleteResult);
         }
       } catch (Exception e) {
-        System.debug(
-          LoggingLevel.ERROR,
-          '📋 Error parsing deleteMetadata SOAP response: ' +
-            e.getMessage() +
-            '\nStack trace: ' +
-            e.getStackTraceString() +
-            '\nRaw response: ' +
-            soapResponse
+        String errorMsg = 'Error parsing deleteMetadata SOAP response: ' + e.getMessage();
+        JT_ErrorLogger.logError(
+          'SOAP Parse Exception',
+          errorMsg,
+          e,
+          'JT_MetadataApiSoap.parseDeleteMetadataResponse',
+          JSON.serialize(new Map<String, Object>{
+            'statusCode' => statusCode,
+            'responseLength' => soapResponse != null ? soapResponse.length() : 0
+          }),
+          'High'
         );
         JT_MetadataApiSoap.DeleteResult errorResult = new JT_MetadataApiSoap.DeleteResult();
         errorResult.success = false;
         errorResult.deleted = false;
-        errorResult.errorMessage =
-          'Error parsing SOAP response: ' + e.getMessage();
+        errorResult.errorMessage = errorMsg;
         results.add(errorResult);
       }
 

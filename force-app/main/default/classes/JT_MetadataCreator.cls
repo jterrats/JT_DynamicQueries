@@ -242,16 +242,6 @@ public with sharing class JT_MetadataCreator {
       }
 
       // Validate required fields
-      // Debug: Log the values to help diagnose the issue
-      System.debug(
-        LoggingLevel.DEBUG,
-        'UpdateConfiguration - originalDevName: ' +
-          config.originalDevName +
-          ', label: ' +
-          config.label +
-          ', baseQuery: ' +
-          (String.isNotBlank(config.baseQuery) ? 'present' : 'blank')
-      );
 
       if (
         String.isBlank(config.originalDevName) ||
@@ -1672,15 +1662,40 @@ public with sharing class JT_MetadataCreator {
         );
 
         // Extract status, done, and success from deployResult
-        String deployStatus = deployResult != null
-          ? (String) deployResult.get('status')
-          : null;
-        Boolean done = deployResult != null
-          ? (Boolean) deployResult.get('done')
-          : null;
-        Boolean success = deployResult != null
-          ? (Boolean) deployResult.get('success')
-          : null;
+        // Note: Some API responses have these fields at the top level, others in deployResult
+        // Check deployResult first, then fall back to top level
+        String deployStatus = null;
+        Boolean done = null;
+        Boolean success = null;
+
+        if (deployResult != null) {
+          deployStatus = (String) deployResult.get('status');
+          Object doneObj = deployResult.get('done');
+          if (doneObj != null) {
+            done = doneObj instanceof Boolean ? (Boolean) doneObj : Boolean.valueOf(String.valueOf(doneObj));
+          }
+          Object successObj = deployResult.get('success');
+          if (successObj != null) {
+            success = successObj instanceof Boolean ? (Boolean) successObj : Boolean.valueOf(String.valueOf(successObj));
+          }
+        }
+
+        // Fall back to top level if not found in deployResult
+        if (deployStatus == null) {
+          deployStatus = (String) responseMap.get('status');
+        }
+        if (done == null) {
+          Object doneObj = responseMap.get('done');
+          if (doneObj != null) {
+            done = doneObj instanceof Boolean ? (Boolean) doneObj : Boolean.valueOf(String.valueOf(doneObj));
+          }
+        }
+        if (success == null) {
+          Object successObj = responseMap.get('success');
+          if (successObj != null) {
+            success = successObj instanceof Boolean ? (Boolean) successObj : Boolean.valueOf(String.valueOf(successObj));
+          }
+        }
 
         status.put('status', deployStatus != null ? deployStatus : 'UNKNOWN');
         status.put('done', done != null ? done : false);

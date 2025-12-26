@@ -1015,7 +1015,8 @@ public inherited sharing class JT_DataSelector {
     String result = baseQuery;
 
     // Find all bindings referenced in the query
-    Pattern bindingPattern = Pattern.compile(':\\b(\\w+)\\b');
+    // Handle both "=:name" and "=: name" (with optional space after colon)
+    Pattern bindingPattern = Pattern.compile(':\\s*(\\w+)\\b');
     Matcher matcher = bindingPattern.matcher(baseQuery);
     Set<String> referencedBindings = new Set<String>();
     while (matcher.find()) {
@@ -1064,7 +1065,10 @@ public inherited sharing class JT_DataSelector {
     }
 
     String result = query;
-    String bindingPattern = ':' + bindingKey;
+    // Handle both "=:name" and "=: name" (with optional space after colon)
+    // Escape the colon and binding key, but allow optional space after colon
+    String escapedBindingKey = Pattern.quote(bindingKey);
+    String bindingPattern = ':\\s*' + escapedBindingKey;
 
     // Match condition with optional AND/OR before and after
     // Use negative lookahead to avoid capturing OR from ORDER BY
@@ -1072,7 +1076,7 @@ public inherited sharing class JT_DataSelector {
     // But don't capture OR if it's part of ORDER BY
     Pattern conditionPattern = Pattern.compile(
       '(?i)(?s)(?:\\s+(?:AND|OR))?\\s+[a-z0-9_]+\\s+(?:IN|NOT\\s+IN|INCLUDES|EXCLUDES|[=<>!]+)\\s*' +
-        Pattern.quote(bindingPattern) +
+        bindingPattern +
         '\\b(?=\\s+(?:AND|OR|ORDER|LIMIT|GROUP|HAVING|$)|$)'
     );
 
@@ -1140,7 +1144,8 @@ public inherited sharing class JT_DataSelector {
     }
 
     // Find all bindings referenced in the query
-    Pattern bindingPattern = Pattern.compile(':\\b(\\w+)\\b');
+    // Handle both "=:name" and "=: name" (with optional space after colon)
+    Pattern bindingPattern = Pattern.compile(':\\s*(\\w+)\\b');
     Matcher matcher = bindingPattern.matcher(query);
     Set<String> referencedBindings = new Set<String>();
     while (matcher.find()) {
@@ -1263,17 +1268,26 @@ public inherited sharing class JT_DataSelector {
     // Check if query uses unsupported operators and throw descriptive error
     validateSupportedOperators(config.JT_BaseQuery__c);
 
+    // Merge config bindings with custom bindings
+    Map<String, Object> configBindings = getConfigBindings(config);
+    Map<String, Object> mergedBindings = mergeBindings(
+      configBindings,
+      bindings
+    );
+
     // Build dynamic query removing conditions for empty/missing bindings
-    String dynamicQuery = buildDynamicQuery(config.JT_BaseQuery__c, bindings);
+    String dynamicQuery = buildDynamicQuery(config.JT_BaseQuery__c, mergedBindings);
 
     // Validate and convert bindings (auto-detect types from query patterns)
     // Only include bindings that are actually used in the dynamic query
     Map<String, Object> validatedBindings = validateAndConvertBindings(
-      bindings,
+      mergedBindings,
       dynamicQuery
     );
 
     // Filter bindings to only include those referenced in the dynamic query
+    // CRITICAL: Use dynamicQuery (after buildDynamicQuery) not baseQuery
+    // This ensures we only include bindings that are actually in the final query
     Map<String, Object> filteredBindings = filterBindingsForQuery(
       validatedBindings,
       dynamicQuery
@@ -1282,7 +1296,25 @@ public inherited sharing class JT_DataSelector {
     // Use appropriate access level
     AccessLevel accessMode = getAccessLevel(enforceSecurity);
 
-    return Database.queryWithBinds(dynamicQuery, filteredBindings, accessMode);
+    // Final safety check: Ensure all bindings in filteredBindings are actually in dynamicQuery
+    // This prevents "Key does not exist in bindMap" errors
+    // Handle both "=:name" and "=: name" (with optional space after colon)
+    Pattern bindingPattern = Pattern.compile(':\\s*(\\w+)\\b');
+    Matcher matcher = bindingPattern.matcher(dynamicQuery);
+    Set<String> finalReferencedBindings = new Set<String>();
+    while (matcher.find()) {
+      finalReferencedBindings.add(matcher.group(1));
+    }
+
+    // Remove any bindings that aren't actually in the final query
+    Map<String, Object> finalBindings = new Map<String, Object>();
+    for (String key : filteredBindings.keySet()) {
+      if (finalReferencedBindings.contains(key)) {
+        finalBindings.put(key, filteredBindings.get(key));
+      }
+    }
+
+    return Database.queryWithBinds(dynamicQuery, finalBindings, accessMode);
   }
 
   /**
@@ -1344,8 +1376,12 @@ public inherited sharing class JT_DataSelector {
     Map<String, Object> bindings,
     Boolean enforceSecurity
   ) {
+    // Build dynamic query removing conditions for empty/missing bindings
+    // This ensures we only process bindings that are actually used in the query
+    String dynamicQuery = buildDynamicQuery(baseQuery, bindings);
+
     // Convert SELECT query to COUNT query
-    String countQuery = baseQuery.replaceAll(
+    String countQuery = dynamicQuery.replaceAll(
       '(?i)SELECT[\\s\\S]+?FROM',
       'SELECT COUNT() FROM'
     );
@@ -1355,14 +1391,29 @@ public inherited sharing class JT_DataSelector {
     countQuery = countQuery.replaceAll('(?i)\\s+LIMIT\\s+\\d+', '');
     countQuery = countQuery.replaceAll('(?i)\\s+OFFSET\\s+\\d+', '');
 
+    // Validate and convert bindings (auto-detect types from query patterns)
+    // Only include bindings that are actually used in the dynamic query
+    Map<String, Object> validatedBindings = validateAndConvertBindings(
+      bindings,
+      dynamicQuery
+    );
+
+    // Filter bindings to only include those referenced in the dynamic query
+    // This prevents "Key does not exist in bindMap" errors
+    Map<String, Object> filteredBindings = filterBindingsForQuery(
+      validatedBindings,
+      dynamicQuery
+    );
+
     // Use appropriate access level
     AccessLevel accessMode = getAccessLevel(enforceSecurity);
 
     // Replace bind variables in the query string for Database.countQuery()
+    // Database.countQuery() doesn't support bindings, so we must replace them with literal values
     String finalQuery = countQuery;
-    if (bindings != null && !bindings.isEmpty()) {
-      for (String key : bindings.keySet()) {
-        Object value = bindings.get(key);
+    if (filteredBindings != null && !filteredBindings.isEmpty()) {
+      for (String key : filteredBindings.keySet()) {
+        Object value = filteredBindings.get(key);
         String replacement = '';
 
         if (value instanceof String) {

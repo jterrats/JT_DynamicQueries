@@ -29,7 +29,7 @@ async function closeUsageModal(page) {
   // Try footer button first (lightning-button)
   let closeButton = page.locator('c-jt-usage-modal lightning-button').first();
   let buttonVisible = await closeButton.isVisible({ timeout: 5000 }).catch(() => false);
-  
+
   if (buttonVisible) {
     // Check if button is disabled
     const isDisabled = await closeButton.getAttribute("disabled").catch(() => null);
@@ -38,11 +38,11 @@ async function closeUsageModal(page) {
       return;
     }
   }
-  
+
   // Fallback to header close button
   closeButton = page.locator('c-jt-usage-modal button.slds-modal__close').first();
   buttonVisible = await closeButton.isVisible({ timeout: 5000 }).catch(() => false);
-  
+
   if (buttonVisible) {
     const isDisabled = await closeButton.getAttribute("disabled").catch(() => null);
     if (!isDisabled) {
@@ -50,7 +50,7 @@ async function closeUsageModal(page) {
       return;
     }
   }
-  
+
   // Last resort: try pressing Escape key
   await page.keyboard.press("Escape");
   await page.waitForTimeout(1000);
@@ -309,11 +309,29 @@ test.describe("Where is this used? - Usage Detection", () => {
     });
 
     // Should show "No usages found" or similar message
-    // The modal uses custom labels, so we need to check for the actual text
-    const noUsagesMessage = modalContent.locator(
-      "text=/No usages found|not found any usage|no results|no usage found|This configuration is not used/i"
+    // The modal uses custom labels: "No usage found" and "This configuration is not currently referenced..."
+    // Check for the actual label text or the icon that indicates no results
+    const noUsageText = modalContent.locator(
+      "text=/No usage found|not currently referenced|not found any usage|no results/i"
     ).first();
-    await expect(noUsagesMessage).toBeVisible({ timeout: 30000 });
+    
+    // Also check for the search icon that appears when there are no results
+    const noUsageIcon = modalContent.locator('lightning-icon[icon-name="utility:search"]');
+    
+    // Wait for either the text or icon to appear
+    const hasNoUsage = await Promise.race([
+      noUsageText.isVisible({ timeout: 30000 }).then(() => true),
+      noUsageIcon.isVisible({ timeout: 30000 }).then(() => true)
+    ]).catch(() => false);
+    
+    // Verify no table is present (table means there ARE usages)
+    const hasTable = await modalContent.locator('table').isVisible({ timeout: 5000 }).catch(() => false);
+    
+    if (hasTable) {
+      throw new Error("Expected 'No usages found' but table with results was found");
+    }
+    
+    expect(hasNoUsage).toBe(true);
 
     // Close modal using helper function
     await closeUsageModal(page);

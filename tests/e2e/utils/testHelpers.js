@@ -33,17 +33,47 @@ async function setupTestContext(page, session, options = {}) {
 
     if (navigated) {
       // Wait for any modal spinner to disappear before clicking tab
+      // Salesforce has its own spinner (forceModalSpinner) that can intercept clicks
       const modalSpinner = page.locator(".forceModalSpinner, .modal-glass");
       await modalSpinner
-        .waitFor({ state: "hidden", timeout: 10000 })
+        .waitFor({ state: "hidden", timeout: 15000 })
         .catch(() => {
           // If spinner doesn't exist or already hidden, that's fine
         });
+      
+      // Also wait for our custom spinners
+      const customSpinner = page.locator(".usage-search-spinner-overlay, .deletion-spinner-overlay, .initial-loading-overlay");
+      await customSpinner
+        .waitFor({ state: "hidden", timeout: 10000 })
+        .catch(() => {
+          // Spinner may already be gone, continue
+        });
 
-      // Click on target tab
+      // Click on target tab with retry logic for spinner interference
       const tabLink = page.locator(SELECTORS.tabLink(targetTab)).first();
       await tabLink.waitFor({ state: "visible", timeout: 10000 });
-      await tabLink.click({ timeout: 5000 });
+      
+      // Retry click if spinner intercepts
+      let clickSuccess = false;
+      for (let i = 0; i < 3; i++) {
+        try {
+          await tabLink.click({ timeout: 10000, force: i === 2 }); // Force on last attempt
+          clickSuccess = true;
+          break;
+        } catch (error) {
+          if (error.message.includes("intercepts pointer events") || error.message.includes("modal-glass")) {
+            // Wait a bit more for spinner to disappear
+            await page.waitForTimeout(1000);
+            await modalSpinner.waitFor({ state: "hidden", timeout: 5000 }).catch(() => {});
+          } else {
+            throw error;
+          }
+        }
+      }
+      
+      if (!clickSuccess) {
+        throw new Error("Failed to click tab after retries - spinner may be blocking");
+      }
       await page.waitForLoadState("domcontentloaded");
 
       // Wait for modal spinner to disappear after navigation

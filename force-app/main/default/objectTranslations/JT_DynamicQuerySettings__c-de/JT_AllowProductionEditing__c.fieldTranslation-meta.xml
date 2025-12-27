@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <help
+  >⚠️ WARNUNG: Aktiviert die Erstellung/Bearbeitung von Metadaten in Produktionsumgebungen (nur Starter/Free Editions). Mit äußerster Vorsicht verwenden.</help>
+    <label>Produktionsbearbeitung Zulassen</label>
+    <name>JT_AllowProductionEditing__c</name>
+</CustomFieldTranslation>

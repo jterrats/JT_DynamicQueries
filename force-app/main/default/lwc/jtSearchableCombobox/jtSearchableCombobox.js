@@ -20,11 +20,28 @@
  * ></c-jt-searchable-combobox>
  */
 import { LightningElement, api, track } from "lwc";
+// Import Custom Labels
+import typeToSearchLabel from "@salesforce/label/c.JT_jtSearchableCombobox_typeToSearch";
+import noResultsFoundLabel from "@salesforce/label/c.JT_jtSearchableCombobox_noResultsFound";
+import pleaseSelectOptionLabel from "@salesforce/label/c.JT_jtSearchableCombobox_pleaseSelectOption";
+import clearSelectionLabel from "@salesforce/label/c.JT_jtSearchableCombobox_clearSelection";
+import showOptionsLabel from "@salesforce/label/c.JT_jtSearchableCombobox_showOptions";
+import searchableComboboxLabel from "@salesforce/label/c.JT_jtSearchableCombobox_searchableCombobox";
 
 export default class JtSearchableCombobox extends LightningElement {
+  // Custom Labels
+  labels = {
+    typeToSearch: typeToSearchLabel,
+    noResultsFound: noResultsFoundLabel,
+    pleaseSelectOption: pleaseSelectOptionLabel,
+    clearSelection: clearSelectionLabel,
+    showOptions: showOptionsLabel,
+    searchableCombobox: searchableComboboxLabel
+  };
+
   // Public API
   @api label = "";
-  @api placeholder = "Type to search...";
+  @api placeholder = "";
   @api required = false;
   @api iconName = ""; // Optional icon for options
   @api disabled = false;
@@ -35,11 +52,32 @@ export default class JtSearchableCombobox extends LightningElement {
   @api testId = "searchable-combobox"; // Base testId for this instance
   @api name = "searchable-combobox"; // Form element name
 
-  // Translatable texts (passed from parent)
-  @api noResultsText = "No results found";
-  @api errorText = "Please select an option";
-  @api clearButtonTitle = "Clear selection";
-  @api showOptionsTitle = "Show options";
+  // Translatable texts (passed from parent, with defaults from Custom Labels)
+  @api noResultsText = "";
+  @api errorText = "";
+  @api clearButtonTitle = "";
+  @api showOptionsTitle = "";
+
+  // Computed properties for default values
+  get effectivePlaceholder() {
+    return this.placeholder || this.labels.typeToSearch;
+  }
+
+  get effectiveNoResultsText() {
+    return this.noResultsText || this.labels.noResultsFound;
+  }
+
+  get effectiveErrorText() {
+    return this.errorText || this.labels.pleaseSelectOption;
+  }
+
+  get effectiveClearButtonTitle() {
+    return this.clearButtonTitle || this.labels.clearSelection;
+  }
+
+  get effectiveShowOptionsTitle() {
+    return this.showOptionsTitle || this.labels.showOptions;
+  }
 
   // Options: [{ value, label, ...otherData }]
   @track _options = [];
@@ -129,7 +167,9 @@ export default class JtSearchableCombobox extends LightningElement {
   }
 
   get ariaLabel() {
-    return this.label || this.placeholder || "Searchable combobox";
+    return (
+      this.label || this.effectivePlaceholder || this.labels.searchableCombobox
+    );
   }
 
   // Lifecycle
@@ -244,7 +284,7 @@ export default class JtSearchableCombobox extends LightningElement {
     if (this.required && !this.selectedValue) {
       return {
         valid: false,
-        message: "Please select an option"
+        message: this.effectiveErrorText
       };
     }
     return { valid: true };

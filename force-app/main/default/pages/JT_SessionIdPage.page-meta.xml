@@ -3,7 +3,5 @@
     <apiVersion>65.0</apiVersion>
     <label>JT Session ID Page</label>
     <description
-  >Helper page to retrieve Session ID for Tooling API callouts</description>
-    <availableInTouch>false</availableInTouch>
-    <confirmationTokenRequired>false</confirmationTokenRequired>
+  >Provides API-enabled session ID for Tooling API calls</description>
 </ApexPage>

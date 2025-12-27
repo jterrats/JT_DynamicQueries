@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <help
+  >⚠️ ATTENZIONE: Abilita la creazione/modifica di metadati negli ambienti di produzione (solo edizioni Starter/Free). Usare con estrema cautela.</help>
+    <label>Consenti Modifica in Produzione</label>
+    <name>JT_AllowProductionEditing__c</name>
+</CustomFieldTranslation>

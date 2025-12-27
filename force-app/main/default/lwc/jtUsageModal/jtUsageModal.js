@@ -6,6 +6,27 @@
  * @fires close - When modal is closed
  */
 import { LightningElement, api, track } from "lwc";
+// Import Custom Labels
+import titlePrefixLabel from "@salesforce/label/c.JT_jtUsageModal_titlePrefix";
+import titleSuffixLabel from "@salesforce/label/c.JT_jtUsageModal_titleSuffix";
+import searchingTextLabel from "@salesforce/label/c.JT_jtUsageModal_searchingText";
+import noUsageFoundTextLabel from "@salesforce/label/c.JT_jtUsageModal_noUsageFoundText";
+import noUsageMessageLabel from "@salesforce/label/c.JT_jtUsageModal_noUsageMessage";
+import foundReferencesTextLabel from "@salesforce/label/c.JT_jtUsageModal_foundReferencesText";
+import closeLabelLabel from "@salesforce/label/c.JT_jtUsageModal_closeLabel";
+import typeColumnLabel from "@salesforce/label/c.JT_jtUsageModal_typeColumn";
+import nameColumnLabel from "@salesforce/label/c.JT_jtUsageModal_nameColumn";
+import lineColumnLabel from "@salesforce/label/c.JT_jtUsageModal_lineColumn";
+import partialResultsLabel from "@salesforce/label/c.JT_jtUsageModal_partialResults";
+import partialResultsMessageLabel from "@salesforce/label/c.JT_jtUsageModal_partialResultsMessage";
+import apexClassesLabel from "@salesforce/label/c.JT_jtUsageModal_apexClasses";
+import flowsToolingApiLabel from "@salesforce/label/c.JT_jtUsageModal_flowsToolingApi";
+import availableLabel from "@salesforce/label/c.JT_jtUsageModal_available";
+import failedLabel from "@salesforce/label/c.JT_jtUsageModal_failed";
+import searchStatusLabel from "@salesforce/label/c.JT_jtUsageModal_searchStatus";
+import apexLabel from "@salesforce/label/c.JT_jtUsageModal_apex";
+import flowsLabel from "@salesforce/label/c.JT_jtUsageModal_flows";
+import searchedLabel from "@salesforce/label/c.JT_jtUsageModal_searched";
 
 export default class JtUsageModal extends LightningElement {
   @api configName = "";
@@ -18,22 +39,99 @@ export default class JtUsageModal extends LightningElement {
   @api flowError = null;
   @api hasPartialResults = false;
 
-  // Translatable labels
-  @api titlePrefix = "Where is";
-  @api titleSuffix = "used?";
-  @api searchingText = "Searching Apex classes and Flows...";
-  @api noUsageFoundText = "No usage found";
-  @api noUsageMessage =
-    "This configuration is not currently referenced in any Apex classes or Flows.";
-  @api foundReferencesText = "Found {0} reference(s)";
-  @api closeLabel = "Close";
-  @api typeColumn = "Type";
-  @api nameColumn = "Name";
-  @api lineColumn = "Line";
+  // Custom Labels
+  labels = {
+    titlePrefix: titlePrefixLabel,
+    titleSuffix: titleSuffixLabel,
+    searchingText: searchingTextLabel,
+    noUsageFoundText: noUsageFoundTextLabel,
+    noUsageMessage: noUsageMessageLabel,
+    foundReferencesText: foundReferencesTextLabel,
+    closeLabel: closeLabelLabel,
+    typeColumn: typeColumnLabel,
+    nameColumn: nameColumnLabel,
+    lineColumn: lineColumnLabel,
+    partialResults: partialResultsLabel,
+    partialResultsMessage: partialResultsMessageLabel,
+    apexClasses: apexClassesLabel,
+    flowsToolingApi: flowsToolingApiLabel,
+    available: availableLabel,
+    failed: failedLabel,
+    searchStatus: searchStatusLabel,
+    apex: apexLabel,
+    flows: flowsLabel,
+    searched: searchedLabel
+  };
+
+  // Public API property to receive usage data from parent
+  @api
+  get usageData() {
+    return this._usageData;
+  }
+
+  set usageData(data) {
+    // Map Apex fields to template fields and ensure unique id
+    if (Array.isArray(data)) {
+      this._usageData = data.map((item, index) => {
+        // Generate unique id if not present
+        const uniqueId =
+          item.id ||
+          `${item.classId || "unknown"}-${item.lineNumber || "0"}-${index}`;
+
+        // Map Apex UsageResult fields to template fields
+        return {
+          id: uniqueId,
+          type: item.metadataType || item.type || "Unknown",
+          name: item.className || item.name || "Unknown",
+          lineNumber: item.lineNumber || 0,
+          icon: this.getIconForType(item.metadataType || item.type),
+          // Keep original fields for reference
+          ...item
+        };
+      });
+    } else {
+      this._usageData = [];
+    }
+  }
+
+  // Helper to get icon based on metadata type
+  getIconForType(type) {
+    if (!type) return "utility:file";
+    const normalizedType = type.toLowerCase();
+    if (normalizedType.includes("apex") || normalizedType.includes("class")) {
+      return "utility:code";
+    }
+    if (normalizedType.includes("flow")) {
+      return "utility:flow";
+    }
+    return "utility:file";
+  }
 
   @api
   setUsageData(data) {
-    this._usageData = data || [];
+    // Use the setter logic to ensure proper mapping
+    // Assign directly to _usageData to avoid linter error about reassigning public property
+    if (Array.isArray(data)) {
+      this._usageData = data.map((item, index) => {
+        // Generate unique id if not present
+        const uniqueId =
+          item.id ||
+          `${item.classId || "unknown"}-${item.lineNumber || "0"}-${index}`;
+
+        // Map Apex UsageResult fields to template fields
+        return {
+          id: uniqueId,
+          type: item.metadataType || item.type || "Unknown",
+          name: item.className || item.name || "Unknown",
+          lineNumber: item.lineNumber || 0,
+          icon: this.getIconForType(item.metadataType || item.type),
+          // Keep original fields for reference
+          ...item
+        };
+      });
+    } else {
+      this._usageData = [];
+    }
   }
 
   @api
@@ -43,7 +141,7 @@ export default class JtUsageModal extends LightningElement {
 
   // Computed
   get title() {
-    return `${this.titlePrefix} "${this.configName}" ${this.titleSuffix}`;
+    return `${this.labels.titlePrefix} "${this.configName}" ${this.labels.titleSuffix}`;
   }
 
   get hasUsage() {
@@ -55,8 +153,8 @@ export default class JtUsageModal extends LightningElement {
   }
 
   get usageSummary() {
-    if (!this.hasUsage) return this.noUsageFoundText;
-    return this.foundReferencesText.replace("{0}", this.usageCount);
+    if (!this.hasUsage) return this.labels.noUsageFoundText;
+    return this.labels.foundReferencesText.replace("{0}", this.usageCount);
   }
 
   // Service status computed properties

@@ -1,55 +1,57 @@
 <template>
-  <div class="results-container" role="region" aria-label="Query Results">
+  <div class="results-container" role="region" aria-label={labels.queryResults}>
     <!-- Header with View Toggle -->
     <div class="slds-grid slds-grid_align-spread slds-p-bottom_small">
       <div class="slds-text-heading_small" id="results-heading">
         Results ({recordCount} {recordCountLabel}):
       </div>
-      <lightning-button-group aria-label="View mode selection">
-        <lightning-button
-          label="Table"
-          icon-name="utility:table"
-          variant={isTableView}
-          onclick={handleViewChange}
-          data-view="table"
-          title="View as Table"
-          aria-label="View results as table"
-          aria-pressed={isTableActive}
-        ></lightning-button>
-        <lightning-button
-          label="JSON"
-          icon-name="utility:file"
-          variant={isJsonView}
-          onclick={handleViewChange}
-          data-view="json"
-          title="View as JSON (LLM-friendly)"
-          aria-label="View results as JSON format"
-          aria-pressed={isJsonActive}
-        ></lightning-button>
-        <lightning-button
-          label="CSV"
-          icon-name="utility:download"
-          variant={isCsvView}
-          onclick={handleViewChange}
-          data-view="csv"
-          title="Download as CSV"
-          aria-label="Download results as CSV file"
-          aria-pressed={isCsvActive}
-        ></lightning-button>
-      </lightning-button-group>
+      <template if:true={showViewToggleValue}>
+        <lightning-button-group aria-label={labels.viewModeSelection}>
+          <lightning-button
+            label={labels.table}
+            icon-name="utility:table"
+            variant={isTableView}
+            onclick={handleViewChange}
+            data-view="table"
+            title={labels.viewAsTable}
+            aria-label={labels.viewResultsAsTable}
+            aria-pressed={isTableActive}
+          ></lightning-button>
+          <lightning-button
+            label={labels.json}
+            icon-name="utility:file"
+            variant={isJsonView}
+            onclick={handleViewChange}
+            data-view="json"
+            title={labels.viewAsJson}
+            aria-label={labels.viewResultsAsJson}
+            aria-pressed={isJsonActive}
+          ></lightning-button>
+          <lightning-button
+            label={labels.csv}
+            icon-name="utility:download"
+            variant={isCsvView}
+            onclick={handleViewChange}
+            data-view="csv"
+            title={labels.downloadAsCsv}
+            aria-label={labels.downloadResultsAsCsvFile}
+            aria-pressed={isCsvActive}
+          ></lightning-button>
+        </lightning-button-group>
+      </template>
     </div>
 
     <!-- Table View -->
-    <template if:true={viewMode.table}>
+    <template if:true={effectiveViewMode.table}>
       <!-- Desktop: Nested Viewer with Child Relationships -->
-      <div class="desktop-table">
+      <div class="desktop-table slds-show_medium">
         <table class="slds-table slds-table_cell-buffer slds-table_bordered">
           <thead>
             <tr class="slds-line-height_reset">
               <th
                 scope="col"
                 style="width: 3rem"
-                aria-label="Expand/Collapse"
+                aria-label={labels.expandCollapse}
               ></th>
               <template for:each={parentColumns} for:item="col">
                 <th key={col.fieldName} scope="col">
@@ -123,16 +125,16 @@
 
       <!-- Mobile Cards -->
       <div
-        class="mobile-cards"
+        class="mobile-cards slds-hide_medium"
         role="list"
-        aria-label="Results as expandable cards"
+        aria-label={labels.resultsAsExpandableCards}
       >
         <template for:each={paginatedResults} for:item="row">
           <article
             key={row.Id}
             class="slds-card slds-m-bottom_small"
             role="listitem"
-            aria-label="Record {row._rowNumber}"
+            aria-label={row._ariaLabel}
           >
             <div
               class="slds-card__header slds-grid"
@@ -141,14 +143,14 @@
               role="button"
               tabindex="0"
               aria-expanded={row._expanded}
-              aria-label="Toggle details for {row._displayName}"
+              aria-label={row._toggleAriaLabel}
               onkeypress={handleCardKeyPress}
             >
               <header
                 class="slds-media slds-media_center slds-has-flexi-truncate"
               >
                 <div class="slds-media__figure">
-                  <span class="slds-badge" aria-label="Row number"
+                  <span class="slds-badge" aria-label={labels.rowNumber}
                     >{row._rowNumber}</span
                   >
                 </div>
@@ -198,12 +200,12 @@
     </template>
 
     <!-- JSON View -->
-    <template if:true={viewMode.json}>
+    <template if:true={effectiveViewMode.json}>
       <div class="json-view slds-box slds-theme_shade slds-m-bottom_medium">
         <div class="slds-grid slds-grid_align-spread slds-p-bottom_x-small">
-          <div class="slds-text-heading_small">JSON Output</div>
+          <div class="slds-text-heading_small">{labels.jsonOutput}</div>
           <lightning-button
-            label="Copy"
+            label={labels.copy}
             icon-name="utility:copy"
             onclick={handleCopyJson}
             variant="neutral"
@@ -214,20 +216,20 @@
     </template>
 
     <!-- CSV Preview -->
-    <template if:true={viewMode.csv}>
+    <template if:true={effectiveViewMode.csv}>
       <div class="csv-view slds-box slds-theme_shade slds-m-bottom_medium">
         <div class="slds-grid slds-grid_align-spread slds-p-bottom_x-small">
-          <div class="slds-text-heading_small">CSV Preview</div>
+          <div class="slds-text-heading_small">{labels.csvPreview}</div>
           <div>
             <lightning-button
-              label="Copy"
+              label={labels.copy}
               icon-name="utility:copy"
               onclick={handleCopyCsv}
               variant="neutral"
               class="slds-m-right_x-small"
             ></lightning-button>
             <lightning-button
-              label="Download"
+              label={labels.download}
               icon-name="utility:download"
               onclick={handleDownloadCsv}
               variant="brand"
@@ -250,9 +252,7 @@
               </div>
               <div class="slds-media__body">
                 <p class="slds-text-body_small">
-                  <strong>Note:</strong> Parent records are duplicated for each
-                  child relationship (LEFT JOIN style). Total rows may exceed
-                  record count.
+                  <strong>{labels.note}</strong> {labels.csvNote}
                 </p>
               </div>
             </div>
@@ -264,7 +264,7 @@
     <!-- Pagination Controls -->
     <template if:true={showPagination}>
       <nav
-        aria-label="Pagination navigation"
+        aria-label={labels.paginationNavigation}
         class="slds-p-top_medium slds-grid slds-grid_align-spread slds-grid_vertical-align-center"
       >
         <div
@@ -282,22 +282,26 @@
             {recordCountLabel}</span
           >
         </div>
-        <div class="slds-button-group" role="group" aria-label="Pagination controls">
+        <div
+          class="slds-button-group"
+          role="group"
+          aria-label={labels.paginationControls}
+        >
           <lightning-button
             icon-name="utility:chevronleft"
             onclick={handlePreviousPage}
             disabled={disablePrevious}
             variant="neutral"
-            title="Previous page"
-            aria-label="Go to previous page"
+            title={labels.previousPage}
+            aria-label={labels.goToPreviousPage}
           ></lightning-button>
           <lightning-button
             icon-name="utility:chevronright"
             onclick={handleNextPage}
             disabled={disableNext}
             variant="neutral"
-            title="Next page"
-            aria-label="Go to next page"
+            title={labels.nextPage}
+            aria-label={labels.goToNextPage}
           ></lightning-button>
         </div>
       </nav>

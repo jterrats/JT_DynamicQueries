@@ -207,39 +207,102 @@ The app includes five tabs:
 - **🆘 Support** - GitHub issues and community support links
 - **📈 Reports** - (Future) Access standard reporting functionality
 
-### 4. (Optional) Configure Tooling API
+### 4. Tooling API (Automatic)
 
-To enable advanced features like **"Where is this used?"** (search in Flows), configure Named Credentials for Tooling API access.
+**✅ No configuration required!** The Tooling API setup is **automatic** and works out-of-the-box.
 
-**🚀 Quick Setup (Automated - Recommended):**
+The application uses Visualforce Page-based session ID retrieval with multi-level caching for optimal performance. No Named Credentials or OAuth setup needed.
+
+**📚 Architecture Details:**
+
+- [Tooling API Setup Guide](./docs/TOOLING_API_OAUTH_SETUP.md) - Complete architecture and troubleshooting
+
+**Note:** The framework works automatically. Tooling API is used for:
+
+- Searching configuration references in Flows (via "Where is this used?" feature)
+- Creating/updating Custom Metadata records (in sandbox/dev orgs)
+
+## 🔄 Configuration Migration
+
+### Export Configurations from Source Org
+
+All query configurations are stored as **Custom Metadata Types** (`JT_DataSelector__mdt`), making them fully version-controllable and migratable.
 
 ```bash
-# Auto-detect org URL and deploy Named Credential
-./scripts/smart-deploy.sh
+# Export all Dynamic Query configurations
+sf project retrieve start \
+  --metadata CustomMetadata:JT_DataSelector \
+  --target-org production
+
+# Result: force-app/main/default/customMetadata/*.md-meta.xml
 ```
 
-**💡 Multi-Org Support:**
+### Import Configurations to Target Org
 
 ```bash
-# Switch to different org
-sf config set target-org my-sandbox
+# Deploy to another org
+sf project deploy start \
+  --source-dir force-app/main/default/customMetadata \
+  --target-org sandbox
 
-# Smart deploy auto-detects change!
-./scripts/smart-deploy.sh
-# ⚠️ Org URL mismatch detected!
-# 🔄 Updating environment...
-# ✅ Named Credential deployed with new org URL!
+# Validate before deploying (dry-run)
+sf project deploy start \
+  --source-dir force-app/main/default/customMetadata \
+  --target-org sandbox \
+  --dry-run
 ```
 
-**📚 Detailed Guides:**
+### Version Control & CI/CD
 
-- [Named Credential Setup](./scripts/SETUP_NAMED_CREDENTIAL.md) - Automation guide
-- [Multi-Org Workflow](./scripts/WORKFLOW_EXAMPLE.md) - Dev/Sandbox/Production examples
-- [Scripts README](./scripts/README.md) - All available scripts and aliases
+Since configurations are metadata, they integrate seamlessly with Git:
 
-**Note:** The framework works WITHOUT Tooling API (core query execution features remain fully functional). Tooling API is only required for:
+```bash
+# Commit configurations to version control
+git add force-app/main/default/customMetadata/
+git commit -m "feat: add Account query config"
+git push
 
-- Searching configuration references in Flows
+# Deploy via CI/CD (GitHub Actions example)
+sf project deploy start \
+  --source-dir force-app/main/default/customMetadata \
+  --target-org ${{ secrets.SF_PROD_USERNAME }}
+```
+
+### Conflict Resolution
+
+If multiple developers create configs with the same name:
+
+```bash
+# Git shows conflicts in .md-meta.xml files
+git merge feature/new-configs
+
+# Resolve manually or rename configs
+# Then deploy with validation
+sf project deploy start \
+  --source-dir force-app/main/default/customMetadata \
+  --target-org sandbox \
+  --dry-run
+```
+
+### Rollback Configurations
+
+```bash
+# Revert to previous version
+git revert <commit-hash>
+
+# Deploy rollback
+sf project deploy start \
+  --source-dir force-app/main/default/customMetadata \
+  --target-org production
+```
+
+**Benefits over custom export/import:**
+
+- ✅ Native Salesforce validation (SOQL syntax, object existence)
+- ✅ Full Git history and auditing
+- ✅ Branch-based development workflow
+- ✅ Automated CI/CD integration
+- ✅ No custom UI maintenance required
 
 ## 📖 Documentation
 
@@ -258,7 +321,7 @@ Documentation automatically displays in your browser's language (English or Span
 
 ### External Documentation
 
-- [**Named Credential Setup**](./scripts/SETUP_NAMED_CREDENTIAL.md) - Auto-config for Tooling API with smart-deploy
+- [**Tooling API Setup**](./docs/TOOLING_API_OAUTH_SETUP.md) - Architecture and troubleshooting guide
 - [**CI/CD Setup**](./.github/CI_SETUP.md) - GitHub Actions for automated E2E testing
 - [**Bug Fixes Summary**](./.github/BUG_FIXES_SUMMARY.md) - 6 critical bugs fixed with test validation
 - [Run As User Feature](./RUN_AS_USER_FEATURE.md) - Detailed explanation of Run As modes

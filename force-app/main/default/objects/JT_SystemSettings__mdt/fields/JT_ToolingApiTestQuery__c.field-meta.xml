@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>JT_ToolingApiTestQuery__c</fullName>
+    <description
+  >Simple SOQL query for Tooling API availability check (e.g., SELECT Id FROM ApexClass LIMIT 1)</description>
+    <externalId>false</externalId>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <inlineHelpText
+  >Simple query to test Tooling API availability</inlineHelpText>
+    <label>Tooling API Test Query</label>
+    <length>200</length>
+    <required>true</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

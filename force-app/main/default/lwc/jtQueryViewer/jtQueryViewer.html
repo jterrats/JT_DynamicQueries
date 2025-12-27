@@ -1,7 +1,7 @@
 <template>
   <!-- Skip Link for Accessibility -->
   <a href="#main-content" class="slds-assistive-text slds-p-around_xxx-small"
-    >Skip to main content</a
+    >{labels.skipToMainContent}</a
   >
 
   <!-- Live Region for Screen Reader Announcements -->
@@ -14,7 +14,91 @@
     {srAnnouncement}
   </div>
 
-  <lightning-card title="Dynamic Query Viewer" icon-name="custom:custom63">
+  <!-- Initial Loading Spinner Overlay -->
+  <!-- Only show when loading AND no modals are open (modals have higher z-index) -->
+  <template if:true={isInitialLoading}>
+    <template if:false={hasOpenModals}>
+      <div
+        class="initial-loading-overlay slds-is-fixed"
+        role="status"
+        aria-live="polite"
+        aria-label={labels.loadingApplication}
+      >
+        <lightning-spinner
+          alternative-text={labels.loadingDynamicQueryViewer}
+          size="large"
+          variant="brand"
+        ></lightning-spinner>
+      </div>
+    </template>
+  </template>
+
+  <!-- Usage Search Spinner Overlay -->
+  <!-- Show while searching for usage, before modal appears -->
+  <!-- Only show when loading AND no modals are open (modals have higher z-index) -->
+  <template if:true={isLoadingUsage}>
+    <template if:false={hasOpenModals}>
+      <div
+        class="usage-search-spinner-overlay slds-is-fixed"
+        role="status"
+        aria-live="polite"
+        aria-label={labels.searchingForUsage}
+      >
+        <div
+          class="slds-grid slds-grid_vertical slds-grid_align-center slds-grid_align-space-around slds-text-align_center"
+          style="max-width: 500px"
+        >
+          <p class="slds-text-heading_small slds-m-bottom_medium">
+            {labels.searchingFlows}
+          </p>
+          <lightning-spinner
+            alternative-text={labels.searching}
+            size="large"
+            variant="brand"
+          ></lightning-spinner>
+          <p
+            class="slds-m-top_medium slds-text-body_regular slds-max-medium-text-width"
+          >
+            {searchingUsageMessage}
+          </p>
+        </div>
+      </div>
+    </template>
+  </template>
+
+  <!-- Configuration Deletion Spinner Overlay -->
+  <!-- Only show when deleting AND no modals are open (modals have higher z-index) -->
+  <template if:true={isDeletingConfiguration}>
+    <template if:false={hasOpenModals}>
+      <div
+        class="deletion-spinner-overlay slds-is-fixed"
+        role="status"
+        aria-live="polite"
+        aria-label="Deleting configuration"
+      >
+        <div
+          class="slds-grid slds-grid_vertical slds-grid_align-center slds-grid_align-space-around slds-text-align_center"
+          style="max-width: 500px"
+        >
+          <p class="slds-text-heading_small slds-m-bottom_medium">
+            Deleting Configuration
+          </p>
+          <lightning-spinner
+            alternative-text="Deleting configuration"
+            size="large"
+            variant="brand"
+          ></lightning-spinner>
+          <p
+            class="slds-m-top_medium slds-text-body_regular slds-max-medium-text-width"
+          >
+            Configuration deletion is being processed. Please wait...
+          </p>
+        </div>
+      </div>
+    </template>
+  </template>
+
+  <lightning-card title={labels.dynamicQueryViewer} icon-name="custom:custom63">
     <!-- Card Header Actions -->
     <div slot="actions">
       <div
@@ -23,49 +107,60 @@
         <!-- Clear Cache Button (Always visible - non-destructive operation) -->
         <lightning-button
           label={labels.clearCache}
-          title="Clear cache and refresh data"
+          title={labels.clearCacheAndRefresh}
           onclick={handleOpenCacheModal}
           variant="neutral"
           icon-name="utility:refresh"
           class="slds-m-right_x-small"
           data-testid="header-clear-cache-button"
           name="clear-cache"
-          aria-label="Open cache management modal"
+          aria-label={labels.openCacheManagementModal}
         >
         </lightning-button>
 
         <!-- Create Configuration Button (Sandbox/Scratch only) -->
         <template if:true={canCreateMetadata}>
           <lightning-button
-            label="Create Configuration"
-            title="Create a new query configuration"
+            label={labels.createConfiguration}
+            title={labels.createNewQueryConfiguration}
             onclick={handleShowCreateModal}
             variant="brand"
             icon-name="utility:add"
             data-testid="header-create-config-button"
             name="create-configuration"
-            aria-label="Create new query configuration"
+            aria-label={labels.createNewQueryConfigurationAria}
           >
           </lightning-button>
-          <lightning-helptext
-            content="Create a new query configuration with a SOQL query (SELECT fields FROM object WHERE condition), optional bind variables in JSON format, and field mappings."
-            icon-variant="inverse"
-            class="slds-m-left_xx-small slds-m-right_small"
-          >
-          </lightning-helptext>
         </template>
 
         <!-- Edit Configuration Button (Sandbox/Scratch only + config selected) -->
         <template if:true={showEditConfigButton}>
           <lightning-button
-            label="Edit Configuration"
-            title="Edit selected configuration"
+            label={labels.editConfigurationNew}
+            title={labels.editSelectedConfiguration}
             onclick={handleShowEditModal}
             variant="neutral"
             icon-name="utility:edit"
+            class="slds-m-left_x-small"
             data-testid="header-edit-config-button"
             name="edit-configuration"
-            aria-label="Edit selected query configuration"
+            aria-label={labels.editSelectedQueryConfigurationAria}
+          >
+          </lightning-button>
+        </template>
+
+        <!-- Delete Configuration Button (Sandbox/Scratch only + config selected) -->
+        <template if:true={showDeleteConfigButton}>
+          <lightning-button
+            label={labels.deleteConfiguration}
+            title={labels.deleteSelectedConfiguration}
+            onclick={handleDeleteConfiguration}
+            variant="destructive"
+            icon-name="utility:delete"
+            class="slds-m-left_x-small slds-m-right_small"
+            data-testid="header-delete-config-button"
+            name="delete-configuration"
+            aria-label={labels.deleteSelectedQueryConfigurationAria}
           >
           </lightning-button>
         </template>
@@ -75,13 +170,14 @@
           <lightning-badge
             label={orgTypeBadge}
             title={orgTypeBadgeTitle}
+            class="slds-m-left_small"
           ></lightning-badge>
         </template>
         <template if:true={isProduction}>
           <lightning-badge
-            label="Production"
+            label={labels.production}
             variant="inverse"
-            title="Read-only mode in Production"
+            title={labels.readOnlyModeInProduction}
           ></lightning-badge>
         </template>
       </div>
@@ -92,7 +188,7 @@
       id="main-content"
       class="slds-p-around_medium"
       role="main"
-      aria-label="Query Viewer Main Content"
+      aria-label={labels.queryViewerMainContent}
     >
       <!-- Production Warning Banner with Override Option -->
       <template if:true={isProduction}>
@@ -101,7 +197,7 @@
             class="slds-notify slds-notify_alert slds-alert_warning"
             role="alert"
           >
-            <span class="slds-assistive-text">warning</span>
+            <span class="slds-assistive-text">{labels.warning}</span>
             <span
               class="slds-icon_container slds-icon-utility-warning slds-m-right_small"
             >
@@ -109,18 +205,15 @@
                 icon-name="utility:warning"
                 size="small"
                 variant="warning"
-                alternative-text="Warning"
+                alternative-text={labels.warning}
               ></lightning-icon>
             </span>
             <div>
               <h2 class="slds-m-bottom_small">
-                <strong>Production Environment Detected</strong>
+                <strong>{labels.productionEnvironmentDetected}</strong>
               </h2>
               <p class="slds-text-body_regular slds-m-bottom_medium">
-                Metadata creation and editing are disabled for safety. These
-                features are only available in
-                <strong>development/test environments</strong>: Sandbox, Scratch
-                Org, Developer Edition, or Trial.
+                {labels.metadataCreationDisabled}
               </p>
 
               <!-- Advanced Override for Starter/Free Editions -->
@@ -134,18 +227,15 @@
                     variant="warning"
                     class="slds-m-right_xx-small"
                   ></lightning-icon>
-                  <strong>Advanced Option (Starter/Free Editions Only)</strong>
+                  <strong>{labels.advancedOptionStarterFree}</strong>
                 </h3>
                 <p class="slds-text-body_small slds-m-bottom_small">
-                  If you're using
-                  <strong>Starter or Free Edition</strong> (which don't include
-                  sandbox), you can enable editing
-                  <strong>at your own risk</strong>:
+                  {labels.starterFreeEditionWarning}
                 </p>
                 <div class="slds-m-bottom_small">
                   <lightning-input
                     type="checkbox"
-                    label="Enable metadata editing in this production environment"
+                    label={labels.enableMetadataEditingProduction}
                     checked={productionOverrideEnabled}
                     onchange={handleProductionOverrideChange}
                     disabled={isUpdatingSettings}
@@ -162,19 +252,11 @@
                       icon-name="utility:ban"
                       size="small"
                       variant="error"
-                      alternative-text="Danger"
+                      alternative-text={labels.danger}
                     ></lightning-icon>
                   </div>
                   <div class="slds-media__body">
-                    <p class="slds-text-body_small">
-                      <strong>⚠️ SECURITY WARNING:</strong><br />
-                      • Changes are immediate (no deployment process)<br />
-                      • Affects all users in this production org<br />
-                      • No rollback mechanism<br />
-                      • Could expose sensitive data if misconfigured<br />
-                      • Recommended: Use Setup UI instead (Setup → Custom
-                      Metadata Types)
-                    </p>
+                    <p class="slds-text-body_small">{labels.securityWarning}</p>
                   </div>
                 </div>
               </div>
@@ -191,14 +273,14 @@
             size="x-small"
             class="slds-m-right_xx-small"
           ></lightning-icon>
-          API Features & Tooling API
+          {labels.apiFeaturesToolingApi}
         </h3>
 
         <!-- Global API Disclaimer -->
         <div
           class="slds-box slds-box_x-small slds-theme_warning slds-m-bottom_small"
           role="alert"
-          aria-label="Tooling API consumption warning"
+          aria-label={labels.toolingApiConsumptionWarning}
         >
           <div class="slds-media slds-media_center">
             <div class="slds-media__figure">
@@ -206,7 +288,7 @@
                 icon-name="utility:warning"
                 size="medium"
                 variant="warning"
-                alternative-text="Warning"
+                alternative-text={labels.warning}
               ></lightning-icon>
             </div>
             <div class="slds-media__body">
@@ -230,7 +312,8 @@
               </ul>
               <p class="slds-text-body_small slds-m-top_xx-small">
                 <strong>{labels.setupRequired}</strong>
-                {labels.namedCredentialSetup}
+                Tooling API must be accessible. Users need appropriate
+                permissions to access Tooling API.
               </p>
               <p class="slds-text-body_small slds-m-top_xx-small">
                 <a href="#" onclick={handleGoToDocumentation}
@@ -287,15 +370,15 @@
             <template if:true={showUsageLink}>
               <div class="slds-m-top_x-small slds-m-left_small">
                 <a
-                  href="javascript:void(0);"
+                  href="#"
                   onclick={handleShowUsageModal}
-                  class="usage-link"
-                  title="Find where this configuration is used in Apex code and Flows"
+                  class="usage-link slds-grid slds-grid_vertical-align-center slds-inline-flex"
+                  title={labels.findWhereConfigurationUsed}
                 >
                   <lightning-icon
                     icon-name="utility:search"
                     size="xx-small"
-                    class="slds-m-right_xx-small"
+                    class="slds-m-right_xx-small slds-shrink-none"
                   ></lightning-icon>
                   Where is this used?
                 </a>
@@ -311,21 +394,14 @@
             >
               <lightning-accordion-section
                 name="run-as"
-                label="Run As User (Advanced)"
+                label={labels.runAsUserAdvanced}
               >
                 <div class="slds-p-around_small">
                   <c-jt-run-as-section
-                    title=""
-                    note-text={labels.runAsNote}
-                    select-user-label={labels.selectUser}
-                    select-user-placeholder={labels.searchUsersPlaceholder}
-                    clear-label={labels.clear}
-                    execute-as-user-label={labels.executeSystemRunAs}
-                    executing-test-text={labels.executingTest}
-                    loading-users-text={labels.loadingUsers}
                     user-options={userOptions}
                     is-loading-users={isLoadingUsers}
-                    run-as-user-id={runAsUserId}
+                    selected-user-id={runAsUserId}
+                    selected-user-name={runAsUserName}
                     show-run-as-test={showRunAsTest}
                     is-running-test={isRunningTest}
                     onuserselect={handleUserSelect}
@@ -345,6 +421,7 @@
             >
               <c-jt-parameter-inputs
                 parameters={parameters}
+                base-query={baseQuery}
                 title={labels.queryParameters}
                 no-parameters-text={labels.noParametersRequired}
                 onchange={handleParameterChange}
@@ -384,6 +461,7 @@
               has-parameters={hasParameters}
               parameter-values={parameterValues}
               is-loading={isLoading}
+              is-running-test={isRunningTest}
               onexecute={handleExecuteQuery}
             ></c-jt-execute-button>
           </div>
@@ -400,25 +478,34 @@
         >
           <!-- Query Preview -->
           <template if:true={baseQuery}>
-            <div class="query-preview-container slds-m-bottom_medium">
+            <div
+              class="query-preview-container slds-m-bottom_medium slds-p-left_small"
+            >
               <div class="slds-text-heading_small slds-p-bottom_x-small">
                 Query Preview:
               </div>
-              <div class="query-preview slds-box slds-theme_shade">
-                <pre class="slds-text-body_small">{queryPreview}</pre>
+              <div
+                class="query-preview slds-box slds-theme_shade slds-p-around_small slds-medium-p-around_medium slds-scrollable_x"
+                style="max-height: 200px"
+              >
+                <pre
+                  class="slds-text-body_small slds-medium-text-body_regular slds-m-around_none"
+                >
+{queryPreview}</pre
+                >
               </div>
 
               <!-- Query Data Preview -->
               <template if:true={showPreviewData}>
                 <div class="slds-m-top_small">
                   <div class="slds-text-heading_small slds-p-bottom_x-small">
-                    Data Preview (Top {previewRecordCount} records):
+                    {dataPreviewTitleFormatted}
                   </div>
 
                   <template if:true={isLoadingPreview}>
                     <div class="slds-text-align_center slds-p-vertical_medium">
                       <lightning-spinner
-                        alternative-text="Loading preview..."
+                        alternative-text={labels.loadingPreview}
                         size="small"
                       ></lightning-spinner>
                     </div>
@@ -440,7 +527,7 @@
                       <div class="slds-m-top_x-small slds-text-align_center">
                         <lightning-button-group>
                           <lightning-button
-                            label="Previous"
+                            label={labels.previousNew}
                             icon-name="utility:chevronleft"
                             onclick={handlePreviewPrevious}
                             disabled={previewHasPrevious}
@@ -452,7 +539,7 @@
                             data-testid="preview-page-info"
                           ></lightning-button>
                           <lightning-button
-                            label="Next"
+                            label={labels.nextNew}
                             icon-name="utility:chevronright"
                             icon-position="right"
                             onclick={handlePreviewNext}
@@ -487,10 +574,10 @@
           <template if:true={showError}>
             <div class="slds-m-bottom_medium">
               <div
-                class="slds-notify slds-notify_alert slds-alert_error"
+                class="slds-notify slds-notify_alert slds-alert_error slds-m-bottom_medium"
                 role="alert"
               >
-                <span class="slds-assistive-text">error</span>
+                <span class="slds-assistive-text">{labels.error}</span>
                 <lightning-icon
                   icon-name="utility:error"
                   size="small"
@@ -504,7 +591,7 @@
 
           <!-- Results Section -->
           <template if:true={showResults}>
-            <div class="results-container slds-m-bottom_medium">
+            <div class="slds-m-top_medium slds-medium-m-top_large">
               <!-- 🆕 Use jtQueryResults component with tree-grid support -->
               <c-jt-query-results
                 columns={columns}
@@ -521,37 +608,43 @@
                   <div
                     class="slds-grid slds-grid_align-spread slds-p-bottom_x-small"
                   >
-                    <div class="slds-text-heading_small">JSON Output</div>
+                    <div class="slds-text-heading_small">
+                      {labels.jsonOutput}
+                    </div>
                     <lightning-button
-                      label="Copy"
+                      label={labels.copy}
                       icon-name="utility:copy"
                       onclick={handleCopyJson}
                       variant="neutral"
                       class="slds-m-left_x-small"
                     ></lightning-button>
                   </div>
-                  <pre class="json-content">{jsonOutput}</pre>
+                  <pre
+                    class="json-content slds-p-around_medium slds-text-body_small slds-medium-text-body_regular"
+                  >
+{jsonOutput}</pre
+                  >
                 </div>
               </template>
 
               <!-- CSV Download -->
               <template if:true={viewMode.csv}>
                 <div
-                  class="csv-view slds-box slds-theme_info slds-text-align_center slds-p-around_large"
+                  class="csv-view slds-box slds-theme_info slds-grid slds-grid_vertical slds-grid_align-center slds-grid_align-space-around slds-text-align_center slds-p-around_large"
                 >
                   <lightning-icon
                     icon-name="utility:download"
                     size="large"
-                    alternative-text="Download CSV"
+                    alternative-text={labels.downloadCsv}
                   ></lightning-icon>
                   <h3 class="slds-text-heading_medium slds-p-top_small">
-                    Download CSV
+                    {labels.downloadCsv}
                   </h3>
                   <p class="slds-text-body_regular slds-p-top_small">
-                    Your CSV file has been generated with {recordCount} records.
+                    {csvFileGeneratedMessage}
                   </p>
                   <lightning-button
-                    label="Download CSV File"
+                    label={labels.downloadCsvFile}
                     icon-name="utility:download"
                     onclick={handleDownloadCsv}
                     variant="brand"
@@ -587,33 +680,17 @@
   <!-- Create/Edit Configuration Modal -->
   <template if:true={showCreateModal}>
     <c-jt-config-modal
+      lwc:ref="configModal"
       mode={configModalMode}
       is-saving={isSaving}
       can-create-metadata={canCreateMetadata}
-      config={newConfig}
-      query-validation={queryValidation}
       is-loading-query-preview={isLoadingQueryPreview}
       query-preview-results={queryPreviewResults}
       query-preview-columns={queryPreviewColumns}
-      create-title={labels.createNewConfiguration}
-      edit-title={labels.editConfiguration}
-      save-label={labels.save}
-      update-label={labels.updateConfiguration}
-      cancel-label={labels.cancel}
-      label-field={labels.label}
-      developer-name-field={labels.developerName}
-      base-query-field={labels.baseQuery}
-      object-name-field={labels.objectName}
-      bindings-field={labels.bindings}
-      valid-syntax={labels.validSOQLSyntax}
-      object-label={labels.object}
-      query-preview-label={labels.queryPreviewTitle}
-      auto-detected-placeholder={labels.autoDetectedFromQuery}
-      tooling-note={labels.toolingAPINote}
-      sandbox-warning={labels.sandboxOnlyWarning}
       onconfigchange={handleNewConfigChange}
       onsave={handleSaveConfiguration}
       oncancel={handleCloseCreateModal}
+      onquerypreview={handleQueryPreview}
     ></c-jt-config-modal>
   </template>
 
@@ -710,7 +787,7 @@
         <!-- Modal Footer -->
         <footer class="slds-modal__footer">
           <lightning-button
-            label="Cancel"
+            label={labels.cancelNew}
             onclick={handleCancelExecution}
             class="slds-m-right_small"
           ></lightning-button>
@@ -718,7 +795,7 @@
           <!-- Show "Proceed Normally" only if NOT critical -->
           <template if:false={queryRiskAssessment.isCriticalRisk}>
             <lightning-button
-              label="Proceed Normally"
+              label={labels.proceedNormally}
               variant="neutral"
               onclick={handleProceedNormal}
               class="slds-m-right_small"
@@ -726,7 +803,7 @@
           </template>
 
           <lightning-button
-            label="Use Batch Processing"
+            label={labels.useBatchProcessing}
             variant="brand"
             icon-name="utility:database"
             onclick={handleProceedWithBatch}
@@ -746,16 +823,6 @@
       apex-error={usageServiceErrors.apex}
       flow-error={usageServiceErrors.flow}
       has-partial-results={hasPartialUsageResults}
-      title-prefix={labels.whereIsThisUsed}
-      title-suffix="used?"
-      searching-text={labels.searchingFlows}
-      no-usage-found-text={labels.noUsageFound}
-      no-usage-message={labels.noReferencesFound}
-      found-references-text={labels.foundReferences}
-      close-label={labels.cancel}
-      type-column={labels.type}
-      name-column={labels.name}
-      line-column={labels.line}
       onclose={handleCloseUsageModal}
     ></c-jt-usage-modal>
   </template>

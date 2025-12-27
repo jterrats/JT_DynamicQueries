@@ -30,6 +30,18 @@ import supportTitle from "@salesforce/label/c.JT_jtDocumentation_supportTitle";
 import documentationTitle from "@salesforce/label/c.JT_jtDocumentation_documentationTitle";
 import issuesTitle from "@salesforce/label/c.JT_jtDocumentation_issuesTitle";
 import contributingTitle from "@salesforce/label/c.JT_jtDocumentation_contributingTitle";
+import namedCredentialTitle from "@salesforce/label/c.JT_jtDocumentation_namedCredentialTitle";
+import namedCredentialIntro from "@salesforce/label/c.JT_jtDocumentation_namedCredentialIntro";
+import namedCredentialWhyRequired from "@salesforce/label/c.JT_jtDocumentation_namedCredentialWhyRequired";
+import namedCredentialWhyText from "@salesforce/label/c.JT_jtDocumentation_namedCredentialWhyText";
+import namedCredentialSetupSteps from "@salesforce/label/c.JT_jtDocumentation_namedCredentialSetupSteps";
+import namedCredentialStep1 from "@salesforce/label/c.JT_jtDocumentation_namedCredentialStep1";
+import namedCredentialStep2 from "@salesforce/label/c.JT_jtDocumentation_namedCredentialStep2";
+import namedCredentialStep3 from "@salesforce/label/c.JT_jtDocumentation_namedCredentialStep3";
+import namedCredentialStep4 from "@salesforce/label/c.JT_jtDocumentation_namedCredentialStep4";
+import namedCredentialStep5 from "@salesforce/label/c.JT_jtDocumentation_namedCredentialStep5";
+import namedCredentialDocsLink from "@salesforce/label/c.JT_jtDocumentation_namedCredentialDocsLink";
+import createFirstQueryTitle from "@salesforce/label/c.JT_jtDocumentation_createFirstQueryTitle";
 
 export default class JtDocumentation extends LightningElement {
   @track activeSection = "overview";
@@ -64,7 +76,19 @@ export default class JtDocumentation extends LightningElement {
     supportTitle,
     documentationTitle,
     issuesTitle,
-    contributingTitle
+    contributingTitle,
+    namedCredentialTitle,
+    namedCredentialIntro,
+    namedCredentialWhyRequired,
+    namedCredentialWhyText,
+    namedCredentialSetupSteps,
+    namedCredentialStep1,
+    namedCredentialStep2,
+    namedCredentialStep3,
+    namedCredentialStep4,
+    namedCredentialStep5,
+    namedCredentialDocsLink,
+    createFirstQueryTitle
   };
 
   get sections() {
@@ -143,5 +167,9 @@ export default class JtDocumentation extends LightningElement {
 
   get showApi() {
     return this.activeSection === "api";
+  }
+
+  get showSupport() {
+    return this.activeSection === "support";
   }
 }

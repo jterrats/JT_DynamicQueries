@@ -3,5 +3,5 @@
     <description>Documentation for Dynamic Query Viewer project</description>
     <label>Documentation</label>
     <lwcComponent>jtDocumentation</lwcComponent>
-    <motif>Custom9:Book</motif>
+    <motif>Custom9: Lightning</motif>
 </CustomTab>

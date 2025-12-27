@@ -14,15 +14,27 @@
  * ></c-jt-parameter-inputs>
  */
 import { LightningElement, api, track } from "lwc";
+// Import Custom Labels
+import queryParametersLabel from "@salesforce/label/c.JT_jtParameterInputs_queryParameters";
+import noParametersRequiredLabel from "@salesforce/label/c.JT_jtParameterInputs_noParametersRequired";
+import helpTextLabel from "@salesforce/label/c.JT_jtParameterInputs_helpText";
+import queryParameterLabel from "@salesforce/label/c.JT_jtParameterInputs_queryParameter";
+import pleaseFillInLabel from "@salesforce/label/c.JT_jtParameterInputs_pleaseFillIn";
 
 export default class JtParameterInputs extends LightningElement {
   // Public API - Parameters from parent
   @track _parameters = [];
   @track _values = {};
+  @api baseQuery = ""; // Query string to detect IN/NOT IN/INCLUDES/EXCLUDES operators
 
-  // Translatable labels
-  @api title = "Query Parameters";
-  @api noParametersText = "No parameters required for this query";
+  // Custom Labels
+  labels = {
+    queryParameters: queryParametersLabel,
+    noParametersRequired: noParametersRequiredLabel,
+    helpText: helpTextLabel,
+    queryParameter: queryParameterLabel,
+    pleaseFillIn: pleaseFillInLabel
+  };
 
   @api
   get parameters() {
@@ -43,16 +55,58 @@ export default class JtParameterInputs extends LightningElement {
     return this._parameters && this._parameters.length > 0;
   }
 
+  /**
+   * Detects if a parameter is used with IN/NOT IN/INCLUDES/EXCLUDES operators
+   * @param {string} paramName - Parameter name
+   * @returns {boolean} True if parameter requires list values
+   */
+  requiresListValue(paramName) {
+    if (!this.baseQuery || !paramName) {
+      return false;
+    }
+
+    const normalizedQuery = this.baseQuery.toLowerCase();
+    const paramNameLower = paramName.toLowerCase();
+
+    // Create regex patterns to match the binding variable
+    // Match patterns like: IN :paramName, NOT IN :paramName, INCLUDES :paramName, EXCLUDES :paramName
+    // Also handle cases with/without spaces: IN:paramName, NOT IN:paramName, etc.
+    const patterns = [
+      new RegExp(`\\bin\\s+:${paramNameLower}\\b`, "i"),
+      new RegExp(`\\bnot\\s+in\\s+:${paramNameLower}\\b`, "i"),
+      new RegExp(`\\bincludes\\s+:${paramNameLower}\\b`, "i"),
+      new RegExp(`\\bexcludes\\s+:${paramNameLower}\\b`, "i")
+    ];
+
+    return patterns.some((pattern) => pattern.test(normalizedQuery));
+  }
+
+  /**
+   * Generates help text for a parameter
+   * @param {Object} param - Parameter object
+   * @returns {string} Help text with additional info for list operators
+   */
+  getHelpText(param) {
+    let helpText = this.labels.helpText.replace("{0}", param.name);
+
+    if (this.requiresListValue(param.name)) {
+      helpText +=
+        " Separate multiple values with commas (e.g., 'Value1, Value2, Value3').";
+    }
+
+    return helpText;
+  }
+
   get parametersWithValues() {
     // Merge parameters with current values and add helpful tooltips + semantic attributes
     return this._parameters.map((param) => ({
       ...param,
       value: this._values[param.name] || "",
-      helpText: `This value replaces ':${param.name}' in your SOQL query. Example: WHERE Field__c = :${param.name}`,
+      helpText: this.getHelpText(param),
       // Semantic HTML attributes for E2E testing
       testId: `query-parameter-${param.name}`,
       inputName: `query-parameter-${param.name}`,
-      ariaLabel: `Query parameter: ${param.label || param.name}`
+      ariaLabel: `${this.labels.queryParameter} ${param.label || param.name}`
     }));
   }
 
@@ -101,7 +155,10 @@ export default class JtParameterInputs extends LightningElement {
     if (missingParams.length > 0) {
       return {
         valid: false,
-        message: `Please fill in: ${missingParams.join(", ")}`,
+        message: this.labels.pleaseFillIn.replace(
+          "{0}",
+          missingParams.join(", ")
+        ),
         missingParams
       };
     }

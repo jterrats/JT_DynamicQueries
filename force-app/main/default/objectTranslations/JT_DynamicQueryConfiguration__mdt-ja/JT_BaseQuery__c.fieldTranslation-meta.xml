@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <help
+  >実行するSOQLクエリ。動的パラメータにはコロン構文のバインド変数を使用してください（例：:accountName）。</help>
+    <label>ベースクエリ (SOQL)</label>
+    <name>JT_BaseQuery__c</name>
+</CustomFieldTranslation>

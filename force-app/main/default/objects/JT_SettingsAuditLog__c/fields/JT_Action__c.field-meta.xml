@@ -3,9 +3,11 @@
     <fullName>JT_Action__c</fullName>
     <description
   >Action performed - flexible text to allow any audit message</description>
+    <externalId>false</externalId>
     <label>Action</label>
     <length>255</length>
     <required>true</required>
     <trackTrending>false</trackTrending>
     <type>Text</type>
+    <unique>false</unique>
 </CustomField>

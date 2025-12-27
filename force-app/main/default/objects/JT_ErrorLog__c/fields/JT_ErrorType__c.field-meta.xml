@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>JT_ErrorType__c</fullName>
+    <description
+  >Type/category of error (e.g., Permission Denied, License Restriction, SOQL Syntax Error, etc.)</description>
+    <externalId>false</externalId>
+    <label>Error Type</label>
+    <length>100</length>
+    <required>true</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

@@ -1,232 +1,68 @@
-# Scripts - Named Credential Setup
+# Scripts Directory
 
-## 🖥️ Cross-Platform Support
+This directory contains utility scripts for development, testing, and maintenance.
 
-All scripts are now available in **Node.js** for maximum compatibility:
+## 📁 Available Scripts
 
-| Platform                     | Shell Scripts (`.sh`) | Node.js Scripts (`.js`) | Recommended |
-| ---------------------------- | --------------------- | ----------------------- | ----------- |
-| **macOS / Linux**            | ✅ Supported          | ✅ Supported            | Either      |
-| **Windows (CMD/PowerShell)** | ❌ Not supported      | ✅ Supported            | **Node.js** |
-| **Windows (Git Bash/WSL)**   | ✅ Supported          | ✅ Supported            | Either      |
-| **CI/CD (GitHub Actions)**   | ✅ Supported          | ✅ Supported            | Either      |
+### Development & Deployment
 
-**🚀 Quick Command:**
+- **`validate-pipeline.sh`** - Validates GitHub Actions workflows locally using `act`
+- **`create-github-issues.sh`** - Creates GitHub issues from templates
 
-```bash
-npm run deploy:named-credential
-```
+### Translation & Localization
 
-## 🎯 Problema a Resolver
+- **`migrate-to-custom-labels.js`** - Migrates hardcoded strings to Custom Labels
+- **`extract-en-labels-only.js`** - Extracts English labels only
+- **`generate-label-imports.js`** - Generates import statements for labels
+- **`convert-translations-to-yaml.js`** - Converts translations to YAML format
 
-Named Credentials necesitan la URL del org. Cada org tiene una URL diferente:
+### Documentation
 
-- Dev: `https://therionpolux-dev-ed.my.salesforce.com`
-- Sandbox: `https://company--staging.sandbox.my.salesforce.com`
-- Production: `https://company.my.salesforce.com`
+- **`convert-index-to-jekyll.js`** - Converts index to Jekyll format
+- **`convert-testing-to-jekyll.js`** - Converts testing docs to Jekyll format
+- **`fix-ascii-diagrams.sh`** - Fixes ASCII diagrams in markdown files
 
-**❌ Si harcodeas la URL**, solo funciona en UN org.
+### Apex Scripts
 
-**✅ Con estos scripts**, funciona en CUALQUIER org automáticamente.
+- **`apex/assign-permset.apex`** - Assigns Permission Set to current user
+- **`apex/hello.apex`** - Simple hello world script
+- **`apex/test-queueable.apex`** - Test script for JT_UsageFinderQueueable (executes job and shows results)
+- **`apex/retrieve-queueable-results.apex`** - Retrieve cached results from Queueable job
+- **`apex/run-queueable-tests.apex`** - Run all unit tests for JT_UsageFinderQueueable
 
-## 🚀 Quick Start
+### SOQL Queries
 
-### ⭐ Opción 1: Node.js (Cross-Platform - RECOMENDADO)
+- **`soql/account.soql`** - Example SOQL query for Account
 
-```bash
-# Cambiar org
-sf config set target-org my-sandbox
+## 📚 Documentation Files
 
-# Smart deploy con Node.js (funciona en Windows, Mac, Linux)
-npm run deploy:named-credential
-```
+- **`ACT_USAGE.md`** - Guide for using `act` to test GitHub Actions locally
+- **`CROSS_PLATFORM.md`** - Cross-platform development notes
+- **`ENABLE_TRANSLATION_WORKBENCH.md`** - Translation workbench setup
+- **`TRANSLATION_WORKBENCH_MIGRATION.md`** - Migration guide for translations
 
-O directamente:
+## 🚀 Usage
 
-```bash
-node scripts/smart-deploy.js
-```
-
-### Opción 2: Shell Scripts (Unix/Linux/Mac/Git Bash)
+Most scripts can be run directly:
 
 ```bash
-# Cambiar org
-sf config set target-org my-sandbox
+# Shell scripts
+./scripts/validate-pipeline.sh
 
-# Smart deploy con shell script
-./scripts/smart-deploy.sh
+# Node.js scripts
+node scripts/migrate-to-custom-labels.js
+
+# Apex scripts (via Developer Console or CLI)
+sf apex run --file scripts/apex/assign-permset.apex
+
+# Test Queueable (copy to Developer Console > Anonymous Apex)
+# 1. Execute: scripts/apex/test-queueable.apex
+# 2. Wait a few seconds, then retrieve: scripts/apex/retrieve-queueable-results.apex
+# 3. Run tests: scripts/apex/run-queueable-tests.apex
 ```
 
-### Opción 3: Shell Aliases (Más conveniente para Unix/Linux/Mac)
+## 📝 Notes
 
-```bash
-# Setup ONE TIME
-./scripts/deploy-alias.sh
-source ~/.zshrc  # or ~/.bashrc
-
-# Después solo:
-sf config set target-org my-sandbox
-jt-deploy  # 🚀 Auto!
-```
-
-## 📁 Scripts Disponibles
-
-### `smart-deploy.js` ⭐ (RECOMENDADO)
-
-Deploy inteligente **cross-platform** (Node.js)
-
-```bash
-npm run deploy:named-credential
-# o
-node scripts/smart-deploy.js [org-alias]
-```
-
-**Qué hace:**
-
-1. Detecta URL del org actual
-2. Compara con URL cacheada en `.env`
-3. Si cambió, actualiza `.env` automáticamente
-4. Deploya Named Credential con string replacement
-5. ✅ Funciona en **Windows, Mac, Linux**!
-
-**Ventajas:**
-
-- ✅ No requiere `bash`, `jq`, o herramientas Unix
-- ✅ Funciona nativamente en Windows CMD/PowerShell
-- ✅ Auto-limpieza de archivos temporales
-- ✅ Error handling robusto
-
----
-
-### `smart-deploy.sh` (Unix/Linux/Mac)
-
-Deploy inteligente shell script
-
-```bash
-./scripts/smart-deploy.sh [org-alias]
-```
-
-**Qué hace:**
-
-1. Detecta URL del org actual
-2. Compara con URL cacheada en `.env`
-3. Si cambió, ejecuta `setup-org-url.sh` automáticamente
-4. Deploya Named Credential
-5. ✅ Siempre correcto!
-
-### `setup-org-url.sh` (Unix/Linux/Mac)
-
-Detecta la URL del org actual y genera `.env`
-
-```bash
-./scripts/setup-org-url.sh [org-alias]
-```
-
-**Output:**
-
-- Crea/actualiza `.env` con `SF_ORG_SQF=https://...`
-- Exporta variable de entorno
-
-### `deploy-with-replacement.sh` (Unix/Linux/Mac)
-
-Deploya Named Credential con string replacement
-
-```bash
-source .env
-./scripts/deploy-with-replacement.sh [org-alias]
-```
-
-**Qué hace:**
-
-1. Lee `SF_ORG_SQF` del environment
-2. Crea temp file con URL real
-3. Deploya a Salesforce
-4. Restaura archivo original
-
-### `deploy-alias.sh`
-
-Setup de aliases para tu shell
-
-```bash
-./scripts/deploy-alias.sh
-```
-
-**Agrega a tu shell:**
-
-- `jt-setup` → Shortcut para setup
-- `jt-deploy` → Shortcut para smart deploy
-
-## 🔄 Flujo de Trabajo
-
-### Desarrollo Local
-
-```bash
-# Día 1: Dev Org
-sf config set target-org my-dev
-jt-deploy
-
-# Día 2: Sandbox
-sf config set target-org my-sandbox
-jt-deploy  # Auto-detecta cambio ✅
-
-# Día 3: Production
-sf config set target-org my-prod
-jt-deploy  # Auto-detecta cambio ✅
-```
-
-### CI/CD
-
-```yaml
-# .github/workflows/deploy.yml
-- name: Deploy Named Credential
-  run: |
-    ./scripts/setup-org-url.sh ci-org
-    source .env
-    ./scripts/deploy-with-replacement.sh ci-org
-```
-
-## 🐛 Troubleshooting
-
-### "SF_ORG_SQF not set"
-
-```bash
-# Re-run setup
-./scripts/setup-org-url.sh
-source .env
-```
-
-### "Org URL mismatch"
-
-```bash
-# Esto es NORMAL si cambiaste de org
-# smart-deploy.sh lo arregla automáticamente
-./scripts/smart-deploy.sh
-```
-
-### "No target org found"
-
-```bash
-# Set default org
-sf config set target-org <username-or-alias>
-```
-
-## 📊 Comparación de Approaches
-
-| Approach            | Auto-detect | Escalable | Git Clean | Effort     |
-| ------------------- | ----------- | --------- | --------- | ---------- |
-| Hardcoded URL       | ❌          | ❌        | ❌        | Low        |
-| Manual setup script | ❌          | ✅        | ✅        | Medium     |
-| Smart deploy        | ✅          | ✅        | ✅        | Low        |
-| Shell aliases       | ✅          | ✅        | ✅        | **Lowest** |
-
-## 💡 Recomendación
-
-Para **desarrollo local**: Usa `deploy-alias.sh` + `jt-deploy`
-Para **CI/CD**: Usa `setup-org-url.sh` + `deploy-with-replacement.sh`
-
-## 🔐 Seguridad
-
-- ❌ `.env` NO se trackea en Git
-- ✅ Placeholder `{!$Credential.JT_Tooling_API}` es seguro para repos públicos
-- ✅ Cada org tiene su propia URL en runtime
-- ✅ No hay secrets expuestos
+- All scripts are designed to be run from the project root
+- Shell scripts require Unix-like environment (macOS, Linux, Git Bash, WSL)
+- Node.js scripts work cross-platform (Windows, macOS, Linux)

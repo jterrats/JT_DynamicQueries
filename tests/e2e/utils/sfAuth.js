@@ -27,17 +27,74 @@ function getSFSession() {
 
     // Get org info from SF CLI - uses active session
     // Force plain JSON output (no colors) with SF_USE_PROGRESS_BAR=false
-    let orgInfoJson = execSync("sf org display --json", {
-      encoding: "utf-8",
-      stdio: ["pipe", "pipe", "pipe"],
-      env: {
-        ...process.env,
-        SF_USE_PROGRESS_BAR: "false",
-        SF_AUTOUPDATE_DISABLE: "true",
-        NO_COLOR: "1", // Disable colors
-        FORCE_COLOR: "0" // Disable colors (alternative)
+    // Configure SF CLI to write logs to a temporary directory to avoid permission errors
+    const os = require("os");
+    const path = require("path");
+    const tempLogDir = path.join(os.tmpdir(), "sf-cli-logs");
+
+    // Ensure temp directory exists (create if needed)
+    try {
+      const fs = require("fs");
+      if (!fs.existsSync(tempLogDir)) {
+        fs.mkdirSync(tempLogDir, { recursive: true });
       }
-    });
+    } catch (e) {
+      // Ignore errors creating temp directory
+    }
+
+    let orgInfoJson;
+    const sfEnv = {
+      ...process.env,
+      SF_USE_PROGRESS_BAR: "false",
+      SF_AUTOUPDATE_DISABLE: "true",
+      NO_COLOR: "1",
+      FORCE_COLOR: "0",
+      SF_LOG_LEVEL: "ERROR", // Only show errors, suppress info logs
+      SF_LOG_PATH: tempLogDir // Write logs to temp directory instead of ~/.sf
+    };
+
+    try {
+      // First attempt: try with stderr redirection (works on Unix-like systems)
+      orgInfoJson = execSync("sf org display --json 2>/dev/null", {
+        encoding: "utf-8",
+        stdio: ["pipe", "pipe", "pipe"],
+        env: sfEnv,
+        shell: true // Use shell to support 2>/dev/null redirection
+      });
+    } catch (execError) {
+      // Second attempt: ignore stderr completely (works on all systems)
+      try {
+        orgInfoJson = execSync("sf org display --json", {
+          encoding: "utf-8",
+          stdio: ["ignore", "pipe", "ignore"], // Ignore stdin and stderr
+          env: sfEnv
+        });
+      } catch (retryError) {
+        // Third attempt: try with stdout only, catch stderr separately
+        try {
+          orgInfoJson = execSync("sf org display --json", {
+            encoding: "utf-8",
+            stdio: ["ignore", "pipe", "pipe"], // Capture stderr but don't fail on it
+            env: sfEnv
+          });
+        } catch (finalError) {
+          // If all attempts fail, check if it's a permission error
+          const errorMsg = finalError.message || retryError.message || execError.message || "";
+          if (errorMsg.includes("EPERM") || errorMsg.includes("operation not permitted")) {
+            console.warn("⚠️  SF CLI log file permission error detected.");
+            console.warn("💡 This is a known issue with SF CLI log file permissions.");
+            console.warn("💡 The tests may still work if SF CLI can read the org info from cache.");
+            throw new Error(
+              "SF CLI log file permission error. Please check permissions on ~/.sf directory or run: chmod 755 ~/.sf"
+            );
+          } else {
+            throw new Error(
+              `Failed to get SF org info: ${errorMsg}. Make sure you have an active SF CLI session: sf org login`
+            );
+          }
+        }
+      }
+    }
 
     // Strip ANSI color codes that SF CLI might include in CI environments
     orgInfoJson = stripAnsiCodes(orgInfoJson);

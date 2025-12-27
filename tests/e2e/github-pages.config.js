@@ -79,3 +79,4 @@ export default defineConfig({
   // Output folder
   outputDir: "test-results/github-pages"
 });
+

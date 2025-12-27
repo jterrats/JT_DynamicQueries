@@ -34,7 +34,7 @@
               aria-autocomplete="list"
               aria-label={ariaLabel}
               role="textbox"
-              placeholder={placeholder}
+              placeholder={effectivePlaceholder}
               value={searchTerm}
               disabled={disabled}
               oninput={handleInput}
@@ -47,13 +47,13 @@
             <template if:true={showClearButton}>
               <button
                 class="slds-button slds-button_icon slds-input__icon slds-input__icon_right"
-                title={clearButtonTitle}
+                title={effectiveClearButtonTitle}
                 onclick={handleClear}
                 tabindex="-1"
               >
                 <lightning-icon
                   icon-name="utility:clear"
-                  alternative-text={clearButtonTitle}
+                  alternative-text={effectiveClearButtonTitle}
                   size="x-small"
                 ></lightning-icon>
               </button>
@@ -61,13 +61,13 @@
             <template if:false={showClearButton}>
               <button
                 class="slds-button slds-button_icon slds-input__icon slds-input__icon_right"
-                title={showOptionsTitle}
+                title={effectiveShowOptionsTitle}
                 onclick={handleToggle}
                 tabindex="-1"
               >
                 <lightning-icon
                   icon-name="utility:down"
-                  alternative-text={showOptionsTitle}
+                  alternative-text={effectiveShowOptionsTitle}
                   size="x-small"
                 ></lightning-icon>
               </button>
@@ -114,7 +114,7 @@
                 <li role="presentation" class="slds-listbox__item">
                   <div class="slds-listbox__option slds-listbox__option_plain">
                     <span class="slds-truncate slds-text-color_weak">
-                      {noResultsText}
+                      {effectiveNoResultsText}
                     </span>
                   </div>
                 </li>
@@ -128,7 +128,7 @@
     <!-- Error message -->
     <template if:true={showErrorMessage}>
       <div class="slds-form-element__help slds-text-color_error" role="alert">
-        {errorText}
+        {effectiveErrorText}
       </div>
     </template>
   </div>

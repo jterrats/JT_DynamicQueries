@@ -150,6 +150,43 @@
 
 ---
 
+### 6. **Edit Configuration** (4 tests) 🆕 v2.0
+
+#### 6.1 `should show Edit Configuration button when config is selected`
+
+- ✅ Skips if Production
+- ✅ Selects a configuration from dropdown
+- ✅ Verifies Edit button becomes visible
+- ✅ Validates button has correct icon and label
+
+#### 6.2 `should open Edit Configuration modal with pre-filled data`
+
+- ✅ Skips if Production
+- ✅ Selects a configuration
+- ✅ Clicks Edit button
+- ✅ Validates modal title says "Edit" (not "Create")
+- ✅ Verifies Label field is pre-filled
+- ✅ Verifies all fields contain existing config data
+
+#### 6.3 `should have Developer Name as read-only in Edit mode`
+
+- ✅ Skips if Production
+- ✅ Opens Edit modal
+- ✅ Validates Developer Name input is disabled
+- ✅ Security: Cannot change API name of existing config
+
+#### 6.4 `should update configuration label successfully`
+
+- ✅ Skips if Production
+- ✅ Opens Edit modal
+- ✅ Modifies Label field
+- ✅ Clicks Update button
+- ✅ Verifies modal closes
+- ✅ Success toast appears
+- ✅ Validates refreshApex() refreshes config list
+
+---
+
 ## 🎯 Feature Coverage Matrix
 
 | Feature                  | Tests | Coverage | Production Safe                |
@@ -159,6 +196,7 @@
 | **Error Handling**       | 1     | ✅ 100%  | ✅ Yes                         |
 | **Run As User**          | 3     | ✅ 100%  | ✅ Yes (permission-gated)      |
 | **Create Config**        | 5     | ✅ 100%  | ✅ **Yes (environment-gated)** |
+| **Edit Config** 🆕       | 4     | ✅ 100%  | ✅ **Yes (environment-gated)** |
 | **Production Safeguard** | 1     | ✅ 100%  | ✅ **Explicitly tested**       |
 
 ---

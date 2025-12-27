@@ -395,6 +395,189 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
     console.log("✅ Modal opened and closed successfully");
   });
 
+  test("should show Edit Configuration button when config is selected", async ({
+    page
+  }) => {
+    const isProduction = !session.instanceUrl.toLowerCase().includes("sandbox");
+
+    if (isProduction) {
+      console.log("⚠️  Skipping in production (Edit button hidden)");
+      return;
+    }
+
+    // Select a configuration first
+    const configDropdown = page.locator("lightning-combobox").first();
+    await configDropdown.click();
+    await page.waitForTimeout(300);
+
+    // Select first option
+    const firstOption = page
+      .locator('lightning-base-combobox-item[role="option"]')
+      .first();
+    await firstOption.click();
+    await page.waitForTimeout(500);
+
+    // Verify Edit button appears
+    const editButton = page
+      .locator("lightning-button")
+      .filter({ hasText: /Edit.*Configuration/i });
+
+    await expect(editButton).toBeVisible();
+    console.log("✅ Edit Configuration button visible when config selected");
+  });
+
+  test("should open Edit Configuration modal with pre-filled data", async ({
+    page
+  }) => {
+    const isProduction = !session.instanceUrl.toLowerCase().includes("sandbox");
+
+    if (isProduction) {
+      console.log("⚠️  Skipping in production");
+      return;
+    }
+
+    // Select a configuration
+    const configDropdown = page.locator("lightning-combobox").first();
+    await configDropdown.click();
+    await page.waitForTimeout(300);
+
+    const firstOption = page
+      .locator('lightning-base-combobox-item[role="option"]')
+      .first();
+    const selectedConfigName = await firstOption.textContent();
+    await firstOption.click();
+    await page.waitForTimeout(500);
+
+    // Click Edit button
+    const editButton = page
+      .locator("lightning-button")
+      .filter({ hasText: /Edit.*Configuration/i });
+    await editButton.click();
+    await page.waitForTimeout(500);
+
+    // Verify modal opened
+    const modal = page.locator('section[role="dialog"]');
+    await expect(modal).toBeVisible();
+
+    // Verify modal has "Edit" title (not "Create")
+    const modalTitle = modal.locator("h2");
+    await expect(modalTitle).toContainText(/Edit/i);
+
+    // Verify fields are pre-filled (Label should have content)
+    const labelInput = modal.locator('lightning-input[data-field="label"]');
+    const labelValue = await labelInput.locator("input").inputValue();
+    expect(labelValue.length).toBeGreaterThan(0);
+
+    console.log(
+      `✅ Edit modal opened with pre-filled data for: ${selectedConfigName}`
+    );
+
+    // Close modal
+    const cancelButton = modal
+      .locator("lightning-button")
+      .filter({ hasText: /Cancel/i });
+    await cancelButton.click();
+  });
+
+  test("should have Developer Name as read-only in Edit mode", async ({
+    page
+  }) => {
+    const isProduction = !session.instanceUrl.toLowerCase().includes("sandbox");
+
+    if (isProduction) {
+      console.log("⚠️  Skipping in production");
+      return;
+    }
+
+    // Select a configuration and open Edit modal
+    const configDropdown = page.locator("lightning-combobox").first();
+    await configDropdown.click();
+    await page.waitForTimeout(300);
+
+    const firstOption = page
+      .locator('lightning-base-combobox-item[role="option"]')
+      .first();
+    await firstOption.click();
+    await page.waitForTimeout(500);
+
+    const editButton = page
+      .locator("lightning-button")
+      .filter({ hasText: /Edit.*Configuration/i });
+    await editButton.click();
+    await page.waitForTimeout(500);
+
+    const modal = page.locator('section[role="dialog"]');
+
+    // Verify Developer Name input is disabled
+    const devNameInput = modal.locator(
+      'lightning-input[data-field="developerName"]'
+    );
+    const isDisabled = await devNameInput.locator("input").isDisabled();
+
+    expect(isDisabled).toBe(true);
+    console.log("✅ Developer Name is read-only in Edit mode");
+
+    // Close modal
+    const cancelButton = modal
+      .locator("lightning-button")
+      .filter({ hasText: /Cancel/i });
+    await cancelButton.click();
+  });
+
+  test("should update configuration label successfully", async ({ page }) => {
+    const isProduction = !session.instanceUrl.toLowerCase().includes("sandbox");
+
+    if (isProduction) {
+      console.log("⚠️  Skipping in production");
+      return;
+    }
+
+    // Select a configuration and open Edit modal
+    const configDropdown = page.locator("lightning-combobox").first();
+    await configDropdown.click();
+    await page.waitForTimeout(300);
+
+    const firstOption = page
+      .locator('lightning-base-combobox-item[role="option"]')
+      .first();
+    await firstOption.click();
+    await page.waitForTimeout(500);
+
+    const editButton = page
+      .locator("lightning-button")
+      .filter({ hasText: /Edit.*Configuration/i });
+    await editButton.click();
+    await page.waitForTimeout(500);
+
+    const modal = page.locator('section[role="dialog"]');
+
+    // Get current label
+    const labelInput = modal.locator('lightning-input[data-field="label"]');
+    const originalLabel = await labelInput.locator("input").inputValue();
+
+    // Modify label (add timestamp to make it unique)
+    const newLabel = `${originalLabel} (Test ${Date.now()})`;
+    await labelInput.locator("input").fill(newLabel);
+    await page.waitForTimeout(300);
+
+    // Click Update button
+    const updateButton = modal
+      .locator("lightning-button")
+      .filter({ hasText: /Update/i });
+    await updateButton.click();
+
+    // Wait for success toast or modal to close
+    await page.waitForTimeout(2000);
+
+    // Verify modal closed
+    await expect(modal).not.toBeVisible();
+
+    console.log(`✅ Configuration updated: "${originalLabel}" → "${newLabel}"`);
+
+    // Note: In a real scenario, you'd verify the label changed in the dropdown
+    // but that requires refreshing the component which may not happen immediately
+  });
+
   // ═══════════════════════════════════════════════════════════════
   // ACCESSIBILITY TESTS
   // ═══════════════════════════════════════════════════════════════
@@ -568,6 +751,197 @@ test.describe("Dynamic Query Viewer E2E Tests", () => {
       const hasSkip = (await skipLink.count()) > 0;
       console.log(`Skip link present: ${hasSkip}`);
     }
+  });
+
+  test("should validate all Documentation tabs have content", async ({
+    page
+  }) => {
+    console.log("📑 Testing Documentation tabs content...");
+
+    const docTab = page
+      .locator("one-app-nav-bar-item-root a")
+      .filter({ hasText: /Documentation/i })
+      .first();
+    const isVisible = await docTab
+      .isVisible({ timeout: 3000 })
+      .catch(() => false);
+
+    if (!isVisible) {
+      console.log("⚠️  Skipping - Documentation tab not available");
+      return;
+    }
+
+    await docTab.click();
+    await page.waitForTimeout(2000);
+
+    // Wait for component to load
+    const docComponent = page.locator("c-jt-documentation");
+    await expect(docComponent).toBeVisible({ timeout: 5000 });
+
+    // Define all tabs to test
+    const tabs = [
+      { name: "Overview", selector: "overview", minLength: 100 },
+      { name: "Getting Started", selector: "getting-started", minLength: 100 },
+      { name: "API Reference", selector: "api", minLength: 100 },
+      {
+        name: "Batch Processing",
+        selector: "batch-processing",
+        minLength: 100
+      },
+      { name: "Support", selector: "support", minLength: 50 }
+    ];
+
+    for (const tab of tabs) {
+      console.log(`   Testing ${tab.name} tab...`);
+
+      // Click tab
+      const tabButton = page
+        .locator("a.slds-tabs_default__link")
+        .filter({ hasText: new RegExp(tab.name, "i") });
+
+      await tabButton.click();
+      await page.waitForTimeout(500);
+
+      // Verify content is visible
+      const contentArea = page.locator('[role="tabpanel"]');
+      const isContentVisible = await contentArea
+        .isVisible({ timeout: 3000 })
+        .catch(() => false);
+
+      expect(isContentVisible).toBe(true);
+
+      // Verify content has meaningful text (not empty)
+      const contentText = await contentArea.textContent();
+      const contentLength = contentText?.trim().length || 0;
+
+      expect(contentLength).toBeGreaterThan(tab.minLength);
+      console.log(
+        `   ✅ ${tab.name}: ${contentLength} characters (min: ${tab.minLength})`
+      );
+    }
+
+    console.log("✅ All Documentation tabs have content");
+  });
+
+  test("should validate API Reference shows JT_DataSelector methods", async ({
+    page
+  }) => {
+    console.log("🔍 Testing API Reference content...");
+
+    const docTab = page
+      .locator("one-app-nav-bar-item-root a")
+      .filter({ hasText: /Documentation/i })
+      .first();
+    const isVisible = await docTab
+      .isVisible({ timeout: 3000 })
+      .catch(() => false);
+
+    if (!isVisible) {
+      console.log("⚠️  Skipping - Documentation tab not available");
+      return;
+    }
+
+    await docTab.click();
+    await page.waitForTimeout(2000);
+
+    // Click API Reference tab
+    const apiTab = page
+      .locator("a.slds-tabs_default__link")
+      .filter({ hasText: /API Reference/i });
+    await apiTab.click();
+    await page.waitForTimeout(1000); // Increased wait time for content to load
+
+    // Verify key API methods are documented
+    // Methods are inside <code> tags within table cells
+    const apiMethods = [
+      "getRecords",
+      "countRecordsForConfig",
+      "getRecordsWithAutoStrategy",
+      "processRecordsWithCursor"
+    ];
+
+    for (const method of apiMethods) {
+      // Try multiple selectors to find the method
+      // 1. Look for code element containing the method (most specific)
+      let methodElement = page
+        .locator(`code`)
+        .filter({ hasText: method })
+        .first();
+      let isPresent = await methodElement
+        .isVisible({ timeout: 2000 })
+        .catch(() => false);
+
+      // 2. Fallback: Look for text in table cells
+      if (!isPresent) {
+        methodElement = page.locator(`td`).filter({ hasText: method }).first();
+        isPresent = await methodElement
+          .isVisible({ timeout: 2000 })
+          .catch(() => false);
+      }
+
+      // 3. Fallback: Generic text search (original approach)
+      if (!isPresent) {
+        methodElement = page.getByText(method, { exact: false }).first();
+        isPresent = await methodElement
+          .isVisible({ timeout: 2000 })
+          .catch(() => false);
+      }
+
+      expect(isPresent).toBe(true);
+      console.log(`   ✅ ${method} documented`);
+    }
+
+    // Verify JT_QueryViewerController is NOT present (removed as internal)
+    const internalClass = page.getByText("JT_QueryViewerController", {
+      exact: false
+    });
+    const shouldNotBePresent = await internalClass
+      .isVisible({ timeout: 1000 })
+      .catch(() => false);
+
+    expect(shouldNotBePresent).toBe(false);
+    console.log("   ✅ Internal classes correctly hidden");
+  });
+
+  test("should validate Support tab has GitHub links", async ({ page }) => {
+    console.log("🔗 Testing Support tab links...");
+
+    const docTab = page
+      .locator("one-app-nav-bar-item-root a")
+      .filter({ hasText: /Documentation/i })
+      .first();
+    const isVisible = await docTab
+      .isVisible({ timeout: 3000 })
+      .catch(() => false);
+
+    if (!isVisible) {
+      console.log("⚠️  Skipping - Documentation tab not available");
+      return;
+    }
+
+    await docTab.click();
+    await page.waitForTimeout(2000);
+
+    // Click Support tab
+    const supportTab = page
+      .locator("a.slds-tabs_default__link")
+      .filter({ hasText: /Support/i });
+    await supportTab.click();
+    await page.waitForTimeout(500);
+
+    // Verify GitHub repository link is present
+    const githubLink = page.locator(
+      'a[href*="github.com/jterrats/JT_DynamicQueries"]'
+    );
+    await expect(githubLink).toBeVisible();
+
+    // Verify cards are present (Documentation, Issues, Contributing)
+    const cards = page.locator("article.slds-card");
+    const cardCount = await cards.count();
+    expect(cardCount).toBeGreaterThanOrEqual(3);
+
+    console.log(`   ✅ Found ${cardCount} support cards`);
+    console.log("   ✅ GitHub link present");
   });
 
   // ═══════════════════════════════════════════════════════════════

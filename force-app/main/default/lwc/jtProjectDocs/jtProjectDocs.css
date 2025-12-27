@@ -1,9 +1,8 @@
+/* Nav Container - Sticky positioning only (spacing handled by SLDS classes) */
 .nav-container {
   position: sticky;
   top: 0;
-  background: white;
   z-index: 10;
-  padding-bottom: 1rem;
 }
 
 /* Skip link for keyboard navigation */
@@ -23,50 +22,30 @@ a.slds-assistive-text:focus {
   border-radius: 0.25rem;
 }
 
-/* Table of Contents Grid Layout */
+/* Table of Contents Grid - Use SLDS grid system */
 .toc-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 0.75rem;
-  padding: 0.5rem;
+  gap: var(--lwc-spacingSmall, 0.75rem);
 }
 
-@media (max-width: 768px) {
-  .toc-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.toc-item {
-  display: flex;
+/* Nav Link - Use SLDS box + CSS hooks for hover effects */
+:host {
+  --slds-c-box-color-background-hover: var(
+    --lwc-colorBackgroundRowHover,
+    #f3f2f2
+  );
+  --slds-c-box-color-border-hover: var(--lwc-colorBorderBrand, #0176d3);
 }
 
 .nav-link {
-  color: #0176d3;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 0.75rem;
-  width: 100%;
-  background: #ffffff;
-  border: 1px solid #dddbda;
-  border-radius: 0.25rem;
   transition: all 0.2s ease;
   cursor: pointer;
 }
 
 .nav-link:hover {
-  background: #f3f2f2;
-  border-color: #0176d3;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transform: translateY(-2px);
-}
-
-.nav-link:focus {
-  outline: 2px solid #0176d3;
-  outline-offset: 2px;
-  background: #f3f2f2;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .nav-link:active {
@@ -74,127 +53,76 @@ a.slds-assistive-text:focus {
 }
 
 .nav-link-content {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  width: 100%;
+  gap: var(--lwc-spacingXxxSmall, 0.5rem);
 }
 
-.nav-icon {
-  flex-shrink: 0;
+/* Enhanced focus indicators - Use CSS hooks */
+:host {
+  --slds-c-focus-ring-color: var(--lwc-colorBorderBrand, #0176d3);
 }
 
-.nav-text {
-  font-weight: 600;
-  font-size: 0.875rem;
-  color: #080707;
-  line-height: 1.25;
-}
-
-.nav-link:hover .nav-text {
-  color: #0176d3;
-}
-
-/* Enhanced focus indicators */
-*:focus {
-  outline: 2px solid #0176d3 !important;
-  outline-offset: 2px !important;
-}
-
+/* Doc Section - Scroll margin only (spacing handled by SLDS classes) */
 .doc-section {
   scroll-margin-top: 100px;
 }
 
 .doc-section h2 {
-  display: flex;
-  align-items: center;
-  border-bottom: 2px solid #e5e5e5;
-  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--lwc-colorBorder, #e5e5e5);
 }
 
 .doc-section h3 {
-  color: #0176d3;
-  margin-top: 1rem;
-  margin-bottom: 0.5rem;
+  color: var(--lwc-colorTextLink, #0176d3);
 }
 
-/* Code blocks */
+/* Code blocks - Monospace font only (spacing handled by SLDS classes) */
 pre {
-  background-color: #f4f6f9;
-  border: 1px solid #dddbda;
-  border-radius: 0.25rem;
-  padding: 1rem;
-  overflow-x: auto;
   font-family: "Courier New", Courier, monospace;
-  font-size: 0.875rem;
+  overflow-x: auto;
 }
 
 code {
-  background-color: #f4f6f9;
-  padding: 0.125rem 0.25rem;
-  border-radius: 0.125rem;
   font-family: "Courier New", Courier, monospace;
-  font-size: 0.875rem;
 }
 
-/* Alert boxes */
+/* Alert boxes - Use SLDS box + theme classes (spacing handled by SLDS classes) */
 .alert-info {
-  background-color: #e8f5fb;
-  border-left: 4px solid #0176d3;
-  padding: 1rem;
-  margin: 1rem 0;
+  border-left: 4px solid var(--lwc-colorBorderBrand, #0176d3);
 }
 
 .alert-warning {
-  background-color: #fef8e7;
-  border-left: 4px solid #ffb75d;
-  padding: 1rem;
-  margin: 1rem 0;
+  border-left: 4px solid var(--lwc-colorBorderWarning, #ffb75d);
 }
 
 .alert-success {
-  background-color: #e8f5e9;
-  border-left: 4px solid #4caf50;
-  padding: 1rem;
-  margin: 1rem 0;
+  border-left: 4px solid var(--lwc-colorBorderSuccess, #4caf50);
 }
 
-/* Lists */
+/* Lists - Use SLDS defaults, minimal overrides */
 ul,
 ol {
-  margin-left: 1.5rem;
-  margin-bottom: 1rem;
+  margin-left: var(--lwc-spacingLarge, 1.5rem);
 }
 
-li {
-  margin-bottom: 0.5rem;
-}
-
-/* Tables */
+/* Tables - Use SLDS table classes (spacing handled by SLDS classes) */
 table {
   width: 100%;
   border-collapse: collapse;
-  margin: 1rem 0;
 }
 
 th {
-  background-color: #f4f6f9;
-  padding: 0.75rem;
-  text-align: left;
-  border: 1px solid #dddbda;
-  font-weight: 700;
+  background-color: var(--lwc-colorBackgroundRowHover, #f4f6f9);
+  border: 1px solid var(--lwc-colorBorder, #dddbda);
 }
 
 td {
-  padding: 0.75rem;
-  border: 1px solid #dddbda;
+  border: 1px solid var(--lwc-colorBorder, #dddbda);
 }
 
 tr:nth-child(even) {
-  background-color: #fafaf9;
+  background-color: var(--lwc-colorBackgroundAlt, #fafaf9);
 }
 
-/* Responsive */
+/* Responsive - Use SLDS responsive utilities */
 @media (max-width: 48rem) {
   .nav-container {
     position: relative;

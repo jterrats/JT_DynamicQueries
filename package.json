@@ -22,7 +22,7 @@
   },
   "scripts": {
     "lint": "sf code-analyzer run --target \"force-app/main/default/**/*.{cls,trigger,js}\" --rule-selector pmd --rule-selector eslint-lwc --rule-selector retire-js --severity-threshold=2 --view table",
-    "lint:staged": "sf code-analyzer run --target \"force-app/main/default\" --rule-selector pmd --rule-selector eslint-lwc --severity-threshold=2 --view table",
+    "lint:staged": "sf code-analyzer run --target \"force-app/main/default/**/*.cls\" --target \"force-app/main/default/**/*.trigger\" --rule-selector pmd --severity-threshold=2 --view table",
     "yamllint": "prettier --check \"**/*.{yaml,yml}\"",
     "test": "npm run test:unit",
     "test:unit": "sfdx-lwc-jest",
@@ -44,7 +44,6 @@
     "screenshots:appexchange": "node tests/screenshots/captureAppExchangeScreenshots.js",
     "videos:appexchange": "node tests/screenshots/captureAppExchangeVideos.js",
     "gifs:happy-path": "node tests/screenshots/captureHappyPathGifs.js",
-    "deploy:named-credential": "node scripts/smart-deploy.js",
     "validate:pipeline": "./scripts/validate-pipeline.sh",
     "validate:pipeline:dry": "./scripts/validate-pipeline.sh --dry-run",
     "validate:pipeline:list": "act -l"

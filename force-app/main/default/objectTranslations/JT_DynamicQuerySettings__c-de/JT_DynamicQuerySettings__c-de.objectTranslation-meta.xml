@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fields>
-        <name>JT_AllowProductionEditing__c</name>
-        <label>Produktionsbearbeitung Zulassen</label>
-        <help
-    >⚠️ WARNUNG: Aktiviert die Erstellung/Bearbeitung von Metadaten in Produktionsumgebungen (nur Starter/Free Editions). Mit äußerster Vorsicht verwenden.</help>
-    </fields>
     <caseValues>
         <caseType>Nominative</caseType>
         <plural>false</plural>
@@ -15,6 +9,36 @@
         <caseType>Nominative</caseType>
         <plural>true</plural>
         <value>Dynamische Abfrage-Einstellungen</value>
+    </caseValues>
+    <caseValues>
+        <caseType>Accusative</caseType>
+        <plural>false</plural>
+        <value><!-- Dynamische Abfrage-Einstellung --></value>
+    </caseValues>
+    <caseValues>
+        <caseType>Accusative</caseType>
+        <plural>true</plural>
+        <value><!-- Dynamische Abfrage-Einstellungen --></value>
+    </caseValues>
+    <caseValues>
+        <caseType>Genitive</caseType>
+        <plural>false</plural>
+        <value><!-- Dynamische Abfrage-Einstellung --></value>
+    </caseValues>
+    <caseValues>
+        <caseType>Genitive</caseType>
+        <plural>true</plural>
+        <value><!-- Dynamische Abfrage-Einstellungen --></value>
+    </caseValues>
+    <caseValues>
+        <caseType>Dative</caseType>
+        <plural>false</plural>
+        <value><!-- Dynamische Abfrage-Einstellung --></value>
+    </caseValues>
+    <caseValues>
+        <caseType>Dative</caseType>
+        <plural>true</plural>
+        <value><!-- Dynamische Abfrage-Einstellungen --></value>
     </caseValues>
     <gender>Feminine</gender>
 </CustomObjectTranslation>

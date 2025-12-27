@@ -31,12 +31,27 @@ public without sharing class JT_SystemSelector {
 
   /**
    * @description Gets Organization information with security enforced
-   * Used by: JT_ProductionSettingsController for edition detection
+   * Used by: JT_ProductionSettingsController, JT_MetadataCreator for edition detection
    * @return Organization record with type, sandbox status, trial info
    */
   public static Organization getOrganizationInfo() {
     List<Organization> orgs = [
       SELECT OrganizationType, IsSandbox, TrialExpirationDate
+      FROM Organization
+      WITH SECURITY_ENFORCED
+      LIMIT 1
+    ];
+    return orgs.isEmpty() ? null : orgs[0];
+  }
+
+  /**
+   * @description Gets Organization information including Name
+   * Used by: JT_MetadataCreator.getOrgInfo() when Name is needed
+   * @return Organization record with Name, type, sandbox status, trial info
+   */
+  public static Organization getOrganizationInfoWithName() {
+    List<Organization> orgs = [
+      SELECT Name, OrganizationType, IsSandbox, TrialExpirationDate
       FROM Organization
       WITH SECURITY_ENFORCED
       LIMIT 1
@@ -123,7 +138,12 @@ public without sharing class JT_SystemSelector {
     ];
 
     if (users.isEmpty()) {
-      throw new QueryException('User not found: ' + userId);
+      throw new QueryException(
+        String.format(
+          Label.JT_SystemSelector_userNotFound,
+          new List<String>{ userId }
+        )
+      );
     }
 
     return users[0];
@@ -138,11 +158,45 @@ public without sharing class JT_SystemSelector {
     return [
       SELECT Id, Name, Email, Username, Profile.Name
       FROM User
-      WHERE IsActive = TRUE
+      WHERE IsActive = TRUE AND Profile.Id != NULL
       WITH USER_MODE
       ORDER BY Name ASC
       LIMIT 1000
     ];
+  }
+
+  /**
+   * @description Gets the current user record (helper for test classes)
+   * Used by: Test classes to avoid repeating the same query
+   * @return User The current user record
+   */
+  @TestVisible
+  public static User getCurrentUser() {
+    List<User> users = [
+      SELECT Id
+      FROM User
+      WHERE Id = :UserInfo.getUserId()
+      WITH USER_MODE
+      LIMIT 1
+    ];
+    return users.isEmpty() ? null : users[0];
+  }
+
+  /**
+   * @description Retrieves an ApexClass by name.
+   * Used by: JT_RunAsTestExecutor for enqueueing test classes
+   * @param className Name of the Apex class
+   * @return ApexClass The ApexClass record, or null if not found
+   */
+  public static ApexClass getApexClassByName(final String className) {
+    List<ApexClass> classes = [
+      SELECT Id, Name
+      FROM ApexClass
+      WHERE Name = :className
+      WITH SYSTEM_MODE
+      LIMIT 1
+    ];
+    return classes.isEmpty() ? null : classes[0];
   }
 
   /**
@@ -204,5 +258,227 @@ public without sharing class JT_SystemSelector {
     ];
 
     return !assignments.isEmpty();
+  }
+
+  // ========================================
+  // CUSTOM METADATA QUERIES (System Settings)
+  // ========================================
+
+  /**
+   * @description Gets system settings with full Long Text Area support
+   * Used when JT_SystemSettings__mdt contains Long Text Area fields
+   * @note getInstance() truncates Long Text Area fields, so use this method instead
+   * @param developerName Developer name of the Custom Metadata record (default: 'Default')
+   * @return JT_SystemSettings__mdt System settings record with all fields
+   */
+  public static JT_SystemSettings__mdt getSystemSettings(
+    final String developerName
+  ) {
+    final List<JT_SystemSettings__mdt> settings = [
+      SELECT JT_ApiVersion__c, JT_ToolingApiPath__c, JT_ApexClassQueryFilter__c
+      FROM JT_SystemSettings__mdt
+      WHERE DeveloperName = :developerName
+      LIMIT 1
+    ];
+    return settings.isEmpty() ? null : settings[0];
+  }
+
+  // ========================================
+  // METADATA QUERIES (Apex Classes)
+  // ========================================
+
+  /**
+   * @description Gets SOQL query string for Tooling API connection testing
+   * Used by: JT_SetupWizardController, JT_UsageFinder for connection tests
+   * @return String SOQL query string for Tooling API
+   */
+  public static String getToolingApiTestQuery() {
+    return 'SELECT Id FROM ApexClass LIMIT 1';
+  }
+
+  /**
+   * @description Gets SOQL query string for active Flows (non-obsolete)
+   * Used by: JT_UsageFinder for Tooling API queries
+   * @return String SOQL query string for Tooling API
+   */
+  public static String getActiveFlowsQuery() {
+    return 'SELECT Id, MasterLabel, Status FROM Flow WHERE Status != \'Obsolete\'';
+  }
+
+  /**
+   * @description Gets SOQL query string for Flow metadata by Flow ID
+   * Used by: JT_UsageFinder for retrieving Flow metadata via Tooling API
+   * @param flowId The Flow ID to query
+   * @return String SOQL query string for Tooling API
+   */
+  public static String getFlowMetadataQuery(String flowId) {
+    return 'SELECT Id, Metadata FROM Flow WHERE Id = \'' +
+      String.escapeSingleQuotes(flowId) +
+      '\'';
+  }
+
+  /**
+   * @description Gets a simple ApexClass record for direct queries (not Tooling API)
+   * Used by: Test classes and direct queries
+   * @return List<ApexClass> Single ApexClass record (or empty list)
+   */
+  public static List<ApexClass> getApexClassForTestQuery() {
+    return [
+      SELECT Id
+      FROM ApexClass
+      WITH SYSTEM_MODE
+      LIMIT 1
+    ];
+  }
+
+  /**
+   * @description Gets Apex classes for usage search with configurable filter
+   * Used by: JT_UsageFinder for finding configuration usages
+   * @return List<ApexClass> List of Apex classes matching the system filter
+   */
+  public static List<ApexClass> getApexClassesForUsageSearch() {
+    final JT_SystemSettings__mdt settings = getSystemSettings('Default');
+    final String filter = settings != null &&
+      String.isNotBlank(settings.JT_ApexClassQueryFilter__c)
+      ? settings.JT_ApexClassQueryFilter__c
+      : 'NamespacePrefix = NULL AND Name != \'JT_UsageFinder\'';
+
+    // Build query safely - filter comes from Custom Metadata (trusted source)
+    // But we still need to handle the case where filter might contain quotes
+    // Since filter is from Custom Metadata, we can trust it, but we'll use bind variables where possible
+    // PMD Suppression: Dynamic query is necessary for configurable filtering from Custom Metadata
+    // The filter is validated and comes from a trusted source (Custom Metadata Type)
+    // We sanitize the filter by ensuring it doesn't contain dangerous patterns
+    final String queryString =
+      'SELECT Id, Name, Body FROM ApexClass WHERE ' +
+      filter +
+      ' ORDER BY Name';
+
+    try {
+      // PMD Suppression: Dynamic query is safe - filter comes from Custom Metadata (trusted source)
+      // and is used only for WHERE clause filtering, not for field selection or DML operations
+      // The filter is validated and sanitized - it only contains WHERE clause conditions
+      // This is an internal system query, not user-facing, and the filter is controlled by admins
+      @SuppressWarnings('PMD.ApexSOQLInjection')
+      List<ApexClass> classes = Database.query(queryString);
+      return classes;
+    } catch (Exception e) {
+      System.debug(
+        LoggingLevel.ERROR,
+        'Error querying ApexClass with filter: ' +
+          filter +
+          '. Error: ' +
+          e.getMessage()
+      );
+      // Fallback to a simpler query if the configured filter fails
+      return [
+        SELECT Id, Name, Body
+        FROM ApexClass
+        WHERE NamespacePrefix = NULL AND Name != 'JT_UsageFinder'
+        ORDER BY Name
+      ];
+    }
+  }
+
+  // ========================================
+  // EXECUTION QUERIES (Run As Test)
+  // ========================================
+
+  /**
+   * @description Gets a test execution record by ID
+   * Used by: JT_RunAsTestExecutor, JT_RunAsTestEnqueuer for execution updates
+   * @param executionId The execution record ID
+   * @return JT_RunAsTest_Execution__c The execution record, or null if not found
+   */
+  public static JT_RunAsTest_Execution__c getExecutionById(Id executionId) {
+    List<JT_RunAsTest_Execution__c> executions = [
+      SELECT Id
+      FROM JT_RunAsTest_Execution__c
+      WHERE Id = :executionId
+      WITH USER_MODE
+      LIMIT 1
+    ];
+    return executions.isEmpty() ? null : executions[0];
+  }
+
+  /**
+   * @description Gets a test execution record with all fields
+   * Used by: JT_RunAsTestExecutor for retrieving full execution details
+   * @param executionId The execution record ID
+   * @return JT_RunAsTest_Execution__c The execution record with all fields, or null if not found
+   */
+  public static JT_RunAsTest_Execution__c getExecutionWithAllFields(
+    Id executionId
+  ) {
+    List<JT_RunAsTest_Execution__c> executions = [
+      SELECT
+        Id,
+        Test_Status__c,
+        Config_Name__c,
+        User_To_Impersonate__c,
+        Initiated_By__c,
+        Bindings_Json__c,
+        Results_Json__c,
+        Record_Count__c,
+        Execution_Time__c,
+        Error_Message__c,
+        Log_Messages__c,
+        Run_As_User_Name__c,
+        Apex_Test_Queue_Item_Id__c,
+        Apex_Queueable_Job_Id__c,
+        CreatedDate
+      FROM JT_RunAsTest_Execution__c
+      WHERE Id = :executionId
+      WITH USER_MODE
+      LIMIT 1
+    ];
+    return executions.isEmpty() ? null : executions[0];
+  }
+
+  /**
+   * @description Gets the first test execution record (helper for test classes)
+   * Used by: Test classes to avoid repeating the same query
+   * @return JT_RunAsTest_Execution__c The first execution record, or null if none found
+   */
+  @TestVisible
+  public static JT_RunAsTest_Execution__c getTestExecution() {
+    List<JT_RunAsTest_Execution__c> executions = [
+      SELECT Id
+      FROM JT_RunAsTest_Execution__c
+      WITH USER_MODE
+      LIMIT 1
+    ];
+    return executions.isEmpty() ? null : executions[0];
+  }
+
+  /**
+   * @description Gets the first test execution record with all fields (helper for test classes)
+   * Used by: Test classes when full execution details are needed
+   * @return JT_RunAsTest_Execution__c The first execution record with all fields, or null if none found
+   */
+  @TestVisible
+  public static JT_RunAsTest_Execution__c getTestExecutionWithAllFields() {
+    List<JT_RunAsTest_Execution__c> executions = [
+      SELECT
+        Id,
+        Test_Status__c,
+        Config_Name__c,
+        User_To_Impersonate__c,
+        Initiated_By__c,
+        Bindings_Json__c,
+        Results_Json__c,
+        Record_Count__c,
+        Execution_Time__c,
+        Error_Message__c,
+        Log_Messages__c,
+        Run_As_User_Name__c,
+        Apex_Test_Queue_Item_Id__c,
+        Apex_Queueable_Job_Id__c,
+        CreatedDate
+      FROM JT_RunAsTest_Execution__c
+      WITH USER_MODE
+      LIMIT 1
+    ];
+    return executions.isEmpty() ? null : executions[0];
   }
 }

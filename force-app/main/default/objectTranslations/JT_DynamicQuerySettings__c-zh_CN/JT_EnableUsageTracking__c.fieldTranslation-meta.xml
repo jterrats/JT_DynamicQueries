@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <help
+  ><!-- ⚠️ API Limits: Searching Apex classes (free) + Flows (consumes Tooling API calls). Enable only if needed. Each search may use 1-5 API calls depending on org size. --></help>
+    <label><!-- Enable Usage Tracking --></label>
+    <name>JT_EnableUsageTracking__c</name>
+</CustomFieldTranslation>

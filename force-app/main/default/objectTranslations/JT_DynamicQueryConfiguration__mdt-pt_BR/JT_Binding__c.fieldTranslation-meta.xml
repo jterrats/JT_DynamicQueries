@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <help
+  >Objeto JSON opcional com valores predefinidos de variáveis de ligação. Exemplo: {&quot;nomeConta&quot;:&quot;ACME Corp&quot;,&quot;status&quot;:&quot;Ativo&quot;}</help>
+    <label>Ligações (JSON)</label>
+    <name>JT_Binding__c</name>
+</CustomFieldTranslation>

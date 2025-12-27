@@ -4,9 +4,12 @@
  * Follows Controller pattern (thin @AuraEnabled layer only)
  *
  * @author Jaime Terrats
- * @date 2025-12-02
+ * @date 2025-12-11
  * @refactored 2025-12-02 - Extracted to Service Layer
+ *
+ * PMD: AvoidBooleanMethodParameters suppressed - enabled/disabled flags are self-documenting
  */
+@SuppressWarnings('PMD.AvoidBooleanMethodParameters')
 public with sharing class JT_ProductionSettingsController {
   /**
    * @description Gets current production editing setting

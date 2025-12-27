@@ -2,9 +2,16 @@
  * @description Controller for the Query Viewer LWC
  * @author Jaime Terrats
  * @group Dynamic Queries
- * @last modified on 11-28-2025
+ * @last modified on 12-11-2025
  * @last modified by Jaime Terrats
+ *
+ * PMD Suppressions:
+ * - CognitiveComplexity/CyclomaticComplexity: Controller orchestrates complex query operations
+ * - AvoidDeeplyNestedIfStmts: Necessary for bind variable processing and risk assessment
  **/
+@SuppressWarnings(
+  'PMD.CognitiveComplexity, PMD.CyclomaticComplexity, PMD.StdCyclomaticComplexity, PMD.AvoidDeeplyNestedIfStmts, PMD.ApexDoc'
+)
 public with sharing class JT_QueryViewerController {
   /**
    * @description Retrieves all available query configurations
@@ -31,7 +38,10 @@ public with sharing class JT_QueryViewerController {
       return options;
     } catch (Exception e) {
       throw new AuraHandledException(
-        'Error retrieving configurations: ' + e.getMessage()
+        String.format(
+          Label.JT_QueryViewerController_errorRetrievingConfigs,
+          new List<String>{ e.getMessage() }
+        )
       );
     }
   }
@@ -56,9 +66,7 @@ public with sharing class JT_QueryViewerController {
         validateRunAsPermission(runAsUserId);
       }
 
-      Map<String, Object> bindings = String.isNotBlank(bindingsJson)
-        ? (Map<String, Object>) JSON.deserializeUntyped(bindingsJson)
-        : new Map<String, Object>();
+      Map<String, Object> bindings = deserializeBindings(bindingsJson);
 
       // Get config to check for LIKE clauses
       JT_DynamicQueryConfiguration__mdt config = [
@@ -69,17 +77,10 @@ public with sharing class JT_QueryViewerController {
         LIMIT 1
       ];
 
-      System.debug(
-        LoggingLevel.FINE,
-        '🔍 Execution bindings BEFORE wildcards: ' + JSON.serialize(bindings)
-      );
-
-      // Auto-add wildcards for LIKE queries
-      addWildcardsForLikeBindings(config.JT_BaseQuery__c, bindings);
-
-      System.debug(
-        LoggingLevel.FINE,
-        '✅ Execution bindings AFTER wildcards: ' + JSON.serialize(bindings)
+      // Auto-add wildcards for LIKE queries using centralized utility
+      JT_QueryBindingUtil.addWildcardsForLikeBindings(
+        config.JT_BaseQuery__c,
+        bindings
       );
 
       List<SObject> sobjectRecords = JT_DataSelector.getRecords(
@@ -91,8 +92,7 @@ public with sharing class JT_QueryViewerController {
       QueryResult result = new QueryResult();
 
       // ✅ SERIALIZE to preserve child relationships
-      String recordsJson = JSON.serialize(sobjectRecords);
-      result.records = (List<Object>) JSON.deserializeUntyped(recordsJson);
+      result.records = serializeRecordsForLWC(sobjectRecords);
 
       result.recordCount = sobjectRecords.size();
       result.success = true;
@@ -107,12 +107,7 @@ public with sharing class JT_QueryViewerController {
 
       return result;
     } catch (Exception e) {
-      QueryResult result = new QueryResult();
-      result.success = false;
-      result.errorMessage = e.getMessage();
-      result.records = new List<Object>(); // Changed from List<SObject>
-      result.recordCount = 0;
-      return result;
+      return createErrorResult(e);
     }
   }
 
@@ -143,6 +138,53 @@ public with sharing class JT_QueryViewerController {
   }
 
   /**
+   * @description Deserializes bindings JSON string to Map
+   * Centralizes bindings deserialization to avoid duplication
+   * @param bindingsJson JSON string with bindings
+   * @return Map<String, Object> Deserialized bindings, or empty map if blank
+   **/
+  private static Map<String, Object> deserializeBindings(String bindingsJson) {
+    return String.isNotBlank(bindingsJson)
+      ? (Map<String, Object>) JSON.deserializeUntyped(bindingsJson)
+      : new Map<String, Object>();
+  }
+
+  /**
+   * @description Creates an error QueryResult with error message
+   * Centralizes error result creation to avoid duplication
+   * @param e Exception that occurred
+   * @return QueryResult Error result with exception message
+   **/
+  private static QueryResult createErrorResult(Exception e) {
+    QueryResult result = new QueryResult();
+    result.success = false;
+    result.errorMessage = e.getMessage();
+    result.records = new List<Object>();
+    result.recordCount = 0;
+    return result;
+  }
+
+  /**
+   * @description Serializes SObject records to LWC-friendly format using standard Salesforce JSON serialization
+   * This method preserves child relationships in the standard Salesforce format: { records: [...] }
+   * @author Jaime Terrats | 12-13-2025
+   * @param sobjectRecords List of SObject records to serialize
+   * @return List<Object> Serialized records compatible with LWC datatable
+   **/
+  public static List<Object> serializeRecordsForLWC(
+    List<SObject> sobjectRecords
+  ) {
+    if (sobjectRecords == null || sobjectRecords.isEmpty()) {
+      return new List<Object>();
+    }
+
+    // Use standard Salesforce JSON serialization to preserve child relationships
+    // This ensures child relationships are in format: { records: [...] }
+    String recordsJson = JSON.serialize(sobjectRecords);
+    return (List<Object>) JSON.deserializeUntyped(recordsJson);
+  }
+
+  /**
    * @description Executes a query preview with LIMIT 5 for data preview
    * @author Jaime Terrats | 12-01-2025
    * @param devName Configuration developer name (optional if queryOverride provided)
@@ -157,9 +199,7 @@ public with sharing class JT_QueryViewerController {
     String queryOverride
   ) {
     try {
-      Map<String, Object> bindings = String.isNotBlank(bindingsJson)
-        ? (Map<String, Object>) JSON.deserializeUntyped(bindingsJson)
-        : new Map<String, Object>();
+      Map<String, Object> bindings = deserializeBindings(bindingsJson);
 
       String baseQuery;
 
@@ -168,18 +208,14 @@ public with sharing class JT_QueryViewerController {
         baseQuery = queryOverride;
       } else {
         // Get the configuration to modify query with LIMIT
-        JT_DynamicQueryConfiguration__mdt config = [
-          SELECT JT_BaseQuery__c, JT_ObjectName__c
-          FROM JT_DynamicQueryConfiguration__mdt
-          WHERE DeveloperName = :devName
-          WITH USER_MODE
-          LIMIT 1
-        ];
+        JT_DynamicQueryConfiguration__mdt config = getConfigWithObjectName(
+          devName
+        );
         baseQuery = config.JT_BaseQuery__c;
       }
 
-      // Auto-add wildcards for LIKE queries in preview
-      addWildcardsForLikeBindings(baseQuery, bindings);
+      // Auto-add wildcards for LIKE queries in preview using centralized utility
+      JT_QueryBindingUtil.addWildcardsForLikeBindings(baseQuery, bindings);
 
       String previewQuery = baseQuery;
 
@@ -211,9 +247,38 @@ public with sharing class JT_QueryViewerController {
     } catch (Exception e) {
       QueryResult result = new QueryResult();
       result.success = false;
-      result.errorMessage = e.getMessage();
       result.records = new List<Object>(); // Changed from List<SObject>
       result.recordCount = 0;
+
+      JT_ErrorMessageUtil.ErrorAnalysisResult analysis = JT_ErrorMessageUtil.analyzeError(
+        e.getMessage(),
+        null
+      );
+
+      switch on analysis.errorType {
+        when OBJECT_ACCESS_DENIED {
+          result.errorMessage = Label.JT_QueryViewerController_objectDoesNotExist;
+        }
+        when FIELD_ACCESS_DENIED {
+          result.errorMessage = Label.JT_QueryViewerController_fieldsDoNotExist;
+        }
+        when INSUFFICIENT_PERMISSIONS {
+          result.errorMessage = Label.JT_QueryViewerController_insufficientPermissions;
+        }
+        when INVALID_SOQL_SYNTAX {
+          result.errorMessage = String.format(
+            Label.JT_QueryViewerController_invalidSoqlSyntax,
+            new List<String>{ e.getMessage() }
+          );
+        }
+        when else {
+          result.errorMessage = String.format(
+            Label.JT_QueryViewerController_queryPreviewFailed,
+            new List<String>{ e.getMessage() }
+          );
+        }
+      }
+
       return result;
     }
   }
@@ -281,7 +346,9 @@ public with sharing class JT_QueryViewerController {
       // ✅ REFACTORED: Use Selector Layer (2025-12-02)
       Profile userProfile = JT_SystemSelector.getUserProfile();
       return userProfile != null &&
-        userProfile.Name.contains('System Administrator');
+        userProfile.Name.contains(
+          Label.JT_QueryViewerController_systemAdministrator
+        );
     } catch (Exception e) {
       return false;
     }
@@ -297,7 +364,7 @@ public with sharing class JT_QueryViewerController {
     try {
       if (!canUseRunAs()) {
         throw new AuraHandledException(
-          'Insufficient permissions to use Run As feature.'
+          Label.JT_QueryViewerController_insufficientPermissionsRunAs
         );
       }
 
@@ -446,18 +513,12 @@ public with sharing class JT_QueryViewerController {
     String bindingsJson
   ) {
     try {
-      Map<String, Object> bindings = String.isNotBlank(bindingsJson)
-        ? (Map<String, Object>) JSON.deserializeUntyped(bindingsJson)
-        : new Map<String, Object>();
+      Map<String, Object> bindings = deserializeBindings(bindingsJson);
 
       // Get config
-      JT_DynamicQueryConfiguration__mdt config = [
-        SELECT JT_BaseQuery__c, JT_ObjectName__c, JT_Binding__c
-        FROM JT_DynamicQueryConfiguration__mdt
-        WHERE DeveloperName = :devName
-        WITH USER_MODE
-        LIMIT 1
-      ];
+      JT_DynamicQueryConfiguration__mdt config = getConfigWithAllFields(
+        devName
+      );
 
       // Merge bindings
       Map<String, Object> configBindings = String.isNotBlank(
@@ -477,103 +538,127 @@ public with sharing class JT_QueryViewerController {
       Map<String, Object> countBindings = (Map<String, Object>) JSON.deserializeUntyped(
         JSON.serialize(mergedBindings)
       );
-      addWildcardsForLikeBindings(config.JT_BaseQuery__c, countBindings);
+      JT_QueryBindingUtil.addWildcardsForLikeBindings(
+        config.JT_BaseQuery__c,
+        countBindings
+      );
 
       // Build COUNT query (replace SELECT ... FROM with SELECT COUNT() FROM)
       // Use [\s\S]*? to match across multiple lines (including newlines)
-      String countQuery = config.JT_BaseQuery__c
+      // Decode HTML entities that may come from metadata
+      String baseQuery = config.JT_BaseQuery__c.replace('&gt;', '>')
+        .replace('&lt;', '<')
+        .replace('&amp;', '&');
+      String countQuery = baseQuery
         .replaceAll('(?i)SELECT[\\s\\S]+?FROM', 'SELECT COUNT() FROM')
         .replaceAll('(?i)ORDER\\s+BY[\\s\\S]*$', '') // Remove ORDER BY
         .replaceAll('(?i)LIMIT\\s+\\d+[\\s\\S]*$', ''); // Remove LIMIT
 
       // Execute count query with timeout protection
       Integer estimatedCount = 0;
+      String finalCountQuery = null;
       try {
-        System.debug(LoggingLevel.FINE, '📊 COUNT Query: ' + countQuery);
-        System.debug(
-          LoggingLevel.FINE,
-          '📊 COUNT Bindings: ' + JSON.serialize(countBindings)
-        );
-
         // Replace bind variables in COUNT query (countQuery() doesn't support bindings)
-        String finalCountQuery = replaceBindVariables(
-          countQuery,
-          countBindings
-        );
+        finalCountQuery = replaceBindVariables(countQuery, countBindings);
 
+        // Remove Long Text Area field conditions that cannot be filtered in COUNT queries
+        finalCountQuery = removeLongTextAreaConditions(finalCountQuery);
+
+        System.debug(LoggingLevel.DEBUG, 'COUNT query: ' + finalCountQuery);
         System.debug(
-          LoggingLevel.FINE,
-          '📊 Final COUNT Query: ' + finalCountQuery
+          LoggingLevel.DEBUG,
+          'COUNT bindings: ' + JSON.serialize(countBindings)
         );
 
         // Use countQuery() instead of queryWithBinds for COUNT queries
         estimatedCount = Database.countQuery(finalCountQuery);
 
-        System.debug(LoggingLevel.FINE, '✅ COUNT Result: ' + estimatedCount);
+        System.debug(LoggingLevel.DEBUG, 'COUNT result: ' + estimatedCount);
       } catch (Exception e) {
-        // If count fails, assume it's risky
-        System.debug(
-          LoggingLevel.ERROR,
-          '❌ COUNT Failed: ' + e.getMessage() + ' | ' + e.getStackTraceString()
-        );
-        estimatedCount = 99999;
+        // If count fails, check if it's a Long Text Area field error and retry without it
+        if (
+          e.getMessage() != null &&
+          e.getMessage().contains('can not be filtered in a query call')
+        ) {
+          System.debug(
+            LoggingLevel.WARN,
+            'COUNT query failed due to unfilterable field, retrying without Long Text Area conditions: ' +
+            e.getMessage()
+          );
+          try {
+            // Remove Long Text Area conditions and retry
+            finalCountQuery = removeLongTextAreaConditions(finalCountQuery);
+            estimatedCount = Database.countQuery(finalCountQuery);
+            System.debug(
+              LoggingLevel.DEBUG,
+              'COUNT result after removing Long Text Area conditions: ' +
+              estimatedCount
+            );
+          } catch (Exception retryException) {
+            // If retry also fails, log and assume risky
+            System.debug(
+              LoggingLevel.ERROR,
+              'COUNT query failed after retry: ' + retryException.getMessage()
+            );
+            estimatedCount = 99999;
+          }
+        } else {
+          // If count fails for other reasons, log detailed error and assume it's risky
+          System.debug(
+            LoggingLevel.ERROR,
+            'COUNT query failed: ' + e.getMessage()
+          );
+          System.debug(
+            LoggingLevel.ERROR,
+            'COUNT query that failed: ' +
+            (finalCountQuery != null ? finalCountQuery : 'null')
+          );
+          System.debug(
+            LoggingLevel.ERROR,
+            'COUNT bindings that failed: ' + JSON.serialize(countBindings)
+          );
+          System.debug(
+            LoggingLevel.ERROR,
+            'Exception type: ' + e.getTypeName()
+          );
+          System.debug(
+            LoggingLevel.ERROR,
+            'Exception stack trace: ' + e.getStackTraceString()
+          );
+          estimatedCount = 99999;
+        }
       }
 
-      QueryRiskAssessment assessment = new QueryRiskAssessment();
+      final QueryRiskAssessment assessment = new QueryRiskAssessment();
       assessment.estimatedRecordCount = estimatedCount;
+      assessment.hasEmptyParameters = hasEmptyParameters(mergedBindings);
 
-      // ⚠️ CRITICAL: Batch processing breaks child relationships
-      // If query has child relationships, disable batch processing
-      Boolean hasChildRelationships = hasChildRelationships(
+      // CRITICAL: Batch processing breaks child relationships
+      final Boolean hasChildRelationships = hasChildRelationships(
         config.JT_BaseQuery__c
       );
 
       if (hasChildRelationships) {
-        // ⚠️ CRITICAL: Batch processing breaks child relationships
-        // Force LOW risk to skip batch processing modal
-        assessment.isHighRisk = false;
-        assessment.isCriticalRisk = false;
-        assessment.recommendBatchProcessing = false;
-        assessment.riskLevel = 'LOW';
-        assessment.message = 'Query contains child relationships. Using standard processing.';
+        setLowRiskAssessment(
+          assessment,
+          Label.JT_QueryViewerController_queryContainsChildRelationships
+        );
       } else {
-        assessment.isHighRisk = estimatedCount > 10000; // >10K is high risk
-        assessment.isCriticalRisk = estimatedCount > 50000; // >50K will fail
-        assessment.recommendBatchProcessing = estimatedCount > 5000;
-
-        if (assessment.isCriticalRisk) {
-          assessment.riskLevel = 'CRITICAL';
-          assessment.message = 'This query will exceed the 50,000 record limit. Batch processing is required.';
-        } else if (assessment.isHighRisk) {
-          assessment.riskLevel = 'HIGH';
-          assessment.message =
-            'This query may return a large number of records (' +
-            estimatedCount +
-            '). Consider using batch processing.';
-        } else if (assessment.recommendBatchProcessing) {
-          assessment.riskLevel = 'MEDIUM';
-          assessment.message =
-            'Query will return ' +
-            estimatedCount +
-            ' records. Batch processing recommended for better performance.';
-        } else {
-          assessment.riskLevel = 'LOW';
-          assessment.message =
-            'Query is safe to execute (' +
-            estimatedCount +
-            ' records).';
-        }
+        assessRiskByCount(assessment, estimatedCount);
       }
 
       return assessment;
     } catch (Exception e) {
-      QueryRiskAssessment assessment = new QueryRiskAssessment();
+      final QueryRiskAssessment assessment = new QueryRiskAssessment();
       assessment.estimatedRecordCount = 0;
       assessment.isHighRisk = true;
       assessment.isCriticalRisk = false;
       assessment.recommendBatchProcessing = true;
-      assessment.riskLevel = 'UNKNOWN';
-      assessment.message = 'Unable to assess risk: ' + e.getMessage();
+      assessment.riskLevel = Label.JT_QueryViewerController_riskLevelUnknown;
+      assessment.message = String.format(
+        Label.JT_QueryViewerController_unableToAssessRisk,
+        new List<String>{ e.getMessage() }
+      );
       return assessment;
     }
   }
@@ -588,42 +673,795 @@ public with sharing class JT_QueryViewerController {
     String query,
     Map<String, Object> bindings
   ) {
-    if (String.isBlank(query) || bindings == null || bindings.isEmpty()) {
+    if (String.isBlank(query)) {
       return query;
     }
 
     String result = query;
-    for (String key : bindings.keySet()) {
-      Object value = bindings.get(key);
-      String escapedValue = '';
 
-      if (value == null) {
-        escapedValue = 'null';
-      } else if (value instanceof String) {
-        // Escape single quotes and wrap in quotes
-        escapedValue =
-          '\'' +
-          String.valueOf(value).replace('\'', '\\\'') +
-          '\'';
-      } else if (
-        value instanceof Boolean ||
-        value instanceof Integer ||
-        value instanceof Decimal
-      ) {
-        escapedValue = String.valueOf(value);
+    // First, find all bindings referenced in the query
+    Pattern bindingPattern = Pattern.compile(':\\b(\\w+)\\b');
+    Matcher matcher = bindingPattern.matcher(query);
+    Set<String> referencedBindings = new Set<String>();
+    while (matcher.find()) {
+      referencedBindings.add(matcher.group(1));
+    }
+
+    // Remove conditions for bindings that don't exist or are empty
+    for (String bindingKey : referencedBindings) {
+      Boolean shouldRemove = false;
+
+      if (bindings == null || !bindings.containsKey(bindingKey)) {
+        // Binding not provided - remove the condition
+        shouldRemove = true;
       } else {
-        // For other types, use string representation
-        escapedValue =
-          '\'' +
-          String.valueOf(value).replace('\'', '\\\'') +
-          '\'';
+        Object value = bindings.get(bindingKey);
+        // Check if value is empty/null
+        Boolean isEmpty =
+          value == null ||
+          (value instanceof String && String.isBlank((String) value)) ||
+          (value instanceof List<Object> && ((List<Object>) value).isEmpty());
+
+        if (isEmpty) {
+          // Binding is empty - remove the condition
+          shouldRemove = true;
+        }
       }
 
-      // Replace :bindVar with actual value
-      result = result.replaceAll(':' + key + '\\b', escapedValue);
+      if (shouldRemove) {
+        result = removeConditionForBinding(result, bindingKey);
+      }
+    }
+
+    // Now replace remaining bindings with their values
+    if (bindings != null && !bindings.isEmpty()) {
+      for (String key : bindings.keySet()) {
+        final Object value = bindings.get(key);
+
+        // Skip empty strings and null values
+        if (value == null) {
+          continue;
+        }
+
+        if (value instanceof String && String.isBlank((String) value)) {
+          continue;
+        }
+
+        if (value instanceof List<Object>) {
+          List<Object> listValue = (List<Object>) value;
+          if (listValue.isEmpty()) {
+            continue;
+          }
+        }
+
+        final Object convertedValue = convertBindingValueForQuery(
+          result,
+          key,
+          value
+        );
+        final String escapedValue = escapeBindingValue(convertedValue);
+
+        result = result.replaceAll(':' + key + '\\b', escapedValue);
+      }
     }
 
     return result;
+  }
+
+  /**
+   * @description Removes WHERE conditions for Text Area and Long Text Area fields that cannot be filtered in COUNT queries
+   * @param query The SOQL query string
+   * @return String Query with Text Area and Long Text Area conditions removed
+   */
+  @TestVisible
+  private static String removeLongTextAreaConditions(String query) {
+    if (String.isBlank(query)) {
+      return query;
+    }
+
+    String result = query;
+
+    // Common Text Area and Long Text Area field names that cannot be filtered in COUNT queries
+    // These field types cannot be used in WHERE clauses for COUNT queries in Salesforce
+    List<String> textAreaFields = new List<String>{
+      'Description',
+      'Body',
+      'Content',
+      'LongTextArea',
+      'RichTextArea',
+      'TextArea',
+      'CommentBody',
+      'MessageBody',
+      'HtmlValue',
+      'PlainTextBody'
+    };
+
+    // Remove conditions for each Text Area and Long Text Area field
+    for (String fieldName : textAreaFields) {
+      // Pattern: (AND|OR)? FieldName LIKE 'value' (AND|OR)?
+      // Match field name case-insensitively and capture the entire condition including quoted values
+      // This handles both bindings (:binding) and already-replaced values ('value')
+      Pattern conditionPattern = Pattern.compile(
+        '(?i)(?s)(?:\\s+(?:AND|OR))?\\s+' +
+          Pattern.quote(fieldName) +
+          '\\s+(?:LIKE|IN|NOT\\s+IN|INCLUDES|EXCLUDES|[=<>!]+)\\s+(?:\'[^\']*\'|\\([^)]+\\)|:[a-zA-Z0-9_]+|\\S+)(?:\\s+(?:AND|OR))?(?=\\s+(?:AND|OR|ORDER|LIMIT|GROUP|HAVING|$)|$)'
+      );
+
+      Matcher matcher = conditionPattern.matcher(result);
+      if (matcher.find()) {
+        String matchedCondition = matcher.group(0);
+
+        // Check if there's AND/OR after the condition that we need to remove
+        String afterMatch = result.substring(matcher.end());
+        Pattern trailingAndOrPattern = Pattern.compile(
+          '(?i)^\\s+(AND|OR)\\s+(?![a-z])'
+        );
+        Matcher trailingMatcher = trailingAndOrPattern.matcher(afterMatch);
+        Integer additionalLength = 0;
+        if (trailingMatcher.find()) {
+          String trailing = trailingMatcher.group(0);
+          // Only remove trailing AND/OR if it's not followed by ORDER, LIMIT, etc.
+          if (
+            !Pattern.compile('(?i)^\\s+(AND|OR)\\s+(ORDER|LIMIT|GROUP|HAVING)')
+              .matcher(afterMatch)
+              .find()
+          ) {
+            additionalLength = trailing.length();
+          }
+        }
+
+        result =
+          result.substring(0, matcher.start()) +
+          result.substring(matcher.end() + additionalLength);
+
+        // Clean up any double AND/OR that might result
+        result = result.replaceAll('(?i)\\s+AND\\s+AND\\s+', ' AND ');
+        result = result.replaceAll('(?i)\\s+OR\\s+OR\\s+', ' OR ');
+        result = result.replaceAll('(?i)\\s+AND\\s+OR\\s+', ' AND ');
+        result = result.replaceAll('(?i)\\s+OR\\s+AND\\s+', ' AND ');
+
+        // Clean up WHERE with nothing after it or with AND/OR immediately after
+        result = result.replaceAll(
+          '(?i)\\s+WHERE\\s+(?:AND|OR)\\s+',
+          ' WHERE '
+        );
+        result = result.replaceAll('(?i)\\s+WHERE\\s*$', '');
+
+        // Clean up trailing AND/OR before ORDER BY, LIMIT, etc.
+        result = result.replaceAll(
+          '(?i)\\s+(?:AND|OR)\\s+(?=ORDER\\s+BY|LIMIT|GROUP\\s+BY|HAVING|$)',
+          ' '
+        );
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * @description Removes a WHERE condition for a binding that doesn't exist or is empty
+   * @param query The SOQL query string
+   * @param bindingKey The binding variable name (without colon)
+   * @return String Query with condition removed
+   */
+  @TestVisible
+  private static String removeConditionForBinding(
+    String query,
+    String bindingKey
+  ) {
+    if (String.isBlank(query) || String.isBlank(bindingKey)) {
+      return query;
+    }
+
+    String result = query;
+    String bindingPattern = ':' + bindingKey;
+
+    // Match condition with optional AND/OR before and after
+    // Use negative lookahead to avoid capturing OR from ORDER BY
+    // Pattern: (AND|OR)? Field (IN|NOT IN|...) :binding (AND|OR)?
+    // But don't capture OR if it's part of ORDER BY
+    Pattern conditionPattern = Pattern.compile(
+      '(?i)(?s)(?:\\s+(?:AND|OR))?\\s+[a-z0-9_]+\\s+(?:IN|NOT\\s+IN|INCLUDES|EXCLUDES|[=<>!]+)\\s*' +
+        Pattern.quote(bindingPattern) +
+        '\\b(?=\\s+(?:AND|OR|ORDER|LIMIT|GROUP|HAVING|$)|$)'
+    );
+
+    Matcher matcher = conditionPattern.matcher(result);
+    if (matcher.find()) {
+      String matchedCondition = matcher.group(0);
+
+      // Check if there's AND/OR after the binding that we need to remove
+      String afterMatch = result.substring(matcher.end());
+      Pattern trailingAndOrPattern = Pattern.compile(
+        '(?i)^\\s+(AND|OR)\\s+(?![a-z])'
+      );
+      Matcher trailingMatcher = trailingAndOrPattern.matcher(afterMatch);
+      Integer additionalLength = 0;
+      if (trailingMatcher.find()) {
+        String trailing = trailingMatcher.group(0);
+        // Only remove trailing AND/OR if it's not followed by ORDER, LIMIT, etc.
+        if (
+          !Pattern.compile('(?i)^\\s+(AND|OR)\\s+(ORDER|LIMIT|GROUP|HAVING)')
+            .matcher(afterMatch)
+            .find()
+        ) {
+          additionalLength = trailing.length();
+        }
+      }
+
+      result =
+        result.substring(0, matcher.start()) +
+        result.substring(matcher.end() + additionalLength);
+
+      // Clean up any double AND/OR that might result
+      result = result.replaceAll('(?i)\\s+AND\\s+AND\\s+', ' AND ');
+      result = result.replaceAll('(?i)\\s+OR\\s+OR\\s+', ' OR ');
+      result = result.replaceAll('(?i)\\s+AND\\s+OR\\s+', ' AND ');
+      result = result.replaceAll('(?i)\\s+OR\\s+AND\\s+', ' AND ');
+
+      // Clean up WHERE with nothing after it or with AND/OR immediately after
+      result = result.replaceAll('(?i)\\s+WHERE\\s+(?:AND|OR)\\s+', ' WHERE ');
+      result = result.replaceAll('(?i)\\s+WHERE\\s*$', '');
+
+      // Clean up trailing AND/OR before ORDER BY, LIMIT, etc.
+      result = result.replaceAll(
+        '(?i)\\s+(?:AND|OR)\\s+(?=ORDER\\s+BY|LIMIT|GROUP\\s+BY|HAVING|$)',
+        ' '
+      );
+    }
+
+    return result;
+  }
+
+  /**
+   * @description Gets the type name of a value for debug messages
+   * @param value Value to get type name for
+   * @return String Type name
+   */
+  @TestVisible
+  private static String getValueTypeName(Object value) {
+    if (value == null) {
+      return 'null';
+    }
+    if (value instanceof String) {
+      return 'String';
+    }
+    if (value instanceof Integer) {
+      return 'Integer';
+    }
+    if (value instanceof Decimal) {
+      return 'Decimal';
+    }
+    if (value instanceof Boolean) {
+      return 'Boolean';
+    }
+    if (value instanceof Date) {
+      return 'Date';
+    }
+    if (value instanceof Datetime) {
+      return 'Datetime';
+    }
+    if (value instanceof List<Object>) {
+      return 'List<Object>';
+    }
+    return 'Object';
+  }
+
+  /**
+   * @description Converts binding value to appropriate type based on query context
+   * Detects numeric comparisons and converts string values to Decimal/Integer
+   * @param query The SOQL query string
+   * @param bindingKey The binding variable name
+   * @param value The binding value (may be String from JSON)
+   * @return Object Converted value with appropriate type
+   */
+  @TestVisible
+  private static Object convertBindingValueForQuery(
+    String query,
+    String bindingKey,
+    Object value
+  ) {
+    if (value == null) {
+      return value;
+    }
+
+    // Decode HTML entities that may come from metadata (e.g., &gt;= becomes >=, &lt;= becomes <=)
+    String decodedQuery = query.replace('&gt;', '>')
+      .replace('&lt;', '<')
+      .replace('&amp;', '&');
+    String normalizedQuery = decodedQuery.toLowerCase();
+    String bindingPattern = ':' + bindingKey;
+    // Normalize binding pattern for regex matching (query is normalized to lowercase)
+    String normalizedBindingPattern = ':' + bindingKey.toLowerCase();
+    String escapedPattern = Pattern.quote(normalizedBindingPattern);
+
+    // Check if binding is used in numeric comparison operators
+    Boolean isNumericComparison = false;
+    Pattern pattern1 = Pattern.compile(
+      '(?i)(?s)[a-z0-9_]+\\s+[>=<]+\\s*' + escapedPattern + '\\b'
+    );
+    Matcher matcher1 = pattern1.matcher(normalizedQuery);
+    if (matcher1.find()) {
+      isNumericComparison = true;
+    }
+
+    if (!isNumericComparison) {
+      Pattern pattern2 = Pattern.compile(
+        '(?i)(?s)\\b' + escapedPattern + '\\s*[>=<]+\\s+[a-z0-9_]+'
+      );
+      Matcher matcher2 = pattern2.matcher(normalizedQuery);
+      if (matcher2.find()) {
+        isNumericComparison = true;
+      }
+    }
+
+    // Check for boolean comparisons first (before numeric, to avoid false positives)
+    // Handle both "Field = :binding" and "Field =: binding" (with optional space after =)
+    Boolean isBooleanComparison = false;
+    Pattern boolPattern1 = Pattern.compile(
+      '[a-z0-9_]+\\s*[=!]?=\\s*' + escapedPattern + '\\b'
+    );
+    Matcher boolMatcher1 = boolPattern1.matcher(normalizedQuery);
+    if (boolMatcher1.find()) {
+      isBooleanComparison = true;
+    }
+
+    if (!isBooleanComparison) {
+      Pattern boolPattern2 = Pattern.compile(
+        '\\b' + escapedPattern + '\\s*[=!]?=\\s*[a-z0-9_]+'
+      );
+      Matcher boolMatcher2 = boolPattern2.matcher(normalizedQuery);
+      if (boolMatcher2.find()) {
+        isBooleanComparison = true;
+      }
+    }
+
+    // Also check if the field name suggests it's a boolean field (starts with Is, Has, Can, etc.)
+    // Handle both "Field = :binding" and "Field =: binding" (with optional space after =)
+    if (!isBooleanComparison) {
+      // Pattern to match field names that suggest boolean (Is*, Has*, Can*, etc.)
+      // Match: iscustomerportal = :isportal or iscustomerportal=:isportal
+      Pattern boolFieldPattern = Pattern.compile(
+        '\\b(is|has|can|should|will|was|were|did|does|contains|includes|enabled|disabled|active|inactive|visible|hidden|required|optional)[a-z0-9_]*\\s*[=!]?=\\s*' + escapedPattern + '\\b'
+      );
+      Matcher boolFieldMatcher = boolFieldPattern.matcher(normalizedQuery);
+      if (boolFieldMatcher.find()) {
+        isBooleanComparison = true;
+      }
+    }
+
+    // Handle boolean values (JavaScript already sends Boolean, but handle String legacy)
+    if (isBooleanComparison) {
+      if (value instanceof Boolean) {
+        return value; // Already boolean from JavaScript
+      } else if (value instanceof String) {
+        String trimmedValue = ((String) value).trim().toLowerCase();
+        if (trimmedValue == 'true' || trimmedValue == '1' || trimmedValue == 'yes') {
+          return true;
+        } else if (trimmedValue == 'false' || trimmedValue == '0' || trimmedValue == 'no') {
+          return false;
+        }
+        // If string is not "true" or "false", return as-is (might be field name or other value)
+        return value;
+      }
+    }
+
+    // If not detected as boolean comparison but value is string "true"/"false" and field suggests boolean,
+    // still try to convert (fallback for edge cases)
+    // This handles cases where the pattern didn't match but we know it's a boolean field
+    if (!isBooleanComparison && value instanceof String) {
+      String trimmedValue = ((String) value).trim().toLowerCase();
+      // Check if field name suggests boolean (starts with Is, Has, Can, etc.)
+      // Look for field name before the binding in the WHERE clause
+      Pattern boolFieldCheck = Pattern.compile(
+        '\\b(is|has|can|should|will|was|were|did|does|contains|includes|enabled|disabled|active|inactive|visible|hidden|required|optional)[a-z0-9_]*\\s*[=!]?=\\s*' + escapedPattern + '\\b'
+      );
+      Matcher boolFieldCheckMatcher = boolFieldCheck.matcher(normalizedQuery);
+      if (boolFieldCheckMatcher.find()) {
+        // Field name suggests boolean, convert string to boolean
+        if (trimmedValue == 'true' || trimmedValue == '1' || trimmedValue == 'yes') {
+          return true;
+        } else if (trimmedValue == 'false' || trimmedValue == '0' || trimmedValue == 'no') {
+          return false;
+        }
+      }
+    }
+
+    if (!isNumericComparison) {
+      Pattern pattern3 = Pattern.compile(
+        '(?i)(?s)[a-z0-9_]+\\s*[=!]+=\\s*' +
+          escapedPattern +
+          '\\b|\\b' +
+          escapedPattern +
+          '\\s*[=!]+=\\s+[a-z0-9_]+'
+      );
+      Matcher matcher3 = pattern3.matcher(normalizedQuery);
+      if (matcher3.find()) {
+        // Check if value is numeric (Decimal, Integer, or numeric String)
+        // Skip if we already handled as boolean
+        if (!isBooleanComparison) {
+          if (value instanceof Decimal || value instanceof Integer) {
+            isNumericComparison = true;
+          } else if (value instanceof String) {
+            String trimmedValue = ((String) value).trim().replace(',', '');
+            if (isNumericString(trimmedValue)) {
+              isNumericComparison = true;
+            }
+          }
+        }
+      }
+    }
+
+    if (isNumericComparison) {
+      // If value is already Integer, no conversion needed
+      if (value instanceof Integer) {
+        return value;
+      }
+
+      // Handle Decimal -> Integer conversion based on field type
+      if (value instanceof Decimal) {
+        Boolean isIntegerField = isIntegerFieldBinding(
+          decodedQuery,
+          bindingKey
+        );
+        if (isIntegerField) {
+          return ((Decimal) value).intValue();
+        }
+        return value; // Keep as Decimal
+      }
+
+      // Legacy: Handle String values (shouldn't happen if JS sends typed values)
+      if (value instanceof String) {
+        String stringValue = ((String) value).trim().replace(',', '');
+        if (String.isBlank(stringValue)) {
+          return value;
+        }
+        if (!isNumericString(stringValue)) {
+          return value;
+        }
+        try {
+          Boolean isIntegerField = isIntegerFieldBinding(
+            decodedQuery,
+            bindingKey
+          );
+          if (isIntegerField) {
+            return Integer.valueOf(stringValue);
+          } else {
+            return Decimal.valueOf(stringValue);
+          }
+        } catch (Exception e) {
+          return value;
+        }
+      }
+    }
+
+    // Check for date/datetime comparisons and convert ISO strings
+    Boolean isDateComparison = isDateFieldBinding(decodedQuery, bindingKey);
+    Boolean isDatetimeComparison = isDatetimeFieldBinding(
+      decodedQuery,
+      bindingKey
+    );
+
+    String valueTypeName = value instanceof String
+      ? 'String'
+      : value instanceof Integer
+          ? 'Integer'
+          : value instanceof Decimal
+              ? 'Decimal'
+              : value instanceof Boolean
+                  ? 'Boolean'
+                  : value instanceof Date
+                      ? 'Date'
+                      : value instanceof Datetime
+                          ? 'Datetime'
+                          : value != null ? 'Object' : 'null';
+    System.debug(
+      LoggingLevel.DEBUG,
+      'convertBindingValueForQuery: bindingKey=' +
+        bindingKey +
+        ', value type=' +
+        valueTypeName +
+        ', isDateComparison=' +
+        isDateComparison +
+        ', isDatetimeComparison=' +
+        isDatetimeComparison
+    );
+
+    if ((isDateComparison || isDatetimeComparison) && value instanceof String) {
+      String stringValue = ((String) value).trim();
+      if (!String.isBlank(stringValue)) {
+        try {
+          // Try to parse ISO 8601 format (from JavaScript toISOString())
+          // Format: YYYY-MM-DDTHH:mm:ss.sssZ or YYYY-MM-DDTHH:mm:ssZ
+          if (isDatetimeComparison) {
+            // Convert ISO string to Datetime
+            // JavaScript toISOString() format: "2024-01-15T10:30:00.000Z" or "2024-01-15T10:30:00Z"
+            // DateTime.ValueofGmt() expects: "yyyy-MM-dd HH:mm:ss" in GMT
+            String normalizedDate = stringValue;
+            // Remove timezone offset if present (+HH:mm or -HH:mm)
+            normalizedDate = normalizedDate.replaceAll(
+              '[+-]\\d{2}:\\d{2}$',
+              ''
+            );
+            // Replace 'T' with space (required for ValueofGmt)
+            normalizedDate = normalizedDate.replace('T', ' ');
+            // Remove 'Z' at the end
+            normalizedDate = normalizedDate.replace('Z', '');
+            // Remove milliseconds if present (.000) - must be at the end after removing Z
+            normalizedDate = normalizedDate.replaceAll('\\.\\d{1,3}$', '');
+            // Trim any trailing spaces
+            normalizedDate = normalizedDate.trim();
+            // Parse to Datetime using ValueofGmt (handles ISO format better than valueOf)
+            System.debug(
+              LoggingLevel.DEBUG,
+              'Converting ISO date string: "' +
+                stringValue +
+                '" to "' +
+                normalizedDate +
+                '"'
+            );
+            Datetime dt = DateTime.ValueofGmt(normalizedDate);
+            System.debug(LoggingLevel.DEBUG, 'Converted to Datetime: ' + dt);
+            return dt;
+          } else if (isDateComparison) {
+            // For Date fields, extract just the date part (YYYY-MM-DD)
+            String datePart = stringValue.split('T')[0];
+            return Date.valueOf(datePart);
+          }
+        } catch (Exception e) {
+          System.debug(
+            LoggingLevel.WARN,
+            'Failed to parse date/datetime string "' +
+              stringValue +
+              '": ' +
+              e.getMessage()
+          );
+          return value; // Return as-is if parsing fails
+        }
+      }
+    }
+
+    return value;
+  }
+
+  /**
+   * @description Checks if a binding is used with a Date field
+   * Common Date fields: CloseDate, StartDate, EndDate, etc.
+   * @param query The SOQL query string
+   * @param bindingKey The binding variable name
+   * @return Boolean True if the binding is likely used with a Date field
+   */
+  @TestVisible
+  private static Boolean isDateFieldBinding(String query, String bindingKey) {
+    String bindingPattern = ':' + bindingKey;
+    String normalizedQuery = query.toLowerCase();
+    // Normalize binding pattern for regex matching (query is normalized to lowercase)
+    String normalizedBindingPattern = ':' + bindingKey.toLowerCase();
+    String escapedPattern = Pattern.quote(normalizedBindingPattern);
+
+    // Common Date field names in Salesforce
+    List<String> dateFieldNames = new List<String>{
+      'closedate',
+      'startdate',
+      'enddate',
+      'birthdate',
+      'hiredate',
+      'terminationdate',
+      'date'
+    };
+
+    // Check if binding is used with any Date field
+    for (String fieldName : dateFieldNames) {
+      // Pattern: fieldName = :binding or fieldName != :binding, etc.
+      Pattern pattern = Pattern.compile(
+        '(?i)(?s)\\b' +
+          fieldName +
+          '\\s*[=!<>]+\\s*' +
+          escapedPattern +
+          '\\b|\\b' +
+          escapedPattern +
+          '\\s*[=!<>]+\\s+' +
+          fieldName +
+          '\\b'
+      );
+      Matcher matcher = pattern.matcher(normalizedQuery);
+      if (matcher.find()) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * @description Checks if a binding is used with a Datetime field
+   * Common Datetime fields: CreatedDate, LastModifiedDate, etc.
+   * @param query The SOQL query string
+   * @param bindingKey The binding variable name
+   * @return Boolean True if the binding is likely used with a Datetime field
+   */
+  @TestVisible
+  private static Boolean isDatetimeFieldBinding(
+    String query,
+    String bindingKey
+  ) {
+    String bindingPattern = ':' + bindingKey;
+    String normalizedQuery = query.toLowerCase();
+    // Normalize binding pattern for regex matching (query is normalized to lowercase)
+    String normalizedBindingPattern = ':' + bindingKey.toLowerCase();
+    String escapedPattern = Pattern.quote(normalizedBindingPattern);
+
+    // Common Datetime field names in Salesforce
+    List<String> datetimeFieldNames = new List<String>{
+      'createddate',
+      'lastmodifieddate',
+      'systemmodstamp',
+      'lastactivitydate',
+      'lastvieweddate',
+      'lastreferenceddate',
+      'datetime',
+      'timestamp'
+    };
+
+    // Check if binding is used with any Datetime field
+    for (String fieldName : datetimeFieldNames) {
+      // Pattern: fieldName = :binding or fieldName != :binding, etc.
+      Pattern pattern = Pattern.compile(
+        '(?i)(?s)\\b' +
+          fieldName +
+          '\\s*[=!<>]+\\s*' +
+          escapedPattern +
+          '\\b|\\b' +
+          escapedPattern +
+          '\\s*[=!<>]+\\s+' +
+          fieldName +
+          '\\b'
+      );
+      Matcher matcher = pattern.matcher(normalizedQuery);
+      if (matcher.find()) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * @description Checks if a binding is used with an Integer field
+   * Common Integer fields: NumberOfEmployees, etc.
+   * @param query The SOQL query string
+   * @param bindingKey The binding variable name
+   * @return Boolean True if the binding is likely used with an Integer field
+   */
+  @TestVisible
+  private static Boolean isIntegerFieldBinding(
+    String query,
+    String bindingKey
+  ) {
+    String bindingPattern = ':' + bindingKey;
+    String normalizedQuery = query.toLowerCase();
+    // Normalize binding pattern for regex matching (query is normalized to lowercase)
+    String normalizedBindingPattern = ':' + bindingKey.toLowerCase();
+    String escapedPattern = Pattern.quote(normalizedBindingPattern);
+
+    // Common Integer field names in Salesforce
+    List<String> integerFieldNames = new List<String>{
+      'numberofemployees',
+      'number_of_employees',
+      'employee_count',
+      'count',
+      'quantity',
+      'qty'
+    };
+
+    // Check if binding is used with any Integer field
+    for (String fieldName : integerFieldNames) {
+      // Pattern: fieldName >= :binding or fieldName <= :binding, etc.
+      Pattern pattern = Pattern.compile(
+        '(?i)(?s)\\b' +
+          fieldName +
+          '\\s+[>=<]+\\s*' +
+          escapedPattern +
+          '\\b|\\b' +
+          escapedPattern +
+          '\\s*[>=<]+\\s+' +
+          fieldName +
+          '\\b'
+      );
+      Matcher matcher = pattern.matcher(normalizedQuery);
+      if (matcher.find()) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * @description Checks if a string represents a numeric value
+   * @param value String value to check
+   * @return Boolean True if the string can be converted to a number
+   */
+  @TestVisible
+  private static Boolean isNumericString(String value) {
+    if (String.isBlank(value)) {
+      return false;
+    }
+    // Remove commas and trim before checking
+    String trimmedValue = value.trim().replace(',', '');
+    if (String.isBlank(trimmedValue)) {
+      return false;
+    }
+    // Check if it matches a numeric pattern (digits, optional decimal point, optional sign)
+    Pattern numericPattern = Pattern.compile('^-?\\d+(\\.\\d+)?$');
+    Matcher matcher = numericPattern.matcher(trimmedValue);
+    return matcher.matches();
+  }
+
+  /**
+   * @description Escapes a binding value for use in SOQL query string replacement
+   * @param value Value to escape
+   * @return String Escaped value ready for SOQL
+   */
+  @TestVisible
+  private static String escapeBindingValue(Object value) {
+    if (value == null) {
+      return 'null';
+    }
+
+    if (value instanceof List<Object>) {
+      return escapeListValue((List<Object>) value);
+    }
+
+    return escapeScalarValue(value);
+  }
+
+  /**
+   * @description Escapes a list value for use in IN/NOT IN clauses
+   * @param listValue List to escape
+   * @return String Escaped list format: (value1, value2, ...)
+   */
+  @TestVisible
+  private static String escapeListValue(List<Object> listValue) {
+    List<String> escapedValues = new List<String>();
+    for (Object item : listValue) {
+      escapedValues.add(escapeScalarValue(item));
+    }
+    return '(' + String.join(escapedValues, ',') + ')';
+  }
+
+  /**
+   * @description Escapes a scalar value for use in SOQL
+   * @param value Scalar value to escape
+   * @return String Escaped value
+   */
+  @TestVisible
+  private static String escapeScalarValue(Object value) {
+    if (value == null) {
+      return 'null';
+    }
+
+    if (value instanceof String) {
+      return '\'' + String.escapeSingleQuotes((String) value) + '\'';
+    }
+
+    if (
+      value instanceof Boolean ||
+      value instanceof Integer ||
+      value instanceof Decimal
+    ) {
+      return String.valueOf(value);
+    }
+
+    if (value instanceof Date) {
+      return String.valueOf((Date) value);
+    }
+
+    if (value instanceof Datetime) {
+      return ((Datetime) value).format('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'');
+    }
+
+    return '\'' + String.escapeSingleQuotes(String.valueOf(value)) + '\'';
   }
 
   /**
@@ -631,49 +1469,18 @@ public with sharing class JT_QueryViewerController {
    * @param query The SOQL query string
    * @param bindings The map of bind variables
    **/
-  private static void addWildcardsForLikeBindings(
+  /**
+   * @description Adds wildcards to bind parameters used in LIKE clauses
+   * Delegates to JT_QueryBindingUtil for consistency
+   * @deprecated Use JT_QueryBindingUtil.addWildcardsForLikeBindings instead
+   * @param query The SOQL query string
+   * @param bindings The map of bind variables
+   **/
+  public static void addWildcardsForLikeBindings(
     String query,
     Map<String, Object> bindings
   ) {
-    if (String.isBlank(query) || bindings == null || bindings.isEmpty()) {
-      return;
-    }
-
-    System.debug(LoggingLevel.FINE, '🔍 Adding wildcards for LIKE bindings...');
-
-    // Find all LIKE clauses with bind variables: LIKE :bindVar
-    // (?i) makes the pattern case-insensitive
-    Pattern likePattern = Pattern.compile('(?i)\\bLIKE\\s+:(\\w+)');
-    Matcher matcher = likePattern.matcher(query);
-
-    while (matcher.find()) {
-      String bindVar = matcher.group(1);
-      System.debug(
-        LoggingLevel.FINE,
-        '📌 Found LIKE bind variable: ' + bindVar
-      );
-
-      if (bindings.containsKey(bindVar)) {
-        Object value = bindings.get(bindVar);
-        if (value instanceof String) {
-          String strValue = (String) value;
-          // Only add wildcards if they're not already present
-          if (!strValue.contains('%') && !strValue.contains('_')) {
-            String newValue = '%' + strValue + '%';
-            bindings.put(bindVar, newValue);
-            System.debug(
-              LoggingLevel.FINE,
-              '✅ Added wildcards: "' + strValue + '" → "' + newValue + '"'
-            );
-          } else {
-            System.debug(
-              LoggingLevel.FINE,
-              'ℹ️  Wildcards already present: "' + strValue + '"'
-            );
-          }
-        }
-      }
-    }
+    JT_QueryBindingUtil.addWildcardsForLikeBindings(query, bindings);
   }
 
   /**
@@ -691,9 +1498,7 @@ public with sharing class JT_QueryViewerController {
     Integer batchSize
   ) {
     try {
-      Map<String, Object> bindings = String.isNotBlank(bindingsJson)
-        ? (Map<String, Object>) JSON.deserializeUntyped(bindingsJson)
-        : new Map<String, Object>();
+      Map<String, Object> bindings = deserializeBindings(bindingsJson);
 
       // Get config to check for LIKE clauses
       JT_DynamicQueryConfiguration__mdt config = [
@@ -704,8 +1509,11 @@ public with sharing class JT_QueryViewerController {
         LIMIT 1
       ];
 
-      // Auto-add wildcards for LIKE queries in batch processing
-      addWildcardsForLikeBindings(config.JT_BaseQuery__c, bindings);
+      // Auto-add wildcards for LIKE queries in batch processing using centralized utility
+      JT_QueryBindingUtil.addWildcardsForLikeBindings(
+        config.JT_BaseQuery__c,
+        bindings
+      );
 
       Integer effectiveBatchSize = batchSize != null &&
         batchSize > 0
@@ -715,12 +1523,15 @@ public with sharing class JT_QueryViewerController {
       // Use ResultCollector to accumulate records
       ResultCollector collector = new ResultCollector();
 
-      Integer totalProcessed = JT_DataSelector.processRecordsWithCursor(
+      JT_DataSelector.CursorProcessingParams cursorParams = new JT_DataSelector.CursorProcessingParams(
         devName,
         bindings,
         true, // enforce security
         effectiveBatchSize,
         collector
+      );
+      Integer totalProcessed = JT_DataSelector.processRecordsWithCursor(
+        cursorParams
       );
 
       // Return collected results
@@ -742,12 +1553,7 @@ public with sharing class JT_QueryViewerController {
 
       return result;
     } catch (Exception e) {
-      QueryResult result = new QueryResult();
-      result.success = false;
-      result.errorMessage = e.getMessage();
-      result.records = new List<Object>(); // Changed from List<SObject>
-      result.recordCount = 0;
-      return result;
+      return createErrorResult(e);
     }
   }
 
@@ -806,5 +1612,134 @@ public with sharing class JT_QueryViewerController {
     public String riskLevel; // LOW, MEDIUM, HIGH, CRITICAL, UNKNOWN
     @AuraEnabled
     public String message;
+  }
+
+  /**
+   * @description Sets assessment to LOW risk for queries with child relationships
+   * @param assessment Risk assessment to update
+   * @param message Message to set
+   */
+  private static void setLowRiskAssessment(
+    final QueryRiskAssessment assessment,
+    final String message
+  ) {
+    assessment.isHighRisk = false;
+    assessment.isCriticalRisk = false;
+    assessment.recommendBatchProcessing = false;
+    assessment.riskLevel = 'LOW';
+    assessment.message = message;
+  }
+
+  /**
+   * @description Assesses risk based on estimated record count
+   * @param assessment Risk assessment to update
+   * @param estimatedCount Estimated number of records
+   */
+  private static void assessRiskByCount(
+    final QueryRiskAssessment assessment,
+    final Integer estimatedCount
+  ) {
+    assessment.isHighRisk = estimatedCount > 10000;
+    assessment.isCriticalRisk = estimatedCount > 50000;
+    assessment.recommendBatchProcessing = estimatedCount > 5000;
+
+    if (assessment.isCriticalRisk) {
+      assessment.riskLevel = Label.JT_QueryViewerController_riskLevelCritical;
+      assessment.message = Label.JT_QueryViewerController_queryExceedsLimit;
+    } else if (assessment.isHighRisk) {
+      assessment.riskLevel = Label.JT_QueryViewerController_riskLevelHigh;
+      assessment.message = String.format(
+        Label.JT_QueryViewerController_queryMayReturnLarge,
+        new List<String>{ String.valueOf(estimatedCount) }
+      );
+    } else if (assessment.recommendBatchProcessing) {
+      assessment.riskLevel = Label.JT_QueryViewerController_riskLevelMedium;
+      assessment.message = String.format(
+        Label.JT_QueryViewerController_queryWillReturn,
+        new List<String>{ String.valueOf(estimatedCount) }
+      );
+    } else {
+      assessment.riskLevel = 'LOW';
+      assessment.message = String.format(
+        Label.JT_QueryViewerController_queryIsSafeToExecute,
+        new List<String>{ String.valueOf(estimatedCount) }
+      );
+    }
+  }
+
+  /**
+   * @description Gets configuration with base query only
+   * Centralizes config queries to avoid duplication
+   * @param devName Configuration developer name
+   * @return JT_DynamicQueryConfiguration__mdt Configuration record
+   **/
+  private static JT_DynamicQueryConfiguration__mdt getConfig(String devName) {
+    List<JT_DynamicQueryConfiguration__mdt> configs = [
+      SELECT JT_BaseQuery__c
+      FROM JT_DynamicQueryConfiguration__mdt
+      WHERE DeveloperName = :devName
+      WITH USER_MODE
+      LIMIT 1
+    ];
+    return configs.isEmpty() ? null : configs[0];
+  }
+
+  /**
+   * @description Gets configuration with base query and object name
+   * Centralizes config queries to avoid duplication
+   * @param devName Configuration developer name
+   * @return JT_DynamicQueryConfiguration__mdt Configuration record
+   **/
+  private static JT_DynamicQueryConfiguration__mdt getConfigWithObjectName(
+    String devName
+  ) {
+    List<JT_DynamicQueryConfiguration__mdt> configs = [
+      SELECT JT_BaseQuery__c, JT_ObjectName__c
+      FROM JT_DynamicQueryConfiguration__mdt
+      WHERE DeveloperName = :devName
+      WITH USER_MODE
+      LIMIT 1
+    ];
+    return configs.isEmpty() ? null : configs[0];
+  }
+
+  /**
+   * @description Gets configuration with all fields (base query, object name, bindings)
+   * Centralizes config queries to avoid duplication
+   * @param devName Configuration developer name
+   * @return JT_DynamicQueryConfiguration__mdt Configuration record
+   **/
+  private static JT_DynamicQueryConfiguration__mdt getConfigWithAllFields(
+    String devName
+  ) {
+    List<JT_DynamicQueryConfiguration__mdt> configs = [
+      SELECT JT_BaseQuery__c, JT_ObjectName__c, JT_Binding__c
+      FROM JT_DynamicQueryConfiguration__mdt
+      WHERE DeveloperName = :devName
+      WITH USER_MODE
+      LIMIT 1
+    ];
+    return configs.isEmpty() ? null : configs[0];
+  }
+
+  /**
+   * @description Checks if any bind parameters are empty strings
+   * @param bindings Map of bind parameters
+   * @return Boolean True if any parameter is empty string
+   */
+  private static Boolean hasEmptyParameters(
+    final Map<String, Object> bindings
+  ) {
+    if (bindings == null || bindings.isEmpty()) {
+      return false;
+    }
+
+    for (Object value : bindings.values()) {
+      if (value instanceof String && String.isBlank((String) value)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 }

@@ -5,11 +5,15 @@
         <visible>true</visible>
     </applicationVisibilities>
     <classAccesses>
-        <apexClass>JT_DataSelector</apexClass>
+        <apexClass>JT_AuditLogDomain</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
-        <apexClass>JT_QueryViewerController</apexClass>
+        <apexClass>JT_ConfigurationSelector</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>JT_DataSelector</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
@@ -17,11 +21,31 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>JT_ProductionSettingsController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>JT_QueryViewerController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>JT_RunAsTestExecutor</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
-        <apexClass>JT_ProductionSettingsController</apexClass>
+        <apexClass>JT_SettingsService</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>JT_SetupWizardController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>JT_SystemSelector</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>JT_ToolingAPIMock</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
@@ -32,24 +56,81 @@
         <enabled>true</enabled>
         <name>JT_DynamicQueryConfiguration__mdt</name>
     </customMetadataTypeAccesses>
-    <customSettingAccesses>
-        <enabled>true</enabled>
-        <name>JT_DynamicQuerySettings__c</name>
-    </customSettingAccesses>
     <description
-  >Grants access to custom metadata, apex classes, and Dynamic Queries application.</description>
+  >Grants full access to JT Dynamic Queries framework: all Apex classes, Custom Objects, Tabs, and Lightning Application.</description>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>JT_RunAsTest_Execution__c.Apex_Queueable_Job_Id__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>JT_RunAsTest_Execution__c.Apex_Test_Queue_Item_Id__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>JT_RunAsTest_Execution__c.Bindings_Json__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>JT_RunAsTest_Execution__c.Error_Message__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>JT_RunAsTest_Execution__c.Execution_Time__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>JT_RunAsTest_Execution__c.Log_Messages__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>JT_RunAsTest_Execution__c.Record_Count__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>JT_RunAsTest_Execution__c.Results_Json__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>JT_RunAsTest_Execution__c.Run_As_User_Name__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <hasActivationRequired>false</hasActivationRequired>
     <label>JT Dynamic Queries</label>
-    <pageAccesses>
-        <apexPage>JT_SessionIdPage</apexPage>
-        <enabled>true</enabled>
-    </pageAccesses>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>true</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>true</modifyAllRecords>
+        <object>JT_RunAsTest_Execution__c</object>
+        <viewAllFields>false</viewAllFields>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>true</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>true</modifyAllRecords>
+        <object>JT_SettingsAuditLog__c</object>
+        <viewAllFields>false</viewAllFields>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
     <tabSettings>
-        <tab>JT_Query_Viewer</tab>
+        <tab>JT_Documentation</tab>
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
-        <tab>JT_Documentation</tab>
+        <tab>JT_Query_Viewer</tab>
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
@@ -57,20 +138,11 @@
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
-        <tab>standard-report</tab>
-        <visibility>Visible</visibility>
-    </tabSettings>
-    <tabSettings>
         <tab>JT_Support</tab>
         <visibility>Visible</visibility>
     </tabSettings>
-    <objectPermissions>
-        <allowCreate>false</allowCreate>
-        <allowDelete>false</allowDelete>
-        <allowEdit>false</allowEdit>
-        <allowRead>true</allowRead>
-        <modifyAllRecords>false</modifyAllRecords>
-        <object>JT_SettingsAuditLog__c</object>
-        <viewAllRecords>true</viewAllRecords>
-    </objectPermissions>
+    <tabSettings>
+        <tab>standard-report</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
 </PermissionSet>

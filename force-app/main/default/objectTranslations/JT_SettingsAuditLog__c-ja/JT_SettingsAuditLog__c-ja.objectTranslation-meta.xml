@@ -1,29 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fields>
-        <name>JT_Action__c</name>
-        <label>アクション</label>
-    </fields>
-    <fields>
-        <name>JT_ChangedBy__c</name>
-        <label>変更者</label>
-    </fields>
-    <fields>
-        <name>JT_ChangedByUsername__c</name>
-        <label>ユーザー名</label>
-    </fields>
-    <fields>
-        <name>JT_IPAddress__c</name>
-        <label>IPアドレス</label>
-    </fields>
-    <fields>
-        <name>JT_OrgType__c</name>
-        <label>組織タイプ</label>
-    </fields>
-    <fields>
-        <name>JT_Timestamp__c</name>
-        <label>タイムスタンプ</label>
-    </fields>
     <caseValues>
         <plural>false</plural>
         <value>設定監査ログ</value>

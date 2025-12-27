@@ -5,12 +5,12 @@
         <lightning-icon
           icon-name="utility:user"
           size="small"
-          alternative-text="User"
+          alternative-text={labels.user}
         ></lightning-icon>
       </div>
       <div class="slds-media__body">
         <h3 class="slds-text-heading_small">
-          <strong>{title}</strong>
+          <strong>{labels.runAsUser}</strong>
         </h3>
       </div>
     </div>
@@ -26,17 +26,14 @@
           ></lightning-icon>
         </div>
         <div class="slds-media__body">
-          <p class="slds-text-body_regular">{noteText}</p>
+          <p class="slds-text-body_regular">{labels.noteText}</p>
           <p class="slds-text-body_small slds-m-top_xx-small">
             <lightning-icon
               icon-name="utility:success"
               size="xx-small"
               class="slds-m-right_xx-small"
             ></lightning-icon>
-            <strong
-              >When you select a user and click "Execute Query", the query will
-              run as that user using System.runAs() in test context.</strong
-            >
+            <strong>{labels.whenSelectUserMessage}</strong>
           </p>
         </div>
       </div>
@@ -44,11 +41,11 @@
 
     <!-- User Selection -->
     <c-jt-searchable-combobox
-      label={selectUserLabel}
-      placeholder={selectUserPlaceholder}
+      label={labels.selectUserToImpersonate}
+      placeholder={labels.selectUserPlaceholder}
       options={userOptions}
       icon-name="standard:user"
-      disabled={isLoadingUsers}
+      disabled={isComboboxDisabled}
       data-testid="run-as-user-selector"
       name="run-as-user"
       onselect={handleUserSelect}
@@ -61,13 +58,13 @@
         class="slds-text-body_small slds-text-color_weak slds-m-top_small"
         role="status"
         aria-live="polite"
-        aria-label="Loading users"
+        aria-label={labels.loadingUsersAria}
       >
         <lightning-spinner
-          alternative-text={loadingUsersText}
+          alternative-text={labels.loadingUsers}
           size="small"
         ></lightning-spinner>
-        <span>{loadingUsersText}</span>
+        <span>{labels.loadingUsers}</span>
       </div>
     </template>
 
@@ -76,38 +73,37 @@
       <div
         class="slds-p-top_x-small slds-grid slds-grid_align-end"
         role="group"
-        aria-label="User impersonation actions"
+        aria-label={labels.userImpersonationActions}
       >
         <lightning-button
-          label={clearLabel}
-          title={clearLabel}
+          label={labels.clearSelection}
+          title={labels.clearSelection}
           onclick={handleClearSelection}
           variant="neutral"
           icon-name="utility:clear"
           size="small"
           data-testid="run-as-clear-button"
           name="run-as-clear"
-          aria-label="Clear selected user"
+          disabled={isRunningTest}
+          aria-label={labels.clearSelectedUser}
         ></lightning-button>
       </div>
     </template>
-
-    <!-- Running Test Indicator -->
-    <template if:true={isRunningTest}>
-      <div
-        class="slds-m-top_small slds-align_absolute-center"
-        role="status"
-        aria-live="polite"
-        aria-label="Test execution in progress"
-      >
-        <lightning-spinner
-          alternative-text={executingTestText}
-          size="small"
-        ></lightning-spinner>
-        <div class="slds-text-body_small slds-m-top_x-small">
-          {executingTestText}
-        </div>
-      </div>
-    </template>
   </div>
+
+  <!-- Full-screen Running Test Indicator -->
+  <template if:true={isRunningTest}>
+    <div
+      class="run-as-spinner-overlay"
+      role="status"
+      aria-live="polite"
+      aria-label={labels.testExecutionInProgress}
+    >
+      <lightning-spinner
+        alternative-text={labels.executingTestWithSystemRunAs}
+        size="large"
+      ></lightning-spinner>
+      <p>{labels.executingTestWithSystemRunAs}</p>
+    </div>
+  </template>
 </template>

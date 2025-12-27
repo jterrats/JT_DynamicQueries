@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <help
+  >⚠️ 警告：本番環境でのメタデータ作成/編集を有効にします（Starter/Free Editionsのみ）。細心の注意を払って使用してください。</help>
+    <label>本番環境での編集を許可</label>
+    <name>JT_AllowProductionEditing__c</name>
+</CustomFieldTranslation>

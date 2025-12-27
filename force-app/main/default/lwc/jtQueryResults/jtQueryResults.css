@@ -1,143 +1,86 @@
-/* Results Container */
+/* Results Container - Border only (spacing handled by SLDS classes) */
 .results-container {
-  margin-top: 1rem;
-  border-top: 2px solid #dddbda;
-  padding-top: 1rem;
+  border-top: 2px solid var(--lwc-colorBorder, #dddbda);
 }
 
-/* View Toggle */
-.slds-button-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
-}
-
-/* JSON View */
+/* JSON View - Container with fixed height */
 .json-view {
   max-height: 600px;
-  overflow: auto;
+  overflow: hidden;
 }
 
+/* JSON Content - Monospace font with scroll contained within gray box */
 .json-content {
   font-family: "Courier New", Courier, monospace;
-  font-size: 0.75rem;
-  line-height: 1.5;
   white-space: pre-wrap;
   word-wrap: break-word;
+  overflow-y: auto;
+  overflow-x: auto;
+  max-height: 550px;
   margin: 0;
-  padding: 1rem;
-  background-color: #f4f6f9;
-  border-radius: 0.25rem;
+  padding: 0;
 }
 
-@media (min-width: 48rem) {
-  .json-content {
-    font-size: 0.875rem;
-  }
-}
-
-/* CSV View */
+/* CSV View - Min height only (layout handled by SLDS grid classes) */
 .csv-view {
   min-height: 300px;
 }
 
+/* CSV Content - Monospace font only (spacing handled by SLDS classes) */
 .csv-content {
   font-family: "Courier New", Courier, monospace;
-  font-size: 0.75rem;
-  line-height: 1.5;
   white-space: pre;
-  overflow-x: auto;
-  margin: 0;
-  padding: 1rem;
-  background-color: #f4f6f9;
-  border-radius: 0.25rem;
   max-height: 600px;
-  overflow-y: auto;
 }
 
-@media (min-width: 48rem) {
-  .csv-content {
-    font-size: 0.875rem;
-  }
-}
-
-/* Desktop Table */
+/* Desktop Table - Overflow only (responsive display handled by SLDS classes) */
 .desktop-table {
-  display: block; /* ✅ Always show tree-grid */
   overflow-x: auto;
-}
-
-.desktop-table table {
-  width: 100%;
 }
 
 .desktop-table th,
 .desktop-table td {
-  padding: 0.5rem;
-  text-align: left;
-  border: 1px solid #dddbda;
+  border: 1px solid var(--lwc-colorBorder, #dddbda);
 }
 
 .desktop-table thead th {
-  background-color: #f3f3f3;
-  font-weight: 700;
+  background-color: var(--lwc-colorBackgroundRowHover, #f3f3f3);
   position: sticky;
   top: 0;
   z-index: 1;
 }
 
 .desktop-table tbody tr:hover {
-  background-color: #fafaf9;
+  background-color: var(--lwc-colorBackgroundRowHover, #fafaf9);
 }
 
-/* Mobile Cards */
-.mobile-cards {
-  display: block;
-}
-
-@media (min-width: 48rem) {
-  .mobile-cards {
-    display: none;
-  }
-}
-
+/* Mobile Cards - Responsive display handled by SLDS classes (slds-show/hide) */
 .mobile-cards .slds-card__header {
   cursor: pointer;
   user-select: none;
-  padding: 0.75rem;
 }
 
 .mobile-cards .slds-card__header:hover {
-  background-color: #f3f3f3;
+  background-color: var(--lwc-colorBackgroundRowHover, #f3f3f3);
 }
 
 .mobile-cards .slds-badge {
-  background-color: #1589ee;
-  color: white;
-  font-weight: 700;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
+  background-color: var(--lwc-colorBrand, #1589ee);
 }
 
 .mobile-cards .slds-card__body {
-  padding: 0.75rem;
-  background-color: #fafaf9;
+  background-color: var(--lwc-colorBackgroundAlt, #fafaf9);
 }
 
 .mobile-cards .slds-item_detail {
   display: grid;
   grid-template-columns: minmax(100px, 40%) 1fr;
-  gap: 0.5rem;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid #dddbda;
+  gap: var(--lwc-spacingXxxSmall, 0.5rem);
+  border-bottom: 1px solid var(--lwc-colorBorder, #dddbda);
 }
 
 .mobile-cards .slds-item_detail:last-child {
   border-bottom: none;
-}
-
-.mobile-cards .slds-item_label {
-  font-weight: 700;
 }
 
 .mobile-cards .slds-item_detail dd {

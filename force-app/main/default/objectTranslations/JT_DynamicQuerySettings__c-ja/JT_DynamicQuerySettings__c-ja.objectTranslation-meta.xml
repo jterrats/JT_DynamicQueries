@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fields>
-        <name>JT_AllowProductionEditing__c</name>
-        <label>本番環境での編集を許可</label>
-        <help
-    >⚠️ 警告：本番環境でのメタデータ作成/編集を有効にします（Starter/Free Editionsのみ）。細心の注意を払って使用してください。</help>
-    </fields>
     <caseValues>
         <plural>false</plural>
         <value>動的クエリ設定</value>

@@ -1,0 +1,63 @@
+/* Usage Modal Styles - Optimized with SLDS + CSS Hooks */
+
+:host {
+  /* CSS Hooks for modal customization */
+  --slds-c-modal-size-width: 800px;
+  --slds-c-modal-size-height: 90vh;
+  --slds-c-backdrop-color-background: rgba(0, 0, 0, 0.5);
+}
+
+/* Modal Container - Size limits only */
+.slds-modal__container {
+  max-width: 90vw;
+  max-height: var(--slds-c-modal-size-height, 90vh);
+  width: var(--slds-c-modal-size-width, 800px);
+}
+
+/* Modal Content - Scrollable if content is too large */
+.slds-modal__content {
+  max-height: calc(90vh - 200px);
+  overflow-y: auto;
+}
+
+/* Backdrop - Use CSS hooks */
+.slds-backdrop {
+  background-color: var(--slds-c-backdrop-color-background, rgba(0, 0, 0, 0.5));
+  z-index: 9000;
+}
+
+/* Modal - Ensure it's on top */
+.slds-modal {
+  z-index: 9001;
+}
+
+/* Modal container - Ensure it's above backdrop */
+.slds-modal__container {
+  position: relative;
+  z-index: 1;
+}
+
+/* Modal content - Ensure no problematic z-index */
+.slds-modal__content {
+  position: relative;
+  z-index: auto;
+}
+
+/* Spinner container - Remove problematic z-index from Salesforce global styles */
+.slds-modal__content .slds-align_absolute-center {
+  position: relative;
+  z-index: auto;
+}
+
+.slds-modal__content lightning-spinner,
+.slds-modal__content .slds-spinner_container {
+  position: relative;
+  z-index: auto;
+}
+
+/* Disabled close button styling */
+.slds-modal__close:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}

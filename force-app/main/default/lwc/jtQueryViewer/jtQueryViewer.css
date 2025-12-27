@@ -1,99 +1,41 @@
-/* Query Preview - Responsive */
+/* Query Preview - Border accent only (padding handled by SLDS classes) */
 .query-preview-container {
   border-left: 3px solid #1589ee;
-  padding-left: 0.75rem;
-}
-
-.query-preview {
-  background-color: #f3f3f3;
-  border-radius: 0.25rem;
-  padding: 0.75rem;
-  overflow-x: auto;
-  max-height: 200px;
 }
 
 .query-preview pre {
-  margin: 0;
   font-family: "Courier New", Courier, monospace;
   white-space: pre-wrap;
   word-wrap: break-word;
-  font-size: 0.875rem;
 }
 
-/* Tablet and up: larger padding and font */
-@media (min-width: 48rem) {
-  .query-preview {
-    padding: 1rem;
-  }
-  .query-preview pre {
-    font-size: 0.9375rem;
-  }
-}
-
-/* Parameters Container - Responsive padding */
+/* Parameters Container - Background and border only (padding handled by SLDS classes) */
 .parameters-container {
   background-color: #fafaf9;
-  border: 1px solid #dddbda;
-  border-radius: 0.25rem;
-  padding: 0.75rem;
 }
 
-@media (min-width: 48rem) {
-  .parameters-container {
-    padding: 1rem;
-  }
-}
+/* View Toggle Buttons - Using SLDS button-group, no custom CSS needed */
 
-/* View Toggle Buttons */
-.slds-button-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
-}
-
-/* JSON View */
+/* JSON View - Max height only (padding handled by SLDS classes) */
 .json-view {
   max-height: 600px;
-  overflow: auto;
 }
 
 .json-content {
   font-family: "Courier New", Courier, monospace;
-  font-size: 0.75rem;
-  line-height: 1.5;
   white-space: pre-wrap;
   word-wrap: break-word;
-  margin: 0;
-  padding: 1rem;
   background-color: #f4f6f9;
-  border-radius: 0.25rem;
 }
 
-@media (min-width: 48rem) {
-  .json-content {
-    font-size: 0.875rem;
-  }
-}
-
-/* CSV View */
+/* CSV View - Min height only (layout handled by SLDS grid classes) */
 .csv-view {
   min-height: 300px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
 }
 
-/* Desktop Table View */
+/* Desktop Table View - Responsive display handled by SLDS classes */
 .desktop-table {
-  display: none;
   overflow-x: auto;
-}
-
-@media (min-width: 48rem) {
-  .desktop-table {
-    display: block;
-  }
 }
 
 .desktop-table table {
@@ -124,21 +66,10 @@
   background-color: #fafaf9;
 }
 
-/* Mobile Cards View */
-.mobile-cards {
-  display: block;
-}
-
-@media (min-width: 48rem) {
-  .mobile-cards {
-    display: none;
-  }
-}
-
+/* Mobile Cards View - Responsive display handled by SLDS classes (slds-show/hide) */
 .mobile-cards .slds-card__header {
   cursor: pointer;
   user-select: none;
-  padding: 0.75rem;
 }
 
 .mobile-cards .slds-card__header:hover {
@@ -152,13 +83,9 @@
 .mobile-cards .slds-badge {
   background-color: #1589ee;
   color: white;
-  font-weight: 700;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
 }
 
 .mobile-cards .slds-card__body {
-  padding: 0.75rem;
   background-color: #fafaf9;
 }
 
@@ -166,7 +93,6 @@
   display: grid;
   grid-template-columns: minmax(100px, 40%) 1fr;
   gap: 0.5rem;
-  padding: 0.5rem 0;
   border-bottom: 1px solid #dddbda;
 }
 
@@ -174,88 +100,52 @@
   border-bottom: none;
 }
 
-.mobile-cards .slds-item_label {
-  font-weight: 700;
-}
-
 .mobile-cards .slds-item_detail dd {
   word-break: break-word;
 }
 
-/* Results Container - Responsive */
+/* Results Container - Border only (spacing handled by SLDS classes) */
 .results-container {
-  margin-top: 1rem;
   border-top: 2px solid #dddbda;
-  padding-top: 1rem;
 }
 
-@media (min-width: 48rem) {
-  .results-container {
-    margin-top: 1.5rem;
-  }
-}
-
-/* Datatable - Responsive with horizontal scroll on mobile */
+/* Datatable - Border and scroll only (display handled by component) */
 lightning-datatable {
   border: 1px solid #dddbda;
-  border-radius: 0.25rem;
   overflow-x: auto;
-  display: block;
   max-width: 100%;
 }
 
-.slds-notify.slds-alert_error {
-  margin-bottom: 1rem;
-}
+/* Error notification spacing handled by SLDS classes */
 
-/* Run As Container - Responsive padding with better visibility */
+/* Run As Container - Colors and border only (padding handled by SLDS classes) */
 .run-as-container {
   background-color: #fefaf5;
   border: 1px solid #ffb75d;
   border-left: 4px solid #ff9a3c;
-  border-radius: 0.25rem;
-  padding: 0.75rem;
 }
 
-@media (min-width: 48rem) {
-  .run-as-container {
-    padding: 1rem;
-  }
-}
-
-/* Run As Note - Highlighted warning box with better visibility */
+/* Run As Note - Colors and border only (spacing handled by SLDS classes) */
 .run-as-note {
   background-color: #fff4e5 !important;
   border: 1px solid #ffb75d !important;
   border-left: 4px solid #fe9339 !important;
-  padding: 0.75rem !important;
-  margin-top: 0;
 }
 
 .run-as-note strong {
   color: #080707 !important;
-  font-weight: 700 !important;
 }
 
 .run-as-note p {
-  margin: 0 !important;
-  line-height: 1.5 !important;
   color: #080707 !important;
 }
 
-/* Form labels with emphasis */
+/* Form labels - Color only (spacing and sizing handled by SLDS classes) */
 .slds-form-element__label {
-  font-weight: 400 !important; /* Normal weight by default */
   color: #080707 !important;
-  font-size: 0.875rem !important;
-  display: block !important;
-  margin-bottom: 0.25rem !important;
 }
 
-.slds-form-element__label strong {
-  font-weight: 700 !important; /* Bold for strong tags */
-  display: inline !important;
-}
+/* Form label strong tags use default bold styling */
 
 /* Skip link for keyboard navigation */
 a.slds-assistive-text:focus {
@@ -347,22 +237,9 @@ a.slds-assistive-text:focus {
   vertical-align: middle;
 }
 
-/* Modal Styles - Responsive */
+/* Modal Styles - Max width only (responsive width handled by SLDS modal component) */
 .slds-modal__container {
   max-width: 50rem;
-  width: 90%; /* Mobile: 90% width */
-}
-
-@media (min-width: 48rem) {
-  .slds-modal__container {
-    width: 70%; /* Tablet: 70% width */
-  }
-}
-
-@media (min-width: 64rem) {
-  .slds-modal__container {
-    width: 50rem; /* Desktop: fixed width */
-  }
 }
 
 /* Info Box - Readable colors */
@@ -415,8 +292,6 @@ lightning-badge {
   color: #0176d3;
   text-decoration: none;
   font-size: 0.875rem;
-  display: inline-flex;
-  align-items: center;
   cursor: pointer;
   transition: color 0.1s ease-in-out;
 }
@@ -430,24 +305,16 @@ lightning-badge {
   color: #001639;
 }
 
-.usage-link lightning-icon {
-  flex-shrink: 0;
-}
-
-/* Query Preview in Create Modal */
+/* Query Preview in Create Modal - Border accent only (background handled by SLDS theme classes) */
 .query-preview {
-  background-color: #f3f3f3;
   border-left: 3px solid #4caf50;
 }
 
 .query-preview-content {
   background-color: #ffffff;
-  padding: 0.75rem;
-  border-radius: 0.25rem;
   border: 1px solid #dddbda;
   white-space: pre-wrap;
   word-break: break-all;
-  line-height: 1.6;
   color: #080707;
 }
 
@@ -503,4 +370,67 @@ lightning-badge {
 /* Parameters: Scrollable if too many (using SLDS utility classes in HTML) */
 .parameters-scrollable {
   max-height: 400px;
+}
+
+/* Initial Loading Spinner Overlay - Full screen white backdrop */
+.initial-loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.9);
+  z-index: 9000;
+}
+
+/* Usage Search Spinner Overlay - Full screen light backdrop for black text */
+.usage-search-spinner-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.95);
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.usage-search-spinner-overlay > div {
+  position: relative;
+  z-index: 9001;
+}
+
+.usage-search-spinner-overlay p {
+  color: #080707 !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: block !important;
+}
+
+/* Configuration Deletion Spinner Overlay - Full screen light backdrop */
+.deletion-spinner-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.95);
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.deletion-spinner-overlay > div {
+  position: relative;
+  z-index: 9001;
+}
+
+.deletion-spinner-overlay p {
+  color: #080707 !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: block !important;
 }

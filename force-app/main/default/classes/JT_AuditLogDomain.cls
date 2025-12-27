@@ -13,7 +13,9 @@
  * 2. All values are from UserInfo/System methods (trusted sources)
  * 3. Required for compliance - audit logs must always be created
  */
-@SuppressWarnings('PMD.ApexCRUDViolation')
+@SuppressWarnings(
+  'PMD.ApexCRUDViolation, PMD.AvoidDebugStatements, PMD.DebugsShouldUseLoggingLevel'
+)
 public without sharing class JT_AuditLogDomain {
   /**
    * @description Inserts a single audit log record
@@ -21,25 +23,22 @@ public without sharing class JT_AuditLogDomain {
    * @throws DmlException if insert fails
    */
   public static void insertLog(JT_SettingsAuditLog__c log) {
-    System.debug('📝 JT_AuditLogDomain.insertLog CALLED');
-    System.debug('📝 Log to insert: ' + log);
-
     if (log == null) {
-      throw new IllegalArgumentException('Audit log cannot be null');
+      throw new IllegalArgumentException(
+        Label.JT_AuditLogDomain_auditLogCannotBeNull
+      );
     }
 
     // Validate required fields
     if (String.isBlank(log.JT_Action__c)) {
-      throw new IllegalArgumentException('JT_Action__c is required');
+      throw new IllegalArgumentException(
+        Label.JT_AuditLogDomain_actionRequired
+      );
     }
 
     try {
       insert log; // PMD suppressed: Audit logs must be created regardless of permissions
-      System.debug('✅ Audit log inserted successfully - Id: ' + log.Id);
     } catch (DmlException e) {
-      System.debug(LoggingLevel.ERROR, '❌ DML Exception: ' + e.getMessage());
-      System.debug(LoggingLevel.ERROR, '❌ DML Fields: ' + e.getDmlFields(0));
-      System.debug(LoggingLevel.ERROR, '❌ DML Message: ' + e.getDmlMessage(0));
       throw e; // Re-throw to let caller handle
     }
   }
@@ -50,22 +49,13 @@ public without sharing class JT_AuditLogDomain {
    * @throws DmlException if insert fails
    */
   public static void insertLogs(List<JT_SettingsAuditLog__c> logs) {
-    System.debug('📝 JT_AuditLogDomain.insertLogs CALLED');
-    System.debug('📝 Logs to insert: ' + logs.size());
-
     if (logs == null || logs.isEmpty()) {
-      System.debug('⚠️ No logs to insert');
       return;
     }
 
     try {
       insert logs; // PMD suppressed: Audit logs must be created regardless of permissions
-      System.debug('✅ ' + logs.size() + ' audit log(s) inserted successfully');
     } catch (DmlException e) {
-      System.debug(
-        LoggingLevel.ERROR,
-        '❌ Bulk DML Exception: ' + e.getMessage()
-      );
       throw e;
     }
   }
@@ -85,7 +75,6 @@ public without sharing class JT_AuditLogDomain {
 
     if (!oldLogs.isEmpty()) {
       delete oldLogs; // PMD suppressed: Cleanup operation
-      System.debug('🗑️ Deleted ' + oldLogs.size() + ' old audit logs');
       return oldLogs.size();
     }
 

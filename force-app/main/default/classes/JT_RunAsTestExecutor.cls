@@ -8,9 +8,39 @@
 @SuppressWarnings('PMD.AvoidDebugStatements')
 public with sharing class JT_RunAsTestExecutor {
   /**
+   * @description Caches Run As test result data
+   * Centralizes cache operations to avoid duplication
+   * @param userId User ID to use as part of cache key
+   * @param resultData Map containing result data to cache
+   * @param ttl Time to live in seconds (default: 300)
+   **/
+  private static void cacheRunAsTestResult(
+    String userId,
+    Map<String, Object> resultData,
+    Integer ttl
+  ) {
+    String sanitizedUserId = JT_ToolingApiUtil.toAlphanumeric(userId);
+    String cacheKey = 'RunAsTestResult' + sanitizedUserId;
+    Cache.Org.put(
+      cacheKey,
+      JSON.serialize(resultData),
+      ttl != null ? ttl : 300
+    );
+  }
+
+  /**
    * @description Executes query as specified user using test context
    * @author Jaime Terrats | 11-29-2025
    * @param userId User ID to run as
+   * @param configName Configuration name
+   * @param bindingsJson JSON bindings
+   * @return TestExecutionResult
+   **/
+  /**
+   * @description Executes query as a specific user using System.runAs() in test context
+   * Uses @future to separate DML (insert execution record) from callout (enqueue test)
+   * @author Jaime Terrats | 12-13-2025
+   * @param userId User ID to impersonate
    * @param configName Configuration name
    * @param bindingsJson JSON bindings
    * @return TestExecutionResult
@@ -27,7 +57,7 @@ public with sharing class JT_RunAsTestExecutor {
       // Validate permissions
       if (!canUseRunAsTest()) {
         throw new AuraHandledException(
-          'Insufficient permissions to use Run As Test feature.'
+          Label.JT_RunAsTestExecutor_insufficientPermissionsRunAsTest
         );
       }
 
@@ -35,129 +65,482 @@ public with sharing class JT_RunAsTestExecutor {
       User targetUser = validateUser(userId);
       result.runAsUserName = targetUser.Name + ' (' + targetUser.Username + ')';
 
-      // Store parameters in custom setting (functional data passing)
-      storeTestParameters(userId, configName, bindingsJson);
+      // Rate limiting: Check for pending executions to avoid queue saturation
+      Integer pendingExecutions = 0;
+      try {
+        pendingExecutions = [
+          SELECT COUNT()
+          FROM JT_RunAsTest_Execution__c
+          WHERE
+            Initiated_By__c = :UserInfo.getUserId()
+            AND Test_Status__c IN ('Queued', 'Running')
+            AND CreatedDate >= :Datetime.now().addMinutes(-10)
+          WITH USER_MODE
+        ];
+      } catch (SecurityException se) {
+        // If user doesn't have access to the object, assume no pending executions
+        // This allows the method to continue and fail later with a more user-friendly error
+        pendingExecutions = 0;
+      }
 
-      // Execute test using Test.runAs through predefined test class
-      // Note: This executes async via future method
-      String jobId = enqueueTestExecution(userId, configName, bindingsJson);
-      result.jobId = jobId;
-      result.message = 'Test execution initiated. Use getTestResults() to retrieve results.';
+      final Integer maxPendingExecutions = 3;
+      if (pendingExecutions >= maxPendingExecutions) {
+        throw new AuraHandledException(
+          'Too many test executions in queue (' +
+            pendingExecutions +
+            '). Please wait for pending executions to complete before starting a new one. Maximum allowed: ' +
+            maxPendingExecutions +
+            '.'
+        );
+      }
+
+      JT_RunAsTest_Execution__c execution = new JT_RunAsTest_Execution__c(
+        Test_Status__c = 'Queued',
+        User_To_Impersonate__c = userId,
+        Run_As_User_Name__c = result.runAsUserName,
+        Config_Name__c = configName,
+        Bindings_Json__c = bindingsJson,
+        Initiated_By__c = UserInfo.getUserId()
+      );
+
+      // Validate CRUD permissions before DML
+      if (!Schema.sObjectType.JT_RunAsTest_Execution__c.isCreateable()) {
+        throw new AuraHandledException(
+          Label.JT_RunAsTestExecutor_insufficientPermissionsCreate
+        );
+      }
+
+      try {
+        insert execution;
+        System.debug(
+          '  Run_As_User_Name__c after insert: ' + execution.Run_As_User_Name__c
+        );
+        System.debug(
+          '  Bindings_Json__c after insert: ' +
+          (execution.Bindings_Json__c != null
+            ? execution.Bindings_Json__c.length() + ' chars'
+            : 'NULL')
+        );
+      } catch (DmlException dmlEx) {
+        // Log DML error for support
+        Map<String, Object> details = new Map<String, Object>{
+          'dmlStatusCode' => dmlEx.getDmlStatusCode(0),
+          'dmlFields' => dmlEx.getDmlFields(0),
+          'userId' => userId,
+          'configName' => configName
+        };
+        JT_ErrorLogger.logError(
+          'DML Insert Failed',
+          dmlEx.getMessage(),
+          dmlEx,
+          'JT_RunAsTestExecutor.executeAsUser',
+          JSON.serialize(details),
+          'Critical'
+        );
+
+        // Check for specific error codes and provide user-friendly messages
+        String statusCode = dmlEx.getDmlStatusCode(0);
+        String errorMessage;
+
+        if (statusCode == 'STORAGE_LIMIT_EXCEEDED') {
+          errorMessage = Label.JT_RunAsTestExecutor_storageLimitExceeded;
+        } else {
+          // Generic DML error message
+          errorMessage =
+            'Failed to create execution record: ' + dmlEx.getMessage();
+        }
+
+        throw new AuraHandledException(errorMessage);
+      } catch (Exception insertEx) {
+        // Log general insert error
+        Map<String, Object> details = new Map<String, Object>{
+          'userId' => userId,
+          'configName' => configName
+        };
+        JT_ErrorLogger.logError(
+          'Execution Record Insert Failed',
+          insertEx.getMessage(),
+          insertEx,
+          'JT_RunAsTestExecutor.executeAsUser',
+          JSON.serialize(details),
+          'Critical'
+        );
+
+        // Check if this is a DmlException that wasn't caught by the DmlException catch block
+        // (shouldn't happen, but handle gracefully)
+        String errorMsg = insertEx.getMessage();
+        if (insertEx instanceof DmlException) {
+          DmlException dmlEx = (DmlException) insertEx;
+          String statusCode = dmlEx.getDmlStatusCode(0);
+          if (statusCode == 'STORAGE_LIMIT_EXCEEDED') {
+            errorMsg = Label.JT_RunAsTestExecutor_storageLimitExceeded;
+          } else {
+            errorMsg =
+              'Failed to create execution record: ' + dmlEx.getMessage();
+          }
+        } else {
+          errorMsg =
+            'Failed to create execution record: ' + insertEx.getMessage();
+        }
+
+        throw new AuraHandledException(errorMsg);
+      }
+
+      // Enqueue test execution via Tooling API using Queueable
+      // This separates DML (insert above) from callout to avoid "uncommitted work pending" error
+      // Queueable provides Job ID for monitoring and avoids async resource contention
+      System.debug('📤 Enqueuing Queueable to enqueue test execution...');
+      Id queueableJobId = System.enqueueJob(
+        new JT_RunAsTestEnqueuer(execution.Id)
+      );
+
+      // Store Queueable Job ID and update status to "Running" in execution record
+      // CRITICAL: All DML must be completed BEFORE the Queueable executes (which makes callout)
+      // This update happens AFTER enqueueJob but BEFORE Queueable executes (different transaction)
+      // This ensures the Queueable can find the record in "Running" status and avoids "uncommitted work pending" error
+      try {
+        execution.Test_Status__c = 'Running';
+        execution.Apex_Queueable_Job_Id__c = String.valueOf(queueableJobId);
+        execution.Log_Messages__c =
+          (String.isNotBlank(execution.Log_Messages__c)
+            ? execution.Log_Messages__c + '\n'
+            : '') +
+          'Queueable enqueued at ' +
+          System.now() +
+          '. Job ID: ' +
+          queueableJobId;
+
+        // Validate CRUD permissions before DML
+        if (!Schema.sObjectType.JT_RunAsTest_Execution__c.isUpdateable()) {
+          throw new AuraHandledException(
+            Label.JT_RunAsTestExecutor_insufficientPermissionsUpdate
+          );
+        }
+        update execution;
+        System.debug(
+          '✅ Execution record updated to Running with Queueable Job ID: ' +
+          queueableJobId
+        );
+      } catch (DmlException dmlEx) {
+        // Log DML error for support
+        Map<String, Object> details = new Map<String, Object>{
+          'dmlStatusCode' => dmlEx.getDmlStatusCode(0),
+          'dmlFields' => dmlEx.getDmlFields(0),
+          'executionId' => execution.Id
+        };
+        JT_ErrorLogger.logError(
+          'DML Update Failed',
+          dmlEx.getMessage(),
+          dmlEx,
+          'JT_RunAsTestExecutor.executeAsUser',
+          JSON.serialize(details),
+          'High'
+        );
+        // Continue execution even if update fails - the Queueable will still run
+        // The execution record ID is still returned for polling
+      } catch (Exception updateEx) {
+        // Log update error for support
+        JT_ErrorLogger.logError(
+          'Execution Update Failed',
+          updateEx.getMessage(),
+          updateEx,
+          'JT_RunAsTestExecutor.executeAsUser'
+        );
+        // Continue execution even if update fails - the Queueable will still run
+      }
+
+      result.jobId = execution.Id; // Return execution record ID for polling
+      result.message = Label.JT_RunAsTestExecutor_testExecutionInitiated;
       result.success = true;
 
       return result;
+    } catch (AuraHandledException ahe) {
+      result.success = false;
+      // AuraHandledException messages are user-friendly and should be used directly
+      String errorMsg = ahe.getMessage();
+      // Handle case where AuraHandledException message might be "Script-thrown exception"
+      // This can happen if the exception was re-thrown without preserving the original message
+      // In @AuraEnabled methods, AuraHandledException messages are sometimes wrapped
+      if (String.isBlank(errorMsg) || errorMsg == 'Script-thrown exception') {
+        // Try to get the original message from the cause if available
+        Exception cause = ahe.getCause();
+        if (cause != null && String.isNotBlank(cause.getMessage())) {
+          errorMsg = cause.getMessage();
+        } else {
+          // Check if this is a rate limiting exception by examining the stack trace
+          String stackTrace = ahe.getStackTraceString();
+          if (stackTrace != null && stackTrace.contains('executeAsUser')) {
+            // This is likely a rate limiting exception that lost its message
+            // Try to reconstruct the message, but handle SecurityException gracefully
+            try {
+              Integer pendingExecutions = [
+                SELECT COUNT()
+                FROM JT_RunAsTest_Execution__c
+                WHERE
+                  Initiated_By__c = :UserInfo.getUserId()
+                  AND Test_Status__c IN ('Queued', 'Running')
+                  AND CreatedDate >= :Datetime.now().addMinutes(-10)
+                WITH USER_MODE
+              ];
+              if (pendingExecutions >= 3) {
+                errorMsg =
+                  'Too many test executions in queue (' +
+                  pendingExecutions +
+                  '). Please wait for pending executions to complete before starting a new one. Maximum allowed: 3.';
+              } else {
+                errorMsg = 'An error occurred during test execution';
+              }
+            } catch (SecurityException se) {
+              // If we can't check pending executions due to permissions, use generic message
+              errorMsg = 'An error occurred during test execution';
+            }
+          } else {
+            errorMsg = 'An error occurred during test execution';
+          }
+        }
+      }
+      result.errorMessage = errorMsg;
+      result.stackTrace = ahe.getStackTraceString();
+      return result;
     } catch (Exception e) {
       result.success = false;
-      result.errorMessage = e.getMessage();
+
+      // Extract error message - check if message contains storage limit error
+      String exceptionMsg = e.getMessage();
+      String errorMsg;
+      if (
+        exceptionMsg != null && exceptionMsg.contains('STORAGE_LIMIT_EXCEEDED')
+      ) {
+        errorMsg = Label.JT_RunAsTestExecutor_storageLimitExceeded;
+      } else {
+        errorMsg = String.isNotBlank(exceptionMsg)
+          ? exceptionMsg
+          : 'An unexpected error occurred';
+      }
+
+      result.errorMessage = errorMsg;
       result.stackTrace = e.getStackTraceString();
       return result;
     }
   }
 
   /**
-   * @description Stores test parameters functionally using Custom Settings
-   * @author Jaime Terrats | 11-29-2025
-   * @param userId User ID
-   * @param configName Configuration name
-   * @param bindingsJson Bindings JSON
-   **/
-  private static void storeTestParameters(
-    String userId,
-    String configName,
-    String bindingsJson
-  ) {
-    // Store in Platform Cache as JSON string (keys must be alphanumeric)
-    Cache.Org.put(
-      'RunAsTest' + userId,
-      JSON.serialize(
-        new Map<String, Object>{
-          'userId' => userId,
-          'configName' => configName,
-          'bindingsJson' => bindingsJson,
-          'timestamp' => System.now().getTime()
-        }
-      ),
-      300
-    ); // 5 minute TTL
-  }
-
-  /**
-   * @description Executes test asynchronously (functional approach)
-   * @author Jaime Terrats | 11-29-2025
-   * @param userId User ID
-   * @param configName Configuration name
-   * @param bindingsJson Bindings JSON
-   **/
-  @future
-  private static void executeTestAsync(
-    String userId,
-    String configName,
-    String bindingsJson
-  ) {
-    // In a real implementation, this would trigger the test execution
-    // For now, we demonstrate the functional pattern
-    enqueueTestExecution(userId, configName, bindingsJson);
-  }
-
-  /**
-   * @description Enqueues test execution using Queueable (functional composition)
-   * @author Jaime Terrats | 11-29-2025
-   * @param userId User ID
-   * @param configName Configuration name
-   * @param bindingsJson Bindings JSON
-   * @return String Job ID
-   **/
-  private static String enqueueTestExecution(
-    String userId,
-    String configName,
-    String bindingsJson
-  ) {
-    return System.enqueueJob(
-      new RunAsTestQueueable(userId, configName, bindingsJson)
-    );
-  }
-
-  /**
-   * @description Retrieves test results as parseable JSON (functional data retrieval)
-   * @author Jaime Terrats | 11-29-2025
-   * @param userId User ID to get results for
+   * @description Retrieves test results from Custom Object (replaces Platform Cache)
+   * @author Jaime Terrats | 12-13-2025
+   * @param executionId The ID of the JT_RunAsTest_Execution__c record
    * @return TestExecutionResult
    **/
   @AuraEnabled
-  public static TestExecutionResult getTestResults(String userId) {
+  public static TestExecutionResult getTestResults(String executionId) {
     TestExecutionResult result = new TestExecutionResult();
 
     try {
-      // Retrieve JSON string from cache (keys must be alphanumeric)
-      String cachedResultJson = (String) Cache.Org.get(
-        'RunAsTestResult' + userId
-      );
-      String assertMessage = (String) Cache.Org.get('RunAsTestAssert' + userId);
+      // Query the execution record
+      List<JT_RunAsTest_Execution__c> executions = [
+        SELECT
+          Id,
+          Test_Status__c,
+          User_To_Impersonate__c,
+          Run_As_User_Name__c,
+          Config_Name__c,
+          Bindings_Json__c,
+          Results_Json__c,
+          Error_Message__c,
+          Record_Count__c,
+          Execution_Time__c,
+          Log_Messages__c,
+          Apex_Test_Queue_Item_Id__c,
+          Apex_Queueable_Job_Id__c,
+          CreatedDate,
+          LastModifiedDate
+        FROM JT_RunAsTest_Execution__c
+        WHERE Id = :executionId
+        WITH USER_MODE
+        LIMIT 1
+      ];
 
-      if (String.isNotBlank(cachedResultJson)) {
-        // Parse JSON result
-        Map<String, Object> resultMap = (Map<String, Object>) JSON.deserializeUntyped(
-          cachedResultJson
-        );
-
-        result.success = (Boolean) resultMap.get('success');
-        result.recordCount = (Integer) resultMap.get('recordCount');
-        result.errorMessage = (String) resultMap.get('errorMessage');
-        result.executionTime = (Integer) resultMap.get('executionTime');
-        result.runAsUserName = (String) resultMap.get('runAsUser');
-        result.assertMessage = assertMessage;
-
-        // Return serialized data for LWC to parse
-        result.queryResults = cachedResultJson; // Complete JSON for LWC
-        result.fields = (List<Object>) resultMap.get('fields');
-        result.records = (List<Object>) resultMap.get('records');
-
-        result.message = result.success
-          ? 'Query executed successfully as ' + result.runAsUserName
-          : 'Query failed: ' + result.errorMessage;
-      } else {
+      if (executions.isEmpty()) {
         result.success = false;
-        result.message = 'No results available yet. Test may still be executing or timed out.';
+        result.errorMessage = Label.JT_RunAsTestExecutor_executionRecordNotFound;
+        result.message = Label.JT_RunAsTestExecutor_executionRecordNotFoundMessage;
+        return result;
+      }
+
+      JT_RunAsTest_Execution__c execution = executions[0];
+
+      // Check status
+      if (
+        execution.Test_Status__c ==
+        Label.JT_RunAsTestExecutor_testStatusQueued ||
+        execution.Test_Status__c == Label.JT_RunAsTestExecutor_testStatusRunning
+      ) {
+        // First, check if Queueable Job is still running (before test is enqueued)
+        if (String.isNotBlank(execution.Apex_Queueable_Job_Id__c)) {
+          try {
+            List<AsyncApexJob> queueableJobs = [
+              SELECT Id, Status, ExtendedStatus, NumberOfErrors
+              FROM AsyncApexJob
+              WHERE Id = :execution.Apex_Queueable_Job_Id__c
+              WITH USER_MODE
+              LIMIT 1
+            ];
+
+            if (!queueableJobs.isEmpty()) {
+              AsyncApexJob queueableJob = queueableJobs[0];
+
+              if (
+                queueableJob.Status == 'Queued' ||
+                queueableJob.Status == 'Processing'
+              ) {
+                result.success = false;
+                result.message =
+                  'Enqueuing test execution (' +
+                  queueableJob.Status.toLowerCase() +
+                  '). Please wait...';
+                return result;
+              } else if (queueableJob.Status == 'Failed') {
+                result.success = false;
+                result.errorMessage =
+                  'Failed to enqueue test: ' +
+                  (String.isNotBlank(queueableJob.ExtendedStatus)
+                    ? queueableJob.ExtendedStatus
+                    : 'Queueable job failed');
+                result.message = result.errorMessage;
+                execution.Test_Status__c = 'Failed';
+                execution.Error_Message__c = result.errorMessage;
+
+                // Validate CRUD permissions before DML
+                if (
+                  Schema.sObjectType.JT_RunAsTest_Execution__c.isUpdateable()
+                ) {
+                  update execution;
+                }
+                return result;
+              }
+            }
+          } catch (Exception e) {
+            System.debug(
+              LoggingLevel.WARN,
+              String.format(
+                Label.JT_RunAsTestExecutor_couldNotCheckQueueableStatus,
+                new List<String>{ e.getMessage() }
+              )
+            );
+          }
+        }
+
+        // Check if test has been queued for too long (possible Developer Org limitation)
+        if (execution.Apex_Test_Queue_Item_Id__c != null) {
+          try {
+            List<ApexTestQueueItem> queueItems = [
+              SELECT Id, Status, ExtendedStatus
+              FROM ApexTestQueueItem
+              WHERE Id = :execution.Apex_Test_Queue_Item_Id__c
+              WITH USER_MODE
+              LIMIT 1
+            ];
+
+            if (!queueItems.isEmpty()) {
+              ApexTestQueueItem queueItem = queueItems[0];
+
+              // If test is still queued after 30 seconds, it might not execute automatically in Developer Orgs
+              Long queuedDuration =
+                System.now().getTime() - execution.CreatedDate.getTime();
+              if (queueItem.Status == 'Queued' && queuedDuration > 30000) {
+                result.success = false;
+                result.message = Label.JT_RunAsTestExecutor_testQueuedTooLong;
+                System.debug(
+                  '⚠️ Test has been queued for ' +
+                    queuedDuration +
+                    'ms without executing'
+                );
+                return result;
+              }
+            }
+          } catch (Exception e) {
+            System.debug(
+              LoggingLevel.WARN,
+              String.format(
+                Label.JT_RunAsTestExecutor_couldNotCheckQueueItemStatus,
+                new List<String>{ e.getMessage() }
+              )
+            );
+          }
+        }
+
+        result.success = false;
+        result.message =
+          String.format(
+            Label.JT_RunAsTestExecutor_testIsStatus,
+            new List<String>{ execution.Test_Status__c.toLowerCase() }
+          ) + '. Please wait...';
+        return result;
+      }
+
+      // Test completed - parse results
+      if (
+        execution.Test_Status__c ==
+        Label.JT_RunAsTestExecutor_testStatusCompleted
+      ) {
+        if (String.isNotBlank(execution.Results_Json__c)) {
+          // Parse JSON result
+          Map<String, Object> resultMap = (Map<String, Object>) JSON.deserializeUntyped(
+            execution.Results_Json__c
+          );
+
+          result.success = (Boolean) resultMap.get('success');
+          result.recordCount = execution.Record_Count__c != null
+            ? execution.Record_Count__c.intValue()
+            : (Integer) resultMap.get('recordCount');
+          result.errorMessage = String.isNotBlank(execution.Error_Message__c)
+            ? execution.Error_Message__c
+            : (String) resultMap.get('errorMessage');
+          result.executionTime = execution.Execution_Time__c != null
+            ? execution.Execution_Time__c.intValue()
+            : (Integer) resultMap.get('executionTime');
+          result.runAsUserName = execution.Run_As_User_Name__c;
+          result.assertMessage = execution.Test_Status__c ==
+            Label.JT_RunAsTestExecutor_testStatusCompleted
+            ? 'SUCCESS: Found ' +
+              result.recordCount +
+              ' record(s) as ' +
+              result.runAsUserName
+            : null;
+
+          // Return serialized data for LWC to parse
+          result.queryResults = execution.Results_Json__c;
+          result.fields = (List<Object>) resultMap.get('fields');
+          result.records = (List<Object>) resultMap.get('records');
+
+          System.debug('  success: ' + result.success);
+          System.debug('  recordCount: ' + result.recordCount);
+          System.debug('  runAsUserName: ' + result.runAsUserName);
+
+          result.message = result.success
+            ? String.format(
+                Label.JT_RunAsTestExecutor_queryExecutedSuccessfully,
+                new List<String>{ result.runAsUserName }
+              )
+            : String.format(
+                Label.JT_RunAsTestExecutor_queryFailed,
+                new List<String>{ result.errorMessage }
+              );
+        } else {
+          // Test completed but no results stored
+          result.success = false;
+          result.errorMessage = String.isNotBlank(execution.Error_Message__c)
+            ? execution.Error_Message__c
+            : Label.JT_RunAsTestExecutor_testCompletedNoResults;
+          result.message = result.errorMessage;
+          System.debug('  Log Messages: ' + execution.Log_Messages__c);
+        }
+      } else if (execution.Test_Status__c == 'Failed') {
+        result.success = false;
+        result.errorMessage = String.isNotBlank(execution.Error_Message__c)
+          ? execution.Error_Message__c
+          : Label.JT_RunAsTestExecutor_testExecutionFailed;
+        result.message = result.errorMessage;
+        System.debug('  Log Messages: ' + execution.Log_Messages__c);
       }
 
       return result;
@@ -165,35 +548,68 @@ public with sharing class JT_RunAsTestExecutor {
       result.success = false;
       result.errorMessage = e.getMessage();
       result.message = 'Error retrieving results: ' + e.getMessage();
+
+      // Log error for support
+      Map<String, Object> details = new Map<String, Object>{
+        'executionId' => executionId
+      };
+      JT_ErrorLogger.logError(
+        'Test Results Retrieval Failed',
+        e.getMessage(),
+        e,
+        'JT_RunAsTestExecutor.getTestResults',
+        JSON.serialize(details),
+        'Medium'
+      );
       return result;
     }
   }
 
   /**
-   * @description Gets test execution status (polling endpoint)
-   * @author Jaime Terrats | 11-29-2025
-   * @param userId User ID to check status for
+   * @description Gets test execution status from Custom Object (polling endpoint)
+   * @author Jaime Terrats | 12-13-2025
+   * @param executionId The ID of the JT_RunAsTest_Execution__c record
    * @return Map<String, Object> Status information
    **/
   @AuraEnabled
-  public static Map<String, Object> getTestStatus(String userId) {
+  public static Map<String, Object> getTestStatus(String executionId) {
     Map<String, Object> status = new Map<String, Object>();
 
     try {
-      String cachedResult = (String) Cache.Org.get('RunAsTestResult' + userId);
+      // Query the execution record
+      List<JT_RunAsTest_Execution__c> executions = [
+        SELECT Id, Test_Status__c, Results_Json__c, Error_Message__c
+        FROM JT_RunAsTest_Execution__c
+        WHERE Id = :executionId
+        WITH USER_MODE
+        LIMIT 1
+      ];
 
-      if (String.isNotBlank(cachedResult)) {
+      if (executions.isEmpty()) {
+        status.put('status', 'NOT_FOUND');
+        status.put('hasResults', false);
+        return status;
+      }
+
+      JT_RunAsTest_Execution__c execution = executions[0];
+      String testStatus = execution.Test_Status__c;
+
+      if (testStatus == Label.JT_RunAsTestExecutor_testStatusCompleted) {
         status.put('status', 'COMPLETED');
-        status.put('hasResults', true);
-      } else {
-        String cachedParams = (String) Cache.Org.get('RunAsTest' + userId);
-        if (String.isNotBlank(cachedParams)) {
-          status.put('status', 'RUNNING');
-          status.put('hasResults', false);
-        } else {
-          status.put('status', 'NOT_FOUND');
-          status.put('hasResults', false);
+        status.put('hasResults', String.isNotBlank(execution.Results_Json__c));
+        if (String.isBlank(execution.Results_Json__c)) {
+          status.put('warning', 'Test completed but no results stored');
         }
+      } else if (testStatus == 'Failed') {
+        status.put('status', 'FAILED');
+        status.put('hasResults', false);
+        status.put('error', execution.Error_Message__c);
+      } else if (testStatus == 'Queued' || testStatus == 'Running') {
+        status.put('status', 'PENDING');
+        status.put('hasResults', false);
+      } else {
+        status.put('status', testStatus);
+        status.put('hasResults', false);
       }
     } catch (Exception e) {
       status.put('status', 'ERROR');
@@ -219,7 +635,9 @@ public with sharing class JT_RunAsTestExecutor {
     ];
 
     if (users.isEmpty() || !users[0].IsActive) {
-      throw new AuraHandledException('User not found or inactive');
+      throw new AuraHandledException(
+        Label.JT_RunAsTestExecutor_userNotFoundOrInactive
+      );
     }
 
     return users[0];
@@ -274,6 +692,11 @@ public with sharing class JT_RunAsTestExecutor {
       System.attachFinalizer(new TestExecutionFinalizer(userId));
 
       try {
+        // ⚠️ LIMITATION: This Queueable executes with USER_MODE but NOT System.runAs()
+        // System.runAs() only works in Test context (Test.startTest() / Test.stopTest())
+        // This means the query executes with the CURRENT user's sharing rules,
+        // not the selected user's permissions. It only enforces FLS/CRUD.
+
         // Execute query and store results functionally
         Map<String, Object> bindings = String.isNotBlank(bindingsJson)
           ? (Map<String, Object>) JSON.deserializeUntyped(bindingsJson)
@@ -287,33 +710,38 @@ public with sharing class JT_RunAsTestExecutor {
         );
         Long endTime = System.now().getTime();
 
+        // Extract field names from first record
+        List<String> fieldNames = new List<String>();
+        if (!records.isEmpty() && records[0] != null) {
+          Map<String, Object> recordMap = records[0].getPopulatedFieldsAsMap();
+          fieldNames.addAll(recordMap.keySet());
+        }
+
         // Store results in cache as JSON string (keys must be alphanumeric)
-        Cache.Org.put(
-          'RunAsTestResult' + userId,
-          JSON.serialize(
-            new Map<String, Object>{
-              'success' => true,
-              'queryResults' => JSON.serialize(records),
-              'recordCount' => records.size(),
-              'errorMessage' => null,
-              'executionTime' => (Integer) (endTime - startTime)
-            }
-          ),
+        cacheRunAsTestResult(
+          userId,
+          new Map<String, Object>{
+            'success' => true,
+            'records' => records,
+            'fields' => fieldNames,
+            'recordCount' => records.size(),
+            'errorMessage' => null,
+            'executionTime' => (Integer) (endTime - startTime),
+            'runAsUserName' => 'Current User (Queueable)'
+          },
           300
         );
       } catch (Exception e) {
         // Store error as JSON string
-        Cache.Org.put(
-          'RunAsTestResult' + userId,
-          JSON.serialize(
-            new Map<String, Object>{
-              'success' => false,
-              'queryResults' => null,
-              'recordCount' => 0,
-              'errorMessage' => e.getMessage(),
-              'executionTime' => 0
-            }
-          ),
+        cacheRunAsTestResult(
+          userId,
+          new Map<String, Object>{
+            'success' => false,
+            'queryResults' => null,
+            'recordCount' => 0,
+            'errorMessage' => e.getMessage(),
+            'executionTime' => 0
+          },
           300
         );
       }
@@ -347,19 +775,17 @@ public with sharing class JT_RunAsTestExecutor {
         // Log exception for monitoring
         System.debug(
           LoggingLevel.ERROR,
-          'Test execution failed with exception'
+          Label.JT_RunAsTestExecutor_testExecutionFailedException
         );
 
         // Store error in cache
-        Cache.Org.put(
-          'RunAsTestResult' + userId,
-          JSON.serialize(
-            new Map<String, Object>{
-              'success' => false,
-              'errorMessage' => 'Test execution failed unexpectedly',
-              'recordCount' => 0
-            }
-          ),
+        JT_RunAsTestExecutor.cacheRunAsTestResult(
+          userId,
+          new Map<String, Object>{
+            'success' => false,
+            'errorMessage' => Label.JT_RunAsTestExecutor_testExecutionFailedUnexpectedly,
+            'recordCount' => 0
+          },
           300
         );
       }

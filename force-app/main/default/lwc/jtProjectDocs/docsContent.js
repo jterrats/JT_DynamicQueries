@@ -380,13 +380,112 @@ Map&lt;String, Object&gt; additionalBindings = new Map&lt;String, Object&gt;{
 List&lt;SObject&gt; records = JT_DataSelector.getRecords('MixedConfig', true, additionalBindings);
 // Query example: SELECT Id, Name FROM Account WHERE Type = :accountType AND Region__c = :region
 
-// Example 4: Invocable method (for Flows/Agentforce)
+// Example 4: Check COUNT first, then decide strategy (RECOMMENDED)
+// This pattern works in ANY context (sync, async, triggers, etc.)
+Integer recordCount = JT_DataSelector.countRecordsForConfig(
+    'MyConfig',
+    bindings,
+    true
+);
+
+if (recordCount > 50000 && System.isBatch()) {
+    // Use Batch Apex for async processing
+    Database.executeBatch(new MyBatchProcessor('MyConfig', bindings));
+} else if (recordCount > 50000 && System.isQueueable()) {
+    // Use Queueable for async processing
+    System.enqueueJob(new MyQueueableProcessor('MyConfig', bindings));
+} else if (recordCount > 50000) {
+    // Use cursor processing (synchronous contexts ONLY)
+    JT_DataSelector.processRecordsWithCursor(
+        'MyConfig',
+        bindings,
+        true,
+        200,
+        new MyCursorProcessor()
+    );
+} else {
+    // Standard query for small/medium datasets
+    List&lt;SObject&gt; records = JT_DataSelector.getRecords('MyConfig', true, bindings);
+}
+
+// Example 5: Auto-strategy (for synchronous contexts ONLY)
+// WARNING: This will FAIL if called from @future, Queueable, Batch, or Triggers
+List&lt;SObject&gt; records = JT_DataSelector.getRecordsWithAutoStrategy(
+    'MyConfig',
+    true,
+    bindings,
+    50000,
+    new MyCursorProcessor() // Required if > 50K records
+);
+
+// Example 6: Cursor processor implementation
+public class MyCursorProcessor implements JT_DataSelector.CursorProcessor {
+    public void processBatch(List&lt;SObject&gt; batch) {
+        // Process each batch (200 records by default)
+        // Your custom logic here: DML, callouts, aggregations, etc.
+    }
+}
+
+// Example 7: From Trigger (must use Batch/Queueable for large datasets)
+trigger AccountTrigger on Account (after insert) {
+    // Check count first
+    Integer recordCount = JT_DataSelector.countRecordsForConfig(
+        'AccountConfig',
+        null,
+        true
+    );
+
+    if (recordCount > 50000) {
+        // ✅ Use Batch Apex for large datasets in trigger context
+        Database.executeBatch(new AccountBatchProcessor('AccountConfig', null));
+    } else {
+        // ✅ Standard query for small datasets
+        List&lt;SObject&gt; records = JT_DataSelector.getRecords('AccountConfig', true);
+        // Process records...
+    }
+}
+
+// ❌ WRONG - This will FAIL even in Service layer
+trigger AccountTrigger on Account (after insert) {
+    AccountTriggerHandler.handle(Trigger.new);
+}
+public class AccountTriggerHandler {
+    public static void handle(List&lt;Account&gt; accounts) {
+        AccountService.processData(); // Calls Service layer
+    }
+}
+public class AccountService {
+    public static void processData() {
+        // ❌ This FAILS - Still in trigger context!
+        JT_DataSelector.processRecordsWithCursor(...);
+    }
+}
+
+// Example 8: Invocable method (for Flows/Agentforce)
 // Access via Flow Builder or Agentforce Agent Builder as an Apex Action
                 </pre>
 
                 <div class="alert-info">
                     <p><strong>Tip:</strong> When you pass bindings from Apex, they are merged with the predefined bindings from metadata.
                     If the same key exists in both, the Apex-provided value takes precedence.</p>
+                </div>
+
+                <div class="alert-warning">
+                    <p><strong>Important - Cursor Limitations:</strong> Apex Cursors (used by <code>processRecordsWithCursor</code>) can
+                    <strong>ONLY</strong> be used in synchronous contexts. They <strong>CANNOT</strong> be used in:</p>
+                    <ul>
+                        <li>❌ Triggers (including Handler → Service layers called from triggers)</li>
+                        <li>❌ @future methods</li>
+                        <li>❌ Queueable jobs</li>
+                        <li>❌ Batch Apex</li>
+                        <li>❌ Any asynchronous context</li>
+                    </ul>
+                    <p><strong>Execution Context Matters:</strong> The <em>execution context</em> (where the code was invoked from)
+                    determines cursor availability, not the architectural layer. If a trigger calls Handler → Service → Cursor,
+                    it will fail because the entire chain runs in trigger context.</p>
+                    <p><strong>Recommended Pattern:</strong> Use <code>countRecordsForConfig()</code> first to check the record count,
+                    then decide which strategy to use based on your execution context. For async contexts with large datasets,
+                    use Batch Apex or Queueable instead of cursors.</p>
                 </div>
 
                 <h3>LWC Components</h3>
@@ -792,20 +891,140 @@ public static JT_DataSelector getInstance() {
 // Obtener instancia singleton
 JT_DataSelector selector = JT_DataSelector.getInstance();
 
-// Obtener registros con configuración predefinida
-List&lt;SObject&gt; records = JT_DataSelector.getRecords('ConfigName');
+// Ejemplo 1: Usar bindings predefinidos desde metadata
+List&lt;SObject&gt; records = JT_DataSelector.getRecords('ConfigName', true);
 
-// Obtener registros con enlaces personalizados
+// Ejemplo 2: Sobrescribir con bindings personalizados desde Apex
 Map&lt;String, Object&gt; bindings = new Map&lt;String, Object&gt;{
-    'accountId' => '0015g00000XXXXXX'
+    'accountId' => '0015g00000XXXXXX',
+    'status' => 'Active'
 };
-List&lt;SObject&gt; records = JT_DataSelector.getRecords('ConfigName', bindings);
+List&lt;SObject&gt; records = JT_DataSelector.getRecords('ConfigName', true, bindings);
 
-// Obtener config (en caché)
-JT_DynamicQueryConfiguration__mdt config = selector.getConfig('ConfigName');
+// Ejemplo 3: Verificar COUNT primero, luego decidir estrategia (RECOMENDADO)
+// Este patrón funciona en CUALQUIER contexto (sync, async, triggers, etc.)
+Integer recordCount = JT_DataSelector.countRecordsForConfig(
+    'MiConfig',
+    bindings,
+    true
+);
+
+if (recordCount > 50000 && System.isBatch()) {
+    // Usar Batch Apex para procesamiento asíncrono
+    Database.executeBatch(new MiBatchProcessor('MiConfig', bindings));
+} else if (recordCount > 50000 && System.isQueueable()) {
+    // Usar Queueable para procesamiento asíncrono
+    System.enqueueJob(new MiQueueableProcessor('MiConfig', bindings));
+} else if (recordCount > 50000) {
+    // Usar procesamiento por cursor (contextos síncronos SOLAMENTE)
+    JT_DataSelector.processRecordsWithCursor(
+        'MiConfig',
+        bindings,
+        true,
+        200,
+        new MiProcesadorCursor()
+    );
+} else {
+    // Query estándar para datasets pequeños/medianos
+    List&lt;SObject&gt; records = JT_DataSelector.getRecords('MiConfig', true, bindings);
+}
+
+// Ejemplo 4: Estrategia automática (solo contextos síncronos)
+// ADVERTENCIA: Esto FALLARÁ si se llama desde @future, Queueable, Batch, o Triggers
+List&lt;SObject&gt; records = JT_DataSelector.getRecordsWithAutoStrategy(
+    'MiConfig',
+    true,
+    bindings,
+    50000,
+    new MiProcesadorCursor() // Requerido si > 50K registros
+);
+
+// Ejemplo 5: Implementación de procesador de cursor
+public class MiProcesadorCursor implements JT_DataSelector.CursorProcessor {
+    public void processBatch(List&lt;SObject&gt; batch) {
+        // Procesa cada lote (200 registros por defecto)
+        // Tu lógica personalizada aquí: DML, callouts, agregaciones, etc.
+    }
+}
+
+// Ejemplo 6: Desde Trigger (debe usar Batch/Queueable para datasets grandes)
+trigger AccountTrigger on Account (after insert) {
+    // Verificar conteo primero
+    Integer recordCount = JT_DataSelector.countRecordsForConfig(
+        'AccountConfig',
+        null,
+        true
+    );
+
+    if (recordCount > 50000) {
+        // ✅ Usar Batch Apex para datasets grandes en contexto de trigger
+        Database.executeBatch(new AccountBatchProcessor('AccountConfig', null));
+    } else {
+        // ✅ Query estándar para datasets pequeños
+        List&lt;SObject&gt; records = JT_DataSelector.getRecords('AccountConfig', true);
+        // Procesar registros...
+    }
+}
+
+// ❌ INCORRECTO - Esto FALLARÁ incluso en capa Service
+trigger AccountTrigger on Account (after insert) {
+    AccountTriggerHandler.handle(Trigger.new);
+}
+public class AccountTriggerHandler {
+    public static void handle(List&lt;Account&gt; accounts) {
+        AccountService.processData(); // Llama a capa Service
+    }
+}
+public class AccountService {
+    public static void processData() {
+        // ❌ Esto FALLA - ¡Aún estamos en contexto de trigger!
+        JT_DataSelector.processRecordsWithCursor(...);
+    }
+}
+
+// Ejemplo 7: Método invocable (para Flows/Agentforce)
+// Accesible vía Flow Builder o Agentforce Agent Builder como Acción Apex
                 </pre>
 
-                <p><strong>Para más detalles, consulta la sección API en la versión en inglés.</strong></p>
+                <div class="alert-info">
+                    <p><strong>Consejo:</strong> Cuando pasas bindings desde Apex, se fusionan con los bindings predefinidos en metadata.
+                    Si la misma clave existe en ambos, el valor provisto desde Apex tiene precedencia.</p>
+                </div>
+
+                <div class="alert-warning">
+                    <p><strong>Importante - Limitaciones de Cursores:</strong> Los Cursores Apex (usados por <code>processRecordsWithCursor</code>)
+                    <strong>SOLO</strong> pueden usarse en contextos síncronos. <strong>NO PUEDEN</strong> usarse en:</p>
+                    <ul>
+                        <li>❌ Triggers (incluyendo capas Handler → Service llamadas desde triggers)</li>
+                        <li>❌ Métodos @future</li>
+                        <li>❌ Jobs Queueable</li>
+                        <li>❌ Batch Apex</li>
+                        <li>❌ Cualquier contexto asíncrono</li>
+                    </ul>
+                    <p><strong>El Contexto de Ejecución Importa:</strong> El <em>contexto de ejecución</em> (desde dónde se invocó el código)
+                    determina la disponibilidad de cursores, no la capa arquitectónica. Si un trigger llama Handler → Service → Cursor,
+                    fallará porque toda la cadena se ejecuta en contexto de trigger.</p>
+                    <p><strong>Patrón Recomendado:</strong> Usa <code>countRecordsForConfig()</code> primero para verificar el conteo de registros,
+                    luego decide qué estrategia usar basándote en tu contexto de ejecución. Para contextos async con datasets grandes,
+                    usa Batch Apex o Queueable en lugar de cursores.</p>
+                </div>
+
+                <h3>Componentes LWC</h3>
+
+                <h4>jtQueryViewer</h4>
+                <p>Componente principal de ejecución de consultas con características:</p>
+                <ul>
+                    <li>Selección de configuración</li>
+                    <li>Generación dinámica de parámetros</li>
+                    <li>Ejecución de consultas</li>
+                    <li>Selección de usuario Run As</li>
+                    <li>Creación de metadata (solo sandbox)</li>
+                    <li>Paginación (> 10 registros)</li>
+                    <li>Soporte i18n</li>
+                </ul>
+
+                <h4>jtProjectDocs</h4>
+                <p>Este componente de documentación con soporte i18n.</p>
             `
     },
     footer: {

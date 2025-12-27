@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomFieldTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <help
+  >La requête SOQL à exécuter. Utilisez des variables de liaison avec syntaxe deux-points (ex: :nomCompte) pour des paramètres dynamiques.</help>
+    <label>Requête de Base (SOQL)</label>
+    <name>JT_BaseQuery__c</name>
+</CustomFieldTranslation>

@@ -4,7 +4,15 @@ on:
   push:
     branches: [main]
     paths:
-      - "docs/**"
+      # Only trigger on actual documentation changes
+      - "docs/**/*.html"
+      - "docs/**/*.md"
+      - "docs/**/*.yml"
+      - "docs/**/*.yaml"
+      - "docs/**/*.js"
+      - "docs/**/*.css"
+      - "docs/**/*.json"
+      - "docs/_config.yml"
       - ".github/workflows/gh-pages.yml"
   workflow_dispatch:
 

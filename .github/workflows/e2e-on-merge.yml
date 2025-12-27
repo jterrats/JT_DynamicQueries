@@ -4,9 +4,23 @@ on:
   push:
     branches:
       - main
+    paths:
+      # Only run when code or tests change
+      - "force-app/**"
+      - "tests/e2e/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/e2e-on-merge.yml"
   pull_request:
     branches:
       - main
+    paths:
+      # Only run when code or tests change
+      - "force-app/**"
+      - "tests/e2e/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/e2e-on-merge.yml"
 
 # Required permissions for github-script to create comments
 permissions:

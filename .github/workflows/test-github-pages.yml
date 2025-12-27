@@ -14,12 +14,21 @@ on:
   # Allow manual trigger
   workflow_dispatch:
 
-  # Run on pushes to main that affect docs
+  # Run on pushes to main that affect docs or GitHub Pages tests
   push:
     branches: [main]
     paths:
-      - "docs/**"
+      # Only trigger on actual documentation changes or test changes
+      - "docs/**/*.html"
+      - "docs/**/*.md"
+      - "docs/**/*.yml"
+      - "docs/**/*.yaml"
+      - "docs/**/*.js"
+      - "docs/**/*.css"
+      - "docs/**/*.json"
+      - "docs/_config.yml"
       - "tests/e2e/github-pages.spec.js"
+      - "tests/e2e/github-pages.config.js"
       - ".github/workflows/test-github-pages.yml"
 
 # Required permissions for github-script to create comments and issues

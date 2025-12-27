@@ -1,3 +1,8 @@
+---
+layout: default
+title: Run As User Feature
+permalink: /guides/RUN_AS_USER_FEATURE/
+---
 # Run As User Feature
 
 ## Overview

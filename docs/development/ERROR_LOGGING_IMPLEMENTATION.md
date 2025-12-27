@@ -3,6 +3,7 @@ layout: default
 title: Error Logging Implementation
 permalink: /development/ERROR_LOGGING_IMPLEMENTATION/
 ---
+
 # Error Logging Implementation
 
 ## Overview

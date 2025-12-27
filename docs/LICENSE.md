@@ -3,6 +3,7 @@ layout: default
 title: License
 permalink: /LICENSE/
 ---
+
 MIT License
 
 Copyright (c) 2025 Jaime Terrats

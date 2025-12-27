@@ -1276,7 +1276,10 @@ public inherited sharing class JT_DataSelector {
     );
 
     // Build dynamic query removing conditions for empty/missing bindings
-    String dynamicQuery = buildDynamicQuery(config.JT_BaseQuery__c, mergedBindings);
+    String dynamicQuery = buildDynamicQuery(
+      config.JT_BaseQuery__c,
+      mergedBindings
+    );
 
     // Validate and convert bindings (auto-detect types from query patterns)
     // Only include bindings that are actually used in the dynamic query

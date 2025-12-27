@@ -3,6 +3,7 @@ layout: default
 title: Features v2.0
 permalink: /FEATURES_v2/
 ---
+
 # Features Documentation - v2.0
 
 ## 🎨 User Interface Components

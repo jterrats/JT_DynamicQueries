@@ -1672,11 +1672,15 @@ public with sharing class JT_MetadataCreator {
           deployStatus = (String) deployResult.get('status');
           Object doneObj = deployResult.get('done');
           if (doneObj != null) {
-            done = doneObj instanceof Boolean ? (Boolean) doneObj : Boolean.valueOf(String.valueOf(doneObj));
+            done = doneObj instanceof Boolean
+              ? (Boolean) doneObj
+              : Boolean.valueOf(String.valueOf(doneObj));
           }
           Object successObj = deployResult.get('success');
           if (successObj != null) {
-            success = successObj instanceof Boolean ? (Boolean) successObj : Boolean.valueOf(String.valueOf(successObj));
+            success = successObj instanceof Boolean
+              ? (Boolean) successObj
+              : Boolean.valueOf(String.valueOf(successObj));
           }
         }
 
@@ -1687,13 +1691,17 @@ public with sharing class JT_MetadataCreator {
         if (done == null) {
           Object doneObj = responseMap.get('done');
           if (doneObj != null) {
-            done = doneObj instanceof Boolean ? (Boolean) doneObj : Boolean.valueOf(String.valueOf(doneObj));
+            done = doneObj instanceof Boolean
+              ? (Boolean) doneObj
+              : Boolean.valueOf(String.valueOf(doneObj));
           }
         }
         if (success == null) {
           Object successObj = responseMap.get('success');
           if (successObj != null) {
-            success = successObj instanceof Boolean ? (Boolean) successObj : Boolean.valueOf(String.valueOf(successObj));
+            success = successObj instanceof Boolean
+              ? (Boolean) successObj
+              : Boolean.valueOf(String.valueOf(successObj));
           }
         }
 

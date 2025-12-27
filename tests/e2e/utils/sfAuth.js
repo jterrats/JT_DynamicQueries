@@ -79,11 +79,19 @@ function getSFSession() {
           });
         } catch (finalError) {
           // If all attempts fail, check if it's a permission error
-          const errorMsg = finalError.message || retryError.message || execError.message || "";
-          if (errorMsg.includes("EPERM") || errorMsg.includes("operation not permitted")) {
+          const errorMsg =
+            finalError.message || retryError.message || execError.message || "";
+          if (
+            errorMsg.includes("EPERM") ||
+            errorMsg.includes("operation not permitted")
+          ) {
             console.warn("⚠️  SF CLI log file permission error detected.");
-            console.warn("💡 This is a known issue with SF CLI log file permissions.");
-            console.warn("💡 The tests may still work if SF CLI can read the org info from cache.");
+            console.warn(
+              "💡 This is a known issue with SF CLI log file permissions."
+            );
+            console.warn(
+              "💡 The tests may still work if SF CLI can read the org info from cache."
+            );
             throw new Error(
               "SF CLI log file permission error. Please check permissions on ~/.sf directory or run: chmod 755 ~/.sf"
             );

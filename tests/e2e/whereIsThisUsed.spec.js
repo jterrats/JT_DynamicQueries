@@ -16,23 +16,29 @@ const {
  */
 async function closeUsageModal(page) {
   // Wait for modal to finish loading (spinner disappears)
-  await page.waitForSelector("c-jt-usage-modal lightning-spinner", {
-    state: "hidden",
-    timeout: 30000
-  }).catch(() => {
-    // Spinner may already be gone, continue
-  });
+  await page
+    .waitForSelector("c-jt-usage-modal lightning-spinner", {
+      state: "hidden",
+      timeout: 30000
+    })
+    .catch(() => {
+      // Spinner may already be gone, continue
+    });
 
   // Wait a bit for modal to fully render before closing
   await page.waitForTimeout(2000);
 
   // Try footer button first (lightning-button)
-  let closeButton = page.locator('c-jt-usage-modal lightning-button').first();
-  let buttonVisible = await closeButton.isVisible({ timeout: 5000 }).catch(() => false);
+  let closeButton = page.locator("c-jt-usage-modal lightning-button").first();
+  let buttonVisible = await closeButton
+    .isVisible({ timeout: 5000 })
+    .catch(() => false);
 
   if (buttonVisible) {
     // Check if button is disabled
-    const isDisabled = await closeButton.getAttribute("disabled").catch(() => null);
+    const isDisabled = await closeButton
+      .getAttribute("disabled")
+      .catch(() => null);
     if (!isDisabled) {
       await closeButton.click({ timeout: 10000 });
       return;
@@ -40,11 +46,17 @@ async function closeUsageModal(page) {
   }
 
   // Fallback to header close button
-  closeButton = page.locator('c-jt-usage-modal button.slds-modal__close').first();
-  buttonVisible = await closeButton.isVisible({ timeout: 5000 }).catch(() => false);
+  closeButton = page
+    .locator("c-jt-usage-modal button.slds-modal__close")
+    .first();
+  buttonVisible = await closeButton
+    .isVisible({ timeout: 5000 })
+    .catch(() => false);
 
   if (buttonVisible) {
-    const isDisabled = await closeButton.getAttribute("disabled").catch(() => null);
+    const isDisabled = await closeButton
+      .getAttribute("disabled")
+      .catch(() => null);
     if (!isDisabled) {
       await closeButton.click({ timeout: 10000 });
       return;
@@ -99,12 +111,14 @@ test.describe("Where is this used? - Usage Detection", () => {
     await page.waitForTimeout(20000);
 
     // Wait for spinner to disappear before interacting with modal
-    await page.waitForSelector(".usage-search-spinner-overlay", {
-      state: "hidden",
-      timeout: 25000
-    }).catch(() => {
-      // Spinner may already be gone, continue
-    });
+    await page
+      .waitForSelector(".usage-search-spinner-overlay", {
+        state: "hidden",
+        timeout: 25000
+      })
+      .catch(() => {
+        // Spinner may already be gone, continue
+      });
 
     // Verify that JT_AccountReportExample appears in results
     const modalContent = page.locator("c-jt-usage-modal");
@@ -123,9 +137,9 @@ test.describe("Where is this used? - Usage Detection", () => {
     await expect(metadataType).toBeVisible({ timeout: 20000 });
 
     // Verify method name appears (searchAccountsByName or searchAccountsForLWC)
-    const methodReference = modalContent.locator(
-      "text=/searchAccounts|Account_By_Name/i"
-    ).first();
+    const methodReference = modalContent
+      .locator("text=/searchAccounts|Account_By_Name/i")
+      .first();
     await expect(methodReference).toBeVisible({ timeout: 20000 });
 
     // Close modal using helper function
@@ -150,12 +164,14 @@ test.describe("Where is this used? - Usage Detection", () => {
     await page.waitForTimeout(20000);
 
     // Wait for spinner to disappear before interacting with modal
-    await page.waitForSelector(".usage-search-spinner-overlay", {
-      state: "hidden",
-      timeout: 25000
-    }).catch(() => {
-      // Spinner may already be gone, continue
-    });
+    await page
+      .waitForSelector(".usage-search-spinner-overlay", {
+        state: "hidden",
+        timeout: 25000
+      })
+      .catch(() => {
+        // Spinner may already be gone, continue
+      });
 
     // Verify JT_AccountReportExample with getAccountsByTypeAndIndustry method
     const modalContent = page.locator("c-jt-usage-modal");
@@ -166,9 +182,9 @@ test.describe("Where is this used? - Usage Detection", () => {
 
     await expect(apexClassUsage).toBeVisible({ timeout: 20000 });
 
-    const methodReference = modalContent.locator(
-      "text=/getAccountsByTypeAndIndustry|Dynamic_Input_Test/i"
-    ).first();
+    const methodReference = modalContent
+      .locator("text=/getAccountsByTypeAndIndustry|Dynamic_Input_Test/i")
+      .first();
     await expect(methodReference).toBeVisible({ timeout: 20000 });
 
     // Close modal using helper function
@@ -193,12 +209,14 @@ test.describe("Where is this used? - Usage Detection", () => {
     await page.waitForTimeout(20000);
 
     // Wait for spinner to disappear before interacting with modal
-    await page.waitForSelector(".usage-search-spinner-overlay", {
-      state: "hidden",
-      timeout: 25000
-    }).catch(() => {
-      // Spinner may already be gone, continue
-    });
+    await page
+      .waitForSelector(".usage-search-spinner-overlay", {
+        state: "hidden",
+        timeout: 25000
+      })
+      .catch(() => {
+        // Spinner may already be gone, continue
+      });
 
     const modalContent = page.locator("c-jt-usage-modal");
     // Use .first() to avoid strict mode violation (may match both class and test class)
@@ -209,9 +227,11 @@ test.describe("Where is this used? - Usage Detection", () => {
     await expect(apexClassUsage).toBeVisible({ timeout: 20000 });
 
     // Should find getCustomer360View or getAllCustomersForAnalysis methods
-    const methodReference = modalContent.locator(
-      "text=/getCustomer360View|getAllCustomersForAnalysis|Complete_Customer_360_View/i"
-    ).first();
+    const methodReference = modalContent
+      .locator(
+        "text=/getCustomer360View|getAllCustomersForAnalysis|Complete_Customer_360_View/i"
+      )
+      .first();
     await expect(methodReference).toBeVisible({ timeout: 20000 });
 
     // Close modal using helper function
@@ -239,17 +259,21 @@ test.describe("Where is this used? - Usage Detection", () => {
     await page.waitForTimeout(20000);
 
     // Wait for spinner to disappear before interacting with modal
-    await page.waitForSelector(".usage-search-spinner-overlay", {
-      state: "hidden",
-      timeout: 25000
-    }).catch(() => {
-      // Spinner may already be gone, continue
-    });
+    await page
+      .waitForSelector(".usage-search-spinner-overlay", {
+        state: "hidden",
+        timeout: 25000
+      })
+      .catch(() => {
+        // Spinner may already be gone, continue
+      });
 
     const modalContent = page.locator("c-jt-usage-modal");
 
     // Check if Flow appears (may be in Draft, so this is informational)
-    const flowUsage = modalContent.locator("text=/JT_Account_Report_Flow/i").first();
+    const flowUsage = modalContent
+      .locator("text=/JT_Account_Report_Flow/i")
+      .first();
     const flowExists = await flowUsage.isVisible().catch(() => false);
 
     if (flowExists) {
@@ -293,39 +317,56 @@ test.describe("Where is this used? - Usage Detection", () => {
     await page.waitForTimeout(20000);
 
     // Wait for spinner to disappear before interacting with modal
-    await page.waitForSelector(".usage-search-spinner-overlay", {
-      state: "hidden",
-      timeout: 25000
-    }).catch(() => {
-      // Spinner may already be gone, continue
-    });
+    await page
+      .waitForSelector(".usage-search-spinner-overlay", {
+        state: "hidden",
+        timeout: 25000
+      })
+      .catch(() => {
+        // Spinner may already be gone, continue
+      });
 
     const modalContent = page.locator("c-jt-usage-modal");
 
     // Wait for loading to complete
-    await page.waitForSelector("c-jt-usage-modal lightning-spinner", {
-      state: "hidden",
-      timeout: 30000
-    }).catch(() => {
-      // Spinner may already be gone, continue
-    });
+    await page
+      .waitForSelector("c-jt-usage-modal lightning-spinner", {
+        state: "hidden",
+        timeout: 30000
+      })
+      .catch(() => {
+        // Spinner may already be gone, continue
+      });
 
     // Check if there's a table (means there ARE usages)
-    const hasTable = await modalContent.locator('table').isVisible({ timeout: 5000 }).catch(() => false);
-    
+    const hasTable = await modalContent
+      .locator("table")
+      .isVisible({ timeout: 5000 })
+      .catch(() => false);
+
     if (hasTable) {
       // Configuration has usages - verify they're displayed correctly
-      const tableRows = await modalContent.locator('table tbody tr').count();
+      const tableRows = await modalContent.locator("table tbody tr").count();
       expect(tableRows).toBeGreaterThan(0);
-      console.log(`✅ Configuration has ${tableRows} usage(s) - verified display`);
+      console.log(
+        `✅ Configuration has ${tableRows} usage(s) - verified display`
+      );
     } else {
       // No usages - verify "No usage found" message appears
-      const noUsageHeading = modalContent.locator('p.slds-text-heading_medium').filter({ hasText: /No usage found/i });
-      const noUsageIcon = modalContent.locator('lightning-icon[icon-name="utility:search"]');
-      
-      const hasNoUsageHeading = await noUsageHeading.isVisible({ timeout: 30000 }).catch(() => false);
-      const hasNoUsageIcon = await noUsageIcon.isVisible({ timeout: 30000 }).catch(() => false);
-      
+      const noUsageHeading = modalContent
+        .locator("p.slds-text-heading_medium")
+        .filter({ hasText: /No usage found/i });
+      const noUsageIcon = modalContent.locator(
+        'lightning-icon[icon-name="utility:search"]'
+      );
+
+      const hasNoUsageHeading = await noUsageHeading
+        .isVisible({ timeout: 30000 })
+        .catch(() => false);
+      const hasNoUsageIcon = await noUsageIcon
+        .isVisible({ timeout: 30000 })
+        .catch(() => false);
+
       // At least one indicator should be present
       expect(hasNoUsageHeading || hasNoUsageIcon).toBe(true);
       console.log("✅ 'No usage found' message displayed correctly");
@@ -351,21 +392,25 @@ test.describe("Where is this used? - Usage Detection", () => {
     await page.waitForTimeout(20000);
 
     // Wait for spinner to disappear before interacting with modal
-    await page.waitForSelector(".usage-search-spinner-overlay", {
-      state: "hidden",
-      timeout: 25000
-    }).catch(() => {
-      // Spinner may already be gone, continue
-    });
+    await page
+      .waitForSelector(".usage-search-spinner-overlay", {
+        state: "hidden",
+        timeout: 25000
+      })
+      .catch(() => {
+        // Spinner may already be gone, continue
+      });
 
     const modalContent = page.locator("c-jt-usage-modal");
 
     // Verify modal shows usage count (may be in header summary or table)
     // The header shows: "Found X reference(s)" or "No usage found"
-    const usageCountInHeader = modalContent.locator('p.slds-text-body_small').filter({ hasText: /\\d+.*reference|found/i });
-    const usageCountInTable = modalContent.locator('table tbody tr');
-    const hasTable = await usageCountInTable.count() > 0;
-    
+    const usageCountInHeader = modalContent
+      .locator("p.slds-text-body_small")
+      .filter({ hasText: /\\d+.*reference|found/i });
+    const usageCountInTable = modalContent.locator("table tbody tr");
+    const hasTable = (await usageCountInTable.count()) > 0;
+
     // At least one should be present
     if (hasTable) {
       // If table exists, verify it has rows
@@ -374,7 +419,9 @@ test.describe("Where is this used? - Usage Detection", () => {
       console.log(`✅ Found ${rowCount} usage(s) in table`);
     } else {
       // Check header for count
-      const headerText = await usageCountInHeader.textContent({ timeout: 20000 }).catch(() => "");
+      const headerText = await usageCountInHeader
+        .textContent({ timeout: 20000 })
+        .catch(() => "");
       expect(headerText).toMatch(/\\d+.*reference|found/i);
       console.log(`✅ Found usage count in header: "${headerText}"`);
     }

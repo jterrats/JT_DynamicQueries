@@ -2019,7 +2019,6 @@ export default class JtQueryViewer extends LightningElement {
       configDataForApex = configData;
     }
 
-
     // Ensure configDataForApex is a plain object (not already a string)
     if (typeof configDataForApex === "string") {
       showErrorToast(
@@ -2356,7 +2355,6 @@ export default class JtQueryViewer extends LightningElement {
         const delay = initialDelay * attempt; // Exponential backoff: 500ms, 1000ms, 1500ms
 
         setTimeout(() => {
-
           refreshApex(this.wiredConfigurationsResult)
             .then(() => {
               // Wait a bit for wire to update after refreshApex completes

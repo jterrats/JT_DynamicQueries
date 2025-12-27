@@ -287,10 +287,12 @@ public class JT_MetadataApiSoap {
               result.message,
               null,
               'JT_MetadataApiSoap.parseDeployResponse',
-              JSON.serialize(new Map<String, Object>{
-                'faultCode' => faultCodeText,
-                'faultString' => faultStringText
-              }),
+              JSON.serialize(
+                new Map<String, Object>{
+                  'faultCode' => faultCodeText,
+                  'faultString' => faultStringText
+                }
+              ),
               'High'
             );
             return result;
@@ -312,9 +314,11 @@ public class JT_MetadataApiSoap {
             errorMsg,
             null,
             'JT_MetadataApiSoap.parseDeployResponse',
-            JSON.serialize(new Map<String, Object>{
-              'availableChildren' => getChildElementNames(envelope)
-            }),
+            JSON.serialize(
+              new Map<String, Object>{
+                'availableChildren' => getChildElementNames(envelope)
+              }
+            ),
             'High'
           );
           result.message = errorMsg;
@@ -340,9 +344,11 @@ public class JT_MetadataApiSoap {
             errorMsg,
             null,
             'JT_MetadataApiSoap.parseDeployResponse',
-            JSON.serialize(new Map<String, Object>{
-              'availableChildren' => getChildElementNames(body)
-            }),
+            JSON.serialize(
+              new Map<String, Object>{
+                'availableChildren' => getChildElementNames(body)
+              }
+            ),
             'High'
           );
           result.message = errorMsg;
@@ -367,9 +373,11 @@ public class JT_MetadataApiSoap {
             errorMsg,
             null,
             'JT_MetadataApiSoap.parseDeployResponse',
-            JSON.serialize(new Map<String, Object>{
-              'availableChildren' => getChildElementNames(deployResponse)
-            }),
+            JSON.serialize(
+              new Map<String, Object>{
+                'availableChildren' => getChildElementNames(deployResponse)
+              }
+            ),
             'High'
           );
           result.message = errorMsg;
@@ -505,10 +513,12 @@ public class JT_MetadataApiSoap {
             errorMsg,
             null,
             'JT_MetadataApiSoap.parseDeleteMetadataResponse',
-            JSON.serialize(new Map<String, Object>{
-              'availableChildren' => getChildElementNames(envelope),
-              'statusCode' => statusCode
-            }),
+            JSON.serialize(
+              new Map<String, Object>{
+                'availableChildren' => getChildElementNames(envelope),
+                'statusCode' => statusCode
+              }
+            ),
             'High'
           );
           JT_MetadataApiSoap.DeleteResult errorResult = new JT_MetadataApiSoap.DeleteResult();
@@ -576,10 +586,12 @@ public class JT_MetadataApiSoap {
             errorMsg,
             null,
             'JT_MetadataApiSoap.parseDeleteMetadataResponse',
-            JSON.serialize(new Map<String, Object>{
-              'availableChildren' => getChildElementNames(body),
-              'statusCode' => statusCode
-            }),
+            JSON.serialize(
+              new Map<String, Object>{
+                'availableChildren' => getChildElementNames(body),
+                'statusCode' => statusCode
+              }
+            ),
             'High'
           );
           JT_MetadataApiSoap.DeleteResult errorResult = new JT_MetadataApiSoap.DeleteResult();
@@ -608,10 +620,12 @@ public class JT_MetadataApiSoap {
             errorMsg,
             null,
             'JT_MetadataApiSoap.parseDeleteMetadataResponse',
-            JSON.serialize(new Map<String, Object>{
-              'availableChildren' => getChildElementNames(deleteResponse),
-              'statusCode' => statusCode
-            }),
+            JSON.serialize(
+              new Map<String, Object>{
+                'availableChildren' => getChildElementNames(deleteResponse),
+                'statusCode' => statusCode
+              }
+            ),
             'High'
           );
           JT_MetadataApiSoap.DeleteResult errorResult = new JT_MetadataApiSoap.DeleteResult();
@@ -673,16 +687,21 @@ public class JT_MetadataApiSoap {
           results.add(deleteResult);
         }
       } catch (Exception e) {
-        String errorMsg = 'Error parsing deleteMetadata SOAP response: ' + e.getMessage();
+        String errorMsg =
+          'Error parsing deleteMetadata SOAP response: ' + e.getMessage();
         JT_ErrorLogger.logError(
           'SOAP Parse Exception',
           errorMsg,
           e,
           'JT_MetadataApiSoap.parseDeleteMetadataResponse',
-          JSON.serialize(new Map<String, Object>{
-            'statusCode' => statusCode,
-            'responseLength' => soapResponse != null ? soapResponse.length() : 0
-          }),
+          JSON.serialize(
+            new Map<String, Object>{
+              'statusCode' => statusCode,
+              'responseLength' => soapResponse != null
+                ? soapResponse.length()
+                : 0
+            }
+          ),
           'High'
         );
         JT_MetadataApiSoap.DeleteResult errorResult = new JT_MetadataApiSoap.DeleteResult();

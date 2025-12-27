@@ -361,7 +361,9 @@ test.describe("Output Validation Tests", () => {
     if (!errorVisible) {
       // Check if error is shown in component's error state
       const queryViewer = page.locator("c-jt-query-viewer");
-      const componentText = await queryViewer.textContent({ timeout: 5000 }).catch(() => "");
+      const componentText = await queryViewer
+        .textContent({ timeout: 5000 })
+        .catch(() => "");
 
       // If BETWEEN is not in this query, test NOT LIKE instead
       if (componentText.toLowerCase().includes("between")) {
@@ -369,52 +371,78 @@ test.describe("Output Validation Tests", () => {
         console.log("✅ BETWEEN error found in component text");
       } else {
         // This query may not use BETWEEN, so test NOT LIKE instead
-        console.log("ℹ️ Complex Mixed Operators may not use BETWEEN operator - testing NOT LIKE instead");
+        console.log(
+          "ℹ️ Complex Mixed Operators may not use BETWEEN operator - testing NOT LIKE instead"
+        );
         await selectConfiguration(page, "NOT Operators Test");
         await executeQuery(page);
         await page.waitForTimeout(3000);
 
         // Wait for error toast or message
         const notLikeErrorVisible = await Promise.race([
-          errorToast.isVisible({ timeout: TIMEOUTS.component * 2 }).then(() => ({ type: "toast", element: errorToast })),
-          errorMessage.isVisible({ timeout: TIMEOUTS.component * 2 }).then(() => ({ type: "message", element: errorMessage }))
+          errorToast
+            .isVisible({ timeout: TIMEOUTS.component * 2 })
+            .then(() => ({ type: "toast", element: errorToast })),
+          errorMessage
+            .isVisible({ timeout: TIMEOUTS.component * 2 })
+            .then(() => ({ type: "message", element: errorMessage }))
         ]).catch(() => null);
-        
+
         if (notLikeErrorVisible) {
           // Try to get text immediately before it disappears
           let errorText = "";
           try {
             // First check if element is still visible
-            const isStillVisible = await notLikeErrorVisible.element.isVisible({ timeout: 2000 }).catch(() => false);
+            const isStillVisible = await notLikeErrorVisible.element
+              .isVisible({ timeout: 2000 })
+              .catch(() => false);
             if (isStillVisible) {
-              errorText = await notLikeErrorVisible.element.textContent({ timeout: 5000 }).catch(() => "");
+              errorText = await notLikeErrorVisible.element
+                .textContent({ timeout: 5000 })
+                .catch(() => "");
             } else {
               // Element disappeared - try to get text from page source or component
               const queryViewer = page.locator("c-jt-query-viewer");
-              const componentText = await queryViewer.textContent({ timeout: 5000 }).catch(() => "");
-              if (componentText.toLowerCase().includes("not like") || componentText.toLowerCase().includes("not supported")) {
+              const componentText = await queryViewer
+                .textContent({ timeout: 5000 })
+                .catch(() => "");
+              if (
+                componentText.toLowerCase().includes("not like") ||
+                componentText.toLowerCase().includes("not supported")
+              ) {
                 errorText = componentText;
               }
             }
           } catch (e) {
             // Element may have disappeared - check component instead
             const queryViewer = page.locator("c-jt-query-viewer");
-            const componentText = await queryViewer.textContent({ timeout: 5000 }).catch(() => "");
-            if (componentText.toLowerCase().includes("not like") || componentText.toLowerCase().includes("not supported")) {
+            const componentText = await queryViewer
+              .textContent({ timeout: 5000 })
+              .catch(() => "");
+            if (
+              componentText.toLowerCase().includes("not like") ||
+              componentText.toLowerCase().includes("not supported")
+            ) {
               errorText = componentText;
             }
           }
-          
+
           if (errorText && errorText.length > 0) {
-            expect(errorText.toLowerCase()).toMatch(/not.*like|not supported|unsupported/i);
+            expect(errorText.toLowerCase()).toMatch(
+              /not.*like|not supported|unsupported/i
+            );
             console.log("✅ NOT LIKE error validated instead");
           } else {
             // Error was visible but couldn't get text - this is acceptable
-            console.log("ℹ️ Error toast appeared but text unavailable - query validation successful");
+            console.log(
+              "ℹ️ Error toast appeared but text unavailable - query validation successful"
+            );
           }
         } else {
           // No error found - query may execute successfully
-          console.log("ℹ️ No error message found - query may execute successfully without unsupported operators");
+          console.log(
+            "ℹ️ No error message found - query may execute successfully without unsupported operators"
+          );
           // This is acceptable - test passes if no error appears
         }
       }
@@ -422,7 +450,9 @@ test.describe("Output Validation Tests", () => {
       // ✅ Validate error message contains "BETWEEN" or other operator
       // Wait a bit for text to be available
       await page.waitForTimeout(1000);
-      const errorText = await errorVisible.element.textContent({ timeout: 10000 }).catch(() => "");
+      const errorText = await errorVisible.element
+        .textContent({ timeout: 10000 })
+        .catch(() => "");
       const lowerText = errorText.toLowerCase();
 
       // Check for BETWEEN or other operator errors
@@ -435,17 +465,26 @@ test.describe("Output Validation Tests", () => {
       } else if (lowerText.length > 0) {
         // Different operator error - just verify it's a valid error message
         expect(lowerText.length).toBeGreaterThan(0);
-        console.log(`✅ Error message found (may be different operator): "${errorText.substring(0, 100)}..."`);
+        console.log(
+          `✅ Error message found (may be different operator): "${errorText.substring(0, 100)}..."`
+        );
       } else {
         // Error element exists but has no text - check component text instead
         const queryViewer = page.locator("c-jt-query-viewer");
-        const componentText = await queryViewer.textContent({ timeout: 5000 }).catch(() => "");
-        if (componentText.toLowerCase().includes("between") || componentText.toLowerCase().includes("not supported")) {
+        const componentText = await queryViewer
+          .textContent({ timeout: 5000 })
+          .catch(() => "");
+        if (
+          componentText.toLowerCase().includes("between") ||
+          componentText.toLowerCase().includes("not supported")
+        ) {
           console.log("✅ Error found in component text");
           expect(componentText.length).toBeGreaterThan(0);
         } else {
           // No error text found - this is acceptable if query doesn't use unsupported operators
-          console.log("ℹ️ No error text found - query may not use unsupported operators");
+          console.log(
+            "ℹ️ No error text found - query may not use unsupported operators"
+          );
         }
       }
     }
@@ -471,30 +510,49 @@ test.describe("Output Validation Tests", () => {
       let notLikeErrorText = "";
       try {
         // First check if element is still visible
-        const isStillVisible = await notLikeErrorVisible.element.isVisible({ timeout: 2000 }).catch(() => false);
+        const isStillVisible = await notLikeErrorVisible.element
+          .isVisible({ timeout: 2000 })
+          .catch(() => false);
         if (isStillVisible) {
-          notLikeErrorText = await notLikeErrorVisible.element.textContent({ timeout: 5000 }).catch(() => "");
+          notLikeErrorText = await notLikeErrorVisible.element
+            .textContent({ timeout: 5000 })
+            .catch(() => "");
         } else {
           // Element disappeared - try to get text from component
           const queryViewer = page.locator("c-jt-query-viewer");
-          const componentText = await queryViewer.textContent({ timeout: 5000 }).catch(() => "");
-          if (componentText.toLowerCase().includes("not like") || componentText.toLowerCase().includes("not supported")) {
+          const componentText = await queryViewer
+            .textContent({ timeout: 5000 })
+            .catch(() => "");
+          if (
+            componentText.toLowerCase().includes("not like") ||
+            componentText.toLowerCase().includes("not supported")
+          ) {
             notLikeErrorText = componentText;
           }
         }
       } catch (e) {
         // Element may have disappeared - check component instead
         const queryViewer = page.locator("c-jt-query-viewer");
-        const componentText = await queryViewer.textContent({ timeout: 5000 }).catch(() => "");
-        if (componentText.toLowerCase().includes("not like") || componentText.toLowerCase().includes("not supported")) {
+        const componentText = await queryViewer
+          .textContent({ timeout: 5000 })
+          .catch(() => "");
+        if (
+          componentText.toLowerCase().includes("not like") ||
+          componentText.toLowerCase().includes("not supported")
+        ) {
           notLikeErrorText = componentText;
         }
       }
-      
+
       if (notLikeErrorText && notLikeErrorText.length > 0) {
         const lowerText = notLikeErrorText.toLowerCase();
         // Check if this is an error message or just component text
-        if (lowerText.includes("not like") && (lowerText.includes("not supported") || lowerText.includes("unsupported") || lowerText.includes("error"))) {
+        if (
+          lowerText.includes("not like") &&
+          (lowerText.includes("not supported") ||
+            lowerText.includes("unsupported") ||
+            lowerText.includes("error"))
+        ) {
           // This is an error message
           expect(lowerText).toContain("not like");
           expect(lowerText).toMatch(/not supported|unsupported|error/i);
@@ -503,19 +561,27 @@ test.describe("Output Validation Tests", () => {
           );
         } else if (lowerText.includes("not like")) {
           // Component text contains "not like" but no error - operator is supported
-          console.log("ℹ️ NOT LIKE operator is supported (no error) - query validation successful");
+          console.log(
+            "ℹ️ NOT LIKE operator is supported (no error) - query validation successful"
+          );
         } else {
           // Error was visible but couldn't get meaningful text
-          console.log("ℹ️ Error toast appeared but text unavailable - query validation successful");
+          console.log(
+            "ℹ️ Error toast appeared but text unavailable - query validation successful"
+          );
         }
       } else {
         // Error was visible but couldn't get text - this is acceptable
-        console.log("ℹ️ Error toast appeared but text unavailable - query validation successful");
+        console.log(
+          "ℹ️ Error toast appeared but text unavailable - query validation successful"
+        );
       }
     } else {
       // Check component text as fallback
       const queryViewer = page.locator("c-jt-query-viewer");
-      const componentText = await queryViewer.textContent({ timeout: 5000 }).catch(() => "");
+      const componentText = await queryViewer
+        .textContent({ timeout: 5000 })
+        .catch(() => "");
       expect(componentText.toLowerCase()).toContain("not like");
       console.log("✅ NOT LIKE error found in component text");
     }

@@ -1022,7 +1022,9 @@ public with sharing class JT_QueryViewerController {
       // Pattern to match field names that suggest boolean (Is*, Has*, Can*, etc.)
       // Match: iscustomerportal = :isportal or iscustomerportal=:isportal
       Pattern boolFieldPattern = Pattern.compile(
-        '\\b(is|has|can|should|will|was|were|did|does|contains|includes|enabled|disabled|active|inactive|visible|hidden|required|optional)[a-z0-9_]*\\s*[=!]?=\\s*' + escapedPattern + '\\b'
+        '\\b(is|has|can|should|will|was|were|did|does|contains|includes|enabled|disabled|active|inactive|visible|hidden|required|optional)[a-z0-9_]*\\s*[=!]?=\\s*' +
+          escapedPattern +
+          '\\b'
       );
       Matcher boolFieldMatcher = boolFieldPattern.matcher(normalizedQuery);
       if (boolFieldMatcher.find()) {
@@ -1036,9 +1038,17 @@ public with sharing class JT_QueryViewerController {
         return value; // Already boolean from JavaScript
       } else if (value instanceof String) {
         String trimmedValue = ((String) value).trim().toLowerCase();
-        if (trimmedValue == 'true' || trimmedValue == '1' || trimmedValue == 'yes') {
+        if (
+          trimmedValue == 'true' ||
+          trimmedValue == '1' ||
+          trimmedValue == 'yes'
+        ) {
           return true;
-        } else if (trimmedValue == 'false' || trimmedValue == '0' || trimmedValue == 'no') {
+        } else if (
+          trimmedValue == 'false' ||
+          trimmedValue == '0' ||
+          trimmedValue == 'no'
+        ) {
           return false;
         }
         // If string is not "true" or "false", return as-is (might be field name or other value)
@@ -1054,14 +1064,24 @@ public with sharing class JT_QueryViewerController {
       // Check if field name suggests boolean (starts with Is, Has, Can, etc.)
       // Look for field name before the binding in the WHERE clause
       Pattern boolFieldCheck = Pattern.compile(
-        '\\b(is|has|can|should|will|was|were|did|does|contains|includes|enabled|disabled|active|inactive|visible|hidden|required|optional)[a-z0-9_]*\\s*[=!]?=\\s*' + escapedPattern + '\\b'
+        '\\b(is|has|can|should|will|was|were|did|does|contains|includes|enabled|disabled|active|inactive|visible|hidden|required|optional)[a-z0-9_]*\\s*[=!]?=\\s*' +
+          escapedPattern +
+          '\\b'
       );
       Matcher boolFieldCheckMatcher = boolFieldCheck.matcher(normalizedQuery);
       if (boolFieldCheckMatcher.find()) {
         // Field name suggests boolean, convert string to boolean
-        if (trimmedValue == 'true' || trimmedValue == '1' || trimmedValue == 'yes') {
+        if (
+          trimmedValue == 'true' ||
+          trimmedValue == '1' ||
+          trimmedValue == 'yes'
+        ) {
           return true;
-        } else if (trimmedValue == 'false' || trimmedValue == '0' || trimmedValue == 'no') {
+        } else if (
+          trimmedValue == 'false' ||
+          trimmedValue == '0' ||
+          trimmedValue == 'no'
+        ) {
           return false;
         }
       }

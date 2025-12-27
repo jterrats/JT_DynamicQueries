@@ -3,6 +3,7 @@ layout: default
 title: V3.0 Roadmap
 permalink: /V3_ROADMAP/
 ---
+
 # 🚀 JT Dynamic Queries v3.0 Roadmap
 
 ## 📊 Overview

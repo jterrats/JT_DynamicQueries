@@ -3,6 +3,7 @@ layout: default
 title: Translation Workbench
 permalink: /TRANSLATION_WORKBENCH/
 ---
+
 # Translation Workbench Configuration
 
 ## Status: ✅ ENABLED

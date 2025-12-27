@@ -42,7 +42,9 @@ async function setupTestContext(page, session, options = {}) {
         });
 
       // Also wait for our custom spinners
-      const customSpinner = page.locator(".usage-search-spinner-overlay, .deletion-spinner-overlay, .initial-loading-overlay");
+      const customSpinner = page.locator(
+        ".usage-search-spinner-overlay, .deletion-spinner-overlay, .initial-loading-overlay"
+      );
       await customSpinner
         .waitFor({ state: "hidden", timeout: 10000 })
         .catch(() => {
@@ -58,27 +60,41 @@ async function setupTestContext(page, session, options = {}) {
       for (let i = 0; i < 5; i++) {
         try {
           // Wait for spinner to be gone before each attempt
-          await modalSpinner.waitFor({ state: "hidden", timeout: 5000 }).catch(() => {});
-          await customSpinner.waitFor({ state: "hidden", timeout: 3000 }).catch(() => {});
+          await modalSpinner
+            .waitFor({ state: "hidden", timeout: 5000 })
+            .catch(() => {});
+          await customSpinner
+            .waitFor({ state: "hidden", timeout: 3000 })
+            .catch(() => {});
           await page.waitForTimeout(500); // Small delay between attempts
-          
+
           await tabLink.click({ timeout: 15000, force: i >= 3 }); // Force on last 2 attempts
           clickSuccess = true;
           break;
         } catch (error) {
-          if (error.message.includes("intercepts pointer events") || error.message.includes("modal-glass") || error.message.includes("forceModalSpinner")) {
+          if (
+            error.message.includes("intercepts pointer events") ||
+            error.message.includes("modal-glass") ||
+            error.message.includes("forceModalSpinner")
+          ) {
             // Wait longer for spinner to disappear
             await page.waitForTimeout(2000);
-            await modalSpinner.waitFor({ state: "hidden", timeout: 10000 }).catch(() => {});
-            await customSpinner.waitFor({ state: "hidden", timeout: 5000 }).catch(() => {});
+            await modalSpinner
+              .waitFor({ state: "hidden", timeout: 10000 })
+              .catch(() => {});
+            await customSpinner
+              .waitFor({ state: "hidden", timeout: 5000 })
+              .catch(() => {});
           } else {
             throw error;
           }
         }
       }
-      
+
       if (!clickSuccess) {
-        throw new Error("Failed to click tab after 5 retries - spinner may be blocking");
+        throw new Error(
+          "Failed to click tab after 5 retries - spinner may be blocking"
+        );
       }
       await page.waitForLoadState("domcontentloaded");
 

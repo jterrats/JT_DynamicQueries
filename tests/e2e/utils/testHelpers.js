@@ -40,7 +40,7 @@ async function setupTestContext(page, session, options = {}) {
         .catch(() => {
           // If spinner doesn't exist or already hidden, that's fine
         });
-      
+
       // Also wait for our custom spinners
       const customSpinner = page.locator(".usage-search-spinner-overlay, .deletion-spinner-overlay, .initial-loading-overlay");
       await customSpinner
@@ -52,19 +52,25 @@ async function setupTestContext(page, session, options = {}) {
       // Click on target tab with retry logic for spinner interference
       const tabLink = page.locator(SELECTORS.tabLink(targetTab)).first();
       await tabLink.waitFor({ state: "visible", timeout: 10000 });
-      
-      // Retry click if spinner intercepts
+
+      // Retry click if spinner intercepts - increase retries and wait times
       let clickSuccess = false;
-      for (let i = 0; i < 3; i++) {
+      for (let i = 0; i < 5; i++) {
         try {
-          await tabLink.click({ timeout: 10000, force: i === 2 }); // Force on last attempt
+          // Wait for spinner to be gone before each attempt
+          await modalSpinner.waitFor({ state: "hidden", timeout: 5000 }).catch(() => {});
+          await customSpinner.waitFor({ state: "hidden", timeout: 3000 }).catch(() => {});
+          await page.waitForTimeout(500); // Small delay between attempts
+          
+          await tabLink.click({ timeout: 15000, force: i >= 3 }); // Force on last 2 attempts
           clickSuccess = true;
           break;
         } catch (error) {
-          if (error.message.includes("intercepts pointer events") || error.message.includes("modal-glass")) {
-            // Wait a bit more for spinner to disappear
-            await page.waitForTimeout(1000);
-            await modalSpinner.waitFor({ state: "hidden", timeout: 5000 }).catch(() => {});
+          if (error.message.includes("intercepts pointer events") || error.message.includes("modal-glass") || error.message.includes("forceModalSpinner")) {
+            // Wait longer for spinner to disappear
+            await page.waitForTimeout(2000);
+            await modalSpinner.waitFor({ state: "hidden", timeout: 10000 }).catch(() => {});
+            await customSpinner.waitFor({ state: "hidden", timeout: 5000 }).catch(() => {});
           } else {
             throw error;
           }
@@ -72,7 +78,7 @@ async function setupTestContext(page, session, options = {}) {
       }
       
       if (!clickSuccess) {
-        throw new Error("Failed to click tab after retries - spinner may be blocking");
+        throw new Error("Failed to click tab after 5 retries - spinner may be blocking");
       }
       await page.waitForLoadState("domcontentloaded");
 

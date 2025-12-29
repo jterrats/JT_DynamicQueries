@@ -600,18 +600,18 @@ public with sharing class JT_QueryViewerController {
               LoggingLevel.WARN,
               'COUNT query failed after retry: ' + retryException.getMessage()
             );
-            
+
             // Check if query has WHERE clause with specific filters
-            Boolean hasWhereClause = baseQuery != null && 
+            Boolean hasWhereClause = baseQuery != null &&
               baseQuery.containsIgnoreCase('WHERE') &&
               !baseQuery.containsIgnoreCase('WHERE 1=1') &&
               !baseQuery.containsIgnoreCase('WHERE TRUE');
-            
+
             // Check if bindings are provided and not empty
-            Boolean hasValidBindings = countBindings != null && 
+            Boolean hasValidBindings = countBindings != null &&
               !countBindings.isEmpty() &&
               !hasEmptyRequiredParameters(countBindings);
-            
+
             // If query has WHERE clause with valid bindings, assume low risk
             if (hasWhereClause && hasValidBindings) {
               estimatedCount = 10000; // Medium risk threshold
@@ -644,18 +644,18 @@ public with sharing class JT_QueryViewerController {
             LoggingLevel.WARN,
             'COUNT bindings that failed: ' + JSON.serialize(countBindings)
           );
-          
+
           // Check if query has WHERE clause with specific filters
-          Boolean hasWhereClause = baseQuery != null && 
+          Boolean hasWhereClause = baseQuery != null &&
             baseQuery.containsIgnoreCase('WHERE') &&
             !baseQuery.containsIgnoreCase('WHERE 1=1') &&
             !baseQuery.containsIgnoreCase('WHERE TRUE');
-          
+
           // Check if bindings are provided and not empty
-          Boolean hasValidBindings = countBindings != null && 
+          Boolean hasValidBindings = countBindings != null &&
             !countBindings.isEmpty() &&
             !hasEmptyRequiredParameters(countBindings);
-          
+
           // If query has WHERE clause with valid bindings, assume low risk
           // Otherwise, assume high risk (could be scanning all records)
           if (hasWhereClause && hasValidBindings) {
@@ -728,7 +728,8 @@ public with sharing class JT_QueryViewerController {
     String result = query;
 
     // First, find all bindings referenced in the query
-    Pattern bindingPattern = Pattern.compile(':\\b(\\w+)\\b');
+    // Handle both "=:name" and "=: name" (with optional space after colon)
+    Pattern bindingPattern = Pattern.compile(':\\s*(\\w+)\\b');
     Matcher matcher = bindingPattern.matcher(query);
     Set<String> referencedBindings = new Set<String>();
     while (matcher.find()) {
@@ -789,7 +790,8 @@ public with sharing class JT_QueryViewerController {
         );
         final String escapedValue = escapeBindingValue(convertedValue);
 
-        result = result.replaceAll(':' + key + '\\b', escapedValue);
+        // Replace binding with optional space after colon: ":name" or ": name"
+        result = result.replaceAll(':\\s*' + Pattern.quote(key) + '\\b', escapedValue);
       }
     }
 

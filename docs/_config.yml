@@ -11,6 +11,10 @@ markdown: kramdown
 theme: null
 plugins: []
 
+# Use classic sass converter instead of sass-embedded
+sass:
+  style: compressed
+
 # Exclude from processing
 exclude:
   - node_modules/

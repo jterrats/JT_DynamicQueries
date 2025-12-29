@@ -161,13 +161,28 @@ async function captureHappyPaths() {
     );
 
   try {
-    // Select configuration (slower)
-    await selectConfiguration(page1, "Customer 360");
-    await page1.waitForTimeout(1500);
+    // Select configuration (use label that matches Custom Metadata)
+    await selectConfiguration(page1, "Customer 360 View");
+    await page1.waitForTimeout(2000);
+
+    // Wait for any parameters to appear and fill them if needed
+    const paramInput = page1
+      .locator('lightning-input[data-testid*="parameter"] input')
+      .first();
+    if (await paramInput.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await paramInput.fill("Customer");
+      await page1.waitForTimeout(1000);
+    }
 
     // Execute query (slower)
     await executeQuery(page1);
-    await page1.waitForTimeout(3000);
+    await page1.waitForTimeout(4000); // Wait longer for results
+
+    // Wait for results to appear
+    const resultsSection = page1.locator("c-jt-query-results").first();
+    await resultsSection.waitFor({ state: "visible", timeout: 10000 }).catch(() => {
+      console.log("   ⚠️  Results may not have appeared");
+    });
 
     // Scroll to see results
     await page1.evaluate(() =>
@@ -178,6 +193,9 @@ async function captureHappyPaths() {
     await page1.waitForTimeout(1000);
 
     console.log("   ✅ Basic Query Execution captured");
+  } catch (error) {
+    console.error("   ❌ Error capturing Query Execution:", error.message);
+    throw error;
   } finally {
     await context1.close();
   }
@@ -196,12 +214,21 @@ async function captureHappyPaths() {
 
   try {
     // Select configuration
-    await selectConfiguration(page2, "Customer 360");
-    await page2.waitForTimeout(1500);
+    await selectConfiguration(page2, "Customer 360 View");
+    await page2.waitForTimeout(2000);
+
+    // Wait for any parameters to appear and fill them if needed
+    const paramInput = page2
+      .locator('lightning-input[data-testid*="parameter"] input')
+      .first();
+    if (await paramInput.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await paramInput.fill("Customer");
+      await page2.waitForTimeout(1000);
+    }
 
     // Execute query
     await executeQuery(page2);
-    await page2.waitForTimeout(2000);
+    await page2.waitForTimeout(3000); // Wait longer for results
 
     // Switch to JSON view
     const jsonButton = page2.locator('button:has-text("JSON")').first();
@@ -257,12 +284,21 @@ async function captureHappyPaths() {
 
   try {
     // Select a config that has child relationships (Account usually has Contacts, Opportunities)
-    await selectConfiguration(page3, "Customer 360");
-    await page3.waitForTimeout(1500);
+    await selectConfiguration(page3, "Customer 360 View");
+    await page3.waitForTimeout(2000);
+
+    // Wait for any parameters to appear and fill them if needed
+    const paramInput = page3
+      .locator('lightning-input[data-testid*="parameter"] input')
+      .first();
+    if (await paramInput.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await paramInput.fill("Customer");
+      await page3.waitForTimeout(1000);
+    }
 
     // Execute query
     await executeQuery(page3);
-    await page3.waitForTimeout(2500);
+    await page3.waitForTimeout(3000); // Wait longer for results
 
     // Try to expand first row with children (tree view)
     const expandButton = page3
@@ -366,52 +402,89 @@ async function captureHappyPaths() {
       .locator('button:has-text("New Configuration")')
       .first();
 
-    if (await newConfigButton.isVisible()) {
+    if (await newConfigButton.isVisible({ timeout: 10000 })) {
       await newConfigButton.click();
-      await page5.waitForTimeout(1500);
+      await page5.waitForTimeout(2000); // Wait for modal to fully open
+
+      // Wait for modal to be visible
+      const modal = page5.locator("c-jt-config-modal").first();
+      await modal.waitFor({ state: "visible", timeout: 5000 });
 
       // Fill configuration name
       const nameInput = page5
         .locator('lightning-input[data-field="name"] input')
         .first();
 
-      if (await nameInput.isVisible().catch(() => false)) {
+      if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
         await nameInput.click();
         await page5.waitForTimeout(500);
-        await nameInput.fill("My Custom Query");
-        await page5.waitForTimeout(1200);
+        await nameInput.fill("Demo Query Configuration");
+        await page5.waitForTimeout(1500);
 
-        // Fill object name
-        const objectInput = page5
-          .locator('lightning-input[data-field="object"] input')
+        // Fill base query (this is what the form actually uses)
+        const queryTextarea = page5
+          .locator('lightning-textarea[data-field="query"] textarea')
           .first();
 
-        if (await objectInput.isVisible().catch(() => false)) {
-          await objectInput.click();
+        if (await queryTextarea.isVisible({ timeout: 3000 }).catch(() => false)) {
+          await queryTextarea.click();
           await page5.waitForTimeout(500);
-          await objectInput.fill("Account");
-          await page5.waitForTimeout(1200);
-        }
+          await queryTextarea.fill("SELECT Id, Name, Type, Industry FROM Account LIMIT 10");
+          await page5.waitForTimeout(2000);
 
-        // Show fields selection
-        const fieldsTextarea = page5
-          .locator('lightning-textarea[data-field="fields"] textarea')
-          .first();
+          // Show query preview/validation (if available)
+          const previewButton = page5.locator('button:has-text("Preview")').first();
+          if (await previewButton.isVisible({ timeout: 2000 }).catch(() => false)) {
+            await previewButton.click();
+            await page5.waitForTimeout(2000);
+          }
+        } else {
+          // Fallback: Fill object name if query field doesn't exist
+          const objectInput = page5
+            .locator('lightning-input[data-field="object"] input')
+            .first();
 
-        if (await fieldsTextarea.isVisible().catch(() => false)) {
-          await fieldsTextarea.click();
-          await page5.waitForTimeout(500);
-          await fieldsTextarea.fill("Id, Name, Type, Industry");
-          await page5.waitForTimeout(1500);
+          if (await objectInput.isVisible({ timeout: 3000 }).catch(() => false)) {
+            await objectInput.click();
+            await page5.waitForTimeout(500);
+            await objectInput.fill("Account");
+            await page5.waitForTimeout(1500);
+          }
+
+          // Show fields selection
+          const fieldsTextarea = page5
+            .locator('lightning-textarea[data-field="fields"] textarea')
+            .first();
+
+          if (await fieldsTextarea.isVisible({ timeout: 3000 }).catch(() => false)) {
+            await fieldsTextarea.click();
+            await page5.waitForTimeout(500);
+            await fieldsTextarea.fill("Id, Name, Type, Industry");
+            await page5.waitForTimeout(2000);
+          }
         }
       }
 
+      // Show the form filled out for a moment before closing
+      await page5.waitForTimeout(2000);
+
       // Close modal (don't save - just demo)
-      await page5.keyboard.press("Escape");
-      await page5.waitForTimeout(1000);
+      const closeButton = page5.locator('button:has-text("Cancel"), button.slds-modal__close').first();
+      if (await closeButton.isVisible({ timeout: 2000 }).catch(() => false)) {
+        await closeButton.click();
+      } else {
+        await page5.keyboard.press("Escape");
+      }
+      await page5.waitForTimeout(1500);
+    } else {
+      console.log("   ⚠️  New Configuration button not found (may be in production org)");
+      await page5.waitForTimeout(2000);
     }
 
     console.log("   ✅ Create Configuration captured");
+  } catch (error) {
+    console.error("   ❌ Error capturing Create Configuration:", error.message);
+    // Don't throw - continue with other GIFs
   } finally {
     await context5.close();
   }
@@ -429,9 +502,18 @@ async function captureHappyPaths() {
     );
 
   try {
-    // Select a configuration first
+    // Select a configuration first (use one that works well)
     await selectConfiguration(page6, "Account By Name");
-    await page6.waitForTimeout(1200);
+    await page6.waitForTimeout(2000);
+
+    // Fill parameter first (before opening Run As)
+    const paramInput = page6
+      .locator('lightning-input[data-testid*="parameter"] input')
+      .first();
+    if (await paramInput.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await paramInput.fill("%");
+      await page6.waitForTimeout(1000);
+    }
 
     // Check if Run As section is available (user has permissions)
     const accordionSection = page6
@@ -448,13 +530,13 @@ async function captureHappyPaths() {
 
       if (!isExpanded) {
         await accordionSection.click();
-        await page6.waitForTimeout(1500);
+        await page6.waitForTimeout(2000); // Wait longer for accordion to expand
       }
 
       // Wait for Run As section component to be visible
       const runAsComponent = page6.locator("c-jt-run-as-section").first();
-      await runAsComponent.waitFor({ state: "visible", timeout: 5000 });
-      await page6.waitForTimeout(1000);
+      await runAsComponent.waitFor({ state: "visible", timeout: 10000 });
+      await page6.waitForTimeout(2000); // Wait longer for component to fully load
 
       // Select a user from the combobox
       const userCombobox = page6.locator(
@@ -462,33 +544,23 @@ async function captureHappyPaths() {
       );
       const userInput = userCombobox.locator("input").first();
 
-      if (await userInput.isVisible({ timeout: 5000 }).catch(() => false)) {
+      if (await userInput.isVisible({ timeout: 10000 }).catch(() => false)) {
         await userInput.click();
-        await page6.waitForTimeout(1000);
-
-        // Search for a user (try common names)
-        await userInput.fill("Mariano");
         await page6.waitForTimeout(1500);
 
-        // Select first option if available
+        // Try to get the first user from the dropdown without searching
+        // This is more reliable than searching for a specific name
         const userDropdown = userCombobox.locator(".slds-listbox").first();
+        await userDropdown.waitFor({ state: "visible", timeout: 5000 }).catch(() => {});
+        await page6.waitForTimeout(1000);
+
         const userOptions = userDropdown.locator(".slds-listbox__item");
         const userCount = await userOptions.count();
 
         if (userCount > 0) {
+          // Select the first available user
           await userOptions.first().click();
-          await page6.waitForTimeout(1500);
-
-          // Fill parameter if needed (for Account By Name)
-          const paramInput = page6
-            .locator('lightning-input[data-testid*="parameter"] input')
-            .first();
-          if (
-            await paramInput.isVisible({ timeout: 2000 }).catch(() => false)
-          ) {
-            await paramInput.fill("Dynamic");
-            await page6.waitForTimeout(1000);
-          }
+          await page6.waitForTimeout(2000);
 
           // Execute query with "Execute with System.runAs" button
           const executeRunAsButton = page6
@@ -497,39 +569,46 @@ async function captureHappyPaths() {
 
           if (
             await executeRunAsButton
-              .isVisible({ timeout: 5000 })
+              .isVisible({ timeout: 10000 })
               .catch(() => false)
           ) {
             await executeRunAsButton.click();
-            await page6.waitForTimeout(3000);
+            await page6.waitForTimeout(5000); // Wait longer for test execution
 
             // Wait for results or test execution status
             const resultsSection = page6.locator("c-jt-query-results").first();
             const testStatus = page6
-              .locator("text=/Running|Completed|Failed/i")
+              .locator("text=/Running|Completed|Failed|Test execution/i")
               .first();
 
-            // Wait for either results or status message
+            // Wait longer for either results or status message
             await Promise.race([
               resultsSection
-                .waitFor({ state: "visible", timeout: 10000 })
+                .waitFor({ state: "visible", timeout: 15000 })
                 .catch(() => null),
               testStatus
-                .waitFor({ state: "visible", timeout: 10000 })
+                .waitFor({ state: "visible", timeout: 15000 })
                 .catch(() => null),
-              page6.waitForTimeout(5000)
+              page6.waitForTimeout(8000) // Wait at least 8 seconds
             ]);
 
             // Scroll to see results if available
             await page6.evaluate(() =>
               window.scrollTo({ top: 400, behavior: "smooth" })
             );
+            await page6.waitForTimeout(3000); // Show results longer
+          } else {
+            console.log("   ⚠️  Execute with System.runAs button not found");
             await page6.waitForTimeout(2000);
           }
         } else {
-          // If no users found, just show the search box
-          await page6.waitForTimeout(1500);
+          // If no users found, show the search box open
+          console.log("   ⚠️  No users found in dropdown");
+          await page6.waitForTimeout(2000);
         }
+      } else {
+        console.log("   ⚠️  User input not found");
+        await page6.waitForTimeout(2000);
       }
     } else {
       // If Run As section is not available, show a message
@@ -540,6 +619,9 @@ async function captureHappyPaths() {
     }
 
     console.log("   ✅ Run As User captured");
+  } catch (error) {
+    console.error("   ❌ Error capturing Run As User:", error.message);
+    // Don't throw - continue with GIF conversion
   } finally {
     await context6.close();
   }

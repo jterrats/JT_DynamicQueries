@@ -8,7 +8,6 @@ gem "jekyll", "~> 4.3"
 gem "kramdown", "~> 2.4"
 gem "kramdown-parser-gfm", "~> 1.1"
 
-# Use classic sass converter instead of sass-embedded to avoid protobuf issues
-gem "jekyll-sass-converter", "~> 2.0"
-gem "sassc", "~> 2.4"
+# Disable Sass processing - site uses plain CSS
+# This avoids native extension issues with sassc/ffi
 

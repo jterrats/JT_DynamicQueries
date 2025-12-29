@@ -11,9 +11,8 @@ markdown: kramdown
 theme: null
 plugins: []
 
-# Use classic sass converter instead of sass-embedded
-sass:
-  style: compressed
+# Disable Sass/SCSS processing - site uses plain CSS files
+# This avoids native extension compilation issues
 
 # Exclude from processing
 exclude:

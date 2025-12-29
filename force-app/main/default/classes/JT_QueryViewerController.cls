@@ -595,37 +595,85 @@ public with sharing class JT_QueryViewerController {
               estimatedCount
             );
           } catch (Exception retryException) {
-            // If retry also fails, log and assume risky
+            // If retry also fails, check if query has specific filters
             System.debug(
-              LoggingLevel.ERROR,
+              LoggingLevel.WARN,
               'COUNT query failed after retry: ' + retryException.getMessage()
             );
-            estimatedCount = 99999;
+            
+            // Check if query has WHERE clause with specific filters
+            Boolean hasWhereClause = baseQuery != null && 
+              baseQuery.containsIgnoreCase('WHERE') &&
+              !baseQuery.containsIgnoreCase('WHERE 1=1') &&
+              !baseQuery.containsIgnoreCase('WHERE TRUE');
+            
+            // Check if bindings are provided and not empty
+            Boolean hasValidBindings = countBindings != null && 
+              !countBindings.isEmpty() &&
+              !hasEmptyRequiredParameters(countBindings);
+            
+            // If query has WHERE clause with valid bindings, assume low risk
+            if (hasWhereClause && hasValidBindings) {
+              estimatedCount = 10000; // Medium risk threshold
+              System.debug(
+                LoggingLevel.INFO,
+                'COUNT query failed after retry but has WHERE clause with bindings. Assuming medium risk (10k records).'
+              );
+            } else {
+              estimatedCount = 99999; // Critical risk
+              System.debug(
+                LoggingLevel.WARN,
+                'COUNT query failed after retry and has no specific filters. Assuming critical risk (99k records).'
+              );
+            }
           }
         } else {
-          // If count fails for other reasons, log detailed error and assume it's risky
+          // If count fails for other reasons, check if query has specific filters
+          // If query has WHERE conditions with bindings, it's likely safe (low count)
+          // Only assume risky if query has no filters or filters are empty
           System.debug(
-            LoggingLevel.ERROR,
+            LoggingLevel.WARN,
             'COUNT query failed: ' + e.getMessage()
           );
           System.debug(
-            LoggingLevel.ERROR,
+            LoggingLevel.WARN,
             'COUNT query that failed: ' +
             (finalCountQuery != null ? finalCountQuery : 'null')
           );
           System.debug(
-            LoggingLevel.ERROR,
+            LoggingLevel.WARN,
             'COUNT bindings that failed: ' + JSON.serialize(countBindings)
           );
-          System.debug(
-            LoggingLevel.ERROR,
-            'Exception type: ' + e.getTypeName()
-          );
-          System.debug(
-            LoggingLevel.ERROR,
-            'Exception stack trace: ' + e.getStackTraceString()
-          );
-          estimatedCount = 99999;
+          
+          // Check if query has WHERE clause with specific filters
+          Boolean hasWhereClause = baseQuery != null && 
+            baseQuery.containsIgnoreCase('WHERE') &&
+            !baseQuery.containsIgnoreCase('WHERE 1=1') &&
+            !baseQuery.containsIgnoreCase('WHERE TRUE');
+          
+          // Check if bindings are provided and not empty
+          Boolean hasValidBindings = countBindings != null && 
+            !countBindings.isEmpty() &&
+            !hasEmptyRequiredParameters(countBindings);
+          
+          // If query has WHERE clause with valid bindings, assume low risk
+          // Otherwise, assume high risk (could be scanning all records)
+          if (hasWhereClause && hasValidBindings) {
+            // Query has specific filters - likely returns few records
+            // Use a conservative estimate (medium risk) instead of critical
+            estimatedCount = 10000; // Medium risk threshold
+            System.debug(
+              LoggingLevel.INFO,
+              'COUNT query failed but has WHERE clause with bindings. Assuming medium risk (10k records).'
+            );
+          } else {
+            // No filters or empty bindings - could be scanning all records
+            estimatedCount = 99999; // Critical risk
+            System.debug(
+              LoggingLevel.WARN,
+              'COUNT query failed and has no specific filters. Assuming critical risk (99k records).'
+            );
+          }
         }
       }
 

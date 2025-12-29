@@ -44,6 +44,9 @@
     "screenshots:appexchange": "node tests/screenshots/captureAppExchangeScreenshots.js",
     "videos:appexchange": "node tests/screenshots/captureAppExchangeVideos.js",
     "gifs:happy-path": "node tests/screenshots/captureHappyPathGifs.js",
+    "docs:install": "bundle install",
+    "docs:serve": "cd docs && bundle exec jekyll serve --baseurl ''",
+    "docs:build": "cd docs && bundle exec jekyll build",
     "validate:pipeline": "./scripts/validate-pipeline.sh",
     "validate:pipeline:dry": "./scripts/validate-pipeline.sh --dry-run",
     "validate:pipeline:list": "act -l"

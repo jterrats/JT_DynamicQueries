@@ -1,57 +1,40 @@
-# Salesforce CLI
-.sfdx/
-.sf/
+# Jekyll
+_site/
+.sass-cache/
+.jekyll-cache/
+.jekyll-metadata
+vendor/
 
-# LWC Jest
-**/__tests__/**
-coverage/
+# Bundler
+.bundle/
 
-# Logs
-logs/
-*.log
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Node
-node_modules/
-package-lock.json
-
-# Playwright
+# Test results
 test-results/
 playwright-report/
-playwright-report-github-pages/
 playwright/.cache/
 
-# IDE
-.vscode/
-.idea/
-
-# Certificates (sensitive)
-*.pem
-*.key
-*.crt
-certs/
-
-# Environment variables (sensitive)
-.env
-.env.*
-!.env.example
-!.env.act.example
-
-# Act (GitHub Actions local runner) - local only
-.actrc
-.env.act
-
-# Backup files
-*.backup
-
-# AppExchange media (large files)
-docs/appexchange/media/*.mp4
-docs/appexchange/media/*.webm
-
-# Temporary development documentation (optional - uncomment if needed)
-# docs/development/_local/
-# docs/development/*_TEMP.md
-# docs/development/*_DRAFT.md
+# Temporary files
+*.tmp
+*.log
+temp_sf_logs/

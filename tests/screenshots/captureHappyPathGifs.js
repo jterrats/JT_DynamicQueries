@@ -101,18 +101,21 @@ async function getComponentURL(browser, session) {
 /**
  * Create recording context and navigate directly to component URL
  * This starts directly in Query Viewer tab without showing App Launcher
+ * @param {string} videoName - Name for the video file (without extension)
  */
 async function createRecordingContextAndNavigate(
   browser,
   componentURL,
-  storageState
+  storageState,
+  videoName
 ) {
   const context = await browser.newContext({
     viewport: VIEWPORT,
     storageState: storageState,
     recordVideo: {
       dir: VIDEOS_DIR,
-      size: VIEWPORT
+      size: VIEWPORT,
+      path: path.join(VIDEOS_DIR, `${videoName}.webm`) // Explicit video filename
     }
   });
 
@@ -154,6 +157,9 @@ async function captureHappyPaths() {
   );
   console.log("");
 
+  // Array to store video file paths mapped to their intended names
+  const videoFilesMap = new Map();
+
   // ==================================================================
   // GIF 1: Basic Query Execution (10 seconds)
   // Show: Select config → Execute → View results (NO view switching)
@@ -163,7 +169,8 @@ async function captureHappyPaths() {
     await createRecordingContextAndNavigate(
       browser,
       componentURL,
-      storageState
+      storageState,
+      "01-query-execution"
     );
 
   try {
@@ -206,7 +213,16 @@ async function captureHappyPaths() {
     console.error("   ❌ Error capturing Query Execution:", error.message);
     throw error;
   } finally {
+    // Get video path before closing
+    const video = page1.video();
+    const videoPath = video ? await video.path() : null;
     await context1.close();
+    // Wait for video to be saved and map it to intended name
+    if (videoPath) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      videoFilesMap.set("01-query-execution.webm", videoPath);
+      console.log(`   📹 Video saved: ${path.basename(videoPath)}`);
+    }
   }
 
   // ==================================================================
@@ -218,7 +234,8 @@ async function captureHappyPaths() {
     await createRecordingContextAndNavigate(
       browser,
       componentURL,
-      storageState
+      storageState,
+      "02-multiple-views"
     );
 
   try {
@@ -250,14 +267,28 @@ async function captureHappyPaths() {
       .first();
     if (await jsonButton.isVisible({ timeout: 5000 }).catch(() => false)) {
       await jsonButton.click();
-      await page2.waitForTimeout(3000); // Wait for JSON view to render
+      await page2.waitForTimeout(2000); // Wait for JSON view to render
 
-      // Scroll JSON to show content
+      // Wait for JSON content to be visible
+      await page2.waitForSelector("c-jt-query-results .json-content, c-jt-query-results pre", {
+        state: "visible",
+        timeout: 5000
+      }).catch(() => {});
+
+      // Scroll down the page to show JSON content
       await page2.evaluate(() => {
-        const jsonView = document.querySelector(".json-content, pre");
-        if (jsonView) jsonView.scrollTop = 150;
+        window.scrollTo({ top: 500, behavior: "smooth" });
       });
-      await page2.waitForTimeout(2500);
+      await page2.waitForTimeout(2000);
+
+      // Also scroll within the JSON content element if it exists
+      await page2.evaluate(() => {
+        const jsonView = document.querySelector("c-jt-query-results .json-content, c-jt-query-results pre");
+        if (jsonView) {
+          jsonView.scrollTop = 200;
+        }
+      });
+      await page2.waitForTimeout(2000);
     } else {
       console.log("   ⚠️  JSON button not found");
     }
@@ -269,14 +300,28 @@ async function captureHappyPaths() {
       .first();
     if (await csvButton.isVisible({ timeout: 5000 }).catch(() => false)) {
       await csvButton.click();
-      await page2.waitForTimeout(3000); // Wait for CSV view to render
+      await page2.waitForTimeout(2000); // Wait for CSV view to render
 
-      // Scroll CSV to show content
+      // Wait for CSV content to be visible
+      await page2.waitForSelector("c-jt-query-results .csv-content, c-jt-query-results pre", {
+        state: "visible",
+        timeout: 5000
+      }).catch(() => {});
+
+      // Scroll down the page to show CSV content
       await page2.evaluate(() => {
-        const csvView = document.querySelector(".csv-content, pre");
-        if (csvView) csvView.scrollTop = 100;
+        window.scrollTo({ top: 500, behavior: "smooth" });
       });
-      await page2.waitForTimeout(2500);
+      await page2.waitForTimeout(2000);
+
+      // Also scroll within the CSV content element if it exists
+      await page2.evaluate(() => {
+        const csvView = document.querySelector("c-jt-query-results .csv-content, c-jt-query-results pre");
+        if (csvView) {
+          csvView.scrollTop = 150;
+        }
+      });
+      await page2.waitForTimeout(2000);
     } else {
       console.log("   ⚠️  CSV button not found");
     }
@@ -295,7 +340,14 @@ async function captureHappyPaths() {
 
     console.log("   ✅ Multiple Views captured");
   } finally {
+    const video = page2.video();
+    const videoPath = video ? await video.path() : null;
     await context2.close();
+    if (videoPath) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      videoFilesMap.set("02-multiple-views.webm", videoPath);
+      console.log(`   📹 Video saved: ${path.basename(videoPath)}`);
+    }
   }
 
   // ==================================================================
@@ -307,7 +359,8 @@ async function captureHappyPaths() {
     await createRecordingContextAndNavigate(
       browser,
       componentURL,
-      storageState
+      storageState,
+      "03-tree-view"
     );
 
   try {
@@ -357,7 +410,14 @@ async function captureHappyPaths() {
 
     console.log("   ✅ Tree View captured");
   } finally {
+    const video = page3.video();
+    const videoPath = video ? await video.path() : null;
     await context3.close();
+    if (videoPath) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      videoFilesMap.set("03-tree-view.webm", videoPath);
+      console.log(`   📹 Video saved: ${path.basename(videoPath)}`);
+    }
   }
 
   // ==================================================================
@@ -369,7 +429,8 @@ async function captureHappyPaths() {
     await createRecordingContextAndNavigate(
       browser,
       componentURL,
-      storageState
+      storageState,
+      "04-large-dataset"
     );
 
   try {
@@ -409,7 +470,14 @@ async function captureHappyPaths() {
 
     console.log("   ✅ Large Dataset captured");
   } finally {
+    const video = page4.video();
+    const videoPath = video ? await video.path() : null;
     await context4.close();
+    if (videoPath) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      videoFilesMap.set("04-large-dataset.webm", videoPath);
+      console.log(`   📹 Video saved: ${path.basename(videoPath)}`);
+    }
   }
 
   // ==================================================================
@@ -421,7 +489,8 @@ async function captureHappyPaths() {
     await createRecordingContextAndNavigate(
       browser,
       componentURL,
-      storageState
+      storageState,
+      "05-create-config"
     );
 
   try {
@@ -533,7 +602,14 @@ async function captureHappyPaths() {
     console.error("   ❌ Error capturing Create Configuration:", error.message);
     // Don't throw - continue with other GIFs
   } finally {
+    const video = page5.video();
+    const videoPath = video ? await video.path() : null;
     await context5.close();
+    if (videoPath) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      videoFilesMap.set("05-create-config.webm", videoPath);
+      console.log(`   📹 Video saved: ${path.basename(videoPath)}`);
+    }
   }
 
   // ==================================================================
@@ -545,7 +621,8 @@ async function captureHappyPaths() {
     await createRecordingContextAndNavigate(
       browser,
       componentURL,
-      storageState
+      storageState,
+      "06-run-as-user"
     );
 
   try {
@@ -566,13 +643,30 @@ async function captureHappyPaths() {
       await page6.waitForTimeout(1000);
     }
 
-    // Check if Run As section is available (user has permissions)
-    const accordionSection = page6
+    // Scroll to top to ensure accordion is visible
+    await page6.evaluate(() => window.scrollTo({ top: 0, behavior: "smooth" }));
+    await page6.waitForTimeout(1000);
+
+    // Try multiple selectors to find the Run As accordion section
+    let accordionSection = page6
       .locator('lightning-accordion-section[name="run-as"]')
       .first();
+
+    // If not found, try alternative selector
+    if ((await accordionSection.count()) === 0) {
+      accordionSection = page6
+        .locator('lightning-accordion-section')
+        .filter({ hasText: /Run As|run as/i })
+        .first();
+    }
+
     const accordionExists = (await accordionSection.count()) > 0;
 
     if (accordionExists) {
+      // Scroll to accordion to make it visible
+      await accordionSection.scrollIntoViewIfNeeded();
+      await page6.waitForTimeout(1000);
+
       // Expand Run As accordion section if collapsed
       const isExpanded = await accordionSection
         .getAttribute("aria-expanded")
@@ -581,119 +675,187 @@ async function captureHappyPaths() {
 
       if (!isExpanded) {
         console.log("   📂 Expanding Run As accordion...");
-        await accordionSection.click();
-        await page6.waitForTimeout(3000); // Wait longer for accordion to expand
+        // Click on the accordion header/button
+        const accordionButton = accordionSection.locator("button").first();
+        if (await accordionButton.isVisible({ timeout: 5000 }).catch(() => false)) {
+          await accordionButton.click();
+        } else {
+          await accordionSection.click();
+        }
+        await page6.waitForTimeout(4000); // Wait longer for accordion to expand and show content
       } else {
         console.log("   ✅ Run As accordion already expanded");
+        await page6.waitForTimeout(2000);
       }
 
-      // Wait for Run As section component to be visible
+      // Scroll down a bit to show the expanded content
+      await page6.evaluate(() => window.scrollTo({ top: 300, behavior: "smooth" }));
+      await page6.waitForTimeout(2000);
+
+      // Wait for Run As section component to be visible (if permissions allow)
       const runAsComponent = page6.locator("c-jt-run-as-section").first();
-      await runAsComponent.waitFor({ state: "visible", timeout: 15000 });
-      await page6.waitForTimeout(3000); // Wait longer for component to fully load
+      const componentVisible = await runAsComponent
+        .isVisible({ timeout: 5000 })
+        .catch(() => false);
 
-      // Select a user from the combobox
-      const userCombobox = page6.locator(
-        'c-jt-run-as-section c-jt-searchable-combobox[data-testid="run-as-user-selector"]'
-      );
-      const userInput = userCombobox.locator("input").first();
+      if (componentVisible) {
+        await page6.waitForTimeout(2000); // Wait for component to fully load
 
-      if (await userInput.isVisible({ timeout: 15000 }).catch(() => false)) {
-        console.log("   👤 Clicking user selector...");
-        await userInput.click();
-        await page6.waitForTimeout(3000); // Wait longer for dropdown to open
+        // Select a user from the combobox
+        const userCombobox = page6.locator(
+          'c-jt-run-as-section c-jt-searchable-combobox[data-testid="run-as-user-selector"]'
+        );
+        const userInput = userCombobox.locator("input").first();
 
-        // Clear any existing text and wait for dropdown
-        await userInput.fill("");
-        await page6.waitForTimeout(2000);
+        if (await userInput.isVisible({ timeout: 10000 }).catch(() => false)) {
+          console.log("   👤 Clicking user selector...");
+          await userInput.scrollIntoViewIfNeeded();
+          await page6.waitForTimeout(1000);
+          await userInput.click();
+          await page6.waitForTimeout(3000); // Wait longer for dropdown to open
 
-        // Try to get users from dropdown
-        const userDropdown = userCombobox.locator(".slds-listbox").first();
-        const dropdownVisible = await userDropdown
-          .waitFor({ state: "visible", timeout: 8000 })
-          .then(() => true)
-          .catch(() => false);
-
-        if (!dropdownVisible) {
-          console.log("   ⚠️  User dropdown not visible, trying to type...");
-          // Try typing to trigger dropdown
-          await userInput.fill("a");
+          // Clear any existing text and wait for dropdown
+          await userInput.fill("");
           await page6.waitForTimeout(2000);
-          // Try waiting again after typing
-          await userDropdown
-            .waitFor({ state: "visible", timeout: 5000 })
-            .catch(() => {});
-        }
 
-        await page6.waitForTimeout(2000);
+          // Try to get users from dropdown
+          const userDropdown = userCombobox.locator(".slds-listbox").first();
+          let dropdownVisible = await userDropdown
+            .isVisible({ timeout: 5000 })
+            .then(() => true)
+            .catch(() => false);
 
-        const userOptions = userDropdown.locator(".slds-listbox__item");
-        const userCount = await userOptions.count();
+          if (!dropdownVisible) {
+            console.log("   ⚠️  User dropdown not visible, trying to type...");
+            // Try typing to trigger dropdown
+            await userInput.fill("a");
+            await page6.waitForTimeout(2000);
+            // Try waiting again after typing
+            dropdownVisible = await userDropdown
+              .isVisible({ timeout: 5000 })
+              .then(() => true)
+              .catch(() => false);
+          }
 
-        console.log(`   📋 Found ${userCount} user(s) in dropdown`);
+          await page6.waitForTimeout(2000);
 
-        if (userCount > 0) {
-          // Select the first available user
-          console.log("   ✅ Selecting first user...");
-          await userOptions.first().click();
-          await page6.waitForTimeout(3000); // Wait for selection to register
+          const userOptions = userDropdown.locator(".slds-listbox__item");
+          const userCount = await userOptions.count();
 
-          // Execute query with "Execute with System.runAs" button (same selector as E2E tests)
-          const executeRunAsButton = page6
-            .locator('lightning-button[title*="Execute with System.runAs"]')
-            .first();
+          console.log(`   📋 Found ${userCount} user(s) in dropdown`);
 
-          if (
-            await executeRunAsButton
-              .isVisible({ timeout: 15000 })
-              .catch(() => false)
-          ) {
-            console.log("   ▶️  Clicking Execute with System.runAs...");
-            await executeRunAsButton.click();
-            await page6.waitForTimeout(8000); // Wait longer for test execution
+          if (userCount > 0) {
+            // Select the first available user
+            console.log("   ✅ Selecting first user...");
+            await userOptions.first().scrollIntoViewIfNeeded();
+            await page6.waitForTimeout(500);
+            await userOptions.first().click();
+            await page6.waitForTimeout(5000); // Wait longer for selection to register
 
-            // Wait for results or test execution status
-            const resultsSection = page6.locator("c-jt-query-results").first();
-            const testStatus = page6
-              .locator("text=/Running|Completed|Failed|Test execution/i")
+            // Scroll to show the execute button area
+            await page6.evaluate(() => window.scrollTo({ top: 300, behavior: "smooth" }));
+            await page6.waitForTimeout(2000);
+
+            // The execute button label changes when a user is selected
+            // Try multiple selectors for the execute button
+            const executeButton = page6
+              .locator('c-jt-execute-button lightning-button, lightning-button[data-testid="execute-query-button"], lightning-button:has-text("Execute"), lightning-button[label*="Execute"]')
               .first();
 
-            // Wait longer for either results or status message
-            console.log("   ⏳ Waiting for execution results...");
-            await Promise.race([
-              resultsSection
-                .waitFor({ state: "visible", timeout: 20000 })
-                .catch(() => null),
-              testStatus
-                .waitFor({ state: "visible", timeout: 20000 })
-                .catch(() => null),
-              page6.waitForTimeout(10000) // Wait at least 10 seconds
-            ]);
+            if (
+              await executeButton
+                .isVisible({ timeout: 10000 })
+                .catch(() => false)
+            ) {
+              console.log("   ▶️  Clicking Execute button (will use System.runAs)...");
+              await executeButton.scrollIntoViewIfNeeded();
+              await page6.waitForTimeout(1000);
+              await executeButton.click();
+              await page6.waitForTimeout(12000); // Wait longer for test execution
 
-            // Scroll to see results if available
-            await page6.evaluate(() =>
-              window.scrollTo({ top: 400, behavior: "smooth" })
-            );
-            await page6.waitForTimeout(4000); // Show results longer
-            console.log("   ✅ Run As execution completed");
+              // Wait for results or test execution status
+              const resultsSection = page6.locator("c-jt-query-results").first();
+              const testStatus = page6
+                .locator("text=/Running|Completed|Failed|Test execution|executing/i")
+                .first();
+              const spinnerOverlay = page6.locator(".run-as-spinner-overlay").first();
+
+              // Wait longer for either results, status message, or spinner
+              console.log("   ⏳ Waiting for execution results...");
+              await Promise.race([
+                resultsSection
+                  .waitFor({ state: "visible", timeout: 25000 })
+                  .catch(() => null),
+                testStatus
+                  .waitFor({ state: "visible", timeout: 25000 })
+                  .catch(() => null),
+                spinnerOverlay
+                  .waitFor({ state: "visible", timeout: 5000 })
+                  .then(() => {
+                    console.log("   ⏳ Test execution spinner visible...");
+                    return spinnerOverlay.waitFor({ state: "hidden", timeout: 20000 }).catch(() => null);
+                  })
+                  .catch(() => null),
+                page6.waitForTimeout(15000) // Wait at least 15 seconds
+              ]);
+
+              // Wait a bit for any error/access messages to appear
+              await page6.waitForTimeout(2000);
+
+              // Scroll up to show the access denied message or error message
+              console.log("   📜 Scrolling up to show access message...");
+              await page6.evaluate(() =>
+                window.scrollTo({ top: 0, behavior: "smooth" })
+              );
+              await page6.waitForTimeout(3000); // Show the message at the top
+
+              // Also check for error messages or test assertion messages
+              const errorMessage = page6.locator("text=/access|permission|denied|insufficient/i").first();
+              const testAssertMessage = page6.locator("text=/Test Assertion|assertion/i").first();
+
+              if (await errorMessage.isVisible({ timeout: 3000 }).catch(() => false)) {
+                await errorMessage.scrollIntoViewIfNeeded();
+                await page6.waitForTimeout(2000);
+              } else if (await testAssertMessage.isVisible({ timeout: 3000 }).catch(() => false)) {
+                await testAssertMessage.scrollIntoViewIfNeeded();
+                await page6.waitForTimeout(2000);
+              }
+
+              // Scroll down a bit to show results if available
+              await page6.evaluate(() =>
+                window.scrollTo({ top: 300, behavior: "smooth" })
+              );
+              await page6.waitForTimeout(3000); // Show results area
+              console.log("   ✅ Run As execution completed");
+            } else {
+              console.log("   ⚠️  Execute button not found");
+              // Still show the accordion expanded with user selected
+              await page6.waitForTimeout(3000);
+            }
           } else {
-            console.log("   ⚠️  Execute with System.runAs button not found");
-            await page6.waitForTimeout(2000);
+            // If no users found, show the search box open
+            console.log("   ⚠️  No users found in dropdown");
+            await page6.waitForTimeout(3000);
           }
         } else {
-          // If no users found, show the search box open
-          console.log("   ⚠️  No users found in dropdown");
-          await page6.waitForTimeout(2000);
+          console.log("   ⚠️  User input not found - showing accordion expanded");
+          // Still show the accordion expanded
+          await page6.waitForTimeout(3000);
         }
       } else {
-        console.log("   ⚠️  User input not found");
-        await page6.waitForTimeout(2000);
+        console.log("   ⚠️  Run As component not visible (user lacks permissions) - showing accordion expanded");
+        // Still show the accordion expanded even without permissions
+        await page6.waitForTimeout(3000);
       }
     } else {
-      // If Run As section is not available, show a message
-      console.log(
-        "   ⚠️  Run As section not available (user lacks permissions)"
-      );
+      // If Run As section is not available, try to find it anyway
+      console.log("   ⚠️  Run As accordion not found with standard selector, trying alternatives...");
+      // Try to find any accordion and show it
+      const anyAccordion = page6.locator("lightning-accordion").first();
+      if (await anyAccordion.isVisible({ timeout: 5000 }).catch(() => false)) {
+        await anyAccordion.scrollIntoViewIfNeeded();
+        await page6.waitForTimeout(2000);
+      }
       await page6.waitForTimeout(2000);
     }
 
@@ -702,7 +864,14 @@ async function captureHappyPaths() {
     console.error("   ❌ Error capturing Run As User:", error.message);
     // Don't throw - continue with GIF conversion
   } finally {
+    const video = page6.video();
+    const videoPath = video ? await video.path() : null;
     await context6.close();
+    if (videoPath) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      videoFilesMap.set("06-run-as-user.webm", videoPath);
+      console.log(`   📹 Video saved: ${path.basename(videoPath)}`);
+    }
   }
 
   await browser.close();
@@ -713,47 +882,29 @@ async function captureHappyPaths() {
   console.log("");
   console.log("🎨 Converting videos to GIFs...");
 
-  const videoFiles = fs
-    .readdirSync(VIDEOS_DIR)
-    .filter((f) => f.endsWith(".webm"))
-    .sort();
+  // Wait a bit for all videos to be fully written
+  await new Promise((resolve) => setTimeout(resolve, 3000));
 
-  if (videoFiles.length >= 6) {
-    await convertToGif(
-      path.join(VIDEOS_DIR, videoFiles[0]),
-      path.join(GIFS_DIR, "01-query-execution.gif"),
-      6 // Slower for better visibility
-    );
+  // Use the video files map we created during capture
+  const videoMappings = [
+    { video: "01-query-execution.webm", gif: "01-query-execution.gif" },
+    { video: "02-multiple-views.webm", gif: "02-multiple-views.gif" },
+    { video: "03-tree-view.webm", gif: "03-tree-view.gif" },
+    { video: "04-large-dataset.webm", gif: "04-large-dataset.gif" },
+    { video: "05-create-config.webm", gif: "05-create-config.gif" },
+    { video: "06-run-as-user.webm", gif: "06-run-as-user.gif" }
+  ];
 
-    await convertToGif(
-      path.join(VIDEOS_DIR, videoFiles[1]),
-      path.join(GIFS_DIR, "02-multiple-views.gif"),
-      6 // Slower to see JSON/CSV content
-    );
+  for (const mapping of videoMappings) {
+    const actualVideoPath = videoFilesMap.get(mapping.video);
+    const gifPath = path.join(GIFS_DIR, mapping.gif);
 
-    await convertToGif(
-      path.join(VIDEOS_DIR, videoFiles[2]),
-      path.join(GIFS_DIR, "03-tree-view.gif"),
-      6 // Slower to see relationships expand
-    );
-
-    await convertToGif(
-      path.join(VIDEOS_DIR, videoFiles[3]),
-      path.join(GIFS_DIR, "04-large-dataset.gif"),
-      6 // Slower to see pagination
-    );
-
-    await convertToGif(
-      path.join(VIDEOS_DIR, videoFiles[4]),
-      path.join(GIFS_DIR, "05-create-config.gif"),
-      6 // Slower to see form filling
-    );
-
-    await convertToGif(
-      path.join(VIDEOS_DIR, videoFiles[5]),
-      path.join(GIFS_DIR, "06-run-as-user.gif"),
-      6 // Slower to see user selection
-    );
+    if (actualVideoPath && fs.existsSync(actualVideoPath)) {
+      console.log(`   ✅ Converting: ${mapping.video} → ${mapping.gif}`);
+      await convertToGif(actualVideoPath, gifPath, 6);
+    } else {
+      console.error(`   ❌ Video not found: ${mapping.video} (mapped path: ${actualVideoPath})`);
+    }
   }
 
   // Cleanup temp videos

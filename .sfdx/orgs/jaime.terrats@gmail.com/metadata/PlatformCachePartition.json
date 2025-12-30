@@ -1,0 +1,18 @@
+{
+  "status": 0,
+  "result": [
+    {
+      "createdById": "0050b0000047X4FAAU",
+      "createdByName": "Jaime Terrats",
+      "createdDate": "2025-12-02T00:51:30.000Z",
+      "fileName": "cachePartitions/JTDynamicQueries.cachePartition",
+      "fullName": "JTDynamicQueries",
+      "id": "0ErKW000000TNA20AO",
+      "lastModifiedById": "0050b0000047X4FAAU",
+      "lastModifiedByName": "Jaime Terrats",
+      "lastModifiedDate": "2025-12-02T00:51:30.000Z",
+      "manageableState": "unmanaged",
+      "type": "PlatformCachePartition"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "status": 0,
+  "result": [
+    {
+      "createdById": "0050b0000047X4FAAU",
+      "createdByName": "Jaime Terrats",
+      "createdDate": "2025-12-12T09:37:32.000Z",
+      "fileName": "extlClntAppPolicies/JT_Tooling_API_plcy.ecaPlcy",
+      "fullName": "JT_Tooling_API_plcy",
+      "id": "196KW000000fxTYYAY",
+      "lastModifiedById": "0050b0000047X4FAAU",
+      "lastModifiedByName": "Jaime Terrats",
+      "lastModifiedDate": "2025-12-12T09:39:21.000Z",
+      "type": "ExtlClntAppConfigurablePolicies"
+    },
+    {
+      "createdById": "0050b0000047X4FAAU",
+      "createdByName": "Jaime Terrats",
+      "createdDate": "2025-12-02T10:18:17.000Z",
+      "fileName": "extlClntAppPolicies/JT_CI_Runner_defaultPolicy.ecaPlcy",
+      "fullName": "JT_CI_Runner_defaultPolicy",
+      "id": "196KW000000fxTJYAY",
+      "lastModifiedById": "0050b0000047X4FAAU",
+      "lastModifiedByName": "Jaime Terrats",
+      "lastModifiedDate": "2025-12-02T11:01:17.000Z",
+      "type": "ExtlClntAppConfigurablePolicies"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "status": 0,
+  "result": [
+    {
+      "createdById": "005PY00000HT4T4YAL",
+      "createdByName": "Jaime Terrats",
+      "createdDate": "1970-01-01T00:00:00.000Z",
+      "fileName": "customMetadata/JT_DynamicQueryConfiguration.Test_Record.md",
+      "fullName": "JT_DynamicQueryConfiguration.Test_Record",
+      "id": "m02Ot00000MpljNIAR",
+      "lastModifiedById": "005PY00000HT4T4YAL",
+      "lastModifiedByName": "Jaime Terrats",
+      "lastModifiedDate": "1970-01-01T00:00:00.000Z",
+      "manageableState": "unmanaged",
+      "type": "CustomMetadata"
+    }
+  ]
+}

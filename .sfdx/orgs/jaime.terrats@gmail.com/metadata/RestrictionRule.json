@@ -1,0 +1,18 @@
+{
+  "status": 0,
+  "result": [
+    {
+      "createdById": "0050b0000047X4FAAU",
+      "createdByName": "Jaime Terrats",
+      "createdDate": "2023-01-28T22:45:08.000Z",
+      "fileName": "restrictionRules/Keep_Tasks_Private.rule",
+      "fullName": "Keep_Tasks_Private",
+      "id": "0eY5a0000004C9NEAU",
+      "lastModifiedById": "0050b0000047X4FAAU",
+      "lastModifiedByName": "Jaime Terrats",
+      "lastModifiedDate": "2023-01-28T22:45:21.000Z",
+      "manageableState": "unmanaged",
+      "type": "RestrictionRule"
+    }
+  ]
+}

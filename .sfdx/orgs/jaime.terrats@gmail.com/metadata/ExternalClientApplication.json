@@ -1,0 +1,31 @@
+{
+  "status": 0,
+  "result": [
+    {
+      "createdById": "0050b0000047X4FAAU",
+      "createdByName": "Jaime Terrats",
+      "createdDate": "2025-12-02T10:18:17.000Z",
+      "fileName": "externalClientApps/JT_CI_Runner.eca",
+      "fullName": "JT_CI_Runner",
+      "id": "0xIKW000000oLlS2AU",
+      "lastModifiedById": "0050b0000047X4FAAU",
+      "lastModifiedByName": "Jaime Terrats",
+      "lastModifiedDate": "2025-12-02T11:01:17.000Z",
+      "manageableState": "unmanaged",
+      "type": "ExternalClientApplication"
+    },
+    {
+      "createdById": "0050b0000047X4FAAU",
+      "createdByName": "Jaime Terrats",
+      "createdDate": "2025-12-12T09:37:32.000Z",
+      "fileName": "externalClientApps/JT_Tooling_API.eca",
+      "fullName": "JT_Tooling_API",
+      "id": "0xIKW000000oLlh2AE",
+      "lastModifiedById": "0050b0000047X4FAAU",
+      "lastModifiedByName": "Jaime Terrats",
+      "lastModifiedDate": "2025-12-12T09:39:21.000Z",
+      "manageableState": "unmanaged",
+      "type": "ExternalClientApplication"
+    }
+  ]
+}

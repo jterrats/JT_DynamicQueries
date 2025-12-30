@@ -1,0 +1,29 @@
+{
+  "status": 0,
+  "result": [
+    {
+      "createdById": "0050b0000047X4FAAU",
+      "createdByName": "Jaime Terrats",
+      "createdDate": "2025-12-12T09:37:32.000Z",
+      "fileName": "extlClntAppGlobalOauthSets/JT_Tooling_API_glbloauth.ecaGlblOauth",
+      "fullName": "JT_Tooling_API_glbloauth",
+      "id": "13PKW000000k9cQ2AQ",
+      "lastModifiedById": "0050b0000047X4FAAU",
+      "lastModifiedByName": "Jaime Terrats",
+      "lastModifiedDate": "2025-12-12T09:39:21.000Z",
+      "type": "ExtlClntAppGlobalOauthSettings"
+    },
+    {
+      "createdById": "0050b0000047X4FAAU",
+      "createdByName": "Jaime Terrats",
+      "createdDate": "2025-12-02T10:18:21.000Z",
+      "fileName": "extlClntAppGlobalOauthSets/JT_CI_RunnerGlobal.ecaGlblOauth",
+      "fullName": "JT_CI_RunnerGlobal",
+      "id": "13PKW000000k9cB2AQ",
+      "lastModifiedById": "0050b0000047X4FAAU",
+      "lastModifiedByName": "Jaime Terrats",
+      "lastModifiedDate": "2025-12-02T11:01:17.000Z",
+      "type": "ExtlClntAppGlobalOauthSettings"
+    }
+  ]
+}

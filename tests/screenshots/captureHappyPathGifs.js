@@ -345,23 +345,23 @@ async function captureHappyPaths() {
     );
 
   try {
-    // Select configuration (ideally one that returns many records)
-    // If "All Accounts" exists, use it, otherwise use first available
-    const combobox = page4.locator("c-jt-searchable-combobox input").first();
-    await combobox.waitFor({ state: "visible", timeout: 15000 });
-    await combobox.click();
-    await page4.waitForTimeout(800);
+    // Select configuration that returns many records
+    // Use "Account By Name" which should return multiple accounts
+    await selectConfiguration(page4, "Account By Name");
+    await page4.waitForTimeout(2000);
 
-    // Try to find a config with many records
-    await combobox.fill("Account");
-    await page4.waitForTimeout(800);
-    await page4.keyboard.press("ArrowDown");
-    await page4.keyboard.press("Enter");
-    await page4.waitForTimeout(1500);
+    // Fill parameter with wildcard to get many records
+    const paramInput = page4
+      .locator('lightning-input[data-testid*="parameter"] input')
+      .first();
+    if (await paramInput.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await paramInput.fill("%");
+      await page4.waitForTimeout(1000);
+    }
 
     // Execute query
     await executeQuery(page4);
-    await page4.waitForTimeout(3000);
+    await page4.waitForTimeout(4000); // Wait longer for results
 
     // Look for pagination or performance message
     const paginationInfo = page4
@@ -397,85 +397,58 @@ async function captureHappyPaths() {
     );
 
   try {
-    // Click "New Configuration" button
-    const newConfigButton = page5
-      .locator('button:has-text("New Configuration")')
+    // Click "Create Configuration" button (same selector as E2E tests)
+    const createButton = page5
+      .locator("lightning-button")
+      .filter({ hasText: /Create.*Configuration/i })
       .first();
 
-    if (await newConfigButton.isVisible({ timeout: 10000 })) {
-      await newConfigButton.click();
-      await page5.waitForTimeout(2000); // Wait for modal to fully open
+    if (await createButton.isVisible({ timeout: 10000 })) {
+      await createButton.click();
+      await page5.waitForTimeout(500); // Wait for modal to open (same as E2E)
 
-      // Wait for modal to be visible
-      const modal = page5.locator("c-jt-config-modal").first();
+      // Wait for modal to be visible (same selector as E2E tests)
+      const modal = page5.locator('section[role="dialog"]').first();
       await modal.waitFor({ state: "visible", timeout: 5000 });
 
-      // Fill configuration name
-      const nameInput = page5
-        .locator('lightning-input[data-field="name"] input')
-        .first();
+      // Fill Label (same as E2E tests - uses "label" field, not "name")
+      const labelInput = modal.locator('lightning-input[data-field="label"]').first();
+      if (await labelInput.isVisible({ timeout: 5000 }).catch(() => false)) {
+        await labelInput.locator("input").fill("Demo Query Configuration");
+        await page5.waitForTimeout(500); // Wait for auto-generation of Developer Name
 
-      if (await nameInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-        await nameInput.click();
-        await page5.waitForTimeout(500);
-        await nameInput.fill("Demo Query Configuration");
-        await page5.waitForTimeout(1500);
-
-        // Fill base query (this is what the form actually uses)
-        const queryTextarea = page5
-          .locator('lightning-textarea[data-field="query"] textarea')
+        // Fill base query (same field name as E2E tests)
+        const queryTextarea = modal
+          .locator('lightning-textarea[data-field="baseQuery"]')
           .first();
 
         if (await queryTextarea.isVisible({ timeout: 3000 }).catch(() => false)) {
-          await queryTextarea.click();
+          await queryTextarea.locator("textarea").fill("SELECT Id, Name, Type, Industry FROM Account LIMIT 10");
+          await page5.waitForTimeout(1000);
+        }
+
+        // Fill object name (same as E2E tests)
+        const objectInput = modal.locator('lightning-input[data-field="object"]').first();
+        if (await objectInput.isVisible({ timeout: 3000 }).catch(() => false)) {
+          await objectInput.locator("input").fill("Account");
           await page5.waitForTimeout(500);
-          await queryTextarea.fill("SELECT Id, Name, Type, Industry FROM Account LIMIT 10");
-          await page5.waitForTimeout(2000);
-
-          // Show query preview/validation (if available)
-          const previewButton = page5.locator('button:has-text("Preview")').first();
-          if (await previewButton.isVisible({ timeout: 2000 }).catch(() => false)) {
-            await previewButton.click();
-            await page5.waitForTimeout(2000);
-          }
-        } else {
-          // Fallback: Fill object name if query field doesn't exist
-          const objectInput = page5
-            .locator('lightning-input[data-field="object"] input')
-            .first();
-
-          if (await objectInput.isVisible({ timeout: 3000 }).catch(() => false)) {
-            await objectInput.click();
-            await page5.waitForTimeout(500);
-            await objectInput.fill("Account");
-            await page5.waitForTimeout(1500);
-          }
-
-          // Show fields selection
-          const fieldsTextarea = page5
-            .locator('lightning-textarea[data-field="fields"] textarea')
-            .first();
-
-          if (await fieldsTextarea.isVisible({ timeout: 3000 }).catch(() => false)) {
-            await fieldsTextarea.click();
-            await page5.waitForTimeout(500);
-            await fieldsTextarea.fill("Id, Name, Type, Industry");
-            await page5.waitForTimeout(2000);
-          }
         }
       }
 
       // Show the form filled out for a moment before closing
       await page5.waitForTimeout(2000);
 
-      // Close modal (don't save - just demo)
-      const closeButton = page5.locator('button:has-text("Cancel"), button.slds-modal__close').first();
-      if (await closeButton.isVisible({ timeout: 2000 }).catch(() => false)) {
-        await closeButton.click();
+      // Close modal (same selector as E2E tests - don't save, just demo)
+      const cancelButton = modal
+        .locator("lightning-button")
+        .filter({ hasText: /Cancel/i })
+        .first();
+      if (await cancelButton.isVisible({ timeout: 2000 }).catch(() => false)) {
+        await cancelButton.click();
       } else {
         await page5.keyboard.press("Escape");
       }
-      await page5.waitForTimeout(1500);
+      await page5.waitForTimeout(500);
     } else {
       console.log("   ⚠️  New Configuration button not found (may be in production org)");
       await page5.waitForTimeout(2000);
@@ -546,10 +519,14 @@ async function captureHappyPaths() {
 
       if (await userInput.isVisible({ timeout: 10000 }).catch(() => false)) {
         await userInput.click();
-        await page6.waitForTimeout(1500);
+        await page6.waitForTimeout(2000); // Same wait time as E2E tests
 
-        // Try to get the first user from the dropdown without searching
-        // This is more reliable than searching for a specific name
+        // Search for a user (same approach as E2E tests - more reliable)
+        // Try common user names or just select first available
+        await userInput.fill("");
+        await page6.waitForTimeout(1000);
+
+        // Try to get users from dropdown
         const userDropdown = userCombobox.locator(".slds-listbox").first();
         await userDropdown.waitFor({ state: "visible", timeout: 5000 }).catch(() => {});
         await page6.waitForTimeout(1000);
@@ -558,13 +535,13 @@ async function captureHappyPaths() {
         const userCount = await userOptions.count();
 
         if (userCount > 0) {
-          // Select the first available user
+          // Select the first available user (same as E2E fallback)
           await userOptions.first().click();
           await page6.waitForTimeout(2000);
 
-          // Execute query with "Execute with System.runAs" button
+          // Execute query with "Execute with System.runAs" button (same selector as E2E tests)
           const executeRunAsButton = page6
-            .locator('button:has-text("Execute with System.runAs")')
+            .locator('lightning-button[title*="Execute with System.runAs"]')
             .first();
 
           if (

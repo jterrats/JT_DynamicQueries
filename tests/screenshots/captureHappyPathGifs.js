@@ -13,6 +13,7 @@ const {
   selectConfiguration,
   executeQuery
 } = require("../e2e/utils/testHelpers");
+const { SELECTORS } = require("../e2e/utils/testConstants");
 const fs = require("fs");
 const path = require("path");
 const { exec } = require("child_process");
@@ -70,40 +71,11 @@ async function convertToGif(videoPath, gifPath, fps = 6) {
 }
 
 /**
- * Navigate to app and get component URL (WITHOUT recording)
+ * Create recording context and navigate using same flow as E2E tests
  */
-async function getComponentURL(browser, session) {
-  console.log("   📍 Getting component URL (not recorded)...");
-  const tempContext = await browser.newContext({
-    viewport: VIEWPORT
-  });
-  const tempPage = await tempContext.newPage();
-
-  await setupTestContext(tempPage, session);
-  await tempPage.waitForTimeout(2000);
-
-  // Get the current URL (should be the component page)
-  const componentURL = tempPage.url();
-
-  // Save storage state (cookies)
-  const storageState = await tempContext.storageState();
-  await tempContext.close();
-
-  console.log("   ✅ Component URL:", componentURL);
-  return { componentURL, storageState };
-}
-
-/**
- * Create recording context and go directly to component
- */
-async function createRecordingContextAndNavigate(
-  browser,
-  componentURL,
-  storageState
-) {
+async function createRecordingContextAndNavigate(browser, session) {
   const context = await browser.newContext({
     viewport: VIEWPORT,
-    storageState: storageState,
     recordVideo: {
       dir: VIDEOS_DIR,
       size: VIEWPORT
@@ -112,13 +84,11 @@ async function createRecordingContextAndNavigate(
 
   const page = await context.newPage();
 
-  // Go directly to component URL (skips App Launcher)
-  await page.goto(componentURL, {
-    waitUntil: "domcontentloaded",
-    timeout: 30000
+  // Use same navigation flow as E2E tests (not direct URL)
+  await setupTestContext(page, session, {
+    targetTab: "Query Viewer",
+    waitForComponent: true
   });
-  await page.waitForSelector("c-jt-query-viewer", { timeout: 30000 });
-  await page.waitForTimeout(1500);
 
   return { context, page };
 }
@@ -141,24 +111,13 @@ async function captureHappyPaths() {
   console.log("✅ Authenticated:", session.username);
   console.log("");
 
-  // Get component URL once (skips navigation in all GIFs)
-  const { componentURL, storageState } = await getComponentURL(
-    browser,
-    session
-  );
-  console.log("");
-
   // ==================================================================
   // GIF 1: Basic Query Execution (10 seconds)
   // Show: Select config → Execute → View results
   // ==================================================================
   console.log("🎥 1/6: Capturing Basic Query Execution...");
   const { context: context1, page: page1 } =
-    await createRecordingContextAndNavigate(
-      browser,
-      componentURL,
-      storageState
-    );
+    await createRecordingContextAndNavigate(browser, session);
 
   try {
     // Select configuration (use label that matches Custom Metadata)
@@ -206,11 +165,7 @@ async function captureHappyPaths() {
   // ==================================================================
   console.log("🎥 2/6: Capturing Multiple Views (JSON, CSV)...");
   const { context: context2, page: page2 } =
-    await createRecordingContextAndNavigate(
-      browser,
-      componentURL,
-      storageState
-    );
+    await createRecordingContextAndNavigate(browser, session);
 
   try {
     // Select configuration
@@ -276,11 +231,7 @@ async function captureHappyPaths() {
   // ==================================================================
   console.log("🎥 3/6: Capturing Tree View with Child Relationships...");
   const { context: context3, page: page3 } =
-    await createRecordingContextAndNavigate(
-      browser,
-      componentURL,
-      storageState
-    );
+    await createRecordingContextAndNavigate(browser, session);
 
   try {
     // Select a config that has child relationships (Account usually has Contacts, Opportunities)
@@ -338,11 +289,7 @@ async function captureHappyPaths() {
   // ==================================================================
   console.log("🎥 4/6: Capturing Large Dataset with Cursors...");
   const { context: context4, page: page4 } =
-    await createRecordingContextAndNavigate(
-      browser,
-      componentURL,
-      storageState
-    );
+    await createRecordingContextAndNavigate(browser, session);
 
   try {
     // Select configuration that returns many records
@@ -390,13 +337,27 @@ async function captureHappyPaths() {
   // ==================================================================
   console.log("🎥 5/6: Capturing Create Configuration...");
   const { context: context5, page: page5 } =
-    await createRecordingContextAndNavigate(
-      browser,
-      componentURL,
-      storageState
-    );
+    await createRecordingContextAndNavigate(browser, session);
 
   try {
+    // Wait for component to be fully loaded and stable
+    await page5.waitForSelector("c-jt-query-viewer", { timeout: 30000 });
+    await page5.waitForTimeout(2000); // Wait for any initial loading to complete
+
+    // Make sure no configuration is selected (clear any selection)
+    // Use same selector as E2E tests
+    const configInput = page5.locator(SELECTORS.configSelectorInput).first();
+    if (await configInput.isVisible({ timeout: 3000 }).catch(() => false)) {
+      // Clear any existing selection by clicking and clearing
+      await configInput.click();
+      await page5.waitForTimeout(500);
+      await configInput.fill("");
+      await page5.waitForTimeout(1000);
+      // Press Escape to close dropdown if open
+      await page5.keyboard.press("Escape");
+      await page5.waitForTimeout(1000);
+    }
+
     // Click "Create Configuration" button (same selector as E2E tests)
     const createButton = page5
       .locator("lightning-button")
@@ -405,7 +366,7 @@ async function captureHappyPaths() {
 
     if (await createButton.isVisible({ timeout: 10000 })) {
       await createButton.click();
-      await page5.waitForTimeout(500); // Wait for modal to open (same as E2E)
+      await page5.waitForTimeout(1000); // Wait longer for modal to open
 
       // Wait for modal to be visible (same selector as E2E tests)
       const modal = page5.locator('section[role="dialog"]').first();
@@ -468,16 +429,16 @@ async function captureHappyPaths() {
   // ==================================================================
   console.log("🎥 6/6: Capturing Run As User...");
   const { context: context6, page: page6 } =
-    await createRecordingContextAndNavigate(
-      browser,
-      componentURL,
-      storageState
-    );
+    await createRecordingContextAndNavigate(browser, session);
 
   try {
+    // Wait for component to be fully loaded and stable
+    await page6.waitForSelector("c-jt-query-viewer", { timeout: 30000 });
+    await page6.waitForTimeout(2000); // Wait for any initial loading to complete
+
     // Select a configuration first (use one that works well)
     await selectConfiguration(page6, "Account By Name");
-    await page6.waitForTimeout(2000);
+    await page6.waitForTimeout(3000); // Wait longer for configuration to load and stabilize
 
     // Fill parameter first (before opening Run As)
     const paramInput = page6

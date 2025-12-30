@@ -71,11 +71,45 @@ async function convertToGif(videoPath, gifPath, fps = 6) {
 }
 
 /**
- * Create recording context and navigate using same flow as E2E tests
+ * Get component URL once (without recording) - starts directly in Query Viewer tab
  */
-async function createRecordingContextAndNavigate(browser, session) {
+async function getComponentURL(browser, session) {
+  console.log("   📍 Getting component URL (not recorded)...");
+  const tempContext = await browser.newContext({
+    viewport: VIEWPORT
+  });
+  const tempPage = await tempContext.newPage();
+
+  // Navigate to app and Query Viewer tab
+  await setupTestContext(tempPage, session, {
+    targetTab: "Query Viewer",
+    waitForComponent: true
+  });
+  await tempPage.waitForTimeout(2000);
+
+  // Get the current URL (should be the Query Viewer component page)
+  const componentURL = tempPage.url();
+
+  // Save storage state (cookies)
+  const storageState = await tempContext.storageState();
+  await tempContext.close();
+
+  console.log("   ✅ Component URL:", componentURL);
+  return { componentURL, storageState };
+}
+
+/**
+ * Create recording context and navigate directly to component URL
+ * This starts directly in Query Viewer tab without showing App Launcher
+ */
+async function createRecordingContextAndNavigate(
+  browser,
+  componentURL,
+  storageState
+) {
   const context = await browser.newContext({
     viewport: VIEWPORT,
+    storageState: storageState,
     recordVideo: {
       dir: VIDEOS_DIR,
       size: VIEWPORT
@@ -84,11 +118,13 @@ async function createRecordingContextAndNavigate(browser, session) {
 
   const page = await context.newPage();
 
-  // Use same navigation flow as E2E tests (not direct URL)
-  await setupTestContext(page, session, {
-    targetTab: "Query Viewer",
-    waitForComponent: true
+  // Go directly to component URL (skips App Launcher, starts in Query Viewer)
+  await page.goto(componentURL, {
+    waitUntil: "domcontentloaded",
+    timeout: 30000
   });
+  await page.waitForSelector("c-jt-query-viewer", { timeout: 30000 });
+  await page.waitForTimeout(2000); // Wait for component to stabilize
 
   return { context, page };
 }
@@ -111,13 +147,24 @@ async function captureHappyPaths() {
   console.log("✅ Authenticated:", session.username);
   console.log("");
 
+  // Get component URL once (starts directly in Query Viewer tab)
+  const { componentURL, storageState } = await getComponentURL(
+    browser,
+    session
+  );
+  console.log("");
+
   // ==================================================================
   // GIF 1: Basic Query Execution (10 seconds)
-  // Show: Select config → Execute → View results
+  // Show: Select config → Execute → View results (NO view switching)
   // ==================================================================
   console.log("🎥 1/6: Capturing Basic Query Execution...");
   const { context: context1, page: page1 } =
-    await createRecordingContextAndNavigate(browser, session);
+    await createRecordingContextAndNavigate(
+      browser,
+      componentURL,
+      storageState
+    );
 
   try {
     // Select configuration (use label that matches Custom Metadata)
@@ -133,23 +180,26 @@ async function captureHappyPaths() {
       await page1.waitForTimeout(1000);
     }
 
-    // Execute query (slower)
+    // Execute query
     await executeQuery(page1);
-    await page1.waitForTimeout(4000); // Wait longer for results
+    await page1.waitForTimeout(5000); // Wait longer for results
 
     // Wait for results to appear
     const resultsSection = page1.locator("c-jt-query-results").first();
-    await resultsSection.waitFor({ state: "visible", timeout: 10000 }).catch(() => {
-      console.log("   ⚠️  Results may not have appeared");
-    });
+    await resultsSection
+      .waitFor({ state: "visible", timeout: 15000 })
+      .catch(() => {
+        console.log("   ⚠️  Results may not have appeared");
+      });
 
-    // Scroll to see results
+    // Scroll to see results (NO clicking on table/json/csv buttons)
+    await page1.waitForTimeout(2000); // Show results in table view
     await page1.evaluate(() =>
-      window.scrollTo({ top: 300, behavior: "smooth" })
+      window.scrollTo({ top: 400, behavior: "smooth" })
     );
     await page1.waitForTimeout(2000);
     await page1.evaluate(() => window.scrollTo({ top: 0, behavior: "smooth" }));
-    await page1.waitForTimeout(1000);
+    await page1.waitForTimeout(1500);
 
     console.log("   ✅ Basic Query Execution captured");
   } catch (error) {
@@ -165,7 +215,11 @@ async function captureHappyPaths() {
   // ==================================================================
   console.log("🎥 2/6: Capturing Multiple Views (JSON, CSV)...");
   const { context: context2, page: page2 } =
-    await createRecordingContextAndNavigate(browser, session);
+    await createRecordingContextAndNavigate(
+      browser,
+      componentURL,
+      storageState
+    );
 
   try {
     // Select configuration
@@ -183,41 +237,60 @@ async function captureHappyPaths() {
 
     // Execute query
     await executeQuery(page2);
-    await page2.waitForTimeout(3000); // Wait longer for results
+    await page2.waitForTimeout(5000); // Wait longer for results to appear
 
-    // Switch to JSON view
-    const jsonButton = page2.locator('button:has-text("JSON")').first();
-    if (await jsonButton.isVisible()) {
+    // Wait for results component to be visible
+    const resultsComponent = page2.locator("c-jt-query-results").first();
+    await resultsComponent.waitFor({ state: "visible", timeout: 15000 });
+
+    // Switch to JSON view - use more specific selector
+    const jsonButton = page2
+      .locator("c-jt-query-results")
+      .locator('button:has-text("JSON"), button[title*="JSON"]')
+      .first();
+    if (await jsonButton.isVisible({ timeout: 5000 }).catch(() => false)) {
       await jsonButton.click();
-      await page2.waitForTimeout(2500);
+      await page2.waitForTimeout(3000); // Wait for JSON view to render
 
       // Scroll JSON to show content
       await page2.evaluate(() => {
-        const jsonView = document.querySelector(".json-content");
-        if (jsonView) jsonView.scrollTop = 100;
+        const jsonView = document.querySelector(".json-content, pre");
+        if (jsonView) jsonView.scrollTop = 150;
       });
-      await page2.waitForTimeout(2000);
+      await page2.waitForTimeout(2500);
+    } else {
+      console.log("   ⚠️  JSON button not found");
     }
 
-    // Switch to CSV view
-    const csvButton = page2.locator('button:has-text("CSV")').first();
-    if (await csvButton.isVisible()) {
+    // Switch to CSV view - use more specific selector
+    const csvButton = page2
+      .locator("c-jt-query-results")
+      .locator('button:has-text("CSV"), button[title*="CSV"]')
+      .first();
+    if (await csvButton.isVisible({ timeout: 5000 }).catch(() => false)) {
       await csvButton.click();
-      await page2.waitForTimeout(2500);
+      await page2.waitForTimeout(3000); // Wait for CSV view to render
 
       // Scroll CSV to show content
       await page2.evaluate(() => {
-        const csvView = document.querySelector(".csv-content");
-        if (csvView) csvView.scrollTop = 50;
+        const csvView = document.querySelector(".csv-content, pre");
+        if (csvView) csvView.scrollTop = 100;
       });
-      await page2.waitForTimeout(2000);
+      await page2.waitForTimeout(2500);
+    } else {
+      console.log("   ⚠️  CSV button not found");
     }
 
-    // Back to Table view
-    const tableButton = page2.locator('button:has-text("Table")').first();
-    if (await tableButton.isVisible()) {
+    // Back to Table view - use more specific selector
+    const tableButton = page2
+      .locator("c-jt-query-results")
+      .locator('button:has-text("Table"), button[title*="Table"]')
+      .first();
+    if (await tableButton.isVisible({ timeout: 5000 }).catch(() => false)) {
       await tableButton.click();
-      await page2.waitForTimeout(1500);
+      await page2.waitForTimeout(2000);
+    } else {
+      console.log("   ⚠️  Table button not found");
     }
 
     console.log("   ✅ Multiple Views captured");
@@ -231,7 +304,11 @@ async function captureHappyPaths() {
   // ==================================================================
   console.log("🎥 3/6: Capturing Tree View with Child Relationships...");
   const { context: context3, page: page3 } =
-    await createRecordingContextAndNavigate(browser, session);
+    await createRecordingContextAndNavigate(
+      browser,
+      componentURL,
+      storageState
+    );
 
   try {
     // Select a config that has child relationships (Account usually has Contacts, Opportunities)
@@ -289,7 +366,11 @@ async function captureHappyPaths() {
   // ==================================================================
   console.log("🎥 4/6: Capturing Large Dataset with Cursors...");
   const { context: context4, page: page4 } =
-    await createRecordingContextAndNavigate(browser, session);
+    await createRecordingContextAndNavigate(
+      browser,
+      componentURL,
+      storageState
+    );
 
   try {
     // Select configuration that returns many records
@@ -332,12 +413,16 @@ async function captureHappyPaths() {
   }
 
   // ==================================================================
-  // GIF 5: Create Configuration (12 seconds)
-  // Show: Click New Config → Fill form → Show validation
+  // GIF 5: Create Configuration (15 seconds)
+  // Show: Click New Config → Fill form → Save → Show success message
   // ==================================================================
   console.log("🎥 5/6: Capturing Create Configuration...");
   const { context: context5, page: page5 } =
-    await createRecordingContextAndNavigate(browser, session);
+    await createRecordingContextAndNavigate(
+      browser,
+      componentURL,
+      storageState
+    );
 
   try {
     // Wait for component to be fully loaded and stable
@@ -373,45 +458,73 @@ async function captureHappyPaths() {
       await modal.waitFor({ state: "visible", timeout: 5000 });
 
       // Fill Label (same as E2E tests - uses "label" field, not "name")
-      const labelInput = modal.locator('lightning-input[data-field="label"]').first();
+      const labelInput = modal
+        .locator('lightning-input[data-field="label"]')
+        .first();
       if (await labelInput.isVisible({ timeout: 5000 }).catch(() => false)) {
+        await labelInput.locator("input").click();
+        await page5.waitForTimeout(300);
         await labelInput.locator("input").fill("Demo Query Configuration");
-        await page5.waitForTimeout(500); // Wait for auto-generation of Developer Name
+        await page5.waitForTimeout(1000); // Wait for auto-generation of Developer Name
 
         // Fill base query (same field name as E2E tests)
         const queryTextarea = modal
           .locator('lightning-textarea[data-field="baseQuery"]')
           .first();
 
-        if (await queryTextarea.isVisible({ timeout: 3000 }).catch(() => false)) {
-          await queryTextarea.locator("textarea").fill("SELECT Id, Name, Type, Industry FROM Account LIMIT 10");
-          await page5.waitForTimeout(1000);
+        if (
+          await queryTextarea.isVisible({ timeout: 3000 }).catch(() => false)
+        ) {
+          await queryTextarea.locator("textarea").click();
+          await page5.waitForTimeout(300);
+          await queryTextarea
+            .locator("textarea")
+            .fill("SELECT Id, Name, Type, Industry FROM Account LIMIT 10");
+          await page5.waitForTimeout(1500);
         }
 
         // Fill object name (same as E2E tests)
-        const objectInput = modal.locator('lightning-input[data-field="object"]').first();
+        const objectInput = modal
+          .locator('lightning-input[data-field="object"]')
+          .first();
         if (await objectInput.isVisible({ timeout: 3000 }).catch(() => false)) {
+          await objectInput.locator("input").click();
+          await page5.waitForTimeout(300);
           await objectInput.locator("input").fill("Account");
-          await page5.waitForTimeout(500);
+          await page5.waitForTimeout(1000);
+        }
+
+        // Show the form filled out for a moment
+        await page5.waitForTimeout(2000);
+
+        // Click Save button (not Cancel - show the save process)
+        const saveButton = modal
+          .locator("lightning-button")
+          .filter({ hasText: /Save/i })
+          .first();
+        if (
+          await saveButton.isVisible({ timeout: 3000 }).catch(() => false)
+        ) {
+          await saveButton.click();
+          await page5.waitForTimeout(3000); // Wait for save to complete
+
+          // Wait for success toast or modal to close
+          const toast = page5.locator("lightning-toast").first();
+          await toast
+            .waitFor({ state: "visible", timeout: 5000 })
+            .catch(() => {});
+          await page5.waitForTimeout(2000); // Show success message
+
+          // Modal should close automatically, but wait a bit
+          await page5.waitForTimeout(1500);
+        } else {
+          console.log("   ⚠️  Save button not found");
         }
       }
-
-      // Show the form filled out for a moment before closing
-      await page5.waitForTimeout(2000);
-
-      // Close modal (same selector as E2E tests - don't save, just demo)
-      const cancelButton = modal
-        .locator("lightning-button")
-        .filter({ hasText: /Cancel/i })
-        .first();
-      if (await cancelButton.isVisible({ timeout: 2000 }).catch(() => false)) {
-        await cancelButton.click();
-      } else {
-        await page5.keyboard.press("Escape");
-      }
-      await page5.waitForTimeout(500);
     } else {
-      console.log("   ⚠️  New Configuration button not found (may be in production org)");
+      console.log(
+        "   ⚠️  New Configuration button not found (may be in production org)"
+      );
       await page5.waitForTimeout(2000);
     }
 
@@ -424,12 +537,16 @@ async function captureHappyPaths() {
   }
 
   // ==================================================================
-  // GIF 6: Run As User (15 seconds)
+  // GIF 6: Run As User (20 seconds)
   // Show: Expand Run As accordion → Select user → Execute with System.runAs → Show results
   // ==================================================================
   console.log("🎥 6/6: Capturing Run As User...");
   const { context: context6, page: page6 } =
-    await createRecordingContextAndNavigate(browser, session);
+    await createRecordingContextAndNavigate(
+      browser,
+      componentURL,
+      storageState
+    );
 
   try {
     // Wait for component to be fully loaded and stable
@@ -463,14 +580,17 @@ async function captureHappyPaths() {
         .catch(() => false);
 
       if (!isExpanded) {
+        console.log("   📂 Expanding Run As accordion...");
         await accordionSection.click();
-        await page6.waitForTimeout(2000); // Wait longer for accordion to expand
+        await page6.waitForTimeout(3000); // Wait longer for accordion to expand
+      } else {
+        console.log("   ✅ Run As accordion already expanded");
       }
 
       // Wait for Run As section component to be visible
       const runAsComponent = page6.locator("c-jt-run-as-section").first();
-      await runAsComponent.waitFor({ state: "visible", timeout: 10000 });
-      await page6.waitForTimeout(2000); // Wait longer for component to fully load
+      await runAsComponent.waitFor({ state: "visible", timeout: 15000 });
+      await page6.waitForTimeout(3000); // Wait longer for component to fully load
 
       // Select a user from the combobox
       const userCombobox = page6.locator(
@@ -478,27 +598,45 @@ async function captureHappyPaths() {
       );
       const userInput = userCombobox.locator("input").first();
 
-      if (await userInput.isVisible({ timeout: 10000 }).catch(() => false)) {
+      if (await userInput.isVisible({ timeout: 15000 }).catch(() => false)) {
+        console.log("   👤 Clicking user selector...");
         await userInput.click();
-        await page6.waitForTimeout(2000); // Same wait time as E2E tests
+        await page6.waitForTimeout(3000); // Wait longer for dropdown to open
 
-        // Search for a user (same approach as E2E tests - more reliable)
-        // Try common user names or just select first available
+        // Clear any existing text and wait for dropdown
         await userInput.fill("");
-        await page6.waitForTimeout(1000);
+        await page6.waitForTimeout(2000);
 
         // Try to get users from dropdown
         const userDropdown = userCombobox.locator(".slds-listbox").first();
-        await userDropdown.waitFor({ state: "visible", timeout: 5000 }).catch(() => {});
-        await page6.waitForTimeout(1000);
+        const dropdownVisible = await userDropdown
+          .waitFor({ state: "visible", timeout: 8000 })
+          .then(() => true)
+          .catch(() => false);
+
+        if (!dropdownVisible) {
+          console.log("   ⚠️  User dropdown not visible, trying to type...");
+          // Try typing to trigger dropdown
+          await userInput.fill("a");
+          await page6.waitForTimeout(2000);
+          // Try waiting again after typing
+          await userDropdown
+            .waitFor({ state: "visible", timeout: 5000 })
+            .catch(() => {});
+        }
+
+        await page6.waitForTimeout(2000);
 
         const userOptions = userDropdown.locator(".slds-listbox__item");
         const userCount = await userOptions.count();
 
+        console.log(`   📋 Found ${userCount} user(s) in dropdown`);
+
         if (userCount > 0) {
-          // Select the first available user (same as E2E fallback)
+          // Select the first available user
+          console.log("   ✅ Selecting first user...");
           await userOptions.first().click();
-          await page6.waitForTimeout(2000);
+          await page6.waitForTimeout(3000); // Wait for selection to register
 
           // Execute query with "Execute with System.runAs" button (same selector as E2E tests)
           const executeRunAsButton = page6
@@ -507,11 +645,12 @@ async function captureHappyPaths() {
 
           if (
             await executeRunAsButton
-              .isVisible({ timeout: 10000 })
+              .isVisible({ timeout: 15000 })
               .catch(() => false)
           ) {
+            console.log("   ▶️  Clicking Execute with System.runAs...");
             await executeRunAsButton.click();
-            await page6.waitForTimeout(5000); // Wait longer for test execution
+            await page6.waitForTimeout(8000); // Wait longer for test execution
 
             // Wait for results or test execution status
             const resultsSection = page6.locator("c-jt-query-results").first();
@@ -520,21 +659,23 @@ async function captureHappyPaths() {
               .first();
 
             // Wait longer for either results or status message
+            console.log("   ⏳ Waiting for execution results...");
             await Promise.race([
               resultsSection
-                .waitFor({ state: "visible", timeout: 15000 })
+                .waitFor({ state: "visible", timeout: 20000 })
                 .catch(() => null),
               testStatus
-                .waitFor({ state: "visible", timeout: 15000 })
+                .waitFor({ state: "visible", timeout: 20000 })
                 .catch(() => null),
-              page6.waitForTimeout(8000) // Wait at least 8 seconds
+              page6.waitForTimeout(10000) // Wait at least 10 seconds
             ]);
 
             // Scroll to see results if available
             await page6.evaluate(() =>
               window.scrollTo({ top: 400, behavior: "smooth" })
             );
-            await page6.waitForTimeout(3000); // Show results longer
+            await page6.waitForTimeout(4000); // Show results longer
+            console.log("   ✅ Run As execution completed");
           } else {
             console.log("   ⚠️  Execute with System.runAs button not found");
             await page6.waitForTimeout(2000);

@@ -1,0 +1,883 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home - Dynamic Query Framework</title>
+
+    <!-- SEO Meta Tags -->
+    <meta
+      name="description"
+      content="Transform how you work with Salesforce data. Dynamic Query Framework is a comprehensive LWC development tool with pre-configured queries, Run As User testing, tree view relationships, and enterprise-scale performance (50k+ records)."
+    />
+    <meta
+      name="keywords"
+      content="Salesforce, SOQL, Lightning Web Component, LWC, Dynamic Queries, Salesforce Development, Developer Tools, Apex, Tooling API, Query Builder, Salesforce DX, Open Source, WCAG, Accessibility, Enterprise Development"
+    />
+    <meta name="author" content="Jaime Terrats" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="http://localhost:8000/" />
+
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#667eea" />
+
+    <!-- Favicon (TODO: Add when ready) -->
+    <!-- <link rel="icon" type="image/svg+xml" href="/favicon.svg" /> -->
+    <!-- <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" /> -->
+
+    <!-- Open Graph (LinkedIn, WhatsApp, etc.) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="http://localhost:8000/" />
+    <meta
+      property="og:title"
+      content="Dynamic Query Framework - Beyond Simple SOQL Queries"
+    />
+    <meta
+      property="og:description"
+      content="A comprehensive Salesforce development framework that transforms how developers interact with data. Pre-configured queries, Run As User testing, tree view relationships, and enterprise-scale performance."
+    />
+    <meta
+      property="og:image"
+      content="http://localhost:8000/assets/gifs/01-query-execution.gif"
+    />
+    <meta property="og:site_name" content="Dynamic Query Framework" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Dynamic Query Framework",
+        "applicationCategory": "DeveloperApplication",
+        "description": "Transform how you work with Salesforce data. Dynamic Query Framework is a comprehensive LWC development tool.",
+        "operatingSystem": "Salesforce",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "author": {
+          "@type": "Person",
+          "name": "Jaime Terrats",
+          "url": "https://github.com/jterrats"
+        },
+        "codeRepository": "https://github.com/jterrats/JT_DynamicQueries",
+        "programmingLanguage": ["JavaScript", "Apex", "SOQL"],
+        "license": "https://opensource.org/licenses/MIT",
+        "keywords": "Salesforce, SOQL, Lightning Web Component, Developer Tools, Dynamic Queries",
+        "screenshot": "http://localhost:8000/assets/gifs/01-query-execution.gif"
+      }
+    </script>
+
+    <!-- External Styles -->
+    <link rel="stylesheet" href="/css/main.css" />
+  </head>
+  <body>
+    <div class="language-banner">
+      <div style="flex: 1"></div>
+      <div class="language-selector">
+        <label for="language">🌍</label>
+        <select id="language" onchange="changeLanguage(this.value)">
+          <option value="en">🇺🇸 English</option>
+
+          <option value="es">🇲🇽 Español</option>
+
+          <option value="fr">🇫🇷 Français</option>
+
+          <option value="de">🇩🇪 Deutsch</option>
+
+          <option value="pt">🇧🇷 Português</option>
+
+          <option value="it">🇮🇹 Italiano</option>
+
+          <option value="ja">🇯🇵 日本語</option>
+
+          <option value="zh">🇨🇳 中文</option>
+        </select>
+      </div>
+      <div style="flex: 1"></div>
+    </div>
+
+    <header>
+      <h1>⚡ Dynamic Query Framework</h1>
+      <p class="tagline">
+        Lightning Web Component for Dynamic SOQL Queries in Salesforce
+      </p>
+
+      <!-- Status Badges (Auto-updating from GitHub) -->
+      <div
+        style="
+          display: flex;
+          gap: 0.5rem;
+          justify-content: center;
+          flex-wrap: wrap;
+          margin: 1.5rem 0;
+        "
+      >
+        <img
+          src="https://img.shields.io/github/package-json/v/jterrats/JT_DynamicQueries?label=version&color=blue"
+          alt="Version"
+          style="height: 20px"
+        />
+        <img
+          src="https://img.shields.io/github/actions/workflow/status/jterrats/JT_DynamicQueries/e2e-on-merge.yml?branch=main&label=E2E%20Tests"
+          alt="E2E Tests"
+          style="height: 20px"
+        />
+        <img
+          src="https://img.shields.io/github/actions/workflow/status/jterrats/JT_DynamicQueries/gh-pages.yml?branch=main&label=docs"
+          alt="Docs"
+          style="height: 20px"
+        />
+        <img
+          src="https://img.shields.io/badge/tests-118%20passing-success.svg"
+          alt="Tests Passing"
+          style="height: 20px"
+        />
+        <img
+          src="https://img.shields.io/github/license/jterrats/JT_DynamicQueries?color=green"
+          alt="License"
+          style="height: 20px"
+        />
+        <img
+          src="https://img.shields.io/github/last-commit/jterrats/JT_DynamicQueries"
+          alt="Last Commit"
+          style="height: 20px"
+        />
+        <img
+          src="https://img.shields.io/badge/playwright-v1.49.1-45ba4b?logo=playwright"
+          alt="Playwright"
+          style="height: 20px"
+        />
+      </div>
+    </header>
+
+    <div class="container">
+      <!-- Hero Section -->
+      <section
+        id="hero"
+        style="
+          background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+          padding: 3rem;
+          border-radius: 15px;
+          margin: 2rem 0;
+          border-left: 5px solid #667eea;
+        "
+      >
+        <h2
+          style="
+            color: #667eea;
+            border: none;
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+          "
+        >
+          🚀 Beyond Simple SOQL Queries
+        </h2>
+        <p
+          style="
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #333;
+            margin-bottom: 1rem;
+          "
+        >
+          This isn't just another tool to run SOQL queries.
+          <strong>JT Dynamic Queries</strong> is a comprehensive development
+          framework that transforms how Salesforce developers interact with
+          data.
+        </p>
+        <div
+          style="
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+          "
+        >
+          <div
+            style="
+              background: white;
+              padding: 1.5rem;
+              border-radius: 10px;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            "
+          >
+            <h3 style="color: #667eea; margin: 0 0 0.5rem 0; font-size: 1.1rem">
+              🔍 Debug Like a Pro
+            </h3>
+            <p style="margin: 0; font-size: 0.95rem; color: #666">
+              Pre-configured queries for common debugging scenarios. No more
+              writing the same queries over and over.
+            </p>
+          </div>
+          <div
+            style="
+              background: white;
+              padding: 1.5rem;
+              border-radius: 10px;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            "
+          >
+            <h3 style="color: #667eea; margin: 0 0 0.5rem 0; font-size: 1.1rem">
+              👤 Test Permissions Instantly
+            </h3>
+            <p style="margin: 0; font-size: 0.95rem; color: #666">
+              Run As User feature lets you validate data visibility and security
+              models without switching users.
+            </p>
+          </div>
+          <div
+            style="
+              background: white;
+              padding: 1.5rem;
+              border-radius: 10px;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            "
+          >
+            <h3 style="color: #667eea; margin: 0 0 0.5rem 0; font-size: 1.1rem">
+              🌳 Understand Complex Data
+            </h3>
+            <p style="margin: 0; font-size: 0.95rem; color: #666">
+              Tree view for parent-child relationships. See your data structure
+              at a glance, not in flat tables.
+            </p>
+          </div>
+          <div
+            style="
+              background: white;
+              padding: 1.5rem;
+              border-radius: 10px;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            "
+          >
+            <h3 style="color: #667eea; margin: 0 0 0.5rem 0; font-size: 1.1rem">
+              ⚡ Enterprise-Scale Performance
+            </h3>
+            <p style="margin: 0; font-size: 0.95rem; color: #666">
+              Handle 50k+ records with cursor-based pagination. No more governor
+              limit headaches.
+            </p>
+          </div>
+          <div
+            style="
+              background: white;
+              padding: 1.5rem;
+              border-radius: 10px;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            "
+          >
+            <h3 style="color: #667eea; margin: 0 0 0.5rem 0; font-size: 1.1rem">
+              📊 Export Anywhere
+            </h3>
+            <p style="margin: 0; font-size: 0.95rem; color: #666">
+              Switch between Table, JSON, and CSV views. Copy data in the format
+              you need for documentation or analysis.
+            </p>
+          </div>
+          <div
+            style="
+              background: white;
+              padding: 1.5rem;
+              border-radius: 10px;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            "
+          >
+            <h3 style="color: #667eea; margin: 0 0 0.5rem 0; font-size: 1.1rem">
+              🎯 Team Collaboration
+            </h3>
+            <p style="margin: 0; font-size: 0.95rem; color: #666">
+              Share query configurations across your team. Everyone uses the
+              same validated queries for consistency.
+            </p>
+          </div>
+        </div>
+        <p
+          style="
+            font-size: 1.1rem;
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 8px;
+            color: #333;
+          "
+        >
+          <strong>💡 For Developers, By Developers:</strong> Built by someone
+          who got tired of Developer Console limitations and wanted a modern,
+          accessible, and powerful way to work with Salesforce data.
+        </p>
+      </section>
+
+      <!-- GIF Showcase -->
+      <section id="demos">
+        <h2>🎬 See It In Action</h2>
+
+        <div class="gif-showcase">
+          <div class="gif-card">
+            <img
+              src="/assets/gifs/01-query-execution.gif"
+              alt="Query Execution Demo"
+              onerror="
+                this.style.display = 'none';
+                this.nextElementSibling.style.display = 'flex';
+              "
+            />
+            <div class="placeholder-gif" style="display: none">
+              GIF: Query Execution
+            </div>
+            <div class="gif-card-content">
+              <h4>⚡ Query Execution</h4>
+              <p>
+                Select a configuration and execute queries instantly. View
+                results in an intuitive table format with smooth scrolling.
+              </p>
+            </div>
+          </div>
+
+          <div class="gif-card">
+            <img
+              src="/assets/gifs/02-multiple-views.gif"
+              alt="Multiple Views Demo"
+              onerror="
+                this.style.display = 'none';
+                this.nextElementSibling.style.display = 'flex';
+              "
+            />
+            <div class="placeholder-gif" style="display: none">
+              GIF: Multiple Views
+            </div>
+            <div class="gif-card-content">
+              <h4>📊 Multiple Views</h4>
+              <p>
+                Switch between Table, JSON, and CSV views seamlessly. Export
+                data in your preferred format for analysis or integration.
+              </p>
+            </div>
+          </div>
+
+          <div class="gif-card">
+            <img
+              src="/assets/gifs/03-tree-view.gif"
+              alt="Tree View Demo"
+              onerror="
+                this.style.display = 'none';
+                this.nextElementSibling.style.display = 'flex';
+              "
+            />
+            <div class="placeholder-gif" style="display: none">
+              GIF: Tree View
+            </div>
+            <div class="gif-card-content">
+              <h4>🌳 Tree View</h4>
+              <p>
+                Expand parent records to view child relationships in a
+                hierarchical tree structure. Perfect for navigating complex data
+                models.
+              </p>
+            </div>
+          </div>
+
+          <div class="gif-card">
+            <img
+              src="/assets/gifs/04-large-dataset.gif"
+              alt="Large Dataset Demo"
+              onerror="
+                this.style.display = 'none';
+                this.nextElementSibling.style.display = 'flex';
+              "
+            />
+            <div class="placeholder-gif" style="display: none">
+              GIF: Large Dataset
+            </div>
+            <div class="gif-card-content">
+              <h4>🚀 Large Datasets</h4>
+              <p>
+                Handle massive datasets (&gt;50k records) with cursor-based
+                pagination. Optimized performance for enterprise-scale queries.
+              </p>
+            </div>
+          </div>
+
+          <div class="gif-card">
+            <img
+              src="/assets/gifs/05-create-config.gif"
+              alt="Create Configuration Demo"
+              onerror="
+                this.style.display = 'none';
+                this.nextElementSibling.style.display = 'flex';
+              "
+            />
+            <div class="placeholder-gif" style="display: none">
+              GIF: Create Configuration
+            </div>
+            <div class="gif-card-content">
+              <h4>⚙️ Create Configuration</h4>
+              <p>
+                Build custom query configurations with a simple form. Define
+                objects, fields, filters, and parameters in seconds.
+              </p>
+            </div>
+          </div>
+
+          <div class="gif-card">
+            <img
+              src="/assets/gifs/06-run-as-user.gif"
+              alt="Run As User Demo"
+              onerror="
+                this.style.display = 'none';
+                this.nextElementSibling.style.display = 'flex';
+              "
+            />
+            <div class="placeholder-gif" style="display: none">
+              GIF: Run As User
+            </div>
+            <div class="gif-card-content">
+              <h4>👤 Run As User</h4>
+              <p>
+                Execute queries as different users using System.runAs() to test
+                permissions and data visibility. Expand the Run As User
+                accordion, select a user, and execute queries with their
+                security context. Perfect for admins validating security models.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Testing Methodology CTA -->
+      <section
+        id="testing-methodology"
+        style="
+          margin: 3rem 0;
+          padding: 3rem;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          border-radius: 15px;
+          color: white;
+          text-align: center;
+          position: relative;
+          box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        "
+      >
+        <div
+          style="
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ffd700;
+            color: #333;
+            padding: 0.4rem 1.5rem;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+          "
+        >
+          ⭐ PIONEERING METHODOLOGY
+        </div>
+
+        <h2
+          style="
+            font-size: 2.5rem;
+            margin: 1rem 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+          "
+        >
+          🔧 Error-Driven Development (EDD)
+        </h2>
+        <p
+          style="
+            font-size: 1.3rem;
+            margin: 1.5rem auto;
+            max-width: 700px;
+            opacity: 0.95;
+            line-height: 1.7;
+          "
+        >
+          Discover how I use <strong>EDD</strong> as the core methodology,
+          complemented by E2E, TDD, and BDD to build better software faster
+        </p>
+
+        <div
+          style="
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+          "
+        >
+          <div
+            style="
+              background: rgba(255, 255, 255, 0.15);
+              padding: 1.5rem;
+              border-radius: 10px;
+              backdrop-filter: blur(10px);
+            "
+          >
+            <div style="font-size: 2rem; font-weight: bold">118</div>
+            <div style="font-size: 0.9rem; opacity: 0.9">E2E Tests Passing</div>
+          </div>
+          <div
+            style="
+              background: rgba(255, 255, 255, 0.15);
+              padding: 1.5rem;
+              border-radius: 10px;
+              backdrop-filter: blur(10px);
+            "
+          >
+            <div style="font-size: 2rem; font-weight: bold">95%</div>
+            <div style="font-size: 0.9rem; opacity: 0.9">Code Coverage</div>
+          </div>
+          <div
+            style="
+              background: rgba(255, 255, 255, 0.15);
+              padding: 1.5rem;
+              border-radius: 10px;
+              backdrop-filter: blur(10px);
+            "
+          >
+            <div style="font-size: 2rem; font-weight: bold">100%</div>
+            <div style="font-size: 0.9rem; opacity: 0.9">WCAG 2.1 AA</div>
+          </div>
+          <div
+            style="
+              background: rgba(255, 255, 255, 0.15);
+              padding: 1.5rem;
+              border-radius: 10px;
+              backdrop-filter: blur(10px);
+            "
+          >
+            <div style="font-size: 2rem; font-weight: bold">40%</div>
+            <div style="font-size: 0.9rem; opacity: 0.9">Faster Dev Time</div>
+          </div>
+        </div>
+
+        <a
+          href="/testing/"
+          style="
+            display: inline-block;
+            margin-top: 1.5rem;
+            padding: 1rem 3rem;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition:
+              transform 0.2s,
+              box-shadow 0.2s;
+          "
+          onmouseover="
+            this.style.transform = 'scale(1.05)';
+            this.style.boxShadow = '0 6px 20px rgba(0,0,0,0.3)';
+          "
+          onmouseout="
+            this.style.transform = 'scale(1)';
+            this.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
+          "
+        >
+          🧪 Explore My Testing Methodology
+        </a>
+
+        <p
+          style="
+            margin-top: 1.5rem;
+            font-size: 0.95rem;
+            opacity: 0.8;
+            font-style: italic;
+          "
+        >
+          💡 "The error message is your friend. It tells you exactly what to
+          build next."
+        </p>
+      </section>
+
+      <!-- Features -->
+      <section id="features">
+        <h2>✨ Key Features</h2>
+        <div class="feature-grid">
+          <div class="feature-card">
+            <h4>🚀 Dynamic Queries</h4>
+            <p>Execute SOQL queries dynamically without hardcoding</p>
+          </div>
+          <div class="feature-card">
+            <h4>🔐 Named Credentials</h4>
+            <p>Secure Tooling API callouts with modern Named Credentials</p>
+          </div>
+          <div class="feature-card">
+            <h4>📊 Multiple Views</h4>
+            <p>Switch between Table, JSON, and mobile card views</p>
+          </div>
+          <div class="feature-card">
+            <h4>♿ Accessible</h4>
+            <p>WCAG 2.1 AA compliant with full keyboard navigation</p>
+          </div>
+          <div class="feature-card">
+            <h4>🎨 Lightning Design</h4>
+            <p>Built with Salesforce Lightning Design System</p>
+          </div>
+          <div class="feature-card">
+            <h4>🧪 Tested</h4>
+            <p>118+ E2E tests with Playwright for reliability</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Installation -->
+      <section id="installation">
+        <h2>🚀 Quick Start</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 2rem; color: #666">
+          Deploy the framework to your Salesforce org with just one click. No
+          need to clone the repository or install any tools.
+        </p>
+
+        <!-- Deploy to Salesforce Button -->
+        <div
+          style="
+            text-align: center;
+            margin: 2rem 0;
+            padding: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+          "
+        >
+          <h3
+            style="
+              color: white;
+              margin: 0 0 1.5rem 0;
+              font-size: 1.5rem;
+              text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            "
+          >
+            ⚡ Deploy Now
+          </h3>
+          <a
+            href="https://githubsfdeploy.herokuapp.com/?owner=jterrats&repo=JT_DynamicQueries"
+            target="_blank"
+            rel="noopener noreferrer"
+            style="
+              display: inline-block;
+              padding: 1rem 2.5rem;
+              background: white;
+              color: #667eea;
+              text-decoration: none;
+              font-size: 1.2rem;
+              font-weight: bold;
+              border-radius: 50px;
+              box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+              transition:
+                transform 0.2s,
+                box-shadow 0.2s;
+            "
+            onmouseover="
+              this.style.transform = 'scale(1.05)';
+              this.style.boxShadow = '0 6px 20px rgba(0,0,0,0.3)';
+            "
+            onmouseout="
+              this.style.transform = 'scale(1)';
+              this.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
+            "
+          >
+            🚀 Deploy to Salesforce
+          </a>
+          <p
+            style="
+              color: rgba(255, 255, 255, 0.9);
+              margin: 1rem 0 0 0;
+              font-size: 0.95rem;
+            "
+          >
+            One-click deployment to any Salesforce org
+          </p>
+        </div>
+
+        <div
+          style="
+            margin-top: 3rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+          "
+        >
+          <h3 style="margin-top: 0; color: #333">
+            👨‍💻 For Contributors & Developers
+          </h3>
+          <p style="color: #666; margin-bottom: 1rem">
+            If you want to contribute to the project or customize it locally,
+            follow these steps:
+          </p>
+
+          <h4 style="color: #667eea; font-size: 1rem; margin-top: 1.5rem">
+            Prerequisites
+          </h4>
+          <ul style="margin-left: 2rem; line-height: 1.8; color: #666">
+            <li>Salesforce CLI (latest)</li>
+            <li>Node.js 24+</li>
+            <li>Git</li>
+          </ul>
+
+          <h4
+            style="
+              color: #667eea;
+              font-size: 1rem;
+              margin-top: 1.5rem;
+              margin-bottom: 0.5rem;
+            "
+          >
+            Installation Steps
+          </h4>
+          <pre
+            style="
+              background: #2d2d2d;
+              color: #f8f8f2;
+              padding: 1rem;
+              border-radius: 8px;
+              overflow-x: auto;
+              font-size: 0.9rem;
+            "
+          ><code># Clone repository
+git clone https://github.com/jterrats/JT_DynamicQueries.git
+cd JT_DynamicQueries
+
+# Install dependencies
+npm install
+
+# Deploy to your org
+sf project deploy start
+
+# Run tests (optional)
+npm test</code></pre>
+        </div>
+      </section>
+
+      <!-- CTA -->
+      <section class="cta-section">
+        <h2>Ready to Get Started?</h2>
+        <p style="font-size: 1.2rem; margin: 1rem 0">
+          Join the community and start building better SOQL queries today
+        </p>
+        <a
+          href="https://github.com/jterrats/JT_DynamicQueries"
+          class="cta-button"
+          >View on GitHub</a
+        >
+        <a
+          href="https://github.com/jterrats/JT_DynamicQueries#readme"
+          class="cta-button"
+          >Read Documentation</a
+        >
+      </section>
+
+      <!-- Documentation Links -->
+      <section id="docs">
+        <h2>📚 Documentation</h2>
+        <div class="feature-grid">
+          <div class="feature-card">
+            <h4>📖 Features v2.0</h4>
+            <p>
+              <a href="/FEATURES_v2/" style="color: white">Learn more →</a>
+            </p>
+          </div>
+          <div class="feature-card">
+            <h4>🏗️ Architecture</h4>
+            <p>
+              <a href="/architecture/" style="color: white"
+                >View Interactive Diagrams →</a
+              >
+            </p>
+          </div>
+          <div class="feature-card">
+            <h4>🗺️ V3.0 Roadmap</h4>
+            <p>
+              <a href="/V3_ROADMAP/" style="color: white">Learn more →</a>
+            </p>
+          </div>
+          <div
+            class="feature-card"
+            style="
+              border: 3px solid #ffd700;
+              position: relative;
+              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            "
+          >
+            <div
+              style="
+                position: absolute;
+                top: -12px;
+                right: 10px;
+                background: #ffd700;
+                color: #333;
+                padding: 0.2rem 0.8rem;
+                border-radius: 15px;
+                font-size: 0.75rem;
+                font-weight: bold;
+              "
+            >
+              ⭐ NEW
+            </div>
+            <h4>🔧 Testing with EDD</h4>
+            <p>
+              <a href="/testing/" style="color: white; font-weight: bold"
+                >Explore Methodology →</a
+              >
+            </p>
+          </div>
+          <div class="feature-card">
+            <h4>👤 Run As User</h4>
+            <p>
+              <a href="/guides/RUN_AS_USER_FEATURE/" style="color: white"
+                >Test permissions with System.runAs() →</a
+              >
+            </p>
+          </div>
+          <div class="feature-card">
+            <h4>📝 Error Logging</h4>
+            <p>
+              <a
+                href="/development/ERROR_LOGGING_IMPLEMENTATION/"
+                style="color: white"
+                >Centralized error tracking system →</a
+              >
+            </p>
+          </div>
+          <div class="feature-card">
+            <h4>🌍 Multilanguage</h4>
+            <p>
+              <a href="/TRANSLATION_WORKBENCH/" style="color: white"
+                >Custom Labels for i18n support →</a
+              >
+            </p>
+          </div>
+        </div>
+      </section>
+      <footer>
+        <p>
+          Built with ❤️ by
+          <a
+            href="https://github.com/jterrats"
+            style="color: #667eea; text-decoration: none"
+            >Jaime Terrats</a
+          >
+        </p>
+        <p style="margin-top: 0.5rem; font-size: 0.9rem">
+          Licensed under
+          <a href="/LICENSE/" style="color: #667eea; text-decoration: none"
+            >MIT</a
+          >
+          | © 2025
+        </p>
+      </footer>
+    </div>
+
+    <!-- External Scripts (Module) -->
+    <script type="module" src="/js/main.js"></script>
+  </body>
+</html>

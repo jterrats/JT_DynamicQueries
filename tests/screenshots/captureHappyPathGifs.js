@@ -270,10 +270,15 @@ async function captureHappyPaths() {
       await page2.waitForTimeout(2000); // Wait for JSON view to render
 
       // Wait for JSON content to be visible
-      await page2.waitForSelector("c-jt-query-results .json-content, c-jt-query-results pre", {
-        state: "visible",
-        timeout: 5000
-      }).catch(() => {});
+      await page2
+        .waitForSelector(
+          "c-jt-query-results .json-content, c-jt-query-results pre",
+          {
+            state: "visible",
+            timeout: 5000
+          }
+        )
+        .catch(() => {});
 
       // Scroll down the page to show JSON content
       await page2.evaluate(() => {
@@ -283,7 +288,9 @@ async function captureHappyPaths() {
 
       // Also scroll within the JSON content element if it exists
       await page2.evaluate(() => {
-        const jsonView = document.querySelector("c-jt-query-results .json-content, c-jt-query-results pre");
+        const jsonView = document.querySelector(
+          "c-jt-query-results .json-content, c-jt-query-results pre"
+        );
         if (jsonView) {
           jsonView.scrollTop = 200;
         }
@@ -303,10 +310,15 @@ async function captureHappyPaths() {
       await page2.waitForTimeout(2000); // Wait for CSV view to render
 
       // Wait for CSV content to be visible
-      await page2.waitForSelector("c-jt-query-results .csv-content, c-jt-query-results pre", {
-        state: "visible",
-        timeout: 5000
-      }).catch(() => {});
+      await page2
+        .waitForSelector(
+          "c-jt-query-results .csv-content, c-jt-query-results pre",
+          {
+            state: "visible",
+            timeout: 5000
+          }
+        )
+        .catch(() => {});
 
       // Scroll down the page to show CSV content
       await page2.evaluate(() => {
@@ -316,7 +328,9 @@ async function captureHappyPaths() {
 
       // Also scroll within the CSV content element if it exists
       await page2.evaluate(() => {
-        const csvView = document.querySelector("c-jt-query-results .csv-content, c-jt-query-results pre");
+        const csvView = document.querySelector(
+          "c-jt-query-results .csv-content, c-jt-query-results pre"
+        );
         if (csvView) {
           csvView.scrollTop = 150;
         }
@@ -571,9 +585,7 @@ async function captureHappyPaths() {
           .locator("lightning-button")
           .filter({ hasText: /Save/i })
           .first();
-        if (
-          await saveButton.isVisible({ timeout: 3000 }).catch(() => false)
-        ) {
+        if (await saveButton.isVisible({ timeout: 3000 }).catch(() => false)) {
           await saveButton.click();
           await page5.waitForTimeout(3000); // Wait for save to complete
 
@@ -655,7 +667,7 @@ async function captureHappyPaths() {
     // If not found, try alternative selector
     if ((await accordionSection.count()) === 0) {
       accordionSection = page6
-        .locator('lightning-accordion-section')
+        .locator("lightning-accordion-section")
         .filter({ hasText: /Run As|run as/i })
         .first();
     }
@@ -677,7 +689,9 @@ async function captureHappyPaths() {
         console.log("   📂 Expanding Run As accordion...");
         // Click on the accordion header/button
         const accordionButton = accordionSection.locator("button").first();
-        if (await accordionButton.isVisible({ timeout: 5000 }).catch(() => false)) {
+        if (
+          await accordionButton.isVisible({ timeout: 5000 }).catch(() => false)
+        ) {
           await accordionButton.click();
         } else {
           await accordionSection.click();
@@ -689,7 +703,9 @@ async function captureHappyPaths() {
       }
 
       // Scroll down a bit to show the expanded content
-      await page6.evaluate(() => window.scrollTo({ top: 300, behavior: "smooth" }));
+      await page6.evaluate(() =>
+        window.scrollTo({ top: 300, behavior: "smooth" })
+      );
       await page6.waitForTimeout(2000);
 
       // Wait for Run As section component to be visible (if permissions allow)
@@ -753,13 +769,17 @@ async function captureHappyPaths() {
             await page6.waitForTimeout(5000); // Wait longer for selection to register
 
             // Scroll to show the execute button area
-            await page6.evaluate(() => window.scrollTo({ top: 300, behavior: "smooth" }));
+            await page6.evaluate(() =>
+              window.scrollTo({ top: 300, behavior: "smooth" })
+            );
             await page6.waitForTimeout(2000);
 
             // The execute button label changes when a user is selected
             // Try multiple selectors for the execute button
             const executeButton = page6
-              .locator('c-jt-execute-button lightning-button, lightning-button[data-testid="execute-query-button"], lightning-button:has-text("Execute"), lightning-button[label*="Execute"]')
+              .locator(
+                'c-jt-execute-button lightning-button, lightning-button[data-testid="execute-query-button"], lightning-button:has-text("Execute"), lightning-button[label*="Execute"]'
+              )
               .first();
 
             if (
@@ -767,18 +787,26 @@ async function captureHappyPaths() {
                 .isVisible({ timeout: 10000 })
                 .catch(() => false)
             ) {
-              console.log("   ▶️  Clicking Execute button (will use System.runAs)...");
+              console.log(
+                "   ▶️  Clicking Execute button (will use System.runAs)..."
+              );
               await executeButton.scrollIntoViewIfNeeded();
               await page6.waitForTimeout(1000);
               await executeButton.click();
               await page6.waitForTimeout(12000); // Wait longer for test execution
 
               // Wait for results or test execution status
-              const resultsSection = page6.locator("c-jt-query-results").first();
-              const testStatus = page6
-                .locator("text=/Running|Completed|Failed|Test execution|executing/i")
+              const resultsSection = page6
+                .locator("c-jt-query-results")
                 .first();
-              const spinnerOverlay = page6.locator(".run-as-spinner-overlay").first();
+              const testStatus = page6
+                .locator(
+                  "text=/Running|Completed|Failed|Test execution|executing/i"
+                )
+                .first();
+              const spinnerOverlay = page6
+                .locator(".run-as-spinner-overlay")
+                .first();
 
               // Wait longer for either results, status message, or spinner
               console.log("   ⏳ Waiting for execution results...");
@@ -793,7 +821,9 @@ async function captureHappyPaths() {
                   .waitFor({ state: "visible", timeout: 5000 })
                   .then(() => {
                     console.log("   ⏳ Test execution spinner visible...");
-                    return spinnerOverlay.waitFor({ state: "hidden", timeout: 20000 }).catch(() => null);
+                    return spinnerOverlay
+                      .waitFor({ state: "hidden", timeout: 20000 })
+                      .catch(() => null);
                   })
                   .catch(() => null),
                 page6.waitForTimeout(15000) // Wait at least 15 seconds
@@ -810,13 +840,25 @@ async function captureHappyPaths() {
               await page6.waitForTimeout(3000); // Show the message at the top
 
               // Also check for error messages or test assertion messages
-              const errorMessage = page6.locator("text=/access|permission|denied|insufficient/i").first();
-              const testAssertMessage = page6.locator("text=/Test Assertion|assertion/i").first();
+              const errorMessage = page6
+                .locator("text=/access|permission|denied|insufficient/i")
+                .first();
+              const testAssertMessage = page6
+                .locator("text=/Test Assertion|assertion/i")
+                .first();
 
-              if (await errorMessage.isVisible({ timeout: 3000 }).catch(() => false)) {
+              if (
+                await errorMessage
+                  .isVisible({ timeout: 3000 })
+                  .catch(() => false)
+              ) {
                 await errorMessage.scrollIntoViewIfNeeded();
                 await page6.waitForTimeout(2000);
-              } else if (await testAssertMessage.isVisible({ timeout: 3000 }).catch(() => false)) {
+              } else if (
+                await testAssertMessage
+                  .isVisible({ timeout: 3000 })
+                  .catch(() => false)
+              ) {
                 await testAssertMessage.scrollIntoViewIfNeeded();
                 await page6.waitForTimeout(2000);
               }
@@ -838,18 +880,24 @@ async function captureHappyPaths() {
             await page6.waitForTimeout(3000);
           }
         } else {
-          console.log("   ⚠️  User input not found - showing accordion expanded");
+          console.log(
+            "   ⚠️  User input not found - showing accordion expanded"
+          );
           // Still show the accordion expanded
           await page6.waitForTimeout(3000);
         }
       } else {
-        console.log("   ⚠️  Run As component not visible (user lacks permissions) - showing accordion expanded");
+        console.log(
+          "   ⚠️  Run As component not visible (user lacks permissions) - showing accordion expanded"
+        );
         // Still show the accordion expanded even without permissions
         await page6.waitForTimeout(3000);
       }
     } else {
       // If Run As section is not available, try to find it anyway
-      console.log("   ⚠️  Run As accordion not found with standard selector, trying alternatives...");
+      console.log(
+        "   ⚠️  Run As accordion not found with standard selector, trying alternatives..."
+      );
       // Try to find any accordion and show it
       const anyAccordion = page6.locator("lightning-accordion").first();
       if (await anyAccordion.isVisible({ timeout: 5000 }).catch(() => false)) {
@@ -903,7 +951,9 @@ async function captureHappyPaths() {
       console.log(`   ✅ Converting: ${mapping.video} → ${mapping.gif}`);
       await convertToGif(actualVideoPath, gifPath, 6);
     } else {
-      console.error(`   ❌ Video not found: ${mapping.video} (mapped path: ${actualVideoPath})`);
+      console.error(
+        `   ❌ Video not found: ${mapping.video} (mapped path: ${actualVideoPath})`
+      );
     }
   }
 

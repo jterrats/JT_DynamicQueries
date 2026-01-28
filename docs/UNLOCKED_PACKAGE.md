@@ -62,6 +62,7 @@ sf org assign permset --name JT_Dynamic_Queries --target-org myorg
 ```
 
 Or via Setup UI:
+
 1. **Setup** → **Users** → **Permission Sets**
 2. Find **JT Dynamic Queries**
 3. Click **Manage Assignments**
@@ -176,7 +177,7 @@ sf package version create \
 ## 🤝 Support
 
 For issues or questions:
+
 - **GitHub Issues**: [Create an issue](https://github.com/jterrats/JT_DynamicQueries/issues)
 - **Documentation**: See `/docs` folder
 - **Questions**: Open a GitHub Discussion
-

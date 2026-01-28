@@ -168,7 +168,35 @@ A metadata-driven SOQL execution framework with built-in security, batch process
 
 ### 1. Deploy to Your Org
 
-#### Option A: Using Salesforce CLI
+#### Option A: Install from AppExchange (Coming Soon)
+
+**📦 Managed Package** - Available on AppExchange with Security Review certification.
+
+```bash
+# Install via AppExchange listing (when available)
+# Or via CLI:
+sf package install --package <VERSION_ID> --wait 10 --target-org your-org-alias
+```
+
+#### Option B: Install as Unlocked Package
+
+**📦 Best for customization** - Provides versioning and allows code editing.
+
+```bash
+# Install via CLI (replace <VERSION_ID> with actual package version ID)
+sf package install --package <VERSION_ID> --wait 10 --target-org your-org-alias
+
+# Or install via Setup UI
+# Setup → Installed Packages → Install a Package
+```
+
+See [Unlocked Package Guide](./docs/UNLOCKED_PACKAGE.md) for complete installation instructions.
+
+#### Option C: Direct Deploy (Development)
+
+**🔧 For developers** - Clone and deploy directly for customization.
+
+#### Option B: Using Salesforce CLI (Direct Deploy)
 
 ```bash
 git clone https://github.com/jterrats/JT_DynamicQueries.git
@@ -176,7 +204,7 @@ cd JT_DynamicQueries
 sf project deploy start --target-org your-org-alias
 ```
 
-#### Option B: One-Click Deploy
+#### Option C: One-Click Deploy
 
 <a href="https://githubsfdeploy.herokuapp.com?owner=jterrats&repo=JT_DynamicQueries&ref=main">
   <img alt="Deploy to Salesforce"

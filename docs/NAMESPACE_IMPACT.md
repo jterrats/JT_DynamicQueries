@@ -3,6 +3,7 @@
 ## 🔍 ¿Qué es un Namespace?
 
 Un **namespace** es un prefijo único que identifica tu package en Salesforce. Ejemplos:
+
 - `sfdc` (Salesforce)
 - `npsp` (Nonprofit Success Pack)
 - `yourcompany` (tu empresa)
@@ -12,17 +13,20 @@ Un **namespace** es un prefijo único que identifica tu package en Salesforce. E
 ### Sin Namespace (Actual - `namespace: ""`)
 
 **Ventajas:**
+
 - ✅ **Código editable**: Los usuarios pueden modificar el código después de instalar
 - ✅ **Sin cambios en código**: No necesitas cambiar referencias existentes
 - ✅ **Más flexible**: Los usuarios pueden personalizar según sus necesidades
 - ✅ **Instalación más simple**: No hay conflictos de nombres
 
 **Desventajas:**
+
 - ❌ **Código editable**: Los usuarios pueden romper funcionalidad modificando código
 - ❌ **Sin protección**: No puedes prevenir modificaciones
 - ❌ **Actualizaciones complejas**: Si el usuario modificó código, las actualizaciones pueden fallar
 
 **Ejemplo de nombres:**
+
 ```apex
 JT_DynamicQueryConfiguration__mdt
 JT_BaseQuery__c
@@ -32,17 +36,20 @@ JT_RunAsTest_Execution__c
 ### Con Namespace (Ejemplo: `namespace: "JT"`)
 
 **Ventajas:**
+
 - ✅ **Código protegido**: Los usuarios NO pueden modificar tu código
 - ✅ **Actualizaciones seguras**: Puedes actualizar sin conflictos
 - ✅ **Mejor para AppExchange**: Requerido para Managed Packages
 - ✅ **Identificación clara**: Todos los componentes tienen tu prefijo
 
 **Desventajas:**
+
 - ❌ **Código NO editable**: Los usuarios no pueden personalizar
 - ❌ **Cambios masivos requeridos**: Debes actualizar TODAS las referencias
 - ❌ **Más complejo**: Requiere registro de namespace en Salesforce
 
 **Ejemplo de nombres (con namespace `JT`):**
+
 ```apex
 JT__JT_DynamicQueryConfiguration__mdt  // Doble prefijo!
 JT__JT_BaseQuery__c
@@ -54,6 +61,7 @@ JT__JT_RunAsTest_Execution__c
 ### 1. Custom Objects y Fields
 
 **Sin namespace (actual):**
+
 ```apex
 JT_RunAsTest_Execution__c
 JT_SettingsAuditLog__c
@@ -63,6 +71,7 @@ JT_Binding__c
 ```
 
 **Con namespace `JT`:**
+
 ```apex
 JT__JT_RunAsTest_Execution__c  // ⚠️ Doble prefijo!
 JT__JT_SettingsAuditLog__c
@@ -74,12 +83,14 @@ JT__JT_Binding__c
 ### 2. Custom Metadata Types
 
 **Sin namespace:**
+
 ```apex
 JT_DynamicQueryConfiguration__mdt
 JT_SystemSettings__mdt
 ```
 
 **Con namespace `JT`:**
+
 ```apex
 JT__JT_DynamicQueryConfiguration__mdt  // ⚠️ Doble prefijo!
 JT__JT_SystemSettings__mdt
@@ -88,12 +99,14 @@ JT__JT_SystemSettings__mdt
 ### 3. Apex Classes
 
 **Sin namespace:**
+
 ```apex
 JT_DataSelector
 JT_QueryViewerController
 ```
 
 **Con namespace `JT`:**
+
 ```apex
 JT.DataSelector  // ⚠️ Cambia de _ a .
 JT.QueryViewerController
@@ -102,25 +115,29 @@ JT.QueryViewerController
 ### 4. Custom Labels
 
 **Sin namespace:**
+
 ```javascript
 import label1 from "@salesforce/label/c.JT_jtQueryViewer_label1";
 ```
 
 **Con namespace `JT`:**
+
 ```javascript
-import label1 from "@salesforce/label/c.JT__JT_jtQueryViewer_label1";  // ⚠️ Doble prefijo!
+import label1 from "@salesforce/label/c.JT__JT_jtQueryViewer_label1"; // ⚠️ Doble prefijo!
 ```
 
 ### 5. Lightning Web Components
 
 **Sin namespace:**
+
 ```html
-<c-jt-query-viewer>
+<c-jt-query-viewer></c-jt-query-viewer>
 ```
 
 **Con namespace `JT`:**
+
 ```html
-<c-jt-jt-query-viewer>  // ⚠️ Doble prefijo!
+<c-jt-jt-query-viewer> // ⚠️ Doble prefijo!</c-jt-jt-query-viewer>
 ```
 
 ## 📝 Cambios Requeridos Si Agregas Namespace
@@ -147,12 +164,12 @@ JT__JT_DynamicQueryConfiguration__mdt config = [
 
 ```javascript
 // ANTES
-import { LightningElement } from 'lwc';
-import getConfigurations from '@salesforce/apex/JT_QueryViewerController.getConfigurations';
+import { LightningElement } from "lwc";
+import getConfigurations from "@salesforce/apex/JT_QueryViewerController.getConfigurations";
 
 // DESPUÉS
-import { LightningElement } from 'lwc';
-import getConfigurations from '@salesforce/apex/JT.QueryViewerController.getConfigurations';
+import { LightningElement } from "lwc";
+import getConfigurations from "@salesforce/apex/JT.QueryViewerController.getConfigurations";
 ```
 
 ### 3. Actualizar Custom Labels
@@ -240,4 +257,3 @@ Si en el futuro decides agregar namespace:
 - Unlocked Package sin namespace es perfecto para distribución flexible
 - Puedes migrar a namespace más adelante si es necesario
 - Los usuarios apreciarán la flexibilidad de poder personalizar
-

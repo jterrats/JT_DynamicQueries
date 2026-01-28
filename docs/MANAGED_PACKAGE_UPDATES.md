@@ -107,17 +107,21 @@ Proporciona release notes claros:
 ## Version 2.5.0
 
 ### 🆕 New Features
+
 - Improved GIF capture script
 - Enhanced Run As User flow
 
 ### 🐛 Bug Fixes
+
 - Fixed GIF paths in GitHub Pages
 - Fixed query risk warning logic
 
 ### ⚠️ Breaking Changes
+
 - None
 
 ### 📋 Migration Notes
+
 - No action required
 - All existing configurations remain compatible
 ```
@@ -146,6 +150,7 @@ Documenta cómo actualizar:
 ### 5. Testing en Sandbox Primero
 
 Anima a usuarios a:
+
 - Probar actualizaciones en sandbox primero
 - Validar que sus configuraciones siguen funcionando
 - Reportar problemas antes de actualizar producción
@@ -159,6 +164,7 @@ Anima a usuarios a:
 ### Opción 2: Unlocked Package (Diferente Modelo)
 
 Los **Unlocked Packages** también requieren instalación manual, pero:
+
 - Los usuarios pueden modificar código
 - Pueden hacer sus propios cambios
 - Más difícil de actualizar (conflictos con modificaciones)
@@ -166,11 +172,13 @@ Los **Unlocked Packages** también requieren instalación manual, pero:
 ### Opción 3: Metadata API Updates (Complejo)
 
 Podrías crear un sistema que:
+
 - Detecte versiones desactualizadas
 - Ofrezca actualización desde tu app
 - Use Metadata API para actualizar componentes
 
 **⚠️ Limitaciones**:
+
 - Muy complejo de implementar
 - Requiere permisos especiales
 - Puede fallar si usuario modificó código
@@ -223,6 +231,7 @@ Podrías crear un sistema que:
 ### 5. Testing de Actualización
 
 Antes de publicar:
+
 - ✅ Probar upgrade desde versión anterior
 - ✅ Verificar que configuraciones existentes funcionan
 - ✅ Validar que no hay pérdida de datos
@@ -247,14 +256,14 @@ WHERE SubscriberPackage.NamespacePrefix = 'JTDynamicQueries'
 
 ```javascript
 // LWC para mostrar banner de actualización disponible
-import { LightningElement } from 'lwc';
-import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import { LightningElement } from "lwc";
+import { ShowToastEvent } from "lightning/platformShowToastEvent";
 
 export default class UpdateNotification extends LightningElement {
-    connectedCallback() {
-        // Check current version vs latest available
-        // Show banner if update available
-    }
+  connectedCallback() {
+    // Check current version vs latest available
+    // Show banner if update available
+  }
 }
 ```
 
@@ -274,8 +283,8 @@ export default class UpdateNotification extends LightningElement {
 - ✅ Transparencia sobre cambios
 
 **Tu responsabilidad como desarrollador**:
+
 - Hacer actualizaciones fáciles de instalar
 - Proporcionar release notes claros
 - Mantener compatibilidad hacia atrás cuando sea posible
 - Comunicar proactivamente sobre nuevas versiones
-

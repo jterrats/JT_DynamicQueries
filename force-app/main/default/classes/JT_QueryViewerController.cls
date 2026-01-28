@@ -602,13 +602,15 @@ public with sharing class JT_QueryViewerController {
             );
 
             // Check if query has WHERE clause with specific filters
-            Boolean hasWhereClause = baseQuery != null &&
+            Boolean hasWhereClause =
+              baseQuery != null &&
               baseQuery.containsIgnoreCase('WHERE') &&
               !baseQuery.containsIgnoreCase('WHERE 1=1') &&
               !baseQuery.containsIgnoreCase('WHERE TRUE');
 
             // Check if bindings are provided and not empty
-            Boolean hasValidBindings = countBindings != null &&
+            Boolean hasValidBindings =
+              countBindings != null &&
               !countBindings.isEmpty() &&
               !hasEmptyRequiredParameters(countBindings);
 
@@ -646,13 +648,15 @@ public with sharing class JT_QueryViewerController {
           );
 
           // Check if query has WHERE clause with specific filters
-          Boolean hasWhereClause = baseQuery != null &&
+          Boolean hasWhereClause =
+            baseQuery != null &&
             baseQuery.containsIgnoreCase('WHERE') &&
             !baseQuery.containsIgnoreCase('WHERE 1=1') &&
             !baseQuery.containsIgnoreCase('WHERE TRUE');
 
           // Check if bindings are provided and not empty
-          Boolean hasValidBindings = countBindings != null &&
+          Boolean hasValidBindings =
+            countBindings != null &&
             !countBindings.isEmpty() &&
             !hasEmptyRequiredParameters(countBindings);
 
@@ -791,7 +795,10 @@ public with sharing class JT_QueryViewerController {
         final String escapedValue = escapeBindingValue(convertedValue);
 
         // Replace binding with optional space after colon: ":name" or ": name"
-        result = result.replaceAll(':\\s*' + Pattern.quote(key) + '\\b', escapedValue);
+        result = result.replaceAll(
+          ':\\s*' + Pattern.quote(key) + '\\b',
+          escapedValue
+        );
       }
     }
 

@@ -2,11 +2,18 @@
   "packageDirectories": [
     {
       "path": "force-app",
-      "default": true
+      "default": true,
+      "package": "JT_DynamicQueries",
+      "versionName": "ver 2.5.0",
+      "versionNumber": "2.5.0.NEXT"
     }
   ],
   "name": "JT_DynamicQueries",
   "namespace": "",
   "sfdcLoginUrl": "https://login.salesforce.com",
-  "sourceApiVersion": "65.0"
+  "sourceApiVersion": "65.0",
+  "packageAliases": {
+    "JT_DynamicQueries": "0Ho..."
+  },
+  "_comment": "For AppExchange: Register namespace first, then update 'namespace' field above. Use 'scripts/migrate-to-namespace.sh' to migrate code."
 }

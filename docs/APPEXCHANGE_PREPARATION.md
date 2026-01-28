@@ -5,18 +5,21 @@
 Para subir a AppExchange necesitas:
 
 ### 1. **Managed Package** (NO Unlocked Package)
+
 - ✅ **Namespace obligatorio**: Debe estar registrado en Salesforce
 - ✅ **Código protegido**: Los usuarios NO pueden modificar tu código
 - ✅ **Versionado estricto**: Cada versión debe pasar Security Review
 - ✅ **Actualizaciones controladas**: Solo puedes actualizar componentes específicos
 
 ### 2. **Security Review**
+
 - ✅ **Code Scan**: Análisis automático de código
 - ✅ **Security Questionnaire**: Preguntas sobre seguridad
 - ✅ **Documentation Review**: Revisión de documentación
 - ✅ **Testing**: Pruebas de funcionalidad
 
 ### 3. **Documentación Requerida**
+
 - ✅ **User Guide**: Guía de usuario completa
 - ✅ **Installation Guide**: Instrucciones de instalación
 - ✅ **Security Documentation**: Documentación de seguridad
@@ -27,6 +30,7 @@ Para subir a AppExchange necesitas:
 ### Paso 1: Registrar Namespace
 
 1. **Crear DevHub Org** (si no tienes):
+
    ```bash
    # Crear Developer Edition org
    # https://developer.salesforce.com/signup
@@ -59,7 +63,7 @@ Para subir a AppExchange necesitas:
     }
   ],
   "name": "JT_DynamicQueries",
-  "namespace": "JTDynamicQueries",  // ⚠️ CAMBIAR AQUÍ
+  "namespace": "JTDynamicQueries", // ⚠️ CAMBIAR AQUÍ
   "sfdcLoginUrl": "https://login.salesforce.com",
   "sourceApiVersion": "65.0"
 }
@@ -68,6 +72,7 @@ Para subir a AppExchange necesitas:
 #### 2.2 Actualizar Custom Objects
 
 **ANTES (sin namespace):**
+
 ```apex
 JT_RunAsTest_Execution__c
 JT_SettingsAuditLog__c
@@ -75,6 +80,7 @@ JT_ErrorLog__c
 ```
 
 **DESPUÉS (con namespace `JTDynamicQueries`):**
+
 ```apex
 JTDynamicQueries__RunAsTest_Execution__c
 JTDynamicQueries__SettingsAuditLog__c
@@ -86,12 +92,14 @@ JTDynamicQueries__ErrorLog__c
 #### 2.3 Actualizar Custom Metadata Types
 
 **ANTES:**
+
 ```apex
 JT_DynamicQueryConfiguration__mdt
 JT_SystemSettings__mdt
 ```
 
 **DESPUÉS:**
+
 ```apex
 JTDynamicQueries__DynamicQueryConfiguration__mdt
 JTDynamicQueries__SystemSettings__mdt
@@ -100,6 +108,7 @@ JTDynamicQueries__SystemSettings__mdt
 #### 2.4 Actualizar Apex Classes
 
 **ANTES:**
+
 ```apex
 public class JT_DataSelector {
     JT_DynamicQueryConfiguration__mdt config = ...
@@ -107,6 +116,7 @@ public class JT_DataSelector {
 ```
 
 **DESPUÉS:**
+
 ```apex
 public class JTDynamicQueries.DataSelector {  // ⚠️ Cambia de _ a .
     JTDynamicQueries__DynamicQueryConfiguration__mdt config = ...
@@ -114,6 +124,7 @@ public class JTDynamicQueries.DataSelector {  // ⚠️ Cambia de _ a .
 ```
 
 **O mantener nombres internos:**
+
 ```apex
 // Si mantienes JT_ como prefijo interno
 public class JTDynamicQueries.DataSelector {
@@ -125,11 +136,13 @@ public class JTDynamicQueries.DataSelector {
 #### 2.5 Actualizar Custom Labels
 
 **ANTES:**
+
 ```javascript
 import label1 from "@salesforce/label/c.JT_jtQueryViewer_executeQuery";
 ```
 
 **DESPUÉS:**
+
 ```javascript
 import label1 from "@salesforce/label/c.JTDynamicQueries__JT_jtQueryViewer_executeQuery";
 ```
@@ -137,13 +150,15 @@ import label1 from "@salesforce/label/c.JTDynamicQueries__JT_jtQueryViewer_execu
 #### 2.6 Actualizar Lightning Web Components
 
 **ANTES:**
+
 ```html
-<c-jt-query-viewer>
+<c-jt-query-viewer></c-jt-query-viewer>
 ```
 
 **DESPUÉS:**
+
 ```html
-<c-jtdynamicqueries-jt-query-viewer>
+<c-jtdynamicqueries-jt-query-viewer></c-jtdynamicqueries-jt-query-viewer>
 ```
 
 ### Paso 3: Crear Script de Migración
@@ -164,6 +179,7 @@ find force-app -type f -name "*.cls" -o -name "*.js" -o -name "*.html" | \
 ## 📋 Checklist Pre-AppExchange
 
 ### Código
+
 - [ ] Namespace registrado y configurado
 - [ ] Todas las referencias actualizadas
 - [ ] Code coverage > 75% (tienes 84.5% ✅)
@@ -172,6 +188,7 @@ find force-app -type f -name "*.cls" -o -name "*.js" -o -name "*.html" | \
 - [ ] Todos los tests pasando (tienes 118+ E2E ✅)
 
 ### Seguridad
+
 - [ ] No hardcoded credentials
 - [ ] Input validation en todos los inputs
 - [ ] SOQL injection prevention (tienes ✅)
@@ -179,6 +196,7 @@ find force-app -type f -name "*.cls" -o -name "*.js" -o -name "*.html" | \
 - [ ] Error handling sin exponer información sensible
 
 ### Documentación
+
 - [ ] User Guide completo
 - [ ] Installation Guide
 - [ ] Security Documentation
@@ -186,6 +204,7 @@ find force-app -type f -name "*.cls" -o -name "*.js" -o -name "*.html" | \
 - [ ] Screenshots/Videos de la aplicación
 
 ### Testing
+
 - [ ] Unit tests para todas las clases públicas
 - [ ] E2E tests para flujos principales
 - [ ] Security tests
@@ -245,6 +264,7 @@ sf package version create \
 ### 1. Cambios Irreversibles
 
 Una vez que creas un Managed Package con namespace:
+
 - ❌ **NO puedes cambiar el namespace**
 - ❌ **NO puedes convertir a Unlocked Package**
 - ❌ **NO puedes eliminar componentes fácilmente**
@@ -265,11 +285,13 @@ Una vez que creas un Managed Package con namespace:
 - Debes soportar múltiples versiones
 
 **Ventajas**:
+
 - ✅ Usuarios tienen control sobre cuándo actualizar
 - ✅ Pueden probar en sandbox primero
 - ✅ Evita actualizaciones que rompan integraciones
 
 **Desventajas**:
+
 - ❌ Fragmentación de versiones (algunos usuarios desactualizados)
 - ❌ Debes mantener compatibilidad hacia atrás
 - ❌ Soporte más complejo (múltiples versiones)
@@ -323,4 +345,3 @@ Ver [Managed Package Updates Guide](./MANAGED_PACKAGE_UPDATES.md) para detalles 
 7. **Iniciar Security Review**
 
 ¿Quieres que cree el script de migración y actualice la configuración?
-

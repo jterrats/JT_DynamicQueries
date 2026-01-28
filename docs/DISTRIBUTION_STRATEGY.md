@@ -7,23 +7,27 @@
 ## 📊 Ventajas de AppExchange
 
 ### 1. **Descubrimiento y Visibilidad**
+
 - ✅ **Millones de usuarios**: AppExchange tiene millones de visitantes
 - ✅ **Búsqueda orgánica**: Los usuarios te encuentran buscando "SOQL" o "Dynamic Queries"
 - ✅ **Credibilidad**: Estar en AppExchange da legitimidad
 - ✅ **Marketing**: Salesforce promociona AppExchange en eventos
 
 ### 2. **Distribución Simplificada**
+
 - ✅ **Un solo lugar**: Todos los usuarios vienen de AppExchange
 - ✅ **Instalación fácil**: Botón "Get It Now" en AppExchange
 - ✅ **Gestión centralizada**: Un solo lugar para distribuir
 - ✅ **Analytics**: Ver cuántos usuarios instalaron
 
 ### 3. **Monetización Potencial**
+
 - ✅ **Pricing models**: Free, Paid, Freemium
 - ✅ **Revenue sharing**: Si decides cobrar después
 - ✅ **Enterprise sales**: Contacto directo con empresas grandes
 
 ### 4. **Ecosistema Salesforce**
+
 - ✅ **Integración**: Otros desarrolladores pueden integrar contigo
 - ✅ **Partnerships**: Oportunidades de colaboración
 - ✅ **Community**: Acceso a comunidad de partners
@@ -31,24 +35,28 @@
 ## ❌ Desventajas de AppExchange
 
 ### 1. **Actualizaciones Manuales**
+
 - ❌ **Fragmentación**: Usuarios en diferentes versiones
 - ❌ **Soporte complejo**: Debes mantener compatibilidad con múltiples versiones
 - ❌ **Usuarios desactualizados**: Algunos nunca actualizan
 - ❌ **Bugs conocidos**: Usuarios con versiones viejas tienen bugs ya arreglados
 
 ### 2. **Proceso Complejo**
+
 - ❌ **Security Review**: Puede tomar semanas/meses
 - ❌ **Documentación extensa**: Requiere mucha documentación
 - ❌ **Cada versión**: Cada nueva versión debe pasar review
 - ❌ **Costo de tiempo**: Mucho tiempo invertido en proceso
 
 ### 3. **Limitaciones Técnicas**
+
 - ❌ **Namespace obligatorio**: Cambios masivos en código
 - ❌ **Código protegido**: Usuarios no pueden personalizar
 - ❌ **Menos flexible**: Difícil hacer cambios rápidos
 - ❌ **Breaking changes**: Más difícil de manejar
 
 ### 4. **Mantenimiento Continuo**
+
 - ❌ **Soporte múltiples versiones**: Debes mantener compatibilidad
 - ❌ **Release notes**: Cada versión necesita documentación
 - ❌ **Testing exhaustivo**: Debes probar upgrades desde versiones anteriores
@@ -59,6 +67,7 @@
 ### Opción 1: GitHub + Unlocked Package (Recomendado para Tu Caso)
 
 **Ventajas**:
+
 - ✅ **Actualizaciones más rápidas**: Usuarios pueden hacer `git pull` y `sf project deploy`
 - ✅ **Flexibilidad**: Usuarios pueden personalizar código
 - ✅ **Sin Security Review**: Publicas cuando quieras
@@ -67,11 +76,13 @@
 - ✅ **CI/CD**: Actualizaciones automáticas vía GitHub Actions
 
 **Desventajas**:
+
 - ❌ **Menos descubrimiento**: No apareces en AppExchange
 - ❌ **Requiere SF CLI**: Usuarios necesitan conocimientos técnicos
 - ❌ **Sin monetización directa**: Más difícil cobrar
 
 **Ideal para**:
+
 - Proyectos open source
 - Herramientas para desarrolladores
 - Frameworks y librerías
@@ -80,6 +91,7 @@
 ### Opción 2: AppExchange (Solo si...)
 
 **Vale la pena si**:
+
 - ✅ Quieres llegar a usuarios no técnicos
 - ✅ Planeas monetizar (Free → Paid)
 - ✅ Quieres legitimidad corporativa
@@ -87,6 +99,7 @@
 - ✅ Estás dispuesto a mantener múltiples versiones
 
 **NO vale la pena si**:
+
 - ❌ Tu audiencia son principalmente desarrolladores
 - ❌ Quieres iterar rápido
 - ❌ No planeas monetizar
@@ -96,12 +109,14 @@
 ### Opción 3: Estrategia Híbrida (Mejor de Ambos Mundos)
 
 **GitHub (Principal)**:
+
 - ✅ Código fuente completo
 - ✅ Unlocked Package sin namespace
 - ✅ Actualizaciones rápidas
 - ✅ Para desarrolladores
 
 **AppExchange (Complementario)**:
+
 - ✅ Managed Package con namespace
 - ✅ Para usuarios no técnicos
 - ✅ Versiones estables (menos frecuentes)
@@ -173,12 +188,14 @@ Basado en tu código y documentación:
 #### Fase 2: Futuro (AppExchange como Complemento)
 
 **Solo si**:
+
 - ✅ Tienes usuarios no técnicos pidiendo AppExchange
 - ✅ Quieres monetizar
 - ✅ Tienes tiempo para Security Review
 - ✅ Estás dispuesto a mantener dos versiones
 
 **Entonces**:
+
 - Crear Managed Package con namespace
 - Versiones estables (cada 3-6 meses)
 - Para usuarios que prefieren AppExchange
@@ -229,12 +246,14 @@ Basado en tu código y documentación:
 **Estrategia de Dos Fases**:
 
 ### Fase 1: GitHub (Ahora - 6-12 meses)
+
 - Construir comunidad en GitHub
 - Iterar rápido basado en feedback
 - Estabilizar API
 - Crear base de usuarios
 
 ### Fase 2: AppExchange (Después)
+
 - Cuando tengas usuarios pidiendo AppExchange
 - Cuando API esté más estable
 - Cuando tengas tiempo para Security Review
@@ -262,4 +281,3 @@ Basado en tu código y documentación:
    - **AppExchange más tarde** si hay demanda
 
 **No necesitas AppExchange para tener éxito**. Muchos proyectos exitosos están solo en GitHub.
-

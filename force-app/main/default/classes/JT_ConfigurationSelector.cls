@@ -66,6 +66,11 @@ public with sharing class JT_ConfigurationSelector {
   public static List<JT_DynamicQueryConfiguration__mdt> getConfigurationsByObject(
     String objectName
   ) {
+    // Return empty list if objectName is null or blank
+    if (String.isBlank(objectName)) {
+      return new List<JT_DynamicQueryConfiguration__mdt>();
+    }
+
     return [
       SELECT
         Id,

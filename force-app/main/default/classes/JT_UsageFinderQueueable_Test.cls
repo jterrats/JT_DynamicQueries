@@ -93,14 +93,25 @@ private class JT_UsageFinderQueueable_Test {
       usage3
     };
 
-    // Use same sanitization logic as production code
-    String sanitizedConfigName = configDevName != null
-      ? JT_ToolingApiUtil.toAlphanumeric(configDevName)
-      : '';
-    String sanitizedUserId = JT_ToolingApiUtil.toAlphanumeric(
-      UserInfo.getUserId()
-    );
-    String cacheKey = 'UsageSearch' + sanitizedConfigName + sanitizedUserId;
+    // Use same cache key logic as production code (hash-based)
+    // Replicate buildCacheKey logic for test
+    String combined = (configDevName != null ? configDevName : '') +
+                      (UserInfo.getUserId() != null ? UserInfo.getUserId() : '');
+    Blob hash = Crypto.generateDigest('SHA-256', Blob.valueOf(combined));
+    String hashHex = EncodingUtil.convertToHex(hash);
+    String shortHash = hashHex.substring(0, 16);
+    String prefix = 'US';
+    String userIdSuffix = '';
+    if (UserInfo.getUserId() != null && UserInfo.getUserId().length() > 0) {
+      String sanitizedUserId = JT_ToolingApiUtil.toAlphanumeric(UserInfo.getUserId());
+      userIdSuffix = sanitizedUserId.length() > 8
+        ? sanitizedUserId.substring(sanitizedUserId.length() - 8)
+        : sanitizedUserId;
+    }
+    String cacheKey = prefix + shortHash + userIdSuffix;
+    if (cacheKey.length() > 50) {
+      cacheKey = cacheKey.substring(0, 50);
+    }
     Cache.Org.put(cacheKey, JSON.serialize(mockResult), 172800); // 2 days (max allowed)
 
     Test.startTest();
@@ -220,7 +231,7 @@ private class JT_UsageFinderQueueable_Test {
 
   @IsTest
   static void testQueueableExecutionError() {
-    // Test execution with error (will throw exception)
+    // Test execution with error (will throw exception during construction)
     String configDevName = null; // This will cause an error
 
     Test.startTest();
@@ -233,8 +244,8 @@ private class JT_UsageFinderQueueable_Test {
       );
       System.enqueueJob(job);
       System.assert(false, 'Should have thrown exception');
-    } catch (Exception e) {
-      System.assert(true, 'Exception thrown as expected');
+    } catch (IllegalArgumentException e) {
+      System.assert(true, 'Exception thrown as expected: ' + e.getMessage());
     }
 
     Test.stopTest();
@@ -322,9 +333,8 @@ private class JT_UsageFinderQueueable_Test {
    */
   @IsTest
   static void testQueueableExecutionErrorWithEmail() {
-    // Create a scenario that will cause an error during execution
-    // Using a very long config name that might cause issues
-    String configDevName = null; // This will cause an error in findAllUsagesResilient
+    // Test that exception is thrown during construction when configDevName is null
+    String configDevName = null; // This will cause an error
 
     Test.startTest();
     try {
@@ -334,15 +344,12 @@ private class JT_UsageFinderQueueable_Test {
         UserInfo.getUserId()
       );
       System.enqueueJob(job);
-      // Job will fail during execution, but should attempt to send error email
-    } catch (Exception e) {
-      // Exception during construction is acceptable
-      System.assert(true, 'Exception during construction is acceptable');
+      System.assert(false, 'Should have thrown IllegalArgumentException');
+    } catch (IllegalArgumentException e) {
+      // Exception during construction is expected
+      System.assert(true, 'Exception thrown as expected: ' + e.getMessage());
     }
     Test.stopTest();
-
-    // Error email sending is tested indirectly - if no exception is thrown during enqueue,
-    // the error email method will be called during execution
   }
 
   /**

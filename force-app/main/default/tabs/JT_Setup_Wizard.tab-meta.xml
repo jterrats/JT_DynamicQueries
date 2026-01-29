@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
-    <description>Setup Wizard for Dynamic Query Framework configuration</description>
+    <description
+  >Setup Wizard for Dynamic Query Framework configuration</description>
     <label>Setup Wizard</label>
     <lwcComponent>jtSetupWizard</lwcComponent>
     <motif>Custom78: Settings</motif>

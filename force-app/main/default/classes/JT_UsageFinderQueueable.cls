@@ -21,12 +21,19 @@ public with sharing class JT_UsageFinderQueueable implements Queueable {
    * @param configurationDevName Developer name of the configuration to search for
    * @param userEmail Email address to notify when search completes
    * @param userId User ID who initiated the search
+   * @throws IllegalArgumentException if configurationDevName is null or blank
    */
   public JT_UsageFinderQueueable(
     String configurationDevName,
     String userEmail,
     String userId
   ) {
+    // Validate required parameters at construction time
+    if (String.isBlank(configurationDevName)) {
+      throw new IllegalArgumentException(
+        'Configuration developer name cannot be null or blank'
+      );
+    }
     this.configurationDevName = configurationDevName;
     this.userEmail = userEmail;
     this.userId = userId;
@@ -197,19 +204,44 @@ public with sharing class JT_UsageFinderQueueable implements Queueable {
   /**
    * @description Builds cache key for storing/retrieving usage search results
    * Centralizes cache key construction logic to avoid duplication
+   * Cache keys must be <= 50 characters, so we use a hash-based approach
    * @param configurationDevName Developer name of the configuration
    * @param userId User ID who initiated the search
-   * @return String Cache key for Platform Cache
+   * @return String Cache key for Platform Cache (max 50 chars)
    */
   private static String buildCacheKey(
     String configurationDevName,
     String userId
   ) {
-    String sanitizedConfigName = JT_ToolingApiUtil.toAlphanumeric(
-      configurationDevName
-    );
-    String sanitizedUserId = JT_ToolingApiUtil.toAlphanumeric(userId);
-    return 'UsageSearch' + sanitizedConfigName + sanitizedUserId;
+    // Create a combined string for hashing
+    String combined = (configurationDevName != null ? configurationDevName : '') +
+                      (userId != null ? userId : '');
+
+    // Generate a short hash (first 16 chars of hex digest)
+    Blob hash = Crypto.generateDigest('SHA-256', Blob.valueOf(combined));
+    String hashHex = EncodingUtil.convertToHex(hash);
+    String shortHash = hashHex.substring(0, 16);
+
+    // Return key with prefix (max 50 chars: "US" + 16 char hash + last 32 chars of userId if needed)
+    String prefix = 'US';
+    String userIdSuffix = '';
+    if (userId != null && userId.length() > 0) {
+      // Use last 8 chars of userId to ensure uniqueness while staying under limit
+      String sanitizedUserId = JT_ToolingApiUtil.toAlphanumeric(userId);
+      userIdSuffix = sanitizedUserId.length() > 8
+        ? sanitizedUserId.substring(sanitizedUserId.length() - 8)
+        : sanitizedUserId;
+    }
+
+    // Ensure total length <= 50: prefix (2) + hash (16) + userIdSuffix (max 8) = max 26 chars
+    String cacheKey = prefix + shortHash + userIdSuffix;
+
+    // Truncate if still too long (shouldn't happen, but safety check)
+    if (cacheKey.length() > 50) {
+      cacheKey = cacheKey.substring(0, 50);
+    }
+
+    return cacheKey;
   }
 
   /**

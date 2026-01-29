@@ -19,12 +19,14 @@ private class JT_ConfigurationSelector_Test {
     System.assertNotEquals(null, configs, 'Configurations should not be null');
     System.assert(configs.size() >= 0, 'Should return list (may be empty)');
 
-    // Verify sorted by label
+    // Verify sorted by label (case-insensitive comparison)
     if (configs.size() > 1) {
       for (Integer i = 0; i < configs.size() - 1; i++) {
+        String label1 = configs[i].Label != null ? configs[i].Label.toLowerCase() : '';
+        String label2 = configs[i + 1].Label != null ? configs[i + 1].Label.toLowerCase() : '';
         System.assert(
-          configs[i].Label <= configs[i + 1].Label,
-          'Configurations should be sorted by Label ASC'
+          label1.compareTo(label2) <= 0,
+          'Configurations should be sorted by Label ASC. Found: "' + configs[i].Label + '" before "' + configs[i + 1].Label + '"'
         );
       }
     }
@@ -115,12 +117,14 @@ private class JT_ConfigurationSelector_Test {
       );
     }
 
-    // Verify sorted by label
+    // Verify sorted by label (case-insensitive comparison)
     if (configs.size() > 1) {
       for (Integer i = 0; i < configs.size() - 1; i++) {
+        String label1 = configs[i].Label != null ? configs[i].Label.toLowerCase() : '';
+        String label2 = configs[i + 1].Label != null ? configs[i + 1].Label.toLowerCase() : '';
         System.assert(
-          configs[i].Label <= configs[i + 1].Label,
-          'Configurations should be sorted by Label ASC'
+          label1.compareTo(label2) <= 0,
+          'Configurations should be sorted by Label ASC. Found: "' + configs[i].Label + '" before "' + configs[i + 1].Label + '"'
         );
       }
     }

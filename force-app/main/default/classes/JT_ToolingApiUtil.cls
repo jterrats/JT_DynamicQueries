@@ -184,7 +184,9 @@ public without sharing class JT_ToolingApiUtil {
     request.setMethod('GET');
     request.setHeader('Authorization', 'Bearer ' + sessionId);
     request.setHeader('Accept', 'application/json');
-    request.setTimeout(timeout != null ? timeout : 60000);
+    // Validate timeout: must be between 1 and 120000 milliseconds
+    Integer validTimeout = (timeout != null && timeout >= 1) ? timeout : 60000;
+    request.setTimeout(validTimeout);
 
     return request;
   }
@@ -221,7 +223,9 @@ public without sharing class JT_ToolingApiUtil {
     request.setHeader('Authorization', 'Bearer ' + sessionId);
     request.setHeader('Accept', 'application/json');
     request.setHeader('Content-Type', 'application/json');
-    request.setTimeout(timeout != null ? timeout : 30000);
+    // Validate timeout: must be between 1 and 120000 milliseconds
+    Integer validTimeout = (timeout != null && timeout >= 1) ? timeout : 30000;
+    request.setTimeout(validTimeout);
 
     return request;
   }

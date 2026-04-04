@@ -1,0 +1,77 @@
+{
+  "name": "get_mobile_lwc_offline_analysis",
+  "description": "Analyzes LWC components for mobile-specific issues and provides detailed recommendations for improvements. It can be leveraged to check if components are mobile-ready.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Name of the LWC component"
+      },
+      "namespace": {
+        "type": "string",
+        "description": "Namespace of the LWC component",
+        "default": "c"
+      },
+      "js": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "path to component file relative to LWC component bundle root"
+          },
+          "content": {
+            "type": "string",
+            "description": "content of the file"
+          }
+        },
+        "required": [
+          "path",
+          "content"
+        ],
+        "additionalProperties": false,
+        "description": "LWC component JavaScript file."
+      },
+      "html": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "$ref": "#/properties/js/properties/path"
+            },
+            "content": {
+              "$ref": "#/properties/js/properties/content"
+            }
+          },
+          "required": [
+            "path",
+            "content"
+          ],
+          "additionalProperties": false
+        },
+        "minItems": 1,
+        "description": "LWC component HTML templates."
+      },
+      "css": {
+        "type": "array",
+        "items": {
+          "$ref": "#/properties/html/items"
+        },
+        "description": "LWC component CSS files."
+      },
+      "jsMetaXml": {
+        "$ref": "#/properties/html/items",
+        "description": "LWC component configuration .js-meta.xml file."
+      }
+    },
+    "required": [
+      "name",
+      "js",
+      "html"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

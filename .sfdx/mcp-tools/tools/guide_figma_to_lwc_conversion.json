@@ -1,0 +1,9 @@
+{
+  "name": "guide_figma_to_lwc_conversion",
+  "description": "Prior to generating an LWC component from a Figma design, you must call this tool to understand how to do this for salesforce.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {},
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

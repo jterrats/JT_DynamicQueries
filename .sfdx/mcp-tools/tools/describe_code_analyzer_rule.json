@@ -1,0 +1,23 @@
+{
+  "name": "describe_code_analyzer_rule",
+  "description": "A tool for getting the description of a Code Analyzer rule.\nThis tool can return a JSON that describes the properties of a Code Analyzer rule, which may include information about\nhow it can be fixed.\n\nWhen to use this tool:\n- When the results file from the run_code_analyzer tool does not provide enough information to fix a violation yourself.\n- When the user asks for information about a specific rule or violation.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "ruleName": {
+        "type": "string",
+        "description": "The name of a rule about which more information is required"
+      },
+      "engineName": {
+        "type": "string",
+        "description": "The engine to which the rule belongs. Resolves ambiguity when rules have the same name."
+      }
+    },
+    "required": [
+      "ruleName",
+      "engineName"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

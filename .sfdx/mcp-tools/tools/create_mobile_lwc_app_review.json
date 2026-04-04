@@ -1,0 +1,9 @@
+{
+  "name": "create_mobile_lwc_app_review",
+  "description": "The MCP tool provides a comprehensive TypeScript-based API documentation for Salesforce LWC App Review Service, laying the foundation for understanding mobile app review and offering expert-level guidance for implementing the App Review feature in a Lightning Web Component (LWC).",
+  "inputSchema": {
+    "type": "object",
+    "properties": {},
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

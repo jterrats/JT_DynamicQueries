@@ -1,0 +1,9 @@
+{
+  "name": "create_mobile_lwc_barcode_scanner",
+  "description": "The MCP tool provides a comprehensive TypeScript-based API documentation for Salesforce LWC Barcode Scanner, laying the foundation for understanding mobile barcode scanner and offering expert-level guidance for implementing the Barcode Scanner feature in a Lightning Web Component (LWC).",
+  "inputSchema": {
+    "type": "object",
+    "properties": {},
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

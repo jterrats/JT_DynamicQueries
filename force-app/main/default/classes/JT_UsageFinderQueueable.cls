@@ -214,8 +214,9 @@ public with sharing class JT_UsageFinderQueueable implements Queueable {
     String userId
   ) {
     // Create a combined string for hashing
-    String combined = (configurationDevName != null ? configurationDevName : '') +
-                      (userId != null ? userId : '');
+    String combined =
+      (configurationDevName != null ? configurationDevName : '') +
+      (userId != null ? userId : '');
 
     // Generate a short hash (first 16 chars of hex digest)
     Blob hash = Crypto.generateDigest('SHA-256', Blob.valueOf(combined));

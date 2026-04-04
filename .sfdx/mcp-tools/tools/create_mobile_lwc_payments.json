@@ -1,0 +1,9 @@
+{
+  "name": "create_mobile_lwc_payments",
+  "description": "The MCP tool provides a comprehensive TypeScript-based API documentation for Salesforce LWC Payments Service, laying the foundation for understanding mobile payments and offering expert-level guidance for implementing the Payments feature in a Lightning Web Component (LWC).",
+  "inputSchema": {
+    "type": "object",
+    "properties": {},
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

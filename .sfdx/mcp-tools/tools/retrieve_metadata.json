@@ -1,0 +1,39 @@
+{
+  "name": "retrieve_metadata",
+  "description": "Retrieve metadata from an org to your local project.\n\nAGENT INSTRUCTIONS:\nIf the user doesn't specify what to retrieve exactly (\"retrieve my changes\"), leave the \"sourceDir\", \"ignoreConflicts\", and \"manifest\" params empty so the tool calculates which files to retrieve.\n\nEXAMPLE USAGE:\nRetrieve changes\nRetrieve changes from my org\nRetrieve this file from my org\nRetrieve the metadata in the manifest\nRetrieve X metadata from my org\nRetrieve X metadata from my org and ignore any conflicts between the local project and org",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "ignoreConflicts": {
+        "type": "boolean",
+        "description": "Ignore conflicts and retrieve and save files to your local filesystem, even if they overwrite your local changes.",
+        "default": false
+      },
+      "sourceDir": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "Path to the local source files to retrieve. Leave this unset if the user is vague about what to retrieve."
+      },
+      "manifest": {
+        "type": "string",
+        "description": "Full file path for manifest (XML file) of components to retrieve."
+      },
+      "usernameOrAlias": {
+        "type": "string",
+        "description": "The username or alias for the Salesforce org to run this tool against.\n\nA username follows the <name@domain.com> format.\nIf the user refers to an org with a string not following that format, it can be a valid alias.\n\nIMPORTANT:\n- If it is not clear what the username or alias is, run the #get_username tool to resolve it.\n- NEVER guess or make-up a username or alias.\n"
+      },
+      "directory": {
+        "type": "string",
+        "description": "The directory to run this tool from.\nAGENT INSTRUCTIONS:\nWe need to know where the user wants to run this tool from.\nLook at your current Workspace Context to determine this filepath.\nALWAYS USE A FULL PATH TO THE DIRECTORY.\nUnless the user explicitly asks for a different directory, or a new directory is created from the action of a tool, use this same directory for future tool calls.\n"
+      }
+    },
+    "required": [
+      "usernameOrAlias",
+      "directory"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

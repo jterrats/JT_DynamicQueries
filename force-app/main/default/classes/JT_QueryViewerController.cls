@@ -14,6 +14,43 @@
 )
 public with sharing class JT_QueryViewerController {
   /**
+   * @description Clears Platform Cache entries used by this package for the Query Viewer.
+   * Currently it targets the dedicated partition used by `JT_DataSelector` for configuration metadata.
+   */
+  @AuraEnabled
+  public static void clearPlatformCache(
+    Boolean configurations,
+    Boolean results,
+    Boolean users,
+    Boolean recent
+  ) {
+    // The dedicated partition in this project currently holds only configuration metadata cache.
+    if (configurations == null || !configurations) {
+      return;
+    }
+
+    // Keep the key format in sync with `JT_DataSelector.getConfig()`
+    final String partitionName = 'local.JTDynamicQueries';
+    Cache.OrgPartition part = Cache.Org.getPartition(partitionName);
+
+    // Admin tool: at most 200 metadata configs.
+    List<JT_DynamicQueryConfiguration__mdt> configs = [
+      SELECT DeveloperName
+      FROM JT_DynamicQueryConfiguration__mdt
+      WITH USER_MODE
+      ORDER BY Label ASC
+      LIMIT 200
+    ];
+
+    for (JT_DynamicQueryConfiguration__mdt c : configs) {
+      String sanitizedDevName = JT_ToolingApiUtil.toAlphanumeric(c.DeveloperName);
+      if (String.isNotBlank(sanitizedDevName)) {
+        part.remove('Config' + sanitizedDevName);
+      }
+    }
+  }
+
+  /**
    * @description Retrieves all available query configurations
    * @author Jaime Terrats | 11-28-2025
    * @return List<ConfigurationOption>

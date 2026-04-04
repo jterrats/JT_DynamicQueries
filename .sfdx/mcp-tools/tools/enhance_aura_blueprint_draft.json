@@ -1,0 +1,19 @@
+{
+  "name": "enhance_aura_blueprint_draft",
+  "description": "Use this tool to enhance a draft Product Requirements Document (PRD) as part of the Aura to LWC migration workflow orchestrator.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "draftPrd": {
+        "type": "string",
+        "minLength": 1,
+        "description": "The draft PRD content to be enhanced"
+      }
+    },
+    "required": [
+      "draftPrd"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

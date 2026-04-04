@@ -1,0 +1,33 @@
+{
+  "name": "resume_tool_operation",
+  "description": "Resume a long running operation that was not completed by another tool.\n\nAGENT INSTRUCTIONS:\nUse this tool to resume a long running operation.\n\nEXAMPLE USAGE:\nResume the metadata deploy job 0Af1234567890\nResume the deployment and wait for 10 minutes\nResume the deployment to my org\nResume scratch org creation\nResume job 2SR1234567890\nResume agent tests\nResume org snapshot with ID 0OoKa000000XZAbKAO\nReport on my org snapshot",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "jobId": {
+        "type": "string",
+        "description": "The job id of the long running operation to resume (required)"
+      },
+      "wait": {
+        "type": "number",
+        "default": 30,
+        "description": "The amount of time to wait for the operation to complete in minutes (optional)"
+      },
+      "usernameOrAlias": {
+        "type": "string",
+        "description": "The username or alias for the Salesforce org to run this tool against.\n\nA username follows the <name@domain.com> format.\nIf the user refers to an org with a string not following that format, it can be a valid alias.\n\nIMPORTANT:\n- If it is not clear what the username or alias is, run the #get_username tool to resolve it.\n- NEVER guess or make-up a username or alias.\n"
+      },
+      "directory": {
+        "type": "string",
+        "description": "The directory to run this tool from.\nAGENT INSTRUCTIONS:\nWe need to know where the user wants to run this tool from.\nLook at your current Workspace Context to determine this filepath.\nALWAYS USE A FULL PATH TO THE DIRECTORY.\nUnless the user explicitly asks for a different directory, or a new directory is created from the action of a tool, use this same directory for future tool calls.\n"
+      }
+    },
+    "required": [
+      "jobId",
+      "usernameOrAlias",
+      "directory"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

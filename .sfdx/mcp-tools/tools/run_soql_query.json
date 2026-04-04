@@ -1,0 +1,32 @@
+{
+  "name": "run_soql_query",
+  "description": "Run a SOQL query against a Salesforce org.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "query": {
+        "type": "string",
+        "description": "SOQL query to run"
+      },
+      "usernameOrAlias": {
+        "type": "string",
+        "description": "The username or alias for the Salesforce org to run this tool against.\n\nA username follows the <name@domain.com> format.\nIf the user refers to an org with a string not following that format, it can be a valid alias.\n\nIMPORTANT:\n- If it is not clear what the username or alias is, run the #get_username tool to resolve it.\n- NEVER guess or make-up a username or alias.\n"
+      },
+      "directory": {
+        "type": "string",
+        "description": "The directory to run this tool from.\nAGENT INSTRUCTIONS:\nWe need to know where the user wants to run this tool from.\nLook at your current Workspace Context to determine this filepath.\nALWAYS USE A FULL PATH TO THE DIRECTORY.\nUnless the user explicitly asks for a different directory, or a new directory is created from the action of a tool, use this same directory for future tool calls.\n"
+      },
+      "useToolingApi": {
+        "type": "boolean",
+        "description": "Use Tooling API for the operation"
+      }
+    },
+    "required": [
+      "query",
+      "usernameOrAlias",
+      "directory"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

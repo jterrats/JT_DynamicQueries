@@ -1,0 +1,9 @@
+{
+  "name": "orchestrate_lwc_component_creation",
+  "description": "Use this tool to create a LWC Components (Lightning Web Components) by orchestrating a workflow that provides step-by-step guidelines",
+  "inputSchema": {
+    "type": "object",
+    "properties": {},
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

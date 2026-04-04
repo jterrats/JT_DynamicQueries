@@ -1,0 +1,9 @@
+{
+  "name": "guide_lo_migration",
+  "description": "Migration recipe: converts a Lightning Out (beta) host page into a Lightning Out 2.0 host page. Includes LO 2.0 architecture reference, step-by-step instructions, value mapping table, and a complete page skeleton with placeholders.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {},
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

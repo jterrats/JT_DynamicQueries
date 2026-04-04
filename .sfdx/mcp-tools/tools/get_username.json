@@ -1,0 +1,28 @@
+{
+  "name": "get_username",
+  "description": "Intelligently determines the appropriate username or alias for Salesforce operations.\n\nWHEN TO USE THIS TOOL:\n- When uncertain which org username a user wants for Salesforce operations.\n\nTo resolve the default org username, set the defaultTargetOrg param to true and defaultDevHub to false.\nTo resole the default devhub org username, set the defaultTargetOrg param to false and defaultDevHub to true.\nIf it's not clear which type of org to resolve, set both defaultTargetOrg and defaultDevHub to false to an allow-listed org username available.\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "defaultTargetOrg": {
+        "type": "boolean",
+        "default": false,
+        "description": "Resolve the default target org username"
+      },
+      "defaultDevHub": {
+        "type": "boolean",
+        "default": false,
+        "description": "Resolve the default target devhub org username"
+      },
+      "directory": {
+        "type": "string",
+        "description": "The directory to run this tool from.\nAGENT INSTRUCTIONS:\nWe need to know where the user wants to run this tool from.\nLook at your current Workspace Context to determine this filepath.\nALWAYS USE A FULL PATH TO THE DIRECTORY.\nUnless the user explicitly asks for a different directory, or a new directory is created from the action of a tool, use this same directory for future tool calls.\n"
+      }
+    },
+    "required": [
+      "directory"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

@@ -18,8 +18,18 @@ public inherited sharing class JT_DataSelector {
   /** Cache to store configurations and avoid repeated queries */
   private static Map<String, JT_DynamicQueryConfiguration__mdt> configCache = new Map<String, JT_DynamicQueryConfiguration__mdt>();
 
+  /**
+   * Platform Cache partition for this framework.
+   * Ensures we don't collide with other applications' cached data.
+   */
+  private static final String CACHE_PARTITION = 'local.JTDynamicQueries';
+
   /** used to validate if there's already an instance of the class */
   private static JT_DataSelector instance;
+
+  private static Cache.OrgPartition getPartition() {
+    return Cache.Org.getPartition(CACHE_PARTITION);
+  }
 
   @SuppressWarnings('PMD.EmptyStatementBlock')
   /**
@@ -193,6 +203,44 @@ public inherited sharing class JT_DataSelector {
       return configCache.get(devName);
     }
 
+    // Platform Cache keys must be strictly alphanumeric.
+    // Reuse the existing key sanitization rules from JT_ToolingApiUtil.
+    final String sanitizedDevName = JT_ToolingApiUtil.toAlphanumeric(devName);
+
+    // If devName cannot be converted into a valid alphanumeric key, skip Platform Cache.
+    // Functional behavior remains unchanged: we still read from MDT and populate static cache.
+    if (String.isBlank(sanitizedDevName)) {
+      JT_DynamicQueryConfiguration__mdt config = getConfigFromMetadata(devName);
+      configCache.put(devName, config);
+      return config;
+    }
+
+    // Check Platform Cache (cross-transaction)
+    // NOTE: Keys are intentionally stable so the UI "Clear Cache" can remove them.
+    final String cacheKey = 'Config' + sanitizedDevName;
+    JT_DynamicQueryConfiguration__mdt cachedConfig = (JT_DynamicQueryConfiguration__mdt) getPartition().get(
+      cacheKey
+    );
+    if (cachedConfig != null) {
+      configCache.put(devName, cachedConfig);
+      return cachedConfig;
+    }
+    JT_DynamicQueryConfiguration__mdt config = getConfigFromMetadata(devName);
+    configCache.put(devName, config);
+    getPartition().put(cacheKey, config);
+    return config;
+  }
+
+  /**
+   * Generates a strictly alphanumeric cache key suffix.
+   */
+  /**
+   * Fetches configuration from MDT with security checks.
+   * Isolated so Platform Cache failures do not change the functional behavior.
+   */
+  private JT_DynamicQueryConfiguration__mdt getConfigFromMetadata(
+    String devName
+  ) {
     if (!Schema.SObjectType.JT_DynamicQueryConfiguration__mdt.isAccessible()) {
       throw new AuraHandledException(
         Label.JT_DataSelector_insufficientPermissionsMetadata
@@ -216,11 +264,7 @@ public inherited sharing class JT_DataSelector {
       );
     }
 
-    // Store in cache for future use
-    JT_DynamicQueryConfiguration__mdt config = configs[0];
-    configCache.put(devName, config);
-
-    return config;
+    return configs[0];
   }
 
   /**

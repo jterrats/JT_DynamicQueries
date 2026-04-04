@@ -1,5 +1,6 @@
 import { LightningElement, track, wire } from "lwc";
 import { refreshApex } from "@salesforce/apex";
+import clearPlatformCache from "@salesforce/apex/JT_QueryViewerController.clearPlatformCache";
 import {
   formatLabel,
   getFieldType,
@@ -1795,6 +1796,15 @@ export default class JtQueryViewer extends LightningElement {
     const cleared = [];
 
     try {
+      // Clear server-side platform cache first so client-side "refreshApex" reflects it.
+      // Only configurations are stored in the dedicated partition in this project.
+      await clearPlatformCache({
+        configurations: configurations ?? false,
+        results: results ?? false,
+        users: users ?? false,
+        recent: recent ?? false
+      });
+
       // Clear configurations
       if (configurations) {
         await refreshApex(this.wiredConfigurationsResult);

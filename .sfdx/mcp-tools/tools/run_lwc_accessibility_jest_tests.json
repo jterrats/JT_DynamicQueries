@@ -1,0 +1,9 @@
+{
+  "name": "run_lwc_accessibility_jest_tests",
+  "description": "Provides detailed instructions and commands for running Sa11y accessibility Jest tests on LWC components. Covers both Bazel commands (core build environment) and Jest commands (standalone environment).",
+  "inputSchema": {
+    "type": "object",
+    "properties": {},
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

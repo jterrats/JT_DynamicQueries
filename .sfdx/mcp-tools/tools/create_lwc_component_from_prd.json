@@ -1,0 +1,15 @@
+{
+  "name": "create_lwc_component_from_prd",
+  "description": "Use this tool to create a Lightning Web Component (LWC) from a Product Requirement Document (PRD).",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "prd": {
+        "type": "string",
+        "description": "Optional: The Product Requirements Document content for context-aware guidance"
+      }
+    },
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

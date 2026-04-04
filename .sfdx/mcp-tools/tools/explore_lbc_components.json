@@ -1,0 +1,23 @@
+{
+  "name": "explore_lbc_components",
+  "description": "Use this tool to retrieve full API documentation for specific Lightning Base Components by name. Returns properties, methods, events, slots, and usage notes. Use guide_lbc_usage first to identify which component names to pass here.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "names": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1
+        },
+        "minItems": 1,
+        "description": "Array of Lightning Base Component names to retrieve documentation for (e.g. [\"accordion\", \"button\"]). Use guide_lbc_usage to discover available component names."
+      }
+    },
+    "required": [
+      "names"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

@@ -8,10 +8,53 @@
 @IsTest
 @SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs, PMD.ApexDoc')
 private class JT_QueryViewerController_Test {
+  private static final String RUN_AS_PERMISSION_SET_DEV_NAME =
+    'JT_Dynamic_Queries';
+
   @testSetup
   static void setupTestData() {
     // Create test Account
     insert new Account(Name = 'Test Account for Viewer');
+  }
+
+  /**
+   * @description Creates an active test user and assigns the Run As Permission Set.
+   * Allows us to cover the happy path for canUseRunAs()/getAllActiveUsers().
+   */
+  private static User createUserWithRunAsPermissions() {
+    final PermissionSet ps = [
+      SELECT Id
+      FROM PermissionSet
+      WHERE Name = :RUN_AS_PERMISSION_SET_DEV_NAME
+      LIMIT 1
+    ];
+
+    final Profile leastPrivilege = [
+      SELECT Id
+      FROM Profile
+      WHERE Name = 'Minimum Access - Salesforce'
+      LIMIT 1
+    ];
+
+    User u = new User(
+      FirstName = 'RunAs',
+      LastName = 'Tester',
+      Email = 'runas.tester@example.com',
+      Username = 'runas.tester+' + System.currentTimeMillis() + '@example.com',
+      Alias = 'rtester',
+      ProfileId = leastPrivilege.Id,
+      TimeZoneSidKey = 'GMT',
+      LocaleSidKey = 'en_US',
+      EmailEncodingKey = 'UTF-8',
+      LanguageLocaleKey = 'en_US'
+    );
+    insert u;
+
+    insert new PermissionSetAssignment(
+      AssigneeId = u.Id,
+      PermissionSetId = ps.Id
+    );
+    return u;
   }
 
   /**
@@ -308,12 +351,14 @@ private class JT_QueryViewerController_Test {
    **/
   @IsTest
   static void testCanUseRunAs() {
-    Test.startTest();
-    Boolean canUse = JT_QueryViewerController.canUseRunAs();
-    Test.stopTest();
+    User runAsUser = createUserWithRunAsPermissions();
+    System.runAs(runAsUser) {
+      Test.startTest();
+      Boolean canUse = JT_QueryViewerController.canUseRunAs();
+      Test.stopTest();
 
-    // Result depends on user permissions - just verify it returns a boolean
-    System.assertNotEquals(null, canUse, 'Should return a boolean');
+      System.assertNotEquals(null, canUse, 'Should return a boolean');
+    }
   }
 
   /**
@@ -322,27 +367,30 @@ private class JT_QueryViewerController_Test {
    **/
   @IsTest
   static void testGetAllActiveUsers() {
-    Test.startTest();
-    try {
-      List<JT_QueryViewerController.UserOption> users = JT_QueryViewerController.getAllActiveUsers();
-      // If user has permissions, should return results or empty list
-      System.assertNotEquals(null, users, 'Should return a list');
-      // Should exclude current user
-      for (JT_QueryViewerController.UserOption user : users) {
-        System.assertNotEquals(
-          UserInfo.getUserId(),
-          user.value,
-          'Should not include current user'
+    User runAsUser = createUserWithRunAsPermissions();
+    System.runAs(runAsUser) {
+      Test.startTest();
+      try {
+        List<JT_QueryViewerController.UserOption> users =
+          JT_QueryViewerController.getAllActiveUsers();
+
+        System.assertNotEquals(null, users, 'Should return a list');
+
+        for (JT_QueryViewerController.UserOption user : users) {
+          System.assertNotEquals(
+            UserInfo.getUserId(),
+            user.value,
+            'Should not include current user'
+          );
+        }
+      } catch (Exception e) {
+        System.assert(
+          e instanceof AuraHandledException,
+          'Should throw AuraHandledException'
         );
       }
-    } catch (Exception e) {
-      // If user doesn't have permissions, should throw exception
-      System.assert(
-        e instanceof AuraHandledException,
-        'Should throw AuraHandledException'
-      );
+      Test.stopTest();
     }
-    Test.stopTest();
   }
 
   /**
@@ -869,6 +917,37 @@ private class JT_QueryViewerController_Test {
       null,
       assessment.riskLevel,
       'Should have risk level'
+    );
+  }
+
+  /**
+   * @description Test assessQueryRisk exception/catch path by forcing a failure
+   * (e.g., invalid config so helper methods operate on null config).
+   */
+  @IsTest
+  static void testAssessQueryRiskExceptionPath() {
+    String bindingsJson = JSON.serialize(
+      new Map<String, Object>{ 'name' => 'Test Account' }
+    );
+
+    Test.startTest();
+    JT_QueryViewerController.QueryRiskAssessment assessment =
+      JT_QueryViewerController.assessQueryRisk(
+        'NonExistent_Config_For_Exception_Path',
+        bindingsJson
+      );
+    Test.stopTest();
+
+    System.assertNotEquals(null, assessment, 'Assessment should not be null');
+    System.assertEquals(
+      true,
+      assessment.isHighRisk,
+      'Exception path should mark assessment as high risk'
+    );
+    System.assertEquals(
+      false,
+      assessment.isCriticalRisk,
+      'Exception path should mark critical risk as false'
     );
   }
 
@@ -1770,5 +1849,207 @@ private class JT_QueryViewerController_Test {
         }
       }
     }
+  }
+
+  @IsTest
+  static void testClearPlatformCache() {
+    Test.startTest();
+    // Cover early-return path
+    JT_QueryViewerController.clearPlatformCache(false, true, true, true);
+
+    // Cover server-side clear path (configurations => platform cache removals)
+    JT_QueryViewerController.clearPlatformCache(true, true, true, true);
+    Test.stopTest();
+
+    System.assert(true, 'clearPlatformCache should execute without throwing');
+  }
+
+  @IsTest
+  static void testClearPlatformCacheWithNullConfigurations() {
+    Test.startTest();
+    JT_QueryViewerController.clearPlatformCache(null, true, true, true);
+    Test.stopTest();
+    System.assert(true, 'clearPlatformCache should handle null configurations');
+  }
+
+  // ─── getValueTypeName ─────────────────────────────────────────────────────
+
+  @IsTest
+  static void testGetValueTypeNameNull() {
+    Test.startTest();
+    String result = JT_QueryViewerController.getValueTypeName(null);
+    Test.stopTest();
+    Assert.areEqual('null', result, 'Null value should return "null"');
+  }
+
+  @IsTest
+  static void testGetValueTypeNameString() {
+    Test.startTest();
+    String result = JT_QueryViewerController.getValueTypeName('hello');
+    Test.stopTest();
+    Assert.areEqual('String', result, 'String value should return "String"');
+  }
+
+  @IsTest
+  static void testGetValueTypeNameInteger() {
+    Test.startTest();
+    String result = JT_QueryViewerController.getValueTypeName(42);
+    Test.stopTest();
+    Assert.areEqual('Integer', result, 'Integer should return "Integer"');
+  }
+
+  @IsTest
+  static void testGetValueTypeNameDecimal() {
+    Test.startTest();
+    String result = JT_QueryViewerController.getValueTypeName(3.14);
+    Test.stopTest();
+    Assert.areEqual('Decimal', result, 'Decimal should return "Decimal"');
+  }
+
+  @IsTest
+  static void testGetValueTypeNameBoolean() {
+    Test.startTest();
+    String result = JT_QueryViewerController.getValueTypeName(true);
+    Test.stopTest();
+    Assert.areEqual('Boolean', result, 'Boolean should return "Boolean"');
+  }
+
+  @IsTest
+  static void testGetValueTypeNameDate() {
+    Test.startTest();
+    String result = JT_QueryViewerController.getValueTypeName(Date.today());
+    Test.stopTest();
+    Assert.areEqual('Date', result, 'Date should return "Date"');
+  }
+
+  @IsTest
+  static void testGetValueTypeNameDatetime() {
+    Test.startTest();
+    String result = JT_QueryViewerController.getValueTypeName(Datetime.now());
+    Test.stopTest();
+    Assert.areEqual('Datetime', result, 'Datetime should return "Datetime"');
+  }
+
+  @IsTest
+  static void testGetValueTypeNameList() {
+    Test.startTest();
+    String result = JT_QueryViewerController.getValueTypeName(
+      new List<Object>{ 'a' }
+    );
+    Test.stopTest();
+    Assert.areEqual(
+      'List<Object>',
+      result,
+      'List<Object> should return "List<Object>"'
+    );
+  }
+
+  @IsTest
+  static void testGetValueTypeNameObject() {
+    Test.startTest();
+    // Map<String,Object> falls through all instanceof checks → Object fallback
+    String result = JT_QueryViewerController.getValueTypeName(
+      new Map<String, Object>()
+    );
+    Test.stopTest();
+    Assert.areEqual('Object', result, 'Unknown type should return "Object"');
+  }
+
+  // ─── convertBindingValueForQuery – date / datetime conversion paths ───────
+  // NOTE: No spaces around '>=' are intentional. The numeric-comparison regex
+  // requires \s+ between field and operator, so removing spaces ensures the
+  // binding reaches the date/datetime conversion block.
+
+  @IsTest
+  static void testConvertBindingValueForQueryDatetimeConversion() {
+    String query = 'SELECT Id FROM Account WHERE CreatedDate>=:createdDate';
+    String isoDatetime = '2025-01-15T10:30:00.000Z';
+
+    Test.startTest();
+    Object result = JT_QueryViewerController.convertBindingValueForQuery(
+      query,
+      'createdDate',
+      isoDatetime
+    );
+    Test.stopTest();
+
+    Assert.isTrue(
+      result instanceof Datetime,
+      'ISO datetime string for CreatedDate should be converted to Datetime'
+    );
+  }
+
+  @IsTest
+  static void testConvertBindingValueForQueryDateConversion() {
+    String query = 'SELECT Id FROM Opportunity WHERE CloseDate>=:closeDate';
+    String isoDate = '2025-06-30T00:00:00.000Z';
+
+    Test.startTest();
+    Object result = JT_QueryViewerController.convertBindingValueForQuery(
+      query,
+      'closeDate',
+      isoDate
+    );
+    Test.stopTest();
+
+    Assert.isTrue(
+      result instanceof Date,
+      'ISO date string for CloseDate should be converted to Date'
+    );
+  }
+
+  @IsTest
+  static void testConvertBindingValueForQueryDateConversionInvalid() {
+    String query = 'SELECT Id FROM Opportunity WHERE CloseDate>=:closeDate';
+    String invalidDate = 'not-a-date';
+
+    Test.startTest();
+    Object result = JT_QueryViewerController.convertBindingValueForQuery(
+      query,
+      'closeDate',
+      invalidDate
+    );
+    Test.stopTest();
+
+    Assert.areEqual(
+      invalidDate,
+      result,
+      'Invalid date string should be returned as-is (catch block)'
+    );
+  }
+
+  // ─── escapeScalarValue – Date / Datetime / null branches ─────────────────
+
+  @IsTest
+  static void testEscapeScalarValueNull() {
+    Test.startTest();
+    String result = JT_QueryViewerController.escapeScalarValue(null);
+    Test.stopTest();
+    Assert.areEqual('null', result, 'null should escape to the string "null"');
+  }
+
+  @IsTest
+  static void testEscapeScalarValueDate() {
+    Date d = Date.newInstance(2025, 6, 30);
+    Test.startTest();
+    String result = JT_QueryViewerController.escapeScalarValue(d);
+    Test.stopTest();
+    Assert.areEqual(
+      '2025-06-30',
+      result,
+      'Date should be formatted as YYYY-MM-DD'
+    );
+  }
+
+  @IsTest
+  static void testEscapeScalarValueDatetime() {
+    Datetime dt = Datetime.newInstanceGmt(2025, 1, 15, 10, 30, 0);
+    Test.startTest();
+    String result = JT_QueryViewerController.escapeScalarValue(dt);
+    Test.stopTest();
+    Assert.isTrue(
+      result != null && result.contains('2025'),
+      'Datetime should be formatted as ISO string containing the year'
+    );
   }
 }

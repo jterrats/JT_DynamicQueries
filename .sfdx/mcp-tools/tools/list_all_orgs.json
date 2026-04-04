@@ -1,0 +1,18 @@
+{
+  "name": "list_all_orgs",
+  "description": "Lists all configured Salesforce orgs.\n\nAGENT INSTRUCTIONS:\nDO NOT use this tool to try to determine which org a user wants, use #get_username instead. Only use it if the user explicitly asks for a list of orgs.\n\nExample usage:\nCan you list all Salesforce orgs for me\nList all Salesforce orgs\nList all orgs",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "directory": {
+        "type": "string",
+        "description": "The directory to run this tool from.\nAGENT INSTRUCTIONS:\nWe need to know where the user wants to run this tool from.\nLook at your current Workspace Context to determine this filepath.\nALWAYS USE A FULL PATH TO THE DIRECTORY.\nUnless the user explicitly asks for a different directory, or a new directory is created from the action of a tool, use this same directory for future tool calls.\n"
+      }
+    },
+    "required": [
+      "directory"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

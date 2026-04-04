@@ -1,0 +1,30 @@
+{
+  "name": "detect_devops_center_merge_conflict",
+  "description": "Detects merge conflicts for a selected work item or in given source branch.\n\n      **When to use:**\n      - User asks to detect conflicts for a work item, or asks for help fixing a merge conflict.\n      - User asks to detect conflicts for a given source branch.\n\n      **MANDATORY input:**\n      - Either workitem name (example WI-0000000X) or source branch (example WI-0000000X) is provided.\n      - usernameOrAlias: DevOps Center org username or alias (example devops-center-org).\n\n      **Behavior:**\n      - The tool will look up the Work Item by Name in the DevOps Center org and compute target branch automatically.\n      - If the item cannot be found, or required fields are missing (branch or repo), it will return actionable guidance.\n\n      **What this tool does:**\n      1. Validates required properties (WorkItemBranch, TargetBranch, SourceCodeRepository.repoUrl)\n      2. Provides instructions to check for conflicts between the work item branch and target branch\n      3. Runs the necessary git commands to detect conflicts and surface findings\n\n      **Output:**\n      - If conflicts exist: lists conflicted files and suggested next steps\n      - If no conflicts: confirms it is safe to merge\n      - On error: returns details\n\n      **Next step:**\n      - After detection, call 'resolve_devops_center_merge_conflict' to guide the user through conflict resolution.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "usernameOrAlias": {
+        "type": "string",
+        "description": "The username or alias for the Salesforce org to run this tool against.\n\nA username follows the <name@domain.com> format.\nIf the user refers to an org with a string not following that format, it can be a valid alias.\n\nIMPORTANT:\n- If it is not clear what the username or alias is, run the #get_username tool to resolve it.\n- NEVER guess or make-up a username or alias.\n"
+      },
+      "workItemName": {
+        "type": "string",
+        "description": "Exact Work Item Name"
+      },
+      "sourcebranch": {
+        "type": "string",
+        "description": "Source branch of the Work Item"
+      },
+      "localPath": {
+        "type": "string",
+        "description": "Local path to the repository (defaults to current working directory)"
+      }
+    },
+    "required": [
+      "localPath"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

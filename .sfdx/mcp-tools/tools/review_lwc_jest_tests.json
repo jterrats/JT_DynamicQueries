@@ -1,0 +1,44 @@
+{
+  "name": "review_lwc_jest_tests",
+  "description": "This is a sub tool of the orchestrate_lwc_component_testing. It should only be used as part of the workflow, not directly. Reviews test coverage and implementation based on initial analysis. Only provides feedback and recommendations, never generates or rewrites test code.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "componentName": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Name of the LWC component"
+      },
+      "files": {
+        "anyOf": [
+          {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          {
+            "type": "string"
+          }
+        ],
+        "description": "Component files as key-value pairs where key is filename and value is file content. Can be passed as an object or JSON string."
+      },
+      "name": {
+        "type": "string",
+        "description": "Name of the tool"
+      },
+      "client": {
+        "type": "string",
+        "description": "Client identifier"
+      }
+    },
+    "required": [
+      "componentName",
+      "files",
+      "name",
+      "client"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

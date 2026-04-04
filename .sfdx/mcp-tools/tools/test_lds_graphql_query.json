@@ -1,0 +1,43 @@
+{
+  "name": "test_lds_graphql_query",
+  "description": "This is a sub tool of the create_lds_graphql_read_query and create_lds_graphql_mutation_query tools. It **must** only be called as part of their workflows, not directly. Tests a GraphQL query against a connected Salesforce org and returns the result.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "usernameOrAlias": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Username or alias of the Salesforce org to test the query against. If not specified, use the #get_username tool."
+      },
+      "directory": {
+        "type": "string",
+        "default": "/Users/jterrats/Library/Application Support/Cursor/User/globalStorage/salesforce.salesforcedx-einstein-gpt/MCP/a4d-npm-cache/salesforce-mcp",
+        "description": "Directory of the Salesforce project. Used to resolve local default orgs and aliases. Defaults to current working directory."
+      },
+      "query": {
+        "type": "string",
+        "minLength": 1,
+        "description": "The GraphQL query to test"
+      },
+      "operation": {
+        "type": "string",
+        "description": "The name of the operation to test"
+      },
+      "variables": {
+        "type": "object",
+        "additionalProperties": {},
+        "description": "Optional GraphQL variables as a JSON object"
+      },
+      "apiVersion": {
+        "type": "string",
+        "description": "Salesforce API version (e.g. \"66.0\"). Uses org default if omitted"
+      }
+    },
+    "required": [
+      "usernameOrAlias",
+      "query"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

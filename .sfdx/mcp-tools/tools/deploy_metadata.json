@@ -1,0 +1,54 @@
+{
+  "name": "deploy_metadata",
+  "description": "Deploy metadata to an org from your local project.\n\nAGENT INSTRUCTIONS:\nIf the user doesn't specify what to deploy exactly (\"deploy my changes\"), leave the \"sourceDir\", \"ignoreConflicts\" and \"manifest\" params empty so the tool calculates which files to deploy.\n\nEXAMPLE USAGE:\nDeploy changes to my org\nDeploy this file to my org\nDeploy the manifest\nDeploy X metadata to my org\nDeploy X local files to my org and ignore any conflicts between the local project and org\nDeploy X to my org and run A,B and C apex tests.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "ignoreConflicts": {
+        "type": "boolean",
+        "description": " Ignore conflicts and deploy local files, even if they overwrite changes in the org."
+      },
+      "sourceDir": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "Path to the local source files to deploy. Leave this unset if the user is vague about what to deploy."
+      },
+      "manifest": {
+        "type": "string",
+        "description": "Full file path for manifest (XML file) of components to deploy."
+      },
+      "apexTestLevel": {
+        "type": "string",
+        "enum": [
+          "NoTestRun",
+          "RunLocalTests",
+          "RunAllTestsInOrg"
+        ],
+        "description": "Apex test level to use during deployment.\n\nAGENT INSTRUCTIONS\nSet this only if the user specifically ask to run apex tests in some of these ways:\n\nNoTestRun=\"No tests are run\"\nRunLocalTests=\"Run all tests in the org, except the ones that originate from installed managed and unlocked packages.\"\nRunAllTestsInOrg=\"Run all tests in the org, including tests of managed packages\"\n\nDon't set this param if \"apexTests\" is also set.\n"
+      },
+      "apexTests": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "Apex tests classes to run.\n\nSet this param if the user ask an Apex test to be run during deployment.\n"
+      },
+      "usernameOrAlias": {
+        "type": "string",
+        "description": "The username or alias for the Salesforce org to run this tool against.\n\nA username follows the <name@domain.com> format.\nIf the user refers to an org with a string not following that format, it can be a valid alias.\n\nIMPORTANT:\n- If it is not clear what the username or alias is, run the #get_username tool to resolve it.\n- NEVER guess or make-up a username or alias.\n"
+      },
+      "directory": {
+        "type": "string",
+        "description": "The directory to run this tool from.\nAGENT INSTRUCTIONS:\nWe need to know where the user wants to run this tool from.\nLook at your current Workspace Context to determine this filepath.\nALWAYS USE A FULL PATH TO THE DIRECTORY.\nUnless the user explicitly asks for a different directory, or a new directory is created from the action of a tool, use this same directory for future tool calls.\n"
+      }
+    },
+    "required": [
+      "usernameOrAlias",
+      "directory"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

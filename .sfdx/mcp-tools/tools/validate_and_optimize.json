@@ -1,0 +1,96 @@
+{
+  "name": "validate_and_optimize",
+  "description": "Validation tool for UI component quality assessment.\n\nThis tool returns a runbook that instructs the agent to:\n- Call a list of validators (predefined suite OR a custom list supplied by the caller)\n- Produce issues per validator\n- Call `score_issues` after each validator and again for the overall score\n- Stop and present results before fixing/revalidating\n\nProvide EITHER `suite` (a predefined validator set) OR `validators` (an explicit list), but not both.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "suite": {
+        "type": "string",
+        "enum": [
+          "core-lwc",
+          "core-react"
+        ]
+      },
+      "validators": {
+        "type": "array",
+        "items": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "instruction": {
+                  "type": "string"
+                },
+                "outputMode": {
+                  "type": "string",
+                  "enum": [
+                    "produces_issues",
+                    "produces_guidance"
+                  ]
+                },
+                "type": {
+                  "type": "string",
+                  "const": "tool"
+                },
+                "tool": {
+                  "type": "string"
+                },
+                "args": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              },
+              "required": [
+                "type",
+                "tool"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "instruction": {
+                  "$ref": "#/properties/validators/items/anyOf/0/properties/instruction"
+                },
+                "outputMode": {
+                  "$ref": "#/properties/validators/items/anyOf/0/properties/outputMode"
+                },
+                "type": {
+                  "type": "string",
+                  "const": "cli"
+                },
+                "command": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "type",
+                "command"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "minItems": 1
+      },
+      "summaryFormat": {
+        "type": "string",
+        "enum": [
+          "text",
+          "json"
+        ],
+        "default": "text"
+      },
+      "targetPaths": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "minItems": 1,
+        "description": "Optional list of absolute file paths to validate. Grounds the agent runbook with the explicit list of files the agent must read and analyze. This tool does not read file contents — the agent is responsible for reading each file."
+      }
+    },
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

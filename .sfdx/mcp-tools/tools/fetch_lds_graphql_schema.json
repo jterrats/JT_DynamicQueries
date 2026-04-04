@@ -1,0 +1,33 @@
+{
+  "name": "fetch_lds_graphql_schema",
+  "description": "Fetches the full GraphQL introspection schema from a connected Salesforce org and saves it to the local filesystem. Returns only the file path and metadata — the schema content never enters the conversation context. Use the saved schema file path in your codegen.yml and ESLint graphql config.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "usernameOrAlias": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Username or alias of the Salesforce org to introspect. If not specified, use the #get_username tool."
+      },
+      "directory": {
+        "type": "string",
+        "default": "/Users/jterrats/Library/Application Support/Cursor/User/globalStorage/salesforce.salesforcedx-einstein-gpt/MCP/a4d-npm-cache/salesforce-mcp",
+        "description": "Directory of the Salesforce project. Used to resolve local default orgs and aliases. Defaults to current working directory."
+      },
+      "outputPath": {
+        "type": "string",
+        "default": "schema.graphql",
+        "description": "File path to write the schema SDL. Relative paths resolve from the nearest project root. Defaults to schema.graphql"
+      },
+      "apiVersion": {
+        "type": "string",
+        "description": "Salesforce API version (e.g. \"62.0\"). Uses org default if omitted"
+      }
+    },
+    "required": [
+      "usernameOrAlias"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

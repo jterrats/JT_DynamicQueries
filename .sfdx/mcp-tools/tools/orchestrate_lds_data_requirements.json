@@ -1,0 +1,21 @@
+{
+  "name": "orchestrate_lds_data_requirements",
+  "description": "Provides step-by-step workflow guidance for analyzing and clarifying LDS data requirements to produce PRD-ready specifications.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "clearRequirements": {
+        "type": "boolean",
+        "default": false,
+        "description": "Skips requirements gathering and ambiguity resolution; set to true when analysis has already been performed and you are confident in the requirements."
+      },
+      "skipValidation": {
+        "type": "boolean",
+        "default": false,
+        "description": "Skips API name validation; either because the data requirement does not involve Salesforce Records orobject and field API names have already been validated."
+      }
+    },
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "guide_component_accessibility",
+  "description": "Provides accessibility guidelines. When hasImages=true, includes Vision AI accessibility guidelines. Use this tool for both code-based accessibility guidance and visual accessibility validation.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "hasImages": {
+        "type": "boolean",
+        "description": "Whether images are present for Vision AI accessibility analysis. When true, includes Vision AI guidelines."
+      },
+      "mode": {
+        "type": "string",
+        "enum": [
+          "fix",
+          "analysis"
+        ],
+        "default": "fix",
+        "description": "The mode of the MCP tool. \"fix\" means the tool will fix the issues found in the code. \"analysis\" means the tool will analyze the code and respond with a SARIF report."
+      }
+    },
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

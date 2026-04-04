@@ -1,0 +1,9 @@
+{
+  "name": "create_lds_graphql_read_query",
+  "description": "This is a sub tool of the guide_lds_graphql tool. It **must** only be called as part of its workflow, not directly. Use this tool to create GraphQL read queries for Lightning Web Components using Salesforce Lightning Data Service (LDS) GraphQL APIs.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {},
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

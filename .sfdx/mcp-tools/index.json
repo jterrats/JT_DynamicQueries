@@ -1,0 +1,263 @@
+{
+  "serverName": "https://github.com/salesforcecli/mcp",
+  "toolCount": 64,
+  "generatedAt": "2026-04-03T23:10:20.940Z",
+  "tools": [
+    {
+      "name": "get_username",
+      "description": "Intelligently determines the appropriate username or alias for Salesforce operations.\n\nWHEN TO USE THIS TOOL:\n- When uncertain which org username a user wants for Salesforce operations.\n\nTo resolve the default org username, set the defaultTargetOrg param to true and defaultDevHub to false.\nTo resole the default devhub org username, set the defaultTargetOrg param to false and defaultDevHub to true.\nIf it's not clear which type of org to resolve, set both defaultTargetOrg and defaultDevHub to false to an allow-listed org username available.\n"
+    },
+    {
+      "name": "resume_tool_operation",
+      "description": "Resume a long running operation that was not completed by another tool.\n\nAGENT INSTRUCTIONS:\nUse this tool to resume a long running operation.\n\nEXAMPLE USAGE:\nResume the metadata deploy job 0Af1234567890\nResume the deployment and wait for 10 minutes\nResume the deployment to my org\nResume scratch org creation\nResume job 2SR1234567890\nResume agent tests\nResume org snapshot with ID 0OoKa000000XZAbKAO\nReport on my org snapshot"
+    },
+    {
+      "name": "run_soql_query",
+      "description": "Run a SOQL query against a Salesforce org."
+    },
+    {
+      "name": "list_all_orgs",
+      "description": "Lists all configured Salesforce orgs.\n\nAGENT INSTRUCTIONS:\nDO NOT use this tool to try to determine which org a user wants, use #get_username instead. Only use it if the user explicitly asks for a list of orgs.\n\nExample usage:\nCan you list all Salesforce orgs for me\nList all Salesforce orgs\nList all orgs"
+    },
+    {
+      "name": "deploy_metadata",
+      "description": "Deploy metadata to an org from your local project.\n\nAGENT INSTRUCTIONS:\nIf the user doesn't specify what to deploy exactly (\"deploy my changes\"), leave the \"sourceDir\", \"ignoreConflicts\" and \"manifest\" params empty so the tool calculates which files to deploy.\n\nEXAMPLE USAGE:\nDeploy changes to my org\nDeploy this file to my org\nDeploy the manifest\nDeploy X metadata to my org\nDeploy X local files to my org and ignore any conflicts between the local project and org\nDeploy X to my org and run A,B and C apex tests."
+    },
+    {
+      "name": "retrieve_metadata",
+      "description": "Retrieve metadata from an org to your local project.\n\nAGENT INSTRUCTIONS:\nIf the user doesn't specify what to retrieve exactly (\"retrieve my changes\"), leave the \"sourceDir\", \"ignoreConflicts\", and \"manifest\" params empty so the tool calculates which files to retrieve.\n\nEXAMPLE USAGE:\nRetrieve changes\nRetrieve changes from my org\nRetrieve this file from my org\nRetrieve the metadata in the manifest\nRetrieve X metadata from my org\nRetrieve X metadata from my org and ignore any conflicts between the local project and org"
+    },
+    {
+      "name": "run_agent_test",
+      "description": "Run Agent tests in an org.\n\nAGENT INSTRUCTIONS:\nIf the user doesn't specify what to test, take context from the currently open file\nThis will ONLY run Agent tests, NOT apex tests, lightning tests, flow tests, or any other type of test.\n\nthis should be chosen when a file in the 'aiEvaluationDefinitions' directory is mentioned\n\nEXAMPLE USAGE:\nRun tests for the X agent\nRun this test\nstart myAgentTest and don't wait for results"
+    },
+    {
+      "name": "run_apex_test",
+      "description": "Run Apex tests in an org.\n\nAGENT INSTRUCTIONS:\nIf the user doesn't specify what to test, take context from the currently open file\nThis will ONLY run APEX tests, NOT agent tests, lightning tests, flow tests, or any other type of test.\n\nthis should be chosen when a file in the 'classes' directory is mentioned\n\nEXAMPLE USAGE:\nRun tests A, B, C.\nRun the myTestMethod in this file\nRun this test and include success and failures\nRun all tests in the org.\nTest the \"mySuite\" suite asynchronously. I’ll check results later.\nRun tests for this file and include coverage\nWhat are the results for 707XXXXXXXXXXXX"
+    },
+    {
+      "name": "assign_permission_set",
+      "description": "Assign a permission set to one or more org users."
+    },
+    {
+      "name": "get_mobile_lwc_offline_analysis",
+      "description": "Analyzes LWC components for mobile-specific issues and provides detailed recommendations for improvements. It can be leveraged to check if components are mobile-ready."
+    },
+    {
+      "name": "get_mobile_lwc_offline_guidance",
+      "description": "Provides structured review instructions to detect and remediate Mobile Offline code violations in Lightning web components (LWCs) for Salesforce Mobile Apps."
+    },
+    {
+      "name": "create_mobile_lwc_app_review",
+      "description": "The MCP tool provides a comprehensive TypeScript-based API documentation for Salesforce LWC App Review Service, laying the foundation for understanding mobile app review and offering expert-level guidance for implementing the App Review feature in a Lightning Web Component (LWC)."
+    },
+    {
+      "name": "create_mobile_lwc_ar_space_capture",
+      "description": "The MCP tool provides a comprehensive TypeScript-based API documentation for Salesforce LWC AR Space Capture, laying the foundation for understanding mobile AR space capture and offering expert-level guidance for implementing the AR Space Capture feature in a Lightning Web Component (LWC)."
+    },
+    {
+      "name": "create_mobile_lwc_barcode_scanner",
+      "description": "The MCP tool provides a comprehensive TypeScript-based API documentation for Salesforce LWC Barcode Scanner, laying the foundation for understanding mobile barcode scanner and offering expert-level guidance for implementing the Barcode Scanner feature in a Lightning Web Component (LWC)."
+    },
+    {
+      "name": "create_mobile_lwc_biometrics",
+      "description": "The MCP tool provides a comprehensive TypeScript-based API documentation for Salesforce LWC Biometrics Service, laying the foundation for understanding mobile biometrics and offering expert-level guidance for implementing the Biometrics feature in a Lightning Web Component (LWC)."
+    },
+    {
+      "name": "create_mobile_lwc_calendar",
+      "description": "The MCP tool provides a comprehensive TypeScript-based API documentation for Salesforce LWC Calendar Service, laying the foundation for understanding mobile calendar and offering expert-level guidance for implementing the Calendar feature in a Lightning Web Component (LWC)."
+    },
+    {
+      "name": "create_mobile_lwc_contacts",
+      "description": "The MCP tool provides a comprehensive TypeScript-based API documentation for Salesforce LWC Contacts Service, laying the foundation for understanding mobile contacts and offering expert-level guidance for implementing the Contacts feature in a Lightning Web Component (LWC)."
+    },
+    {
+      "name": "create_mobile_lwc_document_scanner",
+      "description": "The MCP tool provides a comprehensive TypeScript-based API documentation for Salesforce LWC Document Scanner, laying the foundation for understanding mobile document scanner and offering expert-level guidance for implementing the Document Scanner feature in a Lightning Web Component (LWC)."
+    },
+    {
+      "name": "create_mobile_lwc_geofencing",
+      "description": "The MCP tool provides a comprehensive TypeScript-based API documentation for Salesforce LWC Geofencing Service, laying the foundation for understanding mobile geofencing and offering expert-level guidance for implementing the Geofencing feature in a Lightning Web Component (LWC)."
+    },
+    {
+      "name": "create_mobile_lwc_location",
+      "description": "The MCP tool provides a comprehensive TypeScript-based API documentation for Salesforce LWC Location Service, laying the foundation for understanding mobile location and offering expert-level guidance for implementing the Location feature in a Lightning Web Component (LWC)."
+    },
+    {
+      "name": "create_mobile_lwc_nfc",
+      "description": "The MCP tool provides a comprehensive TypeScript-based API documentation for Salesforce LWC NFC Service, laying the foundation for understanding mobile NFC and offering expert-level guidance for implementing the NFC feature in a Lightning Web Component (LWC)."
+    },
+    {
+      "name": "create_mobile_lwc_payments",
+      "description": "The MCP tool provides a comprehensive TypeScript-based API documentation for Salesforce LWC Payments Service, laying the foundation for understanding mobile payments and offering expert-level guidance for implementing the Payments feature in a Lightning Web Component (LWC)."
+    },
+    {
+      "name": "create_aura_blueprint_draft",
+      "description": "Use this tool to generate a Product Requirements Document (PRD) from a Salesforce Aura component. The PRD outlines the component's structure, functionality, and requirements for migrating or converting it into a Lightning Web Component (LWC), as part of the Aura to LWC migration workflow orchestrator."
+    },
+    {
+      "name": "enhance_aura_blueprint_draft",
+      "description": "Use this tool to enhance a draft Product Requirements Document (PRD) as part of the Aura to LWC migration workflow orchestrator."
+    },
+    {
+      "name": "transition_prd_to_lwc",
+      "description": "Use this tool to provide next-step migration instructions from a Product Requirements Document (PRD) to a Lightning Web Component (LWC), as part of the Aura to LWC migration workflow orchestrator. The PRD is generated from a Salesforce Aura component."
+    },
+    {
+      "name": "orchestrate_aura_migration",
+      "description": "Use this tool to orchestrate a workflow to convert or migrate a Salesforce Aura component into its Lightning Web Component (LWC) equivalent. The input can be either an Aura component bundle file (e.g., .cmp, .controller.js, .helper.js, etc.) or a directory containing Aura component bundle files."
+    },
+    {
+      "name": "verify_aura_migration_completeness",
+      "description": "Completeness Checklist for aura to LWC conversion using this tool."
+    },
+    {
+      "name": "guide_figma_to_lwc_conversion",
+      "description": "Prior to generating an LWC component from a Figma design, you must call this tool to understand how to do this for salesforce."
+    },
+    {
+      "name": "create_lwc_component_from_prd",
+      "description": "Use this tool to create a Lightning Web Component (LWC) from a Product Requirement Document (PRD)."
+    },
+    {
+      "name": "create_lwc_jest_tests",
+      "description": "This is a sub tool of the orchestrate_lwc_component_testing. It should only be used as part of the workflow, not directly. Performs comprehensive component analysis and generates test suite using a static knowledge base."
+    },
+    {
+      "name": "guide_component_accessibility",
+      "description": "Provides accessibility guidelines. When hasImages=true, includes Vision AI accessibility guidelines. Use this tool for both code-based accessibility guidance and visual accessibility validation."
+    },
+    {
+      "name": "guide_lwc_best_practices",
+      "description": "Use this tool for Salesforce LWC best practices guidelines for Lightning Web Component (LWC)."
+    },
+    {
+      "name": "guide_lwc_development",
+      "description": "Use this tool to get guidance on Lightning Web Components (LWC) development."
+    },
+    {
+      "name": "review_lwc_jest_tests",
+      "description": "This is a sub tool of the orchestrate_lwc_component_testing. It should only be used as part of the workflow, not directly. Reviews test coverage and implementation based on initial analysis. Only provides feedback and recommendations, never generates or rewrites test code."
+    },
+    {
+      "name": "orchestrate_lwc_component_creation",
+      "description": "Use this tool to create a LWC Components (Lightning Web Components) by orchestrating a workflow that provides step-by-step guidelines"
+    },
+    {
+      "name": "orchestrate_lwc_component_optimization",
+      "description": "Use this tool to orchestrate a workflow that provides step-by-step guidance for optimization of a Lightning Web Component (LWC)"
+    },
+    {
+      "name": "orchestrate_lwc_component_testing",
+      "description": "Use this tool to orchestrate a workflow that will comprehensively generate or enhance and validate Jest unit tests for a Lightning Web Component (LWC)"
+    },
+    {
+      "name": "explore_lds_uiapi",
+      "description": "Use this tool to explore Lightning Data Service (LDS) UI API documentation, browse available adapter APIs, and retrieve type definitions for LWC development. Use this when you need to discover what LDS APIs are available or get specific API documentation."
+    },
+    {
+      "name": "guide_lds_data_consistency",
+      "description": "Use this tool to get detailed guidance on implementing data consistency patterns in LWC components when working with Salesforce record data through Lightning Data Service (LDS)."
+    },
+    {
+      "name": "guide_lds_development",
+      "description": "Use this tool to get comprehensive Lightning Data Service (LDS) guidelines covering data consistency, referential integrity, and choosing UIAPI vs Apex, with review checklists and links to specialized knowledge tools. Start here for general LDS guidance, then use specialized tools for deeper dives."
+    },
+    {
+      "name": "guide_lds_referential_integrity",
+      "description": "Use this tool to get detailed guidance on implementing referential integrity best practices in LWC components to make your code resilient against object/field name changes. Use this when you need to review Salesforce Record data access."
+    },
+    {
+      "name": "run_lwc_accessibility_jest_tests",
+      "description": "Provides detailed instructions and commands for running Sa11y accessibility Jest tests on LWC components. Covers both Bazel commands (core build environment) and Jest commands (standalone environment)."
+    },
+    {
+      "name": "guide_lws_security",
+      "description": "Use this tool to get comprehensive security analysis in accordance with Product Security Guidelines and Lightning Web Security Guidelines. Use this to identify and fix security vulnerabilities in your code."
+    },
+    {
+      "name": "orchestrate_lds_data_requirements",
+      "description": "Provides step-by-step workflow guidance for analyzing and clarifying LDS data requirements to produce PRD-ready specifications."
+    },
+    {
+      "name": "guide_lds_graphql",
+      "description": "Use this tool to get detailed guidance on implementing GraphQL patterns in LWC components when working with Salesforce data through Lightning Data Service (LDS) GraphQL APIs."
+    },
+    {
+      "name": "create_lds_graphql_read_query",
+      "description": "This is a sub tool of the guide_lds_graphql tool. It **must** only be called as part of its workflow, not directly. Use this tool to create GraphQL read queries for Lightning Web Components using Salesforce Lightning Data Service (LDS) GraphQL APIs."
+    },
+    {
+      "name": "create_lds_graphql_mutation_query",
+      "description": "This is a sub tool of the guide_lds_graphql tool. It **must** only be called as part of its workflow, not directly. Use this tool to create GraphQL mutation queries for Lightning Web Components using Salesforce Lightning Data Service (LDS) GraphQL APIs."
+    },
+    {
+      "name": "fetch_lds_graphql_schema",
+      "description": "Fetches the full GraphQL introspection schema from a connected Salesforce org and saves it to the local filesystem. Returns only the file path and metadata — the schema content never enters the conversation context. Use the saved schema file path in your codegen.yml and ESLint graphql config."
+    },
+    {
+      "name": "test_lds_graphql_query",
+      "description": "This is a sub tool of the create_lds_graphql_read_query and create_lds_graphql_mutation_query tools. It **must** only be called as part of their workflows, not directly. Tests a GraphQL query against a connected Salesforce org and returns the result."
+    },
+    {
+      "name": "guide_design_general",
+      "description": "Provides comprehensive Salesforce Lightning Design System (SLDS) guidelines and best practices for creating enterprise Lightning Web Components with proper accessibility, responsive design, and component usage patterns."
+    },
+    {
+      "name": "create_lightning_type",
+      "description": "(Developer Preview) Creates, enhances, and provides expert guidance and best practices for custom Lightning types. Generates and maintains LightningTypeBundle components, including schema.json, editor.json, renderer.json, and validation rules, for use across Salesforce applications."
+    },
+    {
+      "name": "guide_lbc_usage",
+      "description": "Use this tool to discover which Lightning Base Components are available and find the best fit for a given use case. Follow the returned instructions to identify candidates, then call explore_lbc_components to retrieve their full API documentation."
+    },
+    {
+      "name": "explore_lbc_components",
+      "description": "Use this tool to retrieve full API documentation for specific Lightning Base Components by name. Returns properties, methods, events, slots, and usage notes. Use guide_lbc_usage first to identify which component names to pass here."
+    },
+    {
+      "name": "reference_lwc_compilation_error",
+      "description": "Look up documentation for a single LWC compilation error code (e.g., \"LWC1034\"). Returns the error description, root cause, examples, and suggested fix steps from the knowledge base. Call this tool once per error code.\n\nPREREQUISITES (must be completed BEFORE calling this tool):\n1. The error code MUST come from actual compiler output or IDE diagnostics. If you do not have compiler output, compile the component first or ask the user for the error codes shown in their IDE. NEVER guess or infer error codes from reading the source code.\n2. Read ALL component files (JS, HTML, CSS) for the affected component."
+    },
+    {
+      "name": "guide_lo_migration",
+      "description": "Migration recipe: converts a Lightning Out (beta) host page into a Lightning Out 2.0 host page. Includes LO 2.0 architecture reference, step-by-step instructions, value mapping table, and a complete page skeleton with placeholders."
+    },
+    {
+      "name": "detect_devops_center_merge_conflict",
+      "description": "Detects merge conflicts for a selected work item or in given source branch.\n\n      **When to use:**\n      - User asks to detect conflicts for a work item, or asks for help fixing a merge conflict.\n      - User asks to detect conflicts for a given source branch.\n\n      **MANDATORY input:**\n      - Either workitem name (example WI-0000000X) or source branch (example WI-0000000X) is provided.\n      - usernameOrAlias: DevOps Center org username or alias (example devops-center-org).\n\n      **Behavior:**\n      - The tool will look up the Work Item by Name in the DevOps Center org and compute target branch automatically.\n      - If the item cannot be found, or required fields are missing (branch or repo), it will return actionable guidance.\n\n      **What this tool does:**\n      1. Validates required properties (WorkItemBranch, TargetBranch, SourceCodeRepository.repoUrl)\n      2. Provides instructions to check for conflicts between the work item branch and target branch\n      3. Runs the necessary git commands to detect conflicts and surface findings\n\n      **Output:**\n      - If conflicts exist: lists conflicted files and suggested next steps\n      - If no conflicts: confirms it is safe to merge\n      - On error: returns details\n\n      **Next step:**\n      - After detection, call 'resolve_devops_center_merge_conflict' to guide the user through conflict resolution."
+    },
+    {
+      "name": "resolve_devops_center_merge_conflict",
+      "description": "Guides merge conflict resolution for a selected work item by name.\n\n      **When to use:**\n      - After running 'detect_devops_center_merge_conflict' and conflicts were found.\n\n      **MANDATORY input:**\n      - workItemName (exact Name of the Work Item) and username or alias of the DevOps Center org.\n\n      **Behavior:**\n      - Looks up the Work Item by Name, validates required fields, and prepares per-file resolution commands.\n      - If branch/target branch/repo URL are missing, returns actionable guidance to fix inputs first.\n      - NEVER auto-resolve conflicts. For every conflicted file, the agent must ask the user which side to keep and wait for explicit confirmation before running any checkout command.\n\n      **What this tool does:**\n      1. Confirms the repo is in a conflicted state\n      2. Lists conflicted files\n      3. For each file, asks the user to choose one option only: keep current OR keep incoming\n      4. After each explicit user choice, applies the selected command and stages the file\n      5. Verifies conflicts are cleared and guides local commit steps\n\n      **Hard constraints:**\n      - Do not run `git checkout --ours` or `git checkout --theirs` until the user chooses for that specific file.\n      - Do not offer or attempt a \"keep both\" merge path in this tool.\n      - Keep operations local unless the user explicitly asks to push.\n\n      **Output:**\n      - If conflicts exist: per-file action plan with commands\n      - If no conflicts: confirms the repo is clean\n      - On error: actionable troubleshooting\n"
+    },
+    {
+      "name": "run_code_analyzer",
+      "description": "A tool for performing static analysis against code.\nThis tool can validate that code conforms to best practices, check for security vulnerabilities, and identify possible\nperformance issues. It returns a JSON containing the absolute path to a results file if such a file was created,\nand a string indicating the overall success or failure of the operation.\n\nWhen to use this tool:\n- When the user asks you to generate files, use this tool to scan those files.\n- When the user asks you to check code for problems, use this tool to do that.\n\nOptional: Provide a \"selector\" (same semantics as \"list_code_analyzer_rules\") to choose which rules to run.\nExamples:\n- \"Security:pmd\" → run Security-tagged PMD rules\n- \"Critical\" → run all Critical-severity rules\n- \"(Security,Performance):eslint\" → ESLint rules tagged Security or Performance\n\nAfter completion: Use the \"query_code_analyzer_results\" tool to filter and explain results, e.g., top-N most severe violations or violations by category/tag."
+    },
+    {
+      "name": "describe_code_analyzer_rule",
+      "description": "A tool for getting the description of a Code Analyzer rule.\nThis tool can return a JSON that describes the properties of a Code Analyzer rule, which may include information about\nhow it can be fixed.\n\nWhen to use this tool:\n- When the results file from the run_code_analyzer tool does not provide enough information to fix a violation yourself.\n- When the user asks for information about a specific rule or violation."
+    },
+    {
+      "name": "list_code_analyzer_rules",
+      "description": "A tool for selecting Code Analyzer rules based on a number of criteria.\nThis tool returns a JSON array describing Code Analyzer rules that match a \"selector\".\nA selector is a colon-separated (:) string of tokens; tags and severity names are case-insensitive.\nYou can OR multiple tokens of the same type by grouping them in parentheses and separating with commas, e.g. \"(Performance,Security)\".\n\nPolicy: To prevent overly broad results, the full unfiltered list of rules is not returned unless you explicitly set allowFullList=true.\nThis flag defaults to false and its use is not recommended.\nNote: Listing large rule sets can significantly increase token consumption.\n\nExamples:\n- \"Recommended\" → all rules tagged as Recommended.\n- \"Performance:pmd:Critical\" → rules in the PMD engine with the Performance tag and Critical severity.\n- \"pmd:(Performance,Security):2\" → PMD rules with Performance OR Security tags and severity 2.\n- \"(Apex,JavaScript):Recommended\" → rules for Apex OR JavaScript languages that are Recommended.\n- \"Security:High\" → rules tagged Security with High severity.\n- \"Apex:Recommended\" → rules for the Apex language that are Recommended.\n- \"DevPreview\" → rules marked as DevPreview.\n- Prompt: \"tell me about all performance rules\" → selector: \"Performance\".\n\nSupported selector tokens:\n- Engines: eslint, regex, retire-js, flow, pmd, cpd, sfge\n- Severities (names): Critical, High, Moderate, Low, Info\n- Severities (numbers): 1, 2, 3, 4, 5\n- General tags: Recommended, Custom, All\n- Categories: BestPractices, CodeStyle, Design, Documentation, ErrorProne, Security, Performance\n- Languages: Apex, CSS, HTML, JavaScript, TypeScript, Visualforce, XML\n- Engine-specific tags: DevPreview, LWC\n\nTip: Use the \"describe_code_analyzer_rule\" tool to get details for any listed rule.\n"
+    },
+    {
+      "name": "query_code_analyzer_results",
+      "description": "Query a Code Analyzer results JSON file and return filtered violations.\nSupports filters like severity, category/tag, engine, rule, and file name, plus top-N and sorting.\nUse this after running \"run_code_analyzer\" to read the generated results file.\nAfter completion, this tool will summarize and explain the filtered results to the user.\n\nPolicy: To avoid overwhelming results, this tool returns no more than the top 10 violations by default.\nRequesting more than 10 requires an explicit opt-in via allowLargeResultSet=true and is not recommended.\nNote: Querying larger result sets can significantly increase token consumption.\n\nExamples (natural language → selector/topN):\n- \"Top 5 security in PMD\" → selector: \"Security:pmd\", topN: 5\n- \"Top 10 critical\" → selector: \"Critical\", topN: 10\n- \"Top 5 security or performance in ESLint\" → selector: \"(Security,Performance):eslint\", topN: 5\n- \"Top 5 PMD High severity\" → selector: \"pmd:High\", topN: 5\n- \"Top 5 for rule MyRuleName\" → selector: \"rule=MyRuleName\", topN: 5\n- \"Top 5 in files under src/app\" → selector: \"file=src/app\", topN: 5\n"
+    },
+    {
+      "name": "scan_apex_class_for_antipatterns",
+      "description": "Apex Code Scan Tool: Invoke (alongside other code scan tools if needed) whenever the user intends to scan or analyze an Apex class.\nAnalyzes an Apex class file for performance antipatterns and provides recommendations for fixing them. Currently detects:\n1) Schema.getGlobalDescribe() usage with optimized alternatives\n2) SOQL queries without WHERE or LIMIT clauses\n3) SOQL queries with unused fields (with fix generation).\nDistinguishes between different severity levels (e.g., usage in loops vs. ordinary usage).\nWhen authenticated to an org with ApexGuru enabled, severity is calculated from actual runtime metrics.\nIMPORTANT: If the user does not mention an org alias or username in the request, call #get_username tool to resolve the default org username.\nRequires an absolute path to the Apex class file.\n"
+    },
+    {
+      "name": "validate_and_optimize",
+      "description": "Validation tool for UI component quality assessment.\n\nThis tool returns a runbook that instructs the agent to:\n- Call a list of validators (predefined suite OR a custom list supplied by the caller)\n- Produce issues per validator\n- Call `score_issues` after each validator and again for the overall score\n- Stop and present results before fixing/revalidating\n\nProvide EITHER `suite` (a predefined validator set) OR `validators` (an explicit list), but not both."
+    },
+    {
+      "name": "score_issues",
+      "description": "Score validation issues using readiness scoring rules.\n\n## WHEN TO USE THIS TOOL\n\nUse this tool when you need a numeric score + quality grade from a set of issues:\n- After a single validator run (per-validator score)\n- After aggregating issues across validators (overall readiness score)\n\n## Input\n\nProvide one or more of these (all are merged before scoring):\n- `issues`: A SARIF 2.1.0 report.\n- `codeAnalyzerResultsFiles`: Array of file paths to code analyzer JSON results. The tool reads and converts them internally — preferred to avoid wasting tokens.\n- `codeAnalyzerResults`: Array of inline code analyzer result objects (fallback if file reading fails).\n\nIf all inputs are omitted, scores as zero issues.\n\n## Output\n\nReturns:\n- `readinessScore`: number (0-100)\n- `qualityGrade`: 'draft' | 'prototype' | 'review-for-production'\n- `breakdown`: counts + penalty\n- `sarif`: (only when `codeAnalyzerResultsFiles` was provided) the combined SARIF report so you have the full issue details for summary and fixing\n\n## Aggregate Mode\n\nInstead of re-submitting all issues, you can pass pre-computed per-validator scores:\n- `validatorScores`: Array of `{ name, score }` from individual per-validator calls.\n- Returns the weighted aggregate score using per-validator weights.\n- **Mutually exclusive** with `issues`, `codeAnalyzerResultsFiles`, and `codeAnalyzerResults`."
+    }
+  ]
+}

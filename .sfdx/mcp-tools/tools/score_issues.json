@@ -1,0 +1,353 @@
+{
+  "name": "score_issues",
+  "description": "Score validation issues using readiness scoring rules.\n\n## WHEN TO USE THIS TOOL\n\nUse this tool when you need a numeric score + quality grade from a set of issues:\n- After a single validator run (per-validator score)\n- After aggregating issues across validators (overall readiness score)\n\n## Input\n\nProvide one or more of these (all are merged before scoring):\n- `issues`: A SARIF 2.1.0 report.\n- `codeAnalyzerResultsFiles`: Array of file paths to code analyzer JSON results. The tool reads and converts them internally — preferred to avoid wasting tokens.\n- `codeAnalyzerResults`: Array of inline code analyzer result objects (fallback if file reading fails).\n\nIf all inputs are omitted, scores as zero issues.\n\n## Output\n\nReturns:\n- `readinessScore`: number (0-100)\n- `qualityGrade`: 'draft' | 'prototype' | 'review-for-production'\n- `breakdown`: counts + penalty\n- `sarif`: (only when `codeAnalyzerResultsFiles` was provided) the combined SARIF report so you have the full issue details for summary and fixing\n\n## Aggregate Mode\n\nInstead of re-submitting all issues, you can pass pre-computed per-validator scores:\n- `validatorScores`: Array of `{ name, score }` from individual per-validator calls.\n- Returns the weighted aggregate score using per-validator weights.\n- **Mutually exclusive** with `issues`, `codeAnalyzerResultsFiles`, and `codeAnalyzerResults`.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "issues": {
+        "type": "object",
+        "properties": {
+          "$schema": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string",
+            "const": "2.1.0",
+            "default": "2.1.0"
+          },
+          "runs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "tool": {
+                  "type": "object",
+                  "properties": {
+                    "driver": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "version": {
+                          "type": "string"
+                        },
+                        "informationUri": {
+                          "type": "string"
+                        },
+                        "rules": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "shortDescription": {
+                                "type": "object",
+                                "properties": {
+                                  "text": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "text"
+                                ],
+                                "additionalProperties": false
+                              },
+                              "helpUri": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "id"
+                            ],
+                            "additionalProperties": false
+                          }
+                        }
+                      },
+                      "required": [
+                        "name"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "driver"
+                  ],
+                  "additionalProperties": false
+                },
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "ruleId": {
+                        "type": "string"
+                      },
+                      "level": {
+                        "type": "string",
+                        "enum": [
+                          "error",
+                          "warning",
+                          "note",
+                          "none"
+                        ],
+                        "default": "warning"
+                      },
+                      "message": {
+                        "$ref": "#/properties/issues/properties/runs/items/properties/tool/properties/driver/properties/rules/items/properties/shortDescription"
+                      },
+                      "locations": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "physicalLocation": {
+                              "type": "object",
+                              "properties": {
+                                "artifactLocation": {
+                                  "type": "object",
+                                  "properties": {
+                                    "uri": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "additionalProperties": false
+                                },
+                                "region": {
+                                  "type": "object",
+                                  "properties": {
+                                    "startLine": {
+                                      "type": "integer",
+                                      "exclusiveMinimum": 0
+                                    },
+                                    "endLine": {
+                                      "type": "integer",
+                                      "exclusiveMinimum": 0
+                                    },
+                                    "startColumn": {
+                                      "type": "integer",
+                                      "exclusiveMinimum": 0
+                                    },
+                                    "endColumn": {
+                                      "type": "integer",
+                                      "exclusiveMinimum": 0
+                                    }
+                                  },
+                                  "additionalProperties": false
+                                }
+                              },
+                              "additionalProperties": false
+                            }
+                          },
+                          "additionalProperties": false
+                        }
+                      },
+                      "fixes": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "description": {
+                              "$ref": "#/properties/issues/properties/runs/items/properties/tool/properties/driver/properties/rules/items/properties/shortDescription"
+                            },
+                            "artifactChanges": {
+                              "type": "array",
+                              "items": {}
+                            }
+                          },
+                          "additionalProperties": false
+                        }
+                      }
+                    },
+                    "required": [
+                      "message"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "default": []
+                }
+              },
+              "required": [
+                "tool"
+              ],
+              "additionalProperties": false
+            },
+            "default": []
+          }
+        },
+        "additionalProperties": false,
+        "description": "A SARIF 2.1.0 report."
+      },
+      "codeAnalyzerResultsFiles": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "Paths to code analyzer JSON results files. The tool reads and converts them internally."
+      },
+      "codeAnalyzerResults": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "runDir": {
+              "type": "string"
+            },
+            "violationCounts": {
+              "type": "object",
+              "properties": {
+                "total": {
+                  "type": "number"
+                },
+                "sev1": {
+                  "type": "number"
+                },
+                "sev2": {
+                  "type": "number"
+                },
+                "sev3": {
+                  "type": "number"
+                },
+                "sev4": {
+                  "type": "number"
+                },
+                "sev5": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "total",
+                "sev1",
+                "sev2",
+                "sev3",
+                "sev4",
+                "sev5"
+              ],
+              "additionalProperties": false
+            },
+            "versions": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "violations": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "rule": {
+                    "type": "string"
+                  },
+                  "engine": {
+                    "type": "string"
+                  },
+                  "severity": {
+                    "type": "number"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "primaryLocationIndex": {
+                    "type": "number"
+                  },
+                  "locations": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "file": {
+                          "type": "string"
+                        },
+                        "startLine": {
+                          "type": "number"
+                        },
+                        "startColumn": {
+                          "type": "number"
+                        },
+                        "endLine": {
+                          "type": "number"
+                        },
+                        "endColumn": {
+                          "type": "number"
+                        },
+                        "comment": {
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "resources": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "rule",
+                  "engine",
+                  "severity",
+                  "tags",
+                  "primaryLocationIndex",
+                  "locations",
+                  "message",
+                  "resources"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "runDir",
+            "violationCounts",
+            "versions",
+            "violations"
+          ],
+          "additionalProperties": false
+        },
+        "description": "Inline code analyzer results (fallback when file reading is unavailable)."
+      },
+      "validatorScores": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Validator name (e.g. \"run_code_analyzer\")"
+            },
+            "score": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100,
+              "description": "Readiness score (0-100) from a per-validator score_issues call"
+            }
+          },
+          "required": [
+            "name",
+            "score"
+          ],
+          "additionalProperties": false
+        },
+        "minItems": 1,
+        "description": "Pre-computed per-validator scores for aggregation. Mutually exclusive with issue inputs."
+      }
+    },
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

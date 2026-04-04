@@ -122,7 +122,7 @@
         <shortDescription
     >jtQueryViewer - clearCacheDescription</shortDescription>
         <value
-    >Select which cached data you want to clear. This will force a refresh from the server.</value>
+    >Select which data you want to clear. Query Configurations will be cleared from server-side Platform Cache and then refreshed.</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_clearCacheTitle</fullName>
@@ -137,7 +137,7 @@
         <protected>false</protected>
         <shortDescription>jtQueryViewer - clearCacheWarning</shortDescription>
         <value
-    >Selected data will be cleared and refreshed from the server.</value>
+    >Selected items will be cleared. Query Configurations will be cleared from server-side Platform Cache and refreshed.</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_clearConfigurationsHelp</fullName>
@@ -146,7 +146,7 @@
         <shortDescription
     >jtQueryViewer - clearConfigurationsHelp</shortDescription>
         <value
-    >Refresh the list of available query configurations from metadata</value>
+    >Clear Query Configurations from server-side Platform Cache (local.JTDynamicQueries) and refresh the list from metadata</value>
     </labels>
     <labels>
         <fullName>JT_jtQueryViewer_clearConfigurationsLabel</fullName>

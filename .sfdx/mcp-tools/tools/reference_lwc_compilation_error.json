@@ -1,0 +1,41 @@
+{
+  "name": "reference_lwc_compilation_error",
+  "description": "Look up documentation for a single LWC compilation error code (e.g., \"LWC1034\"). Returns the error description, root cause, examples, and suggested fix steps from the knowledge base. Call this tool once per error code.\n\nPREREQUISITES (must be completed BEFORE calling this tool):\n1. The error code MUST come from actual compiler output or IDE diagnostics. If you do not have compiler output, compile the component first or ask the user for the error codes shown in their IDE. NEVER guess or infer error codes from reading the source code.\n2. Read ALL component files (JS, HTML, CSS) for the affected component.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "errorCode": {
+        "type": "string",
+        "minLength": 1,
+        "description": "A single LWC compilation error code (e.g., \"LWC1034\", \"lwc1034\", or just \"1034\")."
+      },
+      "errorMessage": {
+        "type": "string",
+        "description": "The full error message from the compiler, if available. Helps provide more targeted guidance."
+      },
+      "componentName": {
+        "type": "string",
+        "description": "Name of the LWC component that has the compilation error."
+      },
+      "files": {
+        "anyOf": [
+          {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          {
+            "type": "string"
+          }
+        ],
+        "description": "Component files as key-value pairs where key is filename and value is file content. Can be passed as an object or JSON string. Providing the files enables more targeted fix suggestions."
+      }
+    },
+    "required": [
+      "errorCode"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

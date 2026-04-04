@@ -1,0 +1,20 @@
+{
+  "name": "guide_lws_security",
+  "description": "Use this tool to get comprehensive security analysis in accordance with Product Security Guidelines and Lightning Web Security Guidelines. Use this to identify and fix security vulnerabilities in your code.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "mode": {
+        "type": "string",
+        "enum": [
+          "fix",
+          "analysis"
+        ],
+        "default": "fix",
+        "description": "The mode of the MCP tool. \"fix\" means the tool will fix the issues found in the code. \"analysis\" means the tool will analyze the code and respond with a SARIF report."
+      }
+    },
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

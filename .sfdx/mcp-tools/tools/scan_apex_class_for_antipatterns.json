@@ -1,0 +1,36 @@
+{
+  "name": "scan_apex_class_for_antipatterns",
+  "description": "Apex Code Scan Tool: Invoke (alongside other code scan tools if needed) whenever the user intends to scan or analyze an Apex class.\nAnalyzes an Apex class file for performance antipatterns and provides recommendations for fixing them. Currently detects:\n1) Schema.getGlobalDescribe() usage with optimized alternatives\n2) SOQL queries without WHERE or LIMIT clauses\n3) SOQL queries with unused fields (with fix generation).\nDistinguishes between different severity levels (e.g., usage in loops vs. ordinary usage).\nWhen authenticated to an org with ApexGuru enabled, severity is calculated from actual runtime metrics.\nIMPORTANT: If the user does not mention an org alias or username in the request, call #get_username tool to resolve the default org username.\nRequires an absolute path to the Apex class file.\n",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "className": {
+        "type": "string",
+        "description": "Name of the Apex class to scan (e.g., 'AccountController')"
+      },
+      "apexFilePath": {
+        "type": "string",
+        "description": "Absolute path to the Apex class file (.cls) to analyze for antipatterns"
+      },
+      "identifier": {
+        "type": "string",
+        "description": "Optional unique identifier for this scan (e.g., 'orgId:className'). Defaults to className if not provided."
+      },
+      "directory": {
+        "type": "string",
+        "description": "The directory to run this tool from.\nAGENT INSTRUCTIONS:\nWe need to know where the user wants to run this tool from.\nLook at your current Workspace Context to determine this filepath.\nALWAYS USE A FULL PATH TO THE DIRECTORY.\nUnless the user explicitly asks for a different directory, or a new directory is created from the action of a tool, use this same directory for future tool calls.\n"
+      },
+      "usernameOrAlias": {
+        "type": "string",
+        "description": "The username or alias for the Salesforce org to run this tool against.\n\nA username follows the <name@domain.com> format.\nIf the user refers to an org with a string not following that format, it can be a valid alias.\n\nIMPORTANT:\n- If it is not clear what the username or alias is, run the #get_username tool to resolve it.\n- NEVER guess or make-up a username or alias.\n- If not provided, the tool will use the default target org for the directory.\n"
+      }
+    },
+    "required": [
+      "className",
+      "apexFilePath",
+      "directory"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

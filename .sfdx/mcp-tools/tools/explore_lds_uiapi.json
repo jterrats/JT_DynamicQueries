@@ -1,0 +1,35 @@
+{
+  "name": "explore_lds_uiapi",
+  "description": "Use this tool to explore Lightning Data Service (LDS) UI API documentation, browse available adapter APIs, and retrieve type definitions for LWC development. Use this when you need to discover what LDS APIs are available or get specific API documentation.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "type": {
+        "type": "string",
+        "enum": [
+          "adapter-api",
+          "uiapi-type"
+        ],
+        "description": "Type of knowledge to retrieve. If not provided, returns a complete UIAPI directory listing."
+      },
+      "names": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "Array of specific names to get documentation for. If not provided or empty, returns a list of all available items for the specified type."
+      },
+      "subtype": {
+        "type": "string",
+        "enum": [
+          "records",
+          "lists",
+          "metadata"
+        ],
+        "description": "Subtype of knowledge to retrieve. If not provided, returns a complete UIAPI directory listing."
+      }
+    },
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

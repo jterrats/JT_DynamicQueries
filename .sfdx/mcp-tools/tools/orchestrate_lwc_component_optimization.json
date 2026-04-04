@@ -1,0 +1,9 @@
+{
+  "name": "orchestrate_lwc_component_optimization",
+  "description": "Use this tool to orchestrate a workflow that provides step-by-step guidance for optimization of a Lightning Web Component (LWC)",
+  "inputSchema": {
+    "type": "object",
+    "properties": {},
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

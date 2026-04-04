@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "salesforce-my-hub": {
+      "command": "npx",
+      "args": [
+        "@salesforce/mcp@latest",
+        "--orgs",
+        "my-hub",
+        "--toolsets",
+        "all"
+      ],
+      "type": "stdio"
+    }
+  }
+}

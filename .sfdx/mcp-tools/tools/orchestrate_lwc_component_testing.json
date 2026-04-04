@@ -1,0 +1,9 @@
+{
+  "name": "orchestrate_lwc_component_testing",
+  "description": "Use this tool to orchestrate a workflow that will comprehensively generate or enhance and validate Jest unit tests for a Lightning Web Component (LWC)",
+  "inputSchema": {
+    "type": "object",
+    "properties": {},
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "name": "assign_permission_set",
+  "description": "Assign a permission set to one or more org users.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "permissionSetName": {
+        "type": "string",
+        "description": "A single permission set to assign\n\nEXAMPLE USAGE:\nSet the permission set MyPermSet\nSet the perm set MyPermSet"
+      },
+      "usernameOrAlias": {
+        "type": "string",
+        "description": "The username or alias for the Salesforce org to run this tool against.\n\nA username follows the <name@domain.com> format.\nIf the user refers to an org with a string not following that format, it can be a valid alias.\n\nIMPORTANT:\n- If it is not clear what the username or alias is, run the #get_username tool to resolve it.\n- NEVER guess or make-up a username or alias.\n"
+      },
+      "onBehalfOf": {
+        "type": "string",
+        "description": "A single username or alias (other than the usernameOrAlias) to assign the permission set to\n\nAGENT INSTRUCTIONS:\nIf the user does not specifically say \"on behalf of\" this will be empty.\nIf the user does specifically say \"on behalf of\", but it is unclear what the target-org is, run the #get_username tool.\nIn that case, use the usernameOrAlias parameter as the org to assign the permission set to.\n\nUSAGE EXAMPLE:\nAssign the permission set MyPermSet.\nSet the permission set MyPermSet on behalf of test-3uyb8kmftiu@example.com.\nSet the permission set MyPermSet on behalf of my-alias."
+      },
+      "directory": {
+        "type": "string",
+        "description": "The directory to run this tool from.\nAGENT INSTRUCTIONS:\nWe need to know where the user wants to run this tool from.\nLook at your current Workspace Context to determine this filepath.\nALWAYS USE A FULL PATH TO THE DIRECTORY.\nUnless the user explicitly asks for a different directory, or a new directory is created from the action of a tool, use this same directory for future tool calls.\n"
+      }
+    },
+    "required": [
+      "permissionSetName",
+      "usernameOrAlias",
+      "directory"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "name": "run_agent_test",
+  "description": "Run Agent tests in an org.\n\nAGENT INSTRUCTIONS:\nIf the user doesn't specify what to test, take context from the currently open file\nThis will ONLY run Agent tests, NOT apex tests, lightning tests, flow tests, or any other type of test.\n\nthis should be chosen when a file in the 'aiEvaluationDefinitions' directory is mentioned\n\nEXAMPLE USAGE:\nRun tests for the X agent\nRun this test\nstart myAgentTest and don't wait for results",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "agentApiName": {
+        "type": "string",
+        "description": "Agent test to run\n            if unsure, list all files matching the pattern **/aiEvaluationDefinitions/*.aiEvaluationDefinition-meta.xml\n            only one test can be executed at a time\n"
+      },
+      "usernameOrAlias": {
+        "type": "string",
+        "description": "The username or alias for the Salesforce org to run this tool against.\n\nA username follows the <name@domain.com> format.\nIf the user refers to an org with a string not following that format, it can be a valid alias.\n\nIMPORTANT:\n- If it is not clear what the username or alias is, run the #get_username tool to resolve it.\n- NEVER guess or make-up a username or alias.\n"
+      },
+      "directory": {
+        "type": "string",
+        "description": "The directory to run this tool from.\nAGENT INSTRUCTIONS:\nWe need to know where the user wants to run this tool from.\nLook at your current Workspace Context to determine this filepath.\nALWAYS USE A FULL PATH TO THE DIRECTORY.\nUnless the user explicitly asks for a different directory, or a new directory is created from the action of a tool, use this same directory for future tool calls.\n"
+      },
+      "async": {
+        "type": "boolean",
+        "default": false,
+        "description": "Whether to wait for the tests to finish (false) or quickly return only the test id (true)"
+      }
+    },
+    "required": [
+      "agentApiName",
+      "usernameOrAlias",
+      "directory"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

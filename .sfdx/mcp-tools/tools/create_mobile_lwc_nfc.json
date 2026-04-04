@@ -1,0 +1,9 @@
+{
+  "name": "create_mobile_lwc_nfc",
+  "description": "The MCP tool provides a comprehensive TypeScript-based API documentation for Salesforce LWC NFC Service, laying the foundation for understanding mobile NFC and offering expert-level guidance for implementing the NFC feature in a Lightning Web Component (LWC).",
+  "inputSchema": {
+    "type": "object",
+    "properties": {},
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

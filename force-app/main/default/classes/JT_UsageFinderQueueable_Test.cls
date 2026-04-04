@@ -95,15 +95,18 @@ private class JT_UsageFinderQueueable_Test {
 
     // Use same cache key logic as production code (hash-based)
     // Replicate buildCacheKey logic for test
-    String combined = (configDevName != null ? configDevName : '') +
-                      (UserInfo.getUserId() != null ? UserInfo.getUserId() : '');
+    String combined =
+      (configDevName != null ? configDevName : '') +
+      (UserInfo.getUserId() != null ? UserInfo.getUserId() : '');
     Blob hash = Crypto.generateDigest('SHA-256', Blob.valueOf(combined));
     String hashHex = EncodingUtil.convertToHex(hash);
     String shortHash = hashHex.substring(0, 16);
     String prefix = 'US';
     String userIdSuffix = '';
     if (UserInfo.getUserId() != null && UserInfo.getUserId().length() > 0) {
-      String sanitizedUserId = JT_ToolingApiUtil.toAlphanumeric(UserInfo.getUserId());
+      String sanitizedUserId = JT_ToolingApiUtil.toAlphanumeric(
+        UserInfo.getUserId()
+      );
       userIdSuffix = sanitizedUserId.length() > 8
         ? sanitizedUserId.substring(sanitizedUserId.length() - 8)
         : sanitizedUserId;

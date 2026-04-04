@@ -1,0 +1,9 @@
+{
+  "name": "guide_lbc_usage",
+  "description": "Use this tool to discover which Lightning Base Components are available and find the best fit for a given use case. Follow the returned instructions to identify candidates, then call explore_lbc_components to retrieve their full API documentation.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {},
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}

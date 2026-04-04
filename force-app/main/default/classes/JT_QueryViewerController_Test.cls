@@ -8,8 +8,7 @@
 @IsTest
 @SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs, PMD.ApexDoc')
 private class JT_QueryViewerController_Test {
-  private static final String RUN_AS_PERMISSION_SET_DEV_NAME =
-    'JT_Dynamic_Queries';
+  private static final String RUN_AS_PERMISSION_SET_DEV_NAME = 'JT_Dynamic_Queries';
 
   @testSetup
   static void setupTestData() {
@@ -371,8 +370,7 @@ private class JT_QueryViewerController_Test {
     System.runAs(runAsUser) {
       Test.startTest();
       try {
-        List<JT_QueryViewerController.UserOption> users =
-          JT_QueryViewerController.getAllActiveUsers();
+        List<JT_QueryViewerController.UserOption> users = JT_QueryViewerController.getAllActiveUsers();
 
         System.assertNotEquals(null, users, 'Should return a list');
 
@@ -931,11 +929,10 @@ private class JT_QueryViewerController_Test {
     );
 
     Test.startTest();
-    JT_QueryViewerController.QueryRiskAssessment assessment =
-      JT_QueryViewerController.assessQueryRisk(
-        'NonExistent_Config_For_Exception_Path',
-        bindingsJson
-      );
+    JT_QueryViewerController.QueryRiskAssessment assessment = JT_QueryViewerController.assessQueryRisk(
+      'NonExistent_Config_For_Exception_Path',
+      bindingsJson
+    );
     Test.stopTest();
 
     System.assertNotEquals(null, assessment, 'Assessment should not be null');

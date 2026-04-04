@@ -218,9 +218,8 @@ public inherited sharing class JT_DataSelector {
     // Check Platform Cache (cross-transaction)
     // NOTE: Keys are intentionally stable so the UI "Clear Cache" can remove them.
     final String cacheKey = 'Config' + sanitizedDevName;
-    JT_DynamicQueryConfiguration__mdt cachedConfig = (JT_DynamicQueryConfiguration__mdt) getPartition().get(
-      cacheKey
-    );
+    JT_DynamicQueryConfiguration__mdt cachedConfig = (JT_DynamicQueryConfiguration__mdt) getPartition()
+      .get(cacheKey);
     if (cachedConfig != null) {
       configCache.put(devName, cachedConfig);
       return cachedConfig;

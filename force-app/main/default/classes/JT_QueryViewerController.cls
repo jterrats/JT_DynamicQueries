@@ -43,7 +43,9 @@ public with sharing class JT_QueryViewerController {
     ];
 
     for (JT_DynamicQueryConfiguration__mdt c : configs) {
-      String sanitizedDevName = JT_ToolingApiUtil.toAlphanumeric(c.DeveloperName);
+      String sanitizedDevName = JT_ToolingApiUtil.toAlphanumeric(
+        c.DeveloperName
+      );
       if (String.isNotBlank(sanitizedDevName)) {
         part.remove('Config' + sanitizedDevName);
       }

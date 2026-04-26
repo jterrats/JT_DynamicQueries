@@ -2,6 +2,8 @@
 
 A metadata-driven SOQL execution framework with built-in security, batch processing, and risk assessment. Stop writing boilerplate query code - configure once, execute anywhere.
 
+> **Disclaimer:** This is a **personal open-source project** by [Jaime Terrats](https://github.com/jterrats). It is **not** an official Salesforce product, nor is it endorsed, supported, or affiliated with Salesforce, Inc. Use at your own discretion.
+
 > **Framework Philosophy:** Provide infrastructure and conventions for configurable queries, not just isolated utilities.
 
 <a href="https://githubsfdeploy.herokuapp.com?owner=jterrats&repo=JT_DynamicQueries&ref=main">

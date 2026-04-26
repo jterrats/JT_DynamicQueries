@@ -38,3 +38,7 @@ playwright/.cache/
 *.tmp
 *.log
 temp_sf_logs/
+
+# Salesforce CLI generated artifacts
+.sfdx/tools/vector-db/
+.sfdx/mcp-tools/index.json

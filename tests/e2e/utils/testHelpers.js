@@ -108,8 +108,10 @@ async function setupTestContext(page, session, options = {}) {
 
     // Step 3: Wait for component to load
     if (waitForComponent) {
+      // Lightning UI can be slow/flaky; give it a bit more time for
+      // the viewer LWC to render (especially when opening modals).
       await page.waitForSelector(SELECTORS.queryViewer, {
-        timeout: TIMEOUTS.component
+        timeout: Math.max(TIMEOUTS.component, 30000)
       });
 
       // Extra wait for Shadow DOM and interactivity

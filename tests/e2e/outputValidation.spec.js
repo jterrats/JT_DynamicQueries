@@ -57,6 +57,12 @@ test.describe("Output Validation Tests", () => {
     await expect(resultsTable).toBeVisible({ timeout: TIMEOUTS.component });
 
     const rows = resultsTable.locator("tbody tr");
+    // Wait for at least one row to be rendered before reading cell text.
+    // Without this, `textContent()` can time out while Lightning/LWC is still rendering.
+    await rows
+      .first()
+      .waitFor({ state: "visible", timeout: TIMEOUTS.long })
+      .catch(() => {});
     const rowCount = await rows.count();
 
     if (rowCount > 0) {
@@ -70,7 +76,12 @@ test.describe("Output Validation Tests", () => {
 
       // ✅ Validate Name column has actual data (not empty, not null)
       const firstRow = rows.first();
-      const nameCell = firstRow.locator("td").nth(nameHeaderIndex + 1); // +1 for checkbox
+      // The header row has th[0]=expand-toggle (empty) + th[N]=field headers.
+      // The data rows mirror that structure: td[0]=toggle, td[N]=field data.
+      // So nameHeaderIndex already accounts for the offset — no +1 needed.
+      const nameCell = firstRow.locator("td").nth(nameHeaderIndex);
+      // Wait until Lightning/LWC finishes rendering the cell content.
+      await expect(nameCell).toHaveText(/\S+/, { timeout: TIMEOUTS.component });
       const nameText = await nameCell.textContent();
 
       expect(nameText).toBeTruthy();

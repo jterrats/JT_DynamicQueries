@@ -291,86 +291,80 @@ async function navigateToApp(page, appName) {
   try {
     console.log(`🚀 Opening App Launcher to find "${appName}"...`);
 
-    // Step 1: Click the App Launcher (waffle icon)
-    const appLauncher = page
-      .locator(
-        [
-          "button.slds-icon-waffle_container",
-          'button[title="App Launcher"]',
-          "div.appLauncher button",
-          "button:has(div.slds-icon-waffle)"
-        ].join(", ")
-      )
-      .first();
+    // Lightning App Launcher is occasionally flaky in CI/automation runs.
+    // Retry the whole app-search-and-click flow a few times.
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        console.log(`🔁 App navigation attempt ${attempt}/3 for "${appName}"`);
 
-    await appLauncher.click({ timeout: 10000 });
-    console.log(`✅ App Launcher opened`);
+        const appLauncher = page
+          .locator(
+            [
+              "button.slds-icon-waffle_container",
+              'button[title="App Launcher"]',
+              "div.appLauncher button",
+              "button:has(div.slds-icon-waffle)"
+            ].join(", ")
+          )
+          .first();
 
-    // Wait for the modal to fully load
-    await page.waitForTimeout(2000);
+        await appLauncher.click({ timeout: 10000 });
+        console.log(`✅ App Launcher opened`);
+        await page.waitForTimeout(2000);
 
-    // Step 2: Force focus on the search input (it might be hidden initially)
-    console.log(`🔍 Activating search box...`);
+        console.log(`🔍 Activating search box...`);
+        await page.evaluate(() => {
+          const input = document.querySelector('input[type="search"]');
+          if (input) {
+            input.tabIndex = 0;
+            input.style.visibility = "visible";
+            input.style.display = "block";
+          }
+        });
 
-    // Force the input to be visible by executing JS
-    await page.evaluate(() => {
-      const input = document.querySelector('input[type="search"]');
-      if (input) {
-        input.tabIndex = 0; // Make it focusable
-        input.style.visibility = "visible";
-        input.style.display = "block";
+        const searchInput = page.locator('input[type="search"]').first();
+        console.log(`⌨️  Typing "${appName}" in search...`);
+        await searchInput.focus();
+        await page.keyboard.type(appName, { delay: 100 });
+        await page.waitForTimeout(2000);
+
+        console.log(`🎯 Looking for "${appName}" in results...`);
+
+        // Prefer stable attributes first, then fallback to text matching.
+        const appTile = page
+          .locator(
+            [
+              `[data-name="${appName}"]`,
+              `one-app-launcher-app-tile:has-text("${appName}")`,
+              `a[title="${appName}"]`,
+              `a:has-text("${appName}")`,
+              `div.slds-app-launcher__tile:has-text("${appName}")`
+            ].join(", ")
+          )
+          .first();
+
+        await appTile.waitFor({ state: "visible", timeout: 15000 });
+        console.log(`✅ Found "${appName}" - clicking...`);
+        await appTile.click();
+
+        console.log(`⏳ Waiting for app to load...`);
+        await page.waitForLoadState("domcontentloaded");
+        await page.waitForTimeout(2000);
+
+        console.log(`✅ Successfully navigated to "${appName}" app`);
+        return true;
+      } catch (error) {
+        console.log(`⚠️  Attempt ${attempt}/3 failed: ${error.message}`);
+        await page.waitForTimeout(2000);
       }
-    });
+    }
 
-    const searchInput = page.locator('input[type="search"]').first();
-
-    // Step 3: Type in the search box (force it even if not fully visible)
-    console.log(`⌨️  Typing "${appName}" in search...`);
-    await searchInput.focus();
-    await page.keyboard.type(appName, { delay: 100 });
-
-    // Alternative: use fill with force option
-    // await searchInput.fill(appName, { force: true });
-
-    // Wait for search results
-    await page.waitForTimeout(2000);
-    console.log(`🔍 Waiting for search results...`);
-
-    // Step 4: Find and click the app in results
-    console.log(`🎯 Looking for "${appName}" in results...`);
-
-    // Try multiple selectors for the app tile/link
-    const appTile = page
-      .locator(
-        [
-          `one-app-launcher-app-tile:has-text("${appName}")`,
-          `a[title="${appName}"]`,
-          `a:has-text("${appName}")`,
-          `div.slds-app-launcher__tile:has-text("${appName}")`,
-          `[data-name="${appName}"]`
-        ].join(", ")
-      )
-      .first();
-
-    // Wait for the app to appear in results
-    await appTile.waitFor({ state: "visible", timeout: 5000 });
-
-    console.log(`✅ Found "${appName}" - clicking...`);
-    await appTile.click();
-
-    // Step 5: Wait for app to load
-    console.log(`⏳ Waiting for app to load...`);
-    await page.waitForLoadState("domcontentloaded");
-    await page.waitForTimeout(2000); // Extra time for Lightning to settle
-
-    console.log(`✅ Successfully navigated to "${appName}" app`);
-
-    return true;
+    console.log(`❌ Failed to navigate to "${appName}" after retries`);
+    return false;
   } catch (error) {
     console.log(`❌ Error navigating to app: ${error.message}`);
     console.log(`📸 Taking screenshot for debugging...`);
 
-    // Take screenshot for debugging
     try {
       await page.screenshot({
         path: `test-results/app-launcher-error-${Date.now()}.png`,

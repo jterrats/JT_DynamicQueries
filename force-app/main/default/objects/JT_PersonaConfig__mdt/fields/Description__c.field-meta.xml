@@ -7,6 +7,5 @@
     <inlineHelpText
   >This text appears as the option label in the Persona selector dropdown.</inlineHelpText>
     <label>Description</label>
-    <length>255</length>
     <type>TextArea</type>
 </CustomField>

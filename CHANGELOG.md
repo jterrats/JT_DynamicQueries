@@ -5,6 +5,59 @@ All notable changes to the Dynamic Query Framework project will be documented in
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - 2026-04-26
+
+### 🎭 Persona-Based Run As Testing (US-025)
+
+Community request by Sean Whalen: run queries as a synthetic user defined by a
+Profile + Permission Sets combination — no real named user required.
+
+#### New Metadata
+
+- **`JT_PersonaConfig__mdt`** — new Custom Metadata Type defining reusable personas
+  - `Profile_API_Name__c` — Salesforce Profile API name (e.g., `Standard_User`)
+  - `Permission_Sets__c` — comma-separated Permission Set API names
+  - `See_All_Data__c` — controls `@IsTest(SeeAllData)` annotation (default `false`)
+  - `Description__c` — human-readable label shown in UI combobox
+- **`Persona_Developer_Name__c`** — new field on `JT_RunAsTest_Execution__c` tracking which persona was used
+- Two sample CMT records: `Standard_User_No_PS` and `System_Admin_Full_Access`
+
+#### New & Updated Apex
+
+- **`JT_RunAsTestExecutor.getPersonaOptions()`** — `@AuraEnabled(cacheable=true)` returns CMT records as combobox options
+- **`JT_RunAsTestExecutor.executeAsPersona()`** — same `TestExecutionResult` contract as `executeAsUser`; populates `Persona_Developer_Name__c` and `Run_As_User_Name__c = "Persona: <label> (<profile> + <psets>)"`
+- **`JT_GenericRunAsTest`** — extended to build a synthetic `User` + `PermissionSetAssignment` records when `Persona_Developer_Name__c` is set, then calls `System.runAs(syntheticUser)`
+- **`JT_GenericPersonaTest`** — new `@IsTest(SeeAllData=false)` class for personas with `See_All_Data__c = false`
+- **`JT_RunAsTestEnqueuer.resolveTestClassName()`** — dynamically selects `JT_GenericPersonaTest` or `JT_GenericRunAsTest` based on `See_All_Data__c` before Tooling API callout
+
+#### UI Changes — `jtRunAsSection`
+
+- Mode toggle (segmented button): **Specific User** | **Persona**
+- Persona combobox loads `JT_PersonaConfig__mdt` records on first switch to Persona mode
+- Info note updates per active mode
+- `aria-live="polite"` announcement on mode switch
+- `data-testid` attributes for E2E: `run-as-mode-toggle`, `run-as-mode-user`, `run-as-mode-persona`, `persona-selector`
+
+#### Parent Component — `jtQueryViewer`
+
+- Imports `executeAsPersona` and `getPersonaOptions`
+- Lazy-loads persona options on first switch to Persona mode
+- Smart routing in `handleExecuteQuery`: persona selection routes to `handleExecuteAsPersonaTest`
+
+#### Testing
+
+- `JT_RunAsTestExecutor_Test` — 5 new test methods covering `getPersonaOptions` and `executeAsPersona`
+- `JT_RunAsTestEnqueuer_Test` — 2 new test methods for `resolveTestClassName` routing
+- `tests/e2e/runAsPersona.spec.js` — 7 E2E tests: toggle visibility, mode switching, persona combobox, execution flow, clear button, accessibility
+
+#### Documentation
+
+- `docs/guides/RUN_AS_USER_FEATURE.md` — new Persona Mode section; corrected existing description (was describing old USER_MODE behavior instead of actual Tooling API + System.runAs flow)
+- `docs/architecture/diagrams.md` — bifurcated Run As sequence diagram: Named User path vs Persona path
+- `docs/releases/USER_STORIES_V3.md` — US-025 entry added
+
+---
+
 ## [2.2.0] - 2025-12-02
 
 ### 🌳 Nested Viewer for Child Relationships

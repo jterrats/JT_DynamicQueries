@@ -8,45 +8,38 @@ permalink: /guides/RUN_AS_USER_FEATURE/
 
 ## Overview
 
-The Query Viewer component includes an advanced "Run As User" feature that allows administrators and privileged users to validate query results in the context of another user's permissions.
+The Query Viewer component includes an advanced "Run As" feature that allows administrators and privileged users to validate query results in the context of another user's permissions. It supports two modes:
 
-## Important Limitations
+- **Specific User mode** — runs the query as an existing named user in the org (e.g., Alice, Bob)
+- **Persona mode** — runs the query as a synthetic user built from a Profile + Permission Sets definition, with no real named user required
 
-⚠️ **Security Notice**: This feature has inherent limitations due to Salesforce's security model:
+## How It Really Works (Tooling API + System.runAs)
+
+Both modes use `System.runAs()` in an `@IsTest` context, invoked via the Salesforce Tooling API. This is not a simple USER_MODE query — it is actual permission impersonation through a pre-compiled test class.
+
+**Named User flow:**
+1. `JT_RunAsTestExecutor.executeAsUser()` creates a `JT_RunAsTest_Execution__c` record
+2. `JT_RunAsTestEnqueuer` calls Tooling API `runTestsSynchronous` → `JT_GenericRunAsTest`
+3. `JT_GenericRunAsTest` fetches the real User from the DB, calls `System.runAs(realUser)`, and executes the query
+4. Results are written to the Debug Log with unique markers and extracted by the Queueable
+
+**Persona flow:**
+1. `JT_RunAsTestExecutor.executeAsPersona()` creates the execution record with `Persona_Developer_Name__c`
+2. `JT_RunAsTestEnqueuer` reads `JT_PersonaConfig__mdt` to decide which test class to invoke
+3. The test class builds a synthetic `User` (inserted in `@IsTest` context, rolled back after), assigns Permission Sets, and calls `System.runAs(syntheticUser)`
+
+## Important Notes
 
 ### What It DOES:
-
-- ✅ Validates that the selected user exists and is active
-- ✅ Executes queries with `USER_MODE` security (respects FLS and CRUD)
-- ✅ Applies sharing rules and record-level security
-- ✅ Provides insight into what data different users can access
-- ✅ Useful for testing permissions and troubleshooting access issues
+- ✅ True `System.runAs()` impersonation — respects FLS, CRUD, object access, and sharing rules
+- ✅ Named User mode: validates that a specific real user can see the expected records
+- ✅ Persona mode: validates that a Profile + Permission Sets combination has the correct access
+- ✅ `seeAllData=false` option (Persona mode): validates access without requiring real data in org
 
 ### What It DOESN'T DO:
-
-- ❌ **Cannot use `System.runAs()`** - This is only available in test context
-- ❌ **Cannot truly impersonate** - The query still runs in the current user's context
-- ❌ **Cannot bypass security** - All queries respect USER_MODE security
-- ❌ **Cannot override permissions** - FLS, CRUD, and sharing rules are always enforced
-
-## How It Works
-
-```apex
-// Simplified logic
-public static QueryResult executeQuery(String devName, String bindingsJson, String runAsUserId) {
-    // 1. Validate current user has permission to use Run As feature
-    if (String.isNotBlank(runAsUserId)) {
-        validateRunAsPermission(runAsUserId);
-    }
-
-    // 2. Execute query with USER_MODE (respects all security)
-    List<SObject> records = JT_DataSelector.getRecords(devName, true, bindings);
-
-    // 3. Return results with Run As user info
-    result.runAsUserName = getUserName(runAsUserId);
-    return result;
-}
-```
+- ❌ Cannot be used without Modify All Data / View All Data permission
+- ❌ `SeeAllData=true` is required when validating that a user sees real records (not just access errors)
+- ❌ Persona mode does not validate record volume when `See_All_Data__c = false`
 
 ## Who Can Use It?
 
@@ -248,8 +241,78 @@ Tests cover:
 - Query execution with Run As context
 - Error handling scenarios
 
+---
+
+## Persona Mode (US-025)
+
+Persona mode allows testing without a real named user. Instead, define an archetype in `JT_PersonaConfig__mdt` and the framework creates a synthetic user in the `@IsTest` context.
+
+### When to use Persona mode
+
+| Scenario | Recommendation |
+|----------|---------------|
+| ISV org with no real QA users | ✅ Persona mode |
+| Scarce user licenses | ✅ Persona mode |
+| Validate FLS/CRUD only (no data needed) | ✅ Persona mode, `See_All_Data__c = false` |
+| Validate real record visibility for a specific person | Named User mode |
+| CI/CD permission regression tests | ✅ Persona mode |
+
+### Configure a Persona
+
+Go to **Setup → Custom Metadata Types → JT Persona Config → Manage Records** and create a record:
+
+| Field | Example | Description |
+|-------|---------|-------------|
+| Label | `Sales Rep - Territory` | Display name in UI selector |
+| DeveloperName | `Sales_Rep_Territory` | API name |
+| Profile API Name | `Standard User` | Exact Profile Name from Setup |
+| Permission Sets | `Territory_Manager,Pipeline_Access` | Comma-separated PS API names |
+| See All Data | `false` | FLS/CRUD only; `true` = real data volume |
+| Description | `Sales rep with territory access` | Shown in combobox |
+
+> **Governor Limit Note:** Maximum 10 Permission Sets per persona recommended to stay within DML row limits in `@IsTest` context.
+
+### UI: Mode Toggle
+
+The `jtRunAsSection` component now shows a mode toggle:
+
+```
+[ Specific User ] [ Persona ]
+```
+
+- **Specific User** (default): existing behavior, searches real users
+- **Persona**: loads `JT_PersonaConfig__mdt` records in the combobox
+
+### Apex API
+
+```apex
+// Get persona options for LWC combobox
+List<JT_RunAsTestExecutor.PersonaOption> options = JT_RunAsTestExecutor.getPersonaOptions();
+
+// Execute as persona
+JT_RunAsTestExecutor.TestExecutionResult result = JT_RunAsTestExecutor.executeAsPersona(
+    'Sales_Rep_Territory',  // DeveloperName of JT_PersonaConfig__mdt
+    'Account_By_Name',      // Config name
+    '{"name": "Acme"}'      // Bindings JSON
+);
+```
+
+### seeAllData behavior
+
+| `See_All_Data__c` | Test class used | What is validated |
+|-------------------|----------------|-------------------|
+| `false` | `JT_GenericPersonaTest` (`@IsTest(SeeAllData=false)`) | FLS, CRUD, object access only |
+| `true` | `JT_GenericRunAsTest` (`@IsTest(SeeAllData=true)`) | FLS, CRUD, access + real record count |
+
+When `seeAllData=false`, a result of 0 records is considered a successful test (the query ran without access errors). This is ideal for ISV orgs where no data exists in the installation org.
+
+---
+
 ## Conclusion
 
-The Run As User feature is a valuable tool for administrators to understand and validate permissions in their org. While it has limitations compared to true user impersonation, it provides practical value for everyday permission testing and troubleshooting within Salesforce's security constraints.
+The Run As feature gives administrators and ISV developers two complementary tools:
+
+- **Named User mode** for investigating specific individuals ("Why can't Alice see this record?")
+- **Persona mode** for regression testing permission archetypes without depending on real users
 
 For questions or issues, please refer to the main project documentation or create an issue in the repository.

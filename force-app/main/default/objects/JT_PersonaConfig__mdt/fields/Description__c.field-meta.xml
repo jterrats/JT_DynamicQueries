@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Description__c</fullName>
+    <description>Human-readable description of the persona shown in the UI selector (e.g., "Sales Rep with territory access"). Used as the display label in jtRunAsSection combobox.</description>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <inlineHelpText>This text appears as the option label in the Persona selector dropdown.</inlineHelpText>
+    <label>Description</label>
+    <length>255</length>
+    <type>TextArea</type>
+</CustomField>

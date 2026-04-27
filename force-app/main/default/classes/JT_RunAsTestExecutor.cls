@@ -654,6 +654,202 @@ public with sharing class JT_RunAsTestExecutor {
   }
 
   /**
+   * @description Returns available persona options from JT_PersonaConfig__mdt
+   * @author Jaime Terrats
+   * @return List of PersonaOption wrappers for LWC combobox
+   **/
+  @AuraEnabled(cacheable=true)
+  public static List<PersonaOption> getPersonaOptions() {
+    List<PersonaOption> options = new List<PersonaOption>();
+    for (JT_PersonaConfig__mdt persona : [
+      SELECT
+        DeveloperName,
+        Label,
+        Description__c,
+        Profile_API_Name__c,
+        Permission_Sets__c,
+        See_All_Data__c
+      FROM JT_PersonaConfig__mdt
+      WITH USER_MODE
+      ORDER BY Label
+    ]) {
+      options.add(new PersonaOption(persona));
+    }
+    return options;
+  }
+
+  /**
+   * @description Executes query as a synthetic persona (Profile + Permission Sets)
+   * Creates a temporary user in @IsTest context instead of using a real named user.
+   * @author Jaime Terrats
+   * @param personaDeveloperName DeveloperName of JT_PersonaConfig__mdt record
+   * @param configName Configuration name
+   * @param bindingsJson JSON bindings
+   * @return TestExecutionResult
+   **/
+  @AuraEnabled
+  public static TestExecutionResult executeAsPersona(
+    String personaDeveloperName,
+    String configName,
+    String bindingsJson
+  ) {
+    TestExecutionResult result = new TestExecutionResult();
+
+    try {
+      if (!canUseRunAsTest()) {
+        throw new AuraHandledException(
+          Label.JT_RunAsTestExecutor_insufficientPermissionsRunAsTest
+        );
+      }
+
+      List<JT_PersonaConfig__mdt> personas = [
+        SELECT
+          DeveloperName,
+          Label,
+          Profile_API_Name__c,
+          Permission_Sets__c,
+          See_All_Data__c,
+          Description__c
+        FROM JT_PersonaConfig__mdt
+        WHERE DeveloperName = :personaDeveloperName
+        WITH USER_MODE
+        LIMIT 1
+      ];
+
+      if (personas.isEmpty()) {
+        throw new AuraHandledException(
+          'Persona \'' +
+            personaDeveloperName +
+            '\' not found. Verify the JT_PersonaConfig__mdt record exists.'
+        );
+      }
+
+      JT_PersonaConfig__mdt persona = personas[0];
+
+      result.runAsUserName =
+        'Persona: ' +
+        persona.Label +
+        ' (' +
+        persona.Profile_API_Name__c +
+        (String.isNotBlank(persona.Permission_Sets__c)
+          ? ' + ' + persona.Permission_Sets__c
+          : '') +
+        ')';
+
+      Integer pendingExecutions = 0;
+      try {
+        pendingExecutions = [
+          SELECT COUNT()
+          FROM JT_RunAsTest_Execution__c
+          WHERE
+            Initiated_By__c = :UserInfo.getUserId()
+            AND Test_Status__c IN ('Queued', 'Running')
+            AND CreatedDate >= :Datetime.now().addMinutes(-10)
+          WITH USER_MODE
+        ];
+      } catch (SecurityException se) {
+        pendingExecutions = 0;
+      }
+
+      if (pendingExecutions >= 3) {
+        throw new AuraHandledException(
+          'Too many test executions in queue (' +
+            pendingExecutions +
+            '). Please wait for pending executions to complete before starting a new one. Maximum allowed: 3.'
+        );
+      }
+
+      JT_RunAsTest_Execution__c execution = new JT_RunAsTest_Execution__c(
+        Test_Status__c = 'Queued',
+        Persona_Developer_Name__c = personaDeveloperName,
+        Run_As_User_Name__c = result.runAsUserName,
+        Config_Name__c = configName,
+        Bindings_Json__c = bindingsJson,
+        Initiated_By__c = UserInfo.getUserId()
+      );
+
+      if (!Schema.sObjectType.JT_RunAsTest_Execution__c.isCreateable()) {
+        throw new AuraHandledException(
+          Label.JT_RunAsTestExecutor_insufficientPermissionsCreate
+        );
+      }
+
+      insert execution;
+
+      Id queueableJobId = System.enqueueJob(
+        new JT_RunAsTestEnqueuer(execution.Id)
+      );
+
+      try {
+        execution.Test_Status__c = 'Running';
+        execution.Apex_Queueable_Job_Id__c = String.valueOf(queueableJobId);
+        execution.Log_Messages__c =
+          'Queueable enqueued at ' +
+          System.now() +
+          '. Job ID: ' +
+          queueableJobId;
+        if (Schema.sObjectType.JT_RunAsTest_Execution__c.isUpdateable()) {
+          update execution;
+        }
+      } catch (Exception updateEx) {
+        JT_ErrorLogger.logError(
+          'Persona Execution Update Failed',
+          updateEx.getMessage(),
+          updateEx,
+          'JT_RunAsTestExecutor.executeAsPersona'
+        );
+      }
+
+      result.jobId = execution.Id;
+      result.message = Label.JT_RunAsTestExecutor_testExecutionInitiated;
+      result.success = true;
+      return result;
+    } catch (AuraHandledException ahe) {
+      result.success = false;
+      result.errorMessage = String.isNotBlank(ahe.getMessage())
+        ? ahe.getMessage()
+        : 'An error occurred during persona test execution';
+      result.stackTrace = ahe.getStackTraceString();
+      return result;
+    } catch (Exception e) {
+      result.success = false;
+      result.errorMessage = String.isNotBlank(e.getMessage())
+        ? e.getMessage()
+        : 'An unexpected error occurred';
+      result.stackTrace = e.getStackTraceString();
+      return result;
+    }
+  }
+
+  /**
+   * @description Wrapper for persona option displayed in LWC combobox
+   * @author Jaime Terrats
+   **/
+  public class PersonaOption {
+    @AuraEnabled
+    public String value;
+    @AuraEnabled
+    public String label;
+    @AuraEnabled
+    public String description;
+    @AuraEnabled
+    public String profileApiName;
+    @AuraEnabled
+    public String permissionSets;
+    @AuraEnabled
+    public Boolean seeAllData;
+
+    public PersonaOption(JT_PersonaConfig__mdt persona) {
+      this.value = persona.DeveloperName;
+      this.label = persona.Label;
+      this.description = persona.Description__c;
+      this.profileApiName = persona.Profile_API_Name__c;
+      this.permissionSets = persona.Permission_Sets__c;
+      this.seeAllData = persona.See_All_Data__c;
+    }
+  }
+
+  /**
    * @description Queueable for async test execution with Finalizer support
    * @author Jaime Terrats | 11-29-2025
    **/

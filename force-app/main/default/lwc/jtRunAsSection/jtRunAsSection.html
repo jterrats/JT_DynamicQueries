@@ -15,6 +15,50 @@
       </div>
     </div>
 
+    <!-- Mode Toggle: Specific User | Persona -->
+    <div
+      class="slds-button-group slds-m-bottom_small"
+      role="group"
+      aria-label={labels.runAsModeToggleAria}
+      data-testid="run-as-mode-toggle"
+    >
+      <button
+        class={modeButtonClassUser}
+        onclick={handleModeUser}
+        disabled={isRunningTest}
+        aria-pressed={isModeUser}
+        data-testid="run-as-mode-user"
+      >
+        <lightning-icon
+          icon-name="utility:user"
+          size="xx-small"
+          class="slds-m-right_xx-small"
+        ></lightning-icon>
+        {labels.modeSpecificUser}
+      </button>
+      <button
+        class={modeButtonClassPersona}
+        onclick={handleModePersona}
+        disabled={isRunningTest}
+        aria-pressed={isModePersona}
+        data-testid="run-as-mode-persona"
+      >
+        <lightning-icon
+          icon-name="utility:people"
+          size="xx-small"
+          class="slds-m-right_xx-small"
+        ></lightning-icon>
+        {labels.modePersona}
+      </button>
+    </div>
+
+    <!-- Mode change announcement for screen readers -->
+    <div
+      aria-live="polite"
+      aria-atomic="true"
+      class="slds-assistive-text"
+    >{modeAnnouncement}</div>
+
     <!-- Info Note -->
     <div class="slds-box slds-box_xx-small slds-theme_info slds-m-bottom_small">
       <div class="slds-media slds-media_small">
@@ -26,7 +70,7 @@
           ></lightning-icon>
         </div>
         <div class="slds-media__body">
-          <p class="slds-text-body_regular">{labels.noteText}</p>
+          <p class="slds-text-body_regular">{activeNoteText}</p>
           <p class="slds-text-body_small slds-m-top_xx-small">
             <lightning-icon
               icon-name="utility:success"
@@ -39,21 +83,50 @@
       </div>
     </div>
 
-    <!-- User Selection -->
-    <c-jt-searchable-combobox
-      label={labels.selectUserToImpersonate}
-      placeholder={labels.selectUserPlaceholder}
-      options={userOptions}
-      icon-name="standard:user"
-      disabled={isComboboxDisabled}
-      data-testid="run-as-user-selector"
-      name="run-as-user"
-      onselect={handleUserSelect}
-      onclear={handleUserClear}
-    ></c-jt-searchable-combobox>
+    <!-- Specific User Mode -->
+    <template if:true={isModeUser}>
+      <c-jt-searchable-combobox
+        label={labels.selectUserToImpersonate}
+        placeholder={labels.selectUserPlaceholder}
+        options={userOptions}
+        icon-name="standard:user"
+        disabled={isComboboxDisabled}
+        data-testid="run-as-user-selector"
+        name="run-as-user"
+        onselect={handleUserSelect}
+        onclear={handleUserClear}
+      ></c-jt-searchable-combobox>
+    </template>
 
-    <!-- Loading Users -->
-    <template if:true={isLoadingUsers}>
+    <!-- Persona Mode -->
+    <template if:true={isModePersona}>
+      <c-jt-searchable-combobox
+        label={labels.selectPersonaLabel}
+        placeholder={labels.selectPersonaPlaceholder}
+        options={personaOptions}
+        icon-name="standard:groups"
+        disabled={isComboboxDisabled}
+        data-testid="persona-selector"
+        name="run-as-persona"
+        onselect={handlePersonaSelect}
+        onclear={handlePersonaClear}
+      ></c-jt-searchable-combobox>
+
+      <!-- Loading Personas -->
+      <template if:true={isLoadingPersonas}>
+        <div
+          class="slds-text-body_small slds-text-color_weak slds-m-top_small"
+          role="status"
+          aria-live="polite"
+        >
+          <lightning-spinner alternative-text={labels.loadingPersonas} size="small"></lightning-spinner>
+          <span>{labels.loadingPersonas}</span>
+        </div>
+      </template>
+    </template>
+
+    <!-- Loading Users (Specific User mode) -->
+    <template if:true={showLoadingUsers}>
       <div
         class="slds-text-body_small slds-text-color_weak slds-m-top_small"
         role="status"
@@ -68,7 +141,7 @@
       </div>
     </template>
 
-    <!-- Action Button (when user selected) -->
+    <!-- Action Button (when selection made) -->
     <template if:true={showButtons}>
       <div
         class="slds-p-top_x-small slds-grid slds-grid_align-end"

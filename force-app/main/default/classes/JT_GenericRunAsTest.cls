@@ -73,7 +73,9 @@ public class JT_GenericRunAsTest {
     }
 
     // Execute with functional composition (simplified for Apex limitations)
-    User targetUser = validateUser(params);
+    User targetUser = String.isNotBlank(params.personaDeveloperName)
+      ? buildSyntheticUser(params)
+      : validateUser(params);
     QueryResult queryResult = executeInUserContext(targetUser, params);
 
     // Assert: Validate query execution completed successfully
@@ -123,6 +125,7 @@ public class JT_GenericRunAsTest {
         SELECT
           Id,
           User_To_Impersonate__c,
+          Persona_Developer_Name__c,
           Config_Name__c,
           Bindings_Json__c,
           Test_Status__c,
@@ -149,6 +152,7 @@ public class JT_GenericRunAsTest {
           SELECT
             Id,
             User_To_Impersonate__c,
+            Persona_Developer_Name__c,
             Config_Name__c,
             Bindings_Json__c,
             Test_Status__c,
@@ -219,6 +223,7 @@ public class JT_GenericRunAsTest {
 
         return new TestParameters(
           execution.User_To_Impersonate__c,
+          execution.Persona_Developer_Name__c,
           execution.Config_Name__c,
           execution.Bindings_Json__c,
           execution.Id // Pass execution ID for storing results
@@ -247,6 +252,104 @@ public class JT_GenericRunAsTest {
       WHERE Id = :params.userId
       LIMIT 1
     ];
+  }
+
+  /**
+   * @description Builds a synthetic User from JT_PersonaConfig__mdt for persona-based testing.
+   * Inserts the user and assigns Permission Sets in the @IsTest context.
+   * DML will be rolled back after test completes — this is intentional.
+   * @author Jaime Terrats
+   * @param params Test parameters with personaDeveloperName populated
+   * @return Inserted synthetic User
+   **/
+  @SuppressWarnings('PMD.ApexCRUDViolation')
+  private static User buildSyntheticUser(TestParameters params) {
+    List<JT_PersonaConfig__mdt> personas = [
+      SELECT Profile_API_Name__c, Permission_Sets__c, Label
+      FROM JT_PersonaConfig__mdt
+      WHERE DeveloperName = :params.personaDeveloperName
+      LIMIT 1
+    ];
+
+    if (personas.isEmpty()) {
+      throw new AuraHandledException(
+        'Persona \'' +
+          params.personaDeveloperName +
+          '\' not found in this org. Verify the JT_PersonaConfig__mdt record exists.'
+      );
+    }
+
+    JT_PersonaConfig__mdt persona = personas[0];
+
+    List<Profile> profiles = [
+      SELECT Id
+      FROM Profile
+      WHERE Name = :persona.Profile_API_Name__c
+      LIMIT 1
+    ];
+
+    if (profiles.isEmpty()) {
+      throw new AuraHandledException(
+        'Profile \'' +
+          persona.Profile_API_Name__c +
+          '\' not found in this org. Verify installation.'
+      );
+    }
+
+    String uniqueSuffix = String.valueOf(System.now().getTime());
+    User syntheticUser = new User(
+      Alias = 'jtprsn',
+      Email = 'jtpersona_' + uniqueSuffix + '@test.invalid',
+      EmailEncodingKey = 'UTF-8',
+      LastName = 'JTPersona_' + params.personaDeveloperName,
+      LanguageLocaleKey = 'en_US',
+      LocaleSidKey = 'en_US',
+      ProfileId = profiles[0].Id,
+      TimeZoneSidKey = 'America/Los_Angeles',
+      Username = 'jtpersona_' + uniqueSuffix + '@test.invalid'
+    );
+    insert syntheticUser;
+
+    if (String.isNotBlank(persona.Permission_Sets__c)) {
+      List<String> psNames = persona.Permission_Sets__c.split(',');
+      List<String> trimmedNames = new List<String>();
+      for (String psName : psNames) {
+        String trimmed = psName.trim();
+        if (String.isNotBlank(trimmed)) {
+          trimmedNames.add(trimmed);
+        }
+      }
+
+      if (!trimmedNames.isEmpty()) {
+        List<PermissionSet> permSets = [
+          SELECT Id, Name
+          FROM PermissionSet
+          WHERE Name IN :trimmedNames
+        ];
+
+        if (permSets.isEmpty()) {
+          System.debug(
+            LoggingLevel.WARN,
+            '⚠️ No Permission Sets found for names: ' + trimmedNames
+          );
+        }
+
+        List<PermissionSetAssignment> assignments = new List<PermissionSetAssignment>();
+        for (PermissionSet ps : permSets) {
+          assignments.add(
+            new PermissionSetAssignment(
+              AssigneeId = syntheticUser.Id,
+              PermissionSetId = ps.Id
+            )
+          );
+        }
+        if (!assignments.isEmpty()) {
+          insert assignments;
+        }
+      }
+    }
+
+    return [SELECT Id, Name, Username FROM User WHERE Id = :syntheticUser.Id LIMIT 1];
   }
 
   /**
@@ -667,17 +770,20 @@ public class JT_GenericRunAsTest {
    **/
   private class TestParameters {
     public final String userId;
+    public final String personaDeveloperName;
     public final String configName;
     public final String bindingsJson;
-    public final String executionId; // ID of JT_RunAsTest_Execution__c record
+    public final String executionId;
 
     public TestParameters(
       String userId,
+      String personaDeveloperName,
       String configName,
       String bindingsJson,
       String executionId
     ) {
       this.userId = userId;
+      this.personaDeveloperName = personaDeveloperName;
       this.configName = configName;
       this.bindingsJson = bindingsJson;
       this.executionId = executionId;

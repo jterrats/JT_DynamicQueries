@@ -399,6 +399,45 @@
 
 ## 🛡️ **Security & Compliance**
 
+### **US-025: Persona-Based Run As Testing** 🎭
+
+**Priority:** Medium
+**Story Points:** 13
+**Status:** In Progress
+**GitHub Issue:** [#42](https://github.com/jterrats/JT_DynamicQueries/issues/42)
+**Community request by:** Sean Whalen
+
+**As an** administrator or ISV developer
+**I want** to validate query access for a defined persona (Profile + Permission Sets combination) without requiring a real named user
+**So that** I can run permission tests in orgs where real QA users are not available or user licenses are scarce
+
+**Acceptance Criteria:**
+
+- [ ] `JT_PersonaConfig__mdt` with fields: `Profile_API_Name__c`, `Permission_Sets__c`, `See_All_Data__c`, `Description__c`
+- [ ] 2 example CMT records shipped with package
+- [ ] `JT_RunAsTest_Execution__c` new field: `Persona_Developer_Name__c`
+- [ ] `JT_RunAsTestExecutor.executeAsPersona()` and `getPersonaOptions()` methods
+- [ ] `JT_GenericRunAsTest` extended for persona mode (builds synthetic user in @IsTest)
+- [ ] `JT_GenericPersonaTest` new class (`@IsTest(SeeAllData=false)`) for `See_All_Data__c=false` personas
+- [ ] `JT_RunAsTestEnqueuer.resolveTestClassName()` selects class based on `See_All_Data__c`
+- [ ] `jtRunAsSection` LWC: mode toggle (Specific User / Persona), persona combobox
+- [ ] Result label shows `"Persona: <label> (<profile> + <psets>)"`
+- [ ] Unit tests: `JT_RunAsTestExecutor_Test`, `JT_RunAsTestEnqueuer_Test` — 90% coverage
+- [ ] E2E: `runAsPersona.spec.js`
+- [ ] **Accessibility:** `data-testid="run-as-mode-toggle"`, `aria-live="polite"` on mode switch
+- [ ] **Docs:** `RUN_AS_USER_FEATURE.md`, `diagrams.md` updated
+
+**Technical Notes:**
+
+- `@IsTest(SeeAllData=true/false)` is a static annotation — requires two separate test classes
+- Synthetic user creation and PSA assignment happens inside `@IsTest` context; DML is rolled back
+- Profile must exist in target org; missing profile surfaces a clear error message
+- Max 10 Permission Sets per persona (DML row governor limit consideration)
+
+**Dependencies:** `JT_RunAsTestExecutor`, `JT_GenericRunAsTest`, `JT_RunAsTestEnqueuer`, `jtRunAsSection`
+
+---
+
 ### **US-013: Field-Level Security (FLS) Warnings** 🔒
 
 **Priority:** High

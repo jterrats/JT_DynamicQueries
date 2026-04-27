@@ -43,9 +43,12 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
         );
       }
 
-      ApexClass testClass = JT_SystemSelector.getApexClassByName(
-        'JT_GenericRunAsTest'
-      );
+      // Determine which test class to invoke:
+      // - Persona mode with See_All_Data__c=false → JT_GenericPersonaTest (SeeAllData=false)
+      // - Named user mode OR persona with See_All_Data__c=true → JT_GenericRunAsTest (SeeAllData=true)
+      String testClassName = resolveTestClassName();
+
+      ApexClass testClass = JT_SystemSelector.getApexClassByName(testClassName);
 
       if (testClass == null) {
         throw new AuraHandledException(
@@ -76,6 +79,46 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
         'JT_RunAsTestEnqueuer.execute'
       );
     }
+  }
+
+  /**
+   * @description Resolves which test class to invoke based on the execution record.
+   * Persona mode with See_All_Data__c=false uses JT_GenericPersonaTest.
+   * All other cases use JT_GenericRunAsTest.
+   * @return String test class name
+   **/
+  private String resolveTestClassName() {
+    try {
+      List<JT_RunAsTest_Execution__c> executions = [
+        SELECT Persona_Developer_Name__c
+        FROM JT_RunAsTest_Execution__c
+        WHERE Id = :this.executionId
+        LIMIT 1
+      ];
+
+      if (executions.isEmpty() || String.isBlank(executions[0].Persona_Developer_Name__c)) {
+        return 'JT_GenericRunAsTest';
+      }
+
+      String personaDevName = executions[0].Persona_Developer_Name__c;
+      List<JT_PersonaConfig__mdt> personas = [
+        SELECT See_All_Data__c
+        FROM JT_PersonaConfig__mdt
+        WHERE DeveloperName = :personaDevName
+        LIMIT 1
+      ];
+
+      if (!personas.isEmpty() && personas[0].See_All_Data__c == false) {
+        return 'JT_GenericPersonaTest';
+      }
+    } catch (Exception e) {
+      System.debug(
+        LoggingLevel.WARN,
+        '⚠️ Could not resolve test class name, defaulting to JT_GenericRunAsTest: ' +
+          e.getMessage()
+      );
+    }
+    return 'JT_GenericRunAsTest';
   }
 
   /**

@@ -220,6 +220,64 @@ graph TD
 
 ---
 
+## 🎭 Run As Flow — Named User vs Persona (US-025)
+
+```mermaid
+sequenceDiagram
+    actor Admin
+    participant UI as jtRunAsSection
+    participant QV as jtQueryViewer
+    participant RTE as JT_RunAsTestExecutor
+    participant ENQ as JT_RunAsTestEnqueuer
+    participant CMT as JT_PersonaConfig__mdt
+    participant GRUT as JT_GenericRunAsTest<br/>(SeeAllData=true)
+    participant GPT as JT_GenericPersonaTest<br/>(SeeAllData=false)
+
+    Note over UI: Mode toggle: Specific User | Persona
+
+    alt Named User Mode
+        Admin->>UI: Select real user (Alice)
+        UI->>QV: userselect event
+        QV->>RTE: executeAsUser(userId, config, bindings)
+        RTE->>ENQ: enqueueJob(executionId)
+        ENQ->>ENQ: resolveTestClassName() → JT_GenericRunAsTest
+        ENQ->>GRUT: Tooling API runTestsSynchronous
+        GRUT->>GRUT: validateUser(userId) → real User from DB
+        GRUT->>GRUT: System.runAs(realUser) { JT_DataSelector.getRecords() }
+        GRUT-->>ENQ: Debug Log markers with results
+        ENQ-->>QV: Execution record updated (Completed)
+        QV-->>Admin: "Alice Smith (alice@org.com) — 42 records"
+    else Persona Mode (See_All_Data__c = false)
+        Admin->>UI: Switch to Persona mode, select "Standard User"
+        UI->>QV: personaselect event
+        QV->>RTE: executeAsPersona(personaDevName, config, bindings)
+        RTE->>CMT: Query JT_PersonaConfig__mdt
+        CMT-->>RTE: Profile_API_Name__c, Permission_Sets__c, See_All_Data__c=false
+        RTE->>ENQ: enqueueJob(executionId) with Persona_Developer_Name__c
+        ENQ->>ENQ: resolveTestClassName() → JT_GenericPersonaTest
+        ENQ->>GPT: Tooling API runTestsSynchronous
+        GPT->>GPT: buildSyntheticUser() → insert User + PermissionSetAssignments
+        GPT->>GPT: System.runAs(syntheticUser) { JT_DataSelector.getRecords() }
+        Note over GPT: DML rolled back after test — synthetic user is temporary
+        GPT-->>ENQ: Debug Log markers with results (FLS/CRUD validated)
+        ENQ-->>QV: Execution record updated (Completed)
+        QV-->>Admin: "Persona: Standard User — 0 records (SeeAllData=false)"
+    else Persona Mode (See_All_Data__c = true)
+        Admin->>UI: Select "System Administrator" persona
+        QV->>RTE: executeAsPersona(personaDevName, config, bindings)
+        RTE->>ENQ: enqueueJob(executionId)
+        ENQ->>ENQ: resolveTestClassName() → JT_GenericRunAsTest
+        ENQ->>GRUT: Tooling API runTestsSynchronous
+        GRUT->>GRUT: buildSyntheticUser() → insert User (SeeAllData=true path)
+        GRUT->>GRUT: System.runAs(syntheticUser) { JT_DataSelector.getRecords() }
+        GRUT-->>ENQ: Debug Log markers with real record count
+        ENQ-->>QV: Execution record updated (Completed)
+        QV-->>Admin: "Persona: System Administrator — 156 records"
+    end
+```
+
+---
+
 ## 🔍 Usage Finder (Microservices Pattern)
 
 ```mermaid

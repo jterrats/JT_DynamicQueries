@@ -164,7 +164,7 @@ async function captureHappyPaths() {
   // GIF 1: Basic Query Execution (10 seconds)
   // Show: Select config → Execute → View results (NO view switching)
   // ==================================================================
-  console.log("🎥 1/6: Capturing Basic Query Execution...");
+  console.log("🎥 1/7: Capturing Basic Query Execution...");
   const { context: context1, page: page1 } =
     await createRecordingContextAndNavigate(
       browser,
@@ -229,7 +229,7 @@ async function captureHappyPaths() {
   // GIF 2: Multiple Views - JSON, CSV (15 seconds)
   // Show: Execute query → Switch to JSON → Switch to CSV → Back to Table
   // ==================================================================
-  console.log("🎥 2/6: Capturing Multiple Views (JSON, CSV)...");
+  console.log("🎥 2/7: Capturing Multiple Views (JSON, CSV)...");
   const { context: context2, page: page2 } =
     await createRecordingContextAndNavigate(
       browser,
@@ -368,7 +368,7 @@ async function captureHappyPaths() {
   // GIF 3: Tree View - Child Relationships (12 seconds)
   // Show: Execute query with relationships → Expand parent → Show children
   // ==================================================================
-  console.log("🎥 3/6: Capturing Tree View with Child Relationships...");
+  console.log("🎥 3/7: Capturing Tree View with Child Relationships...");
   const { context: context3, page: page3 } =
     await createRecordingContextAndNavigate(
       browser,
@@ -438,7 +438,7 @@ async function captureHappyPaths() {
   // GIF 4: Large Dataset (Cursors >50k) (12 seconds)
   // Show: Query with many records → Pagination → Performance message
   // ==================================================================
-  console.log("🎥 4/6: Capturing Large Dataset with Cursors...");
+  console.log("🎥 4/7: Capturing Large Dataset with Cursors...");
   const { context: context4, page: page4 } =
     await createRecordingContextAndNavigate(
       browser,
@@ -498,7 +498,7 @@ async function captureHappyPaths() {
   // GIF 5: Create Configuration (15 seconds)
   // Show: Click New Config → Fill form → Save → Show success message
   // ==================================================================
-  console.log("🎥 5/6: Capturing Create Configuration...");
+  console.log("🎥 5/7: Capturing Create Configuration...");
   const { context: context5, page: page5 } =
     await createRecordingContextAndNavigate(
       browser,
@@ -628,7 +628,7 @@ async function captureHappyPaths() {
   // GIF 6: Run As User (20 seconds)
   // Show: Expand Run As accordion → Select user → Execute with System.runAs → Show results
   // ==================================================================
-  console.log("🎥 6/6: Capturing Run As User...");
+  console.log("🎥 6/7: Capturing Run As User...");
   const { context: context6, page: page6 } =
     await createRecordingContextAndNavigate(
       browser,
@@ -922,6 +922,156 @@ async function captureHappyPaths() {
     }
   }
 
+  // ==================================================================
+  // GIF 7: Run As Persona (20 seconds)
+  // Show: Expand Run As accordion → Switch to Persona mode → Select persona
+  //       with PS → Execute → Show "Persona: ..." label in results
+  // ==================================================================
+  console.log("🎥 7/7: Capturing Run As Persona...");
+  const { context: context7, page: page7 } =
+    await createRecordingContextAndNavigate(
+      browser,
+      componentURL,
+      storageState,
+      "07-run-as-persona"
+    );
+
+  try {
+    await page7.waitForSelector("c-jt-query-viewer", { timeout: 30000 });
+    await page7.waitForTimeout(2000);
+
+    await selectConfiguration(page7, "Account By Name");
+    await page7.waitForTimeout(2000);
+
+    const paramInput = page7
+      .locator('lightning-input[data-testid*="parameter"] input')
+      .first();
+    if (await paramInput.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await paramInput.fill("%");
+      await page7.waitForTimeout(1000);
+    }
+
+    await page7.evaluate(() => window.scrollTo({ top: 0, behavior: "smooth" }));
+    await page7.waitForTimeout(1000);
+
+    // Expand Run As accordion
+    let accordionSection = page7
+      .locator('lightning-accordion-section[name="run-as"]')
+      .first();
+    if ((await accordionSection.count()) === 0) {
+      accordionSection = page7
+        .locator("lightning-accordion-section")
+        .filter({ hasText: /Run As/i })
+        .first();
+    }
+
+    if ((await accordionSection.count()) > 0) {
+      await accordionSection.scrollIntoViewIfNeeded();
+      const accordionButton = accordionSection.locator("button").first();
+      if (await accordionButton.isVisible({ timeout: 5000 }).catch(() => false)) {
+        await accordionButton.click();
+      }
+      await page7.waitForTimeout(3000);
+
+      await page7.evaluate(() =>
+        window.scrollTo({ top: 300, behavior: "smooth" })
+      );
+      await page7.waitForTimeout(1500);
+
+      const runAsComponent = page7.locator("c-jt-run-as-section").first();
+      const componentVisible = await runAsComponent
+        .isVisible({ timeout: 5000 })
+        .catch(() => false);
+
+      if (componentVisible) {
+        // Switch to Persona mode
+        const personaBtn = runAsComponent.locator(
+          '[data-testid="run-as-mode-persona"]'
+        );
+        if (await personaBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
+          await personaBtn.click();
+          await page7.waitForTimeout(2000);
+          console.log("   🎭 Switched to Persona mode");
+
+          // Open persona combobox
+          const personaInput = runAsComponent
+            .locator('[data-testid="persona-selector"] input')
+            .first();
+          if (
+            await personaInput.isVisible({ timeout: 5000 }).catch(() => false)
+          ) {
+            await personaInput.click();
+            await page7.waitForTimeout(2000);
+
+            // Select persona with PS if available, else first
+            const psOption = page7
+              .locator('[data-testid="persona-selector"] [role="option"]')
+              .filter({ hasText: /JT Dynamic Queries/i })
+              .first();
+            const fallbackOption = page7
+              .locator('[data-testid="persona-selector"] [role="option"]')
+              .first();
+
+            const target =
+              (await psOption.count()) > 0 ? psOption : fallbackOption;
+            if ((await target.count()) > 0) {
+              await target.click();
+              await page7.waitForTimeout(2000);
+              console.log("   ✅ Persona with PS selected");
+
+              // Execute
+              const executeButton = page7
+                .locator("c-jt-execute-button lightning-button")
+                .first();
+              if (
+                await executeButton
+                  .isVisible({ timeout: 10000 })
+                  .catch(() => false)
+              ) {
+                await executeButton.scrollIntoViewIfNeeded();
+                await page7.waitForTimeout(1000);
+                await executeButton.click();
+                console.log("   ▶️  Execute clicked — waiting for Persona results...");
+
+                // Wait for spinner overlay then disappear
+                const spinnerOverlay = page7
+                  .locator(".run-as-spinner-overlay")
+                  .first();
+                await spinnerOverlay
+                  .waitFor({ state: "visible", timeout: 8000 })
+                  .catch(() => null);
+                await spinnerOverlay
+                  .waitFor({ state: "hidden", timeout: 30000 })
+                  .catch(() => null);
+
+                await page7.waitForTimeout(3000);
+
+                // Scroll up to show result label
+                await page7.evaluate(() =>
+                  window.scrollTo({ top: 0, behavior: "smooth" })
+                );
+                await page7.waitForTimeout(3000);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    console.log("   ✅ Run As Persona captured");
+  } catch (error) {
+    console.error("   ❌ Error capturing Run As Persona:", error.message);
+  } finally {
+    const video = page7.video();
+    const videoPath = video ? await video.path() : null;
+    await context7.close();
+    if (videoPath) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      videoFilesMap.set("07-run-as-persona.webm", videoPath);
+      console.log(`   📹 Video saved: ${path.basename(videoPath)}`);
+    }
+  }
+
   await browser.close();
 
   // ==================================================================
@@ -940,7 +1090,8 @@ async function captureHappyPaths() {
     { video: "03-tree-view.webm", gif: "03-tree-view.gif" },
     { video: "04-large-dataset.webm", gif: "04-large-dataset.gif" },
     { video: "05-create-config.webm", gif: "05-create-config.gif" },
-    { video: "06-run-as-user.webm", gif: "06-run-as-user.gif" }
+    { video: "06-run-as-user.webm", gif: "06-run-as-user.gif" },
+    { video: "07-run-as-persona.webm", gif: "07-run-as-persona.gif" }
   ];
 
   for (const mapping of videoMappings) {
@@ -975,6 +1126,9 @@ async function captureHappyPaths() {
   );
   console.log("   5. 05-create-config.gif - Create custom configuration");
   console.log("   6. 06-run-as-user.gif - Run queries as different users");
+  console.log(
+    "   7. 07-run-as-persona.gif - Run queries as persona (Profile + PS)"
+  );
   console.log("");
 }
 

@@ -9,9 +9,16 @@
  */
 
 const { test, expect } = require("@playwright/test");
-const { setupTestContext, selectConfiguration } = require("./utils/testHelpers");
+const {
+  setupTestContext,
+  selectConfiguration
+} = require("./utils/testHelpers");
 const { getSFSession } = require("./utils/sfAuth");
-const { QUERY_VIEWER_TAB, SELECTORS, TIMEOUTS } = require("./utils/testConstants");
+const {
+  QUERY_VIEWER_TAB,
+  SELECTORS,
+  TIMEOUTS
+} = require("./utils/testConstants");
 
 let session;
 
@@ -40,7 +47,9 @@ test.describe("Persona-Based Run As Tests", () => {
     const sectionExists = (await runAsSection.count()) > 0;
 
     if (!sectionExists) {
-      console.log("ℹ️  Run As section not visible — user lacks permissions, skipping.");
+      console.log(
+        "ℹ️  Run As section not visible — user lacks permissions, skipping."
+      );
       return;
     }
 
@@ -48,7 +57,9 @@ test.describe("Persona-Based Run As Tests", () => {
     await toggle.waitFor({ state: "visible", timeout: TIMEOUTS.component });
 
     const userBtn = runAsSection.locator('[data-testid="run-as-mode-user"]');
-    const personaBtn = runAsSection.locator('[data-testid="run-as-mode-persona"]');
+    const personaBtn = runAsSection.locator(
+      '[data-testid="run-as-mode-persona"]'
+    );
 
     await expect(userBtn).toBeVisible();
     await expect(personaBtn).toBeVisible();
@@ -64,8 +75,12 @@ test.describe("Persona-Based Run As Tests", () => {
     const runAsSection = page.locator("c-jt-run-as-section").first();
     if ((await runAsSection.count()) === 0) return;
 
-    const userSelector = runAsSection.locator('[data-testid="run-as-user-selector"]');
-    const personaSelector = runAsSection.locator('[data-testid="persona-selector"]');
+    const userSelector = runAsSection.locator(
+      '[data-testid="run-as-user-selector"]'
+    );
+    const personaSelector = runAsSection.locator(
+      '[data-testid="persona-selector"]'
+    );
 
     await expect(userSelector).toBeVisible({ timeout: TIMEOUTS.component });
     await expect(personaSelector).not.toBeVisible();
@@ -81,14 +96,20 @@ test.describe("Persona-Based Run As Tests", () => {
     const runAsSection = page.locator("c-jt-run-as-section").first();
     if ((await runAsSection.count()) === 0) return;
 
-    const personaBtn = runAsSection.locator('[data-testid="run-as-mode-persona"]');
+    const personaBtn = runAsSection.locator(
+      '[data-testid="run-as-mode-persona"]'
+    );
     await personaBtn.waitFor({ state: "visible", timeout: TIMEOUTS.component });
     await personaBtn.click();
 
-    const personaSelector = runAsSection.locator('[data-testid="persona-selector"]');
+    const personaSelector = runAsSection.locator(
+      '[data-testid="persona-selector"]'
+    );
     await expect(personaSelector).toBeVisible({ timeout: TIMEOUTS.component });
 
-    const userSelector = runAsSection.locator('[data-testid="run-as-user-selector"]');
+    const userSelector = runAsSection.locator(
+      '[data-testid="run-as-user-selector"]'
+    );
     await expect(userSelector).not.toBeVisible();
 
     console.log("✅ Switched to Persona mode — persona combobox visible");
@@ -103,7 +124,9 @@ test.describe("Persona-Based Run As Tests", () => {
     if ((await runAsSection.count()) === 0) return;
 
     // Switch to Persona first
-    const personaBtn = runAsSection.locator('[data-testid="run-as-mode-persona"]');
+    const personaBtn = runAsSection.locator(
+      '[data-testid="run-as-mode-persona"]'
+    );
     await personaBtn.waitFor({ state: "visible", timeout: TIMEOUTS.component });
     await personaBtn.click();
 
@@ -111,7 +134,9 @@ test.describe("Persona-Based Run As Tests", () => {
     const userBtn = runAsSection.locator('[data-testid="run-as-mode-user"]');
     await userBtn.click();
 
-    const userSelector = runAsSection.locator('[data-testid="run-as-user-selector"]');
+    const userSelector = runAsSection.locator(
+      '[data-testid="run-as-user-selector"]'
+    );
     await expect(userSelector).toBeVisible({ timeout: TIMEOUTS.component });
 
     console.log("✅ Successfully switched back to Specific User mode");
@@ -129,11 +154,15 @@ test.describe("Persona-Based Run As Tests", () => {
     const runAsSection = page.locator("c-jt-run-as-section").first();
     if ((await runAsSection.count()) === 0) return;
 
-    const personaBtn = runAsSection.locator('[data-testid="run-as-mode-persona"]');
+    const personaBtn = runAsSection.locator(
+      '[data-testid="run-as-mode-persona"]'
+    );
     await personaBtn.waitFor({ state: "visible", timeout: TIMEOUTS.component });
     await personaBtn.click();
 
-    const personaSelector = runAsSection.locator('[data-testid="persona-selector"]');
+    const personaSelector = runAsSection.locator(
+      '[data-testid="persona-selector"]'
+    );
     await expect(personaSelector).toBeVisible({ timeout: TIMEOUTS.component });
 
     console.log("✅ Persona selector visible after mode switch");
@@ -168,11 +197,15 @@ test.describe("Persona-Based Run As Tests", () => {
     await selectConfiguration(page, "Test_Record");
 
     // Switch to Persona mode
-    const personaBtn = runAsSection.locator('[data-testid="run-as-mode-persona"]');
+    const personaBtn = runAsSection.locator(
+      '[data-testid="run-as-mode-persona"]'
+    );
     await personaBtn.waitFor({ state: "visible", timeout: TIMEOUTS.component });
     await personaBtn.click();
 
-    const personaSelector = runAsSection.locator('[data-testid="persona-selector"]');
+    const personaSelector = runAsSection.locator(
+      '[data-testid="persona-selector"]'
+    );
     await expect(personaSelector).toBeVisible({ timeout: TIMEOUTS.component });
 
     // Try to select a persona — depends on CMT data deployed in org
@@ -203,10 +236,11 @@ test.describe("Persona-Based Run As Tests", () => {
     console.log("✅ Persona selected from dropdown");
 
     // Execute the query
-    const executeButton = page
-      .locator(SELECTORS.executeButton)
-      .first();
-    await executeButton.waitFor({ state: "visible", timeout: TIMEOUTS.component });
+    const executeButton = page.locator(SELECTORS.executeButton).first();
+    await executeButton.waitFor({
+      state: "visible",
+      timeout: TIMEOUTS.component
+    });
     await executeButton.click();
 
     // Wait for execution to start
@@ -243,15 +277,21 @@ test.describe("Persona-Based Run As Tests", () => {
     const runAsSection = page.locator("c-jt-run-as-section").first();
     if ((await runAsSection.count()) === 0) return;
 
-    const personaBtn = runAsSection.locator('[data-testid="run-as-mode-persona"]');
+    const personaBtn = runAsSection.locator(
+      '[data-testid="run-as-mode-persona"]'
+    );
     await personaBtn.waitFor({ state: "visible", timeout: TIMEOUTS.component });
     await personaBtn.click();
 
-    const personaSelector = runAsSection.locator('[data-testid="persona-selector"]');
+    const personaSelector = runAsSection.locator(
+      '[data-testid="persona-selector"]'
+    );
     await expect(personaSelector).toBeVisible({ timeout: TIMEOUTS.component });
 
     // Clear button should not be visible yet
-    const clearButton = runAsSection.locator('[data-testid="run-as-clear-button"]');
+    const clearButton = runAsSection.locator(
+      '[data-testid="run-as-clear-button"]'
+    );
     await expect(clearButton).not.toBeVisible();
 
     console.log("✅ Clear button not shown when no persona selected");

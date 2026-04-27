@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Permission_Sets__c</fullName>
-    <description>Comma-separated list of Permission Set API names to assign to the synthetic test user. Maximum 10 recommended to stay within DML row governor limits.</description>
+    <description
+  >Comma-separated list of Permission Set API names to assign to the synthetic test user. Maximum 10 recommended to stay within DML row governor limits.</description>
     <fieldManageability>DeveloperControlled</fieldManageability>
-    <inlineHelpText>Example: Territory_Manager,Pipeline_Access,Reports_Viewer — comma-separated, no spaces. Leave blank if no Permission Sets are needed.</inlineHelpText>
+    <inlineHelpText
+  >Example: Territory_Manager,Pipeline_Access,Reports_Viewer — comma-separated, no spaces. Leave blank if no Permission Sets are needed.</inlineHelpText>
     <label>Permission Sets</label>
     <length>2000</length>
     <type>LongTextArea</type>

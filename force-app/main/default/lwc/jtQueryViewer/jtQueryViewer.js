@@ -232,6 +232,8 @@ import executeQuery from "@salesforce/apex/JT_QueryViewerController.executeQuery
 import canUseRunAs from "@salesforce/apex/JT_QueryViewerController.canUseRunAs";
 import getAllActiveUsers from "@salesforce/apex/JT_QueryViewerController.getAllActiveUsers";
 import executeAsUser from "@salesforce/apex/JT_RunAsTestExecutor.executeAsUser";
+import executeAsPersona from "@salesforce/apex/JT_RunAsTestExecutor.executeAsPersona";
+import getPersonaOptions from "@salesforce/apex/JT_RunAsTestExecutor.getPersonaOptions";
 import getTestResults from "@salesforce/apex/JT_RunAsTestExecutor.getTestResults";
 import canUseRunAsTest from "@salesforce/apex/JT_RunAsTestExecutor.canUseRunAsTest";
 import isSandboxOrScratch from "@salesforce/apex/JT_MetadataCreator.isSandboxOrScratch";
@@ -283,6 +285,10 @@ export default class JtQueryViewer extends LightningElement {
   @track isLoadingUsers = false;
   @track showRunAsTest = false;
   @track isRunningTest = false;
+  @track personaOptions = [];
+  @track runAsPersonaDevName = "";
+  @track isLoadingPersonas = false;
+  @track runAsMode = "user"; // "user" | "persona"
   @track testJobId = "";
   @track testAssertMessage = "";
   @track showTestResults = false;
@@ -1012,11 +1018,42 @@ export default class JtQueryViewer extends LightningElement {
     this.handleClearRunAs();
   }
 
+  handlePersonaSelect(event) {
+    const { value, label } = event.detail;
+    this.runAsPersonaDevName = value;
+    this.runAsUserName = label;
+  }
+
+  handlePersonaClear() {
+    this.runAsPersonaDevName = "";
+    this.runAsUserName = "";
+  }
+
+  handleModeChange(event) {
+    const { mode } = event.detail;
+    this.runAsMode = mode;
+
+    if (mode === "persona" && this.personaOptions.length === 0) {
+      this.isLoadingPersonas = true;
+      getPersonaOptions()
+        .then((options) => {
+          this.personaOptions = options;
+        })
+        .catch((error) => {
+          console.error("Error loading persona options:", error);
+        })
+        .finally(() => {
+          this.isLoadingPersonas = false;
+        });
+    }
+  }
+
   // Clear Run As user and all related data
   handleClearRunAs() {
-    // Clear user selection
+    // Clear user and persona selection
     this.runAsUserId = "";
     this.runAsUserName = "";
+    this.runAsPersonaDevName = "";
 
     // ✅ Always clear query results when Run As User is cleared
     // This ensures UI is properly reset regardless of state
@@ -1131,6 +1168,75 @@ export default class JtQueryViewer extends LightningElement {
 
         this.errorMessage = errorMsg;
         // Error message is displayed in banner below, no need for redundant toast
+        this.isRunningTest = false;
+      });
+  }
+
+  // Execute query as synthetic persona user (test context)
+  handleExecuteAsPersonaTest() {
+    if (this.isRunningTest) {
+      showErrorToast(
+        this,
+        this.labels.executionInProgress,
+        this.labels.pleaseWaitForExecution
+      );
+      return;
+    }
+
+    if (!this.selectedConfig) {
+      showErrorToast(
+        this,
+        this.labels.configurationRequired,
+        this.labels.pleaseSelectConfiguration
+      );
+      return;
+    }
+
+    if (!this.runAsPersonaDevName) {
+      showErrorToast(
+        this,
+        this.labels.userRequired,
+        this.labels.pleaseSelectUser
+      );
+      return;
+    }
+
+    this.isRunningTest = true;
+    this.showError = false;
+    this.resetResults();
+    this.testAssertMessage = "";
+
+    const bindingsToSend = this.buildBindingsJson();
+
+    executeAsPersona({
+      personaDeveloperName: this.runAsPersonaDevName,
+      configName: this.selectedConfig,
+      bindingsJson: bindingsToSend
+    })
+      .then((result) => {
+        if (result.success) {
+          this.testJobId = result.jobId;
+          this.runAsUserName = result.runAsUserName;
+          this.startPollingTestResults();
+        } else {
+          this.showError = true;
+          this.errorMessage = result.errorMessage;
+          this.isRunningTest = false;
+        }
+      })
+      .catch((error) => {
+        this.showError = true;
+        let errorMsg = extractErrorMessage(error, this.labels.unknownError);
+        if (
+          errorMsg === "Script-thrown exception" &&
+          error.body?.output?.errors
+        ) {
+          const errors = error.body.output.errors;
+          if (errors.length > 0 && errors[0].message) {
+            errorMsg = errors[0].message;
+          }
+        }
+        this.errorMessage = errorMsg;
         this.isRunningTest = false;
       });
   }
@@ -2665,6 +2771,13 @@ export default class JtQueryViewer extends LightningElement {
     if (this.runAsUserId) {
       this.isLoading = false; // 🐛 FIX: Reset spinner - handleExecuteAsUserTest uses its own spinner (isRunningTest)
       this.handleExecuteAsUserTest(); // Use test class with System.runAs()
+      return;
+    }
+
+    // 🎯 SMART ROUTING: If persona mode is active with a selection, use persona flow
+    if (this.runAsPersonaDevName) {
+      this.isLoading = false;
+      this.handleExecuteAsPersonaTest();
       return;
     }
 

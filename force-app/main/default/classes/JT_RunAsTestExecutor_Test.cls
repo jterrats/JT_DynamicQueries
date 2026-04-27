@@ -1866,7 +1866,10 @@ private class JT_RunAsTestExecutor_Test {
     List<JT_RunAsTestExecutor.PersonaOption> options = JT_RunAsTestExecutor.getPersonaOptions();
     Test.stopTest();
 
-    Assert.isNotNull(options, 'getPersonaOptions should return a list (may be empty if no CMT records deployed)');
+    Assert.isNotNull(
+      options,
+      'getPersonaOptions should return a list (may be empty if no CMT records deployed)'
+    );
   }
 
   @IsTest
@@ -1879,7 +1882,10 @@ private class JT_RunAsTestExecutor_Test {
     );
     Test.stopTest();
 
-    Assert.isFalse(result.success, 'Should fail for unknown persona DeveloperName');
+    Assert.isFalse(
+      result.success,
+      'Should fail for unknown persona DeveloperName'
+    );
     Assert.isNotNull(result.errorMessage, 'Should return an error message');
   }
 
@@ -1893,7 +1899,10 @@ private class JT_RunAsTestExecutor_Test {
     );
     Test.stopTest();
 
-    Assert.isFalse(result.success, 'Should fail when personaDeveloperName is null');
+    Assert.isFalse(
+      result.success,
+      'Should fail when personaDeveloperName is null'
+    );
   }
 
   @IsTest
@@ -1911,7 +1920,10 @@ private class JT_RunAsTestExecutor_Test {
     );
     Test.stopTest();
 
-    Assert.isNotNull(result, 'executeAsUser should still work correctly alongside persona methods');
+    Assert.isNotNull(
+      result,
+      'executeAsUser should still work correctly alongside persona methods'
+    );
   }
 
   @IsTest

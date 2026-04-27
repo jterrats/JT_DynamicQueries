@@ -29,7 +29,8 @@ public class JT_GenericPersonaTest {
 
         if (!executions.isEmpty()) {
           executions[0].Test_Status__c = 'Failed';
-          executions[0].Error_Message__c = 'Execution parameters not found for persona test.';
+          executions[0]
+            .Error_Message__c = 'Execution parameters not found for persona test.';
           executions[0].Log_Messages__c =
             (String.isNotBlank(executions[0].Log_Messages__c)
               ? executions[0].Log_Messages__c + '\n'
@@ -55,7 +56,11 @@ public class JT_GenericPersonaTest {
         : 'Persona query execution failed.';
 
       if (String.isNotBlank(queryResult.runAsUser)) {
-        assertionMessage = 'User [' + queryResult.runAsUser + ']: ' + assertionMessage;
+        assertionMessage =
+          'User [' +
+          queryResult.runAsUser +
+          ']: ' +
+          assertionMessage;
       }
       System.assert(false, assertionMessage);
     }
@@ -68,7 +73,11 @@ public class JT_GenericPersonaTest {
     }
 
     storeResults(params.executionId, queryResult);
-    System.assertEquals(true, queryResult.success, 'Persona test execution should complete successfully.');
+    System.assertEquals(
+      true,
+      queryResult.success,
+      'Persona test execution should complete successfully.'
+    );
   }
 
   private static TestParameters getTestParameters() {
@@ -230,7 +239,12 @@ public class JT_GenericPersonaTest {
       }
     }
 
-    return [SELECT Id, Name, Username FROM User WHERE Id = :syntheticUser.Id LIMIT 1];
+    return [
+      SELECT Id, Name, Username
+      FROM User
+      WHERE Id = :syntheticUser.Id
+      LIMIT 1
+    ];
   }
 
   private static QueryResult executeInUserContext(
@@ -291,7 +305,10 @@ public class JT_GenericPersonaTest {
     return result;
   }
 
-  private static void storeResults(String executionId, QueryResult queryResult) {
+  private static void storeResults(
+    String executionId,
+    QueryResult queryResult
+  ) {
     Map<String, Object> resultData = new Map<String, Object>{
       'success' => queryResult.success,
       'recordCount' => queryResult.recordCount,
@@ -309,10 +326,13 @@ public class JT_GenericPersonaTest {
       );
       resultData.put('records', serializedRecords);
 
-      Map<String, Object> fieldMap = queryResult.records[0].getPopulatedFieldsAsMap();
+      Map<String, Object> fieldMap = queryResult.records[0]
+        .getPopulatedFieldsAsMap();
       List<String> fields = new List<String>();
       for (String key : fieldMap.keySet()) {
-        if (key != 'attributes' && !(fieldMap.get(key) instanceof List<SObject>)) {
+        if (
+          key != 'attributes' && !(fieldMap.get(key) instanceof List<SObject>)
+        ) {
           fields.add(key);
         }
       }

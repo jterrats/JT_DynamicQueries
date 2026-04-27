@@ -53,11 +53,9 @@
     </div>
 
     <!-- Mode change announcement for screen readers -->
-    <div
-      aria-live="polite"
-      aria-atomic="true"
-      class="slds-assistive-text"
-    >{modeAnnouncement}</div>
+    <div aria-live="polite" aria-atomic="true" class="slds-assistive-text">
+      {modeAnnouncement}
+    </div>
 
     <!-- Info Note -->
     <div class="slds-box slds-box_xx-small slds-theme_info slds-m-bottom_small">
@@ -119,7 +117,10 @@
           role="status"
           aria-live="polite"
         >
-          <lightning-spinner alternative-text={labels.loadingPersonas} size="small"></lightning-spinner>
+          <lightning-spinner
+            alternative-text={labels.loadingPersonas}
+            size="small"
+          ></lightning-spinner>
           <span>{labels.loadingPersonas}</span>
         </div>
       </template>

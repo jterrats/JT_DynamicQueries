@@ -349,7 +349,12 @@ public class JT_GenericRunAsTest {
       }
     }
 
-    return [SELECT Id, Name, Username FROM User WHERE Id = :syntheticUser.Id LIMIT 1];
+    return [
+      SELECT Id, Name, Username
+      FROM User
+      WHERE Id = :syntheticUser.Id
+      LIMIT 1
+    ];
   }
 
   /**

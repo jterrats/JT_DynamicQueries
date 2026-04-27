@@ -80,7 +80,11 @@ export default class JtRunAsSection extends LightningElement {
     this._selectedUserId = value || "";
     if (previous && !this._selectedUserId) {
       // eslint-disable-next-line @lwc/lwc/no-async-operation
-      setTimeout(() => this.resetCombobox("c-jt-searchable-combobox[name='run-as-user']"), 0);
+      setTimeout(
+        () =>
+          this.resetCombobox("c-jt-searchable-combobox[name='run-as-user']"),
+        0
+      );
     }
   }
 
@@ -157,6 +161,9 @@ export default class JtRunAsSection extends LightningElement {
     this._selectedPersonaValue = "";
     this._selectedPersonaLabel = "";
     this.dispatchEvent(new CustomEvent("personaclear"));
+    this.dispatchEvent(
+      new CustomEvent("modechange", { detail: { mode: MODE_USER } })
+    );
   }
   handleModePersona() {
     if (this._mode === MODE_PERSONA) return;
@@ -173,7 +180,9 @@ export default class JtRunAsSection extends LightningElement {
   // ── Specific User handlers ──────────────────────────────────────
   handleUserSelect(event) {
     const { value, label } = event.detail;
-    this.dispatchEvent(new CustomEvent("userselect", { detail: { value, label } }));
+    this.dispatchEvent(
+      new CustomEvent("userselect", { detail: { value, label } })
+    );
   }
   handleUserClear() {
     this.dispatchEvent(new CustomEvent("userclear"));

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
-    <description>Defines a reusable persona (Profile + Permission Sets) for Run As testing without requiring a real named user. Used by JT_GenericRunAsTest and JT_GenericPersonaTest to create synthetic users in @IsTest context.</description>
+    <description
+  >Defines a reusable persona (Profile + Permission Sets) for Run As testing without requiring a real named user. Used by JT_GenericRunAsTest and JT_GenericPersonaTest to create synthetic users in @IsTest context.</description>
     <label>JT Persona Config</label>
     <pluralLabel>JT Persona Configs</pluralLabel>
     <visibility>Public</visibility>

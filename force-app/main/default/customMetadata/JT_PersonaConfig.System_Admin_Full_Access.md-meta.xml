@@ -20,6 +20,8 @@
     </values>
     <values>
         <field>Description__c</field>
-        <value xsi:type="xsd:string">System Administrator persona — validates full data access and confirms queries return real records</value>
+        <value
+      xsi:type="xsd:string"
+    >System Administrator persona — validates full data access and confirms queries return real records</value>
     </values>
 </CustomMetadata>

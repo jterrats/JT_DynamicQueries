@@ -404,10 +404,16 @@
                     selected-user-name={runAsUserName}
                     show-run-as-test={showRunAsTest}
                     is-running-test={isRunningTest}
+                    persona-options={personaOptions}
+                    is-loading-personas={isLoadingPersonas}
                     onuserselect={handleUserSelect}
                     onuserclear={handleUserClear}
+                    onpersonaselect={handlePersonaSelect}
+                    onpersonaclear={handlePersonaClear}
+                    onmodechange={handleModeChange}
                     onclearselection={handleClearRunAs}
                     onexecuteasuser={handleExecuteAsUserTest}
+                    onexecuteaspersona={handleExecuteAsPersonaTest}
                   ></c-jt-run-as-section>
                 </div>
               </lightning-accordion-section>

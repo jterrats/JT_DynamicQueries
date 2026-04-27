@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Persona_Developer_Name__c</fullName>
-    <description>DeveloperName of the JT_PersonaConfig__mdt record used for this execution. Populated only when running in Persona mode. When set, JT_GenericRunAsTest/JT_GenericPersonaTest create a synthetic user instead of using User_To_Impersonate__c.</description>
+    <description
+  >DeveloperName of the JT_PersonaConfig__mdt record used for this execution. Populated only when running in Persona mode. When set, JT_GenericRunAsTest/JT_GenericPersonaTest create a synthetic user instead of using User_To_Impersonate__c.</description>
     <externalId>false</externalId>
     <label>Persona Developer Name</label>
     <length>80</length>

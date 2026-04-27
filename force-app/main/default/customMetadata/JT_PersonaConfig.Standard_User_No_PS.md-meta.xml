@@ -20,6 +20,8 @@
     </values>
     <values>
         <field>Description__c</field>
-        <value xsi:type="xsd:string">Standard User with no additional Permission Sets — validates baseline object and FLS access</value>
+        <value
+      xsi:type="xsd:string"
+    >Standard User with no additional Permission Sets — validates baseline object and FLS access</value>
     </values>
 </CustomMetadata>

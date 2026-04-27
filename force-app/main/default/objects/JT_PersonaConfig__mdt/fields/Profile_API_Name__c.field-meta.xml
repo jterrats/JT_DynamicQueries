@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Profile_API_Name__c</fullName>
-    <description>API name of the Salesforce Profile to assign to the synthetic test user (e.g., Standard_User, Sales_User). Must exist in the target org.</description>
+    <description
+  >API name of the Salesforce Profile to assign to the synthetic test user (e.g., Standard_User, Sales_User). Must exist in the target org.</description>
     <fieldManageability>DeveloperControlled</fieldManageability>
-    <inlineHelpText>Example: Standard_User — must match the Profile Name exactly as it appears in Setup > Profiles.</inlineHelpText>
+    <inlineHelpText
+  >Example: Standard_User — must match the Profile Name exactly as it appears in Setup > Profiles.</inlineHelpText>
     <label>Profile API Name</label>
     <length>80</length>
     <required>true</required>

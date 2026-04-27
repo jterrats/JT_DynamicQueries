@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>See_All_Data__c</fullName>
-    <description>Controls whether the test runs with @IsTest(SeeAllData=true) to validate real data volume, or SeeAllData=false to validate FLS/CRUD/object access only. Default false is recommended for ISV use cases.</description>
+    <description
+  >Controls whether the test runs with @IsTest(SeeAllData=true) to validate real data volume, or SeeAllData=false to validate FLS/CRUD/object access only. Default false is recommended for ISV use cases.</description>
     <fieldManageability>DeveloperControlled</fieldManageability>
-    <inlineHelpText>false = validates FLS/CRUD/object access only (no real data required). true = validates that the persona can see real records (requires data in org).</inlineHelpText>
+    <inlineHelpText
+  >false = validates FLS/CRUD/object access only (no real data required). true = validates that the persona can see real records (requires data in org).</inlineHelpText>
     <label>See All Data</label>
     <defaultValue>false</defaultValue>
     <type>Checkbox</type>

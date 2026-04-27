@@ -1222,7 +1222,10 @@ private class JT_RunAsTestEnqueuer_Test {
         'apexLogId' => null
       }
     );
-    Test.setMock(HttpCalloutMock.class, new JT_ToolingAPIMock(200, successResponse));
+    Test.setMock(
+      HttpCalloutMock.class,
+      new JT_ToolingAPIMock(200, successResponse)
+    );
 
     Test.startTest();
     System.enqueueJob(new JT_RunAsTestEnqueuer(execution.Id));
@@ -1235,7 +1238,10 @@ private class JT_RunAsTestEnqueuer_Test {
       FROM JT_RunAsTest_Execution__c
       WHERE Id = :execution.Id
     ];
-    Assert.isNotNull(updated.Test_Status__c, 'Execution record should have a status');
+    Assert.isNotNull(
+      updated.Test_Status__c,
+      'Execution record should have a status'
+    );
   }
 
   @IsTest
@@ -1260,7 +1266,10 @@ private class JT_RunAsTestEnqueuer_Test {
         'apexLogId' => null
       }
     );
-    Test.setMock(HttpCalloutMock.class, new JT_ToolingAPIMock(200, successResponse));
+    Test.setMock(
+      HttpCalloutMock.class,
+      new JT_ToolingAPIMock(200, successResponse)
+    );
 
     Test.startTest();
     System.enqueueJob(new JT_RunAsTestEnqueuer(personaExecution.Id));
@@ -1273,6 +1282,9 @@ private class JT_RunAsTestEnqueuer_Test {
       FROM JT_RunAsTest_Execution__c
       WHERE Id = :personaExecution.Id
     ];
-    Assert.isNotNull(updated.Test_Status__c, 'Persona execution record should have a status');
+    Assert.isNotNull(
+      updated.Test_Status__c,
+      'Persona execution record should have a status'
+    );
   }
 }

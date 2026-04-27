@@ -96,7 +96,10 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
         LIMIT 1
       ];
 
-      if (executions.isEmpty() || String.isBlank(executions[0].Persona_Developer_Name__c)) {
+      if (
+        executions.isEmpty() ||
+        String.isBlank(executions[0].Persona_Developer_Name__c)
+      ) {
         return 'JT_GenericRunAsTest';
       }
 
@@ -115,7 +118,7 @@ public without sharing class JT_RunAsTestEnqueuer implements Queueable, Database
       System.debug(
         LoggingLevel.WARN,
         '⚠️ Could not resolve test class name, defaulting to JT_GenericRunAsTest: ' +
-          e.getMessage()
+        e.getMessage()
       );
     }
     return 'JT_GenericRunAsTest';

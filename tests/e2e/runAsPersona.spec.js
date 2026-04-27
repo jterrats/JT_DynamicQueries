@@ -298,6 +298,83 @@ test.describe("Persona-Based Run As Tests", () => {
   });
 
   // ═══════════════════════════════════════════════════════════════
+  // State isolation between modes
+  // ═══════════════════════════════════════════════════════════════
+
+  test("should clear persona selection when switching back to Specific User mode", async ({
+    page
+  }) => {
+    console.log("🧪 Testing persona state cleared on mode switch to User...");
+
+    const runAsSection = page.locator("c-jt-run-as-section").first();
+    if ((await runAsSection.count()) === 0) return;
+
+    // Switch to Persona mode
+    const personaBtn = runAsSection.locator(
+      '[data-testid="run-as-mode-persona"]'
+    );
+    await personaBtn.waitFor({ state: "visible", timeout: TIMEOUTS.component });
+    await personaBtn.click();
+
+    const personaSelector = runAsSection.locator(
+      '[data-testid="persona-selector"]'
+    );
+    await expect(personaSelector).toBeVisible({ timeout: TIMEOUTS.component });
+
+    // Switch back to Specific User mode
+    const userBtn = runAsSection.locator('[data-testid="run-as-mode-user"]');
+    await userBtn.click();
+
+    // Persona selector must not be visible
+    await expect(personaSelector).not.toBeVisible();
+
+    // User selector must be visible again
+    const userSelector = runAsSection.locator(
+      '[data-testid="run-as-user-selector"]'
+    );
+    await expect(userSelector).toBeVisible({ timeout: TIMEOUTS.component });
+
+    console.log(
+      "✅ Persona selector hidden and user selector restored after mode switch"
+    );
+  });
+
+  test("should clear user selector when switching to Persona mode", async ({
+    page
+  }) => {
+    console.log("🧪 Testing user selector hidden when switching to Persona...");
+
+    const runAsSection = page.locator("c-jt-run-as-section").first();
+    if ((await runAsSection.count()) === 0) return;
+
+    // Verify user selector visible in default mode
+    const userSelector = runAsSection.locator(
+      '[data-testid="run-as-user-selector"]'
+    );
+    await expect(userSelector).toBeVisible({ timeout: TIMEOUTS.component });
+
+    // Switch to Persona mode
+    const personaBtn = runAsSection.locator(
+      '[data-testid="run-as-mode-persona"]'
+    );
+    await personaBtn.waitFor({ state: "visible", timeout: TIMEOUTS.component });
+    await personaBtn.click();
+
+    // User selector must not be visible
+    await expect(userSelector).not.toBeVisible();
+
+    // Persona selector must be visible
+    const personaSelector = runAsSection.locator(
+      '[data-testid="persona-selector"]'
+    );
+    await expect(personaSelector).toBeVisible({ timeout: TIMEOUTS.component });
+
+    console.log(
+      "✅ User selector hidden and persona selector shown after switching to Persona mode"
+    );
+  });
+
+  // ═══════════════════════════════════════════════════════════════
   // Accessibility
   // ═══════════════════════════════════════════════════════════════
 

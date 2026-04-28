@@ -203,24 +203,6 @@ public class JT_GenericRunAsTest {
       if (!executions.isEmpty()) {
         JT_RunAsTest_Execution__c execution = executions[0];
 
-        // Update status to Running (if not already Running or Completed)
-        if (
-          execution.Test_Status__c != 'Running' &&
-          execution.Test_Status__c != 'Completed'
-        ) {
-          execution.Test_Status__c = 'Running';
-          execution.Log_Messages__c =
-            (String.isNotBlank(execution.Log_Messages__c)
-              ? execution.Log_Messages__c + '\n'
-              : '') +
-            'Test execution started at ' +
-            System.now() +
-            (execution.Apex_Test_Queue_Item_Id__c != null
-              ? ' (Asynchronous)'
-              : ' (Synchronous)');
-          update execution;
-        }
-
         return new TestParameters(
           execution.User_To_Impersonate__c,
           execution.Persona_Developer_Name__c,
@@ -643,28 +625,9 @@ public class JT_GenericRunAsTest {
         execution.Run_As_User_Name__c = queryResult.runAsUser;
       }
 
-      // Attempt to update status (this will be reverted, but helps with error handling)
-      // The Queueable will handle the final persistence
-      try {
-        update execution;
-      } catch (DmlException dmlEx) {
-        // DML failure is expected in @IsTest context - that's okay, Queueable will handle it
-        // Expected behavior: DML operations in @IsTest methods executed via Tooling API are rolled back
-        // The Queueable will persist the final status after extracting results from Debug Log
-        System.debug(
-          LoggingLevel.FINE,
-          'DML update reverted (expected in @IsTest context)'
-        );
-      } catch (Exception updateEx) {
-        // Exception is expected in @IsTest context - that's okay, Queueable will handle it
-        // Expected behavior: Exceptions in @IsTest methods executed via Tooling API are expected
-        // The Queueable will persist the final status after extracting results from Debug Log
-        System.debug(
-          LoggingLevel.FINE,
-          'Update exception (expected in @IsTest context)'
-        );
-      }
-
+      // No DML here — the Queueable extracts results from the Debug Log marker and persists them.
+      // Any update attempted here would be rolled back by @IsTest and causes MIXED_DML when
+      // the persona path has already inserted setup objects (User, PermissionSetAssignment).
       return new TestResult(true, 'Results stored successfully');
     } catch (Exception e) {
       System.debug(

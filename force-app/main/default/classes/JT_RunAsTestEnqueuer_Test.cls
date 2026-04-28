@@ -1245,8 +1245,7 @@ private class JT_RunAsTestEnqueuer_Test {
   }
 
   @IsTest
-  static void testResolveTestClassName_personaExecution_withSeeAllDataFalse_usesPersonaTest() {
-    // Insert a persona execution record (Persona_Developer_Name__c populated)
+  static void testResolveTestClassName_personaExecution_usesGenericRunAsTest() {
     JT_RunAsTest_Execution__c personaExecution = new JT_RunAsTest_Execution__c(
       Test_Status__c = 'Running',
       Config_Name__c = 'Test_Record',
@@ -1260,7 +1259,7 @@ private class JT_RunAsTestEnqueuer_Test {
         'numFailures' => 0,
         'numTestsRun' => 1,
         'successes' => new List<Object>{
-          new Map<String, Object>{ 'methodName' => 'executePersonaTest' }
+          new Map<String, Object>{ 'methodName' => 'executeRunAsTest' }
         },
         'failures' => new List<Object>(),
         'apexLogId' => null
@@ -1275,8 +1274,6 @@ private class JT_RunAsTestEnqueuer_Test {
     System.enqueueJob(new JT_RunAsTestEnqueuer(personaExecution.Id));
     Test.stopTest();
 
-    // Verify the execution ran (test class selected was JT_GenericPersonaTest or JT_GenericRunAsTest
-    // depending on CMT data — the key is no exception was thrown)
     JT_RunAsTest_Execution__c updated = [
       SELECT Test_Status__c
       FROM JT_RunAsTest_Execution__c

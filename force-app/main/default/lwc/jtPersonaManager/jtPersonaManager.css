@@ -1,0 +1,17 @@
+/* Persona Manager — scoped styles */
+
+/* Widen dual-listbox Available/Selected columns */
+lightning-dual-listbox {
+  --sds-c-dual-listbox-option-list-sizing-width: 220px;
+}
+
+.pending-notice {
+  background-color: #e8f4fd;
+  border-left: 4px solid #0070d2;
+  padding: 0.5rem 1rem;
+}
+
+.pagination-bar {
+  border-top: 1px solid #e0e5ee;
+  padding-top: 0.5rem;
+}

@@ -98,6 +98,20 @@
 
     <!-- Persona Mode -->
     <template if:true={isModePersona}>
+      <div class="slds-grid slds-grid_align-spread slds-m-bottom_x-small">
+        <span class="slds-text-body_small slds-text-color_weak"
+          >{labels.selectPersonaLabel}</span
+        >
+        <lightning-button
+          label="Manage Personas"
+          variant="base"
+          icon-name="utility:settings"
+          icon-position="left"
+          size="small"
+          onclick={handleManagePersonas}
+          data-testid="manage-personas-button"
+        ></lightning-button>
+      </div>
       <c-jt-searchable-combobox
         label={labels.selectPersonaLabel}
         placeholder={labels.selectPersonaPlaceholder}

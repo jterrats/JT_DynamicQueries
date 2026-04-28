@@ -297,6 +297,19 @@ async function navigateToApp(page, appName) {
       try {
         console.log(`🔁 App navigation attempt ${attempt}/3 for "${appName}"`);
 
+        // Close App Launcher if already open (intercepts waffle button click)
+        const appLauncherDialog = page.locator(
+          'div[role="dialog"][class*="appLauncher"], .forceAppLauncher, one-app-launcher-modal'
+        );
+        if (
+          await appLauncherDialog
+            .isVisible({ timeout: 1000 })
+            .catch(() => false)
+        ) {
+          await page.keyboard.press("Escape");
+          await page.waitForTimeout(500);
+        }
+
         const appLauncher = page
           .locator(
             [

@@ -224,6 +224,10 @@ export default class JtRunAsSection extends LightningElement {
     }
   }
 
+  handleManagePersonas() {
+    this.dispatchEvent(new CustomEvent("managepersonas"));
+  }
+
   handleExecuteAsUser() {
     if (this.hasSelectedUser) {
       this.dispatchEvent(new CustomEvent("executeasuser"));

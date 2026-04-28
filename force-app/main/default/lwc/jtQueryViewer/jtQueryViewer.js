@@ -143,6 +143,7 @@ import dangerLabel from "@salesforce/label/c.JT_jtQueryViewer_danger";
 import securityWarningLabel from "@salesforce/label/c.JT_jtQueryViewer_securityWarning";
 import apiFeaturesToolingApiLabel from "@salesforce/label/c.JT_jtQueryViewer_apiFeaturesToolingApi";
 import toolingApiConsumptionWarningLabel from "@salesforce/label/c.JT_jtQueryViewer_toolingApiConsumptionWarning";
+import runAsOwdNoticeLabel from "@salesforce/label/c.JT_jtQueryViewer_runAsOwdNotice";
 import findWhereConfigurationUsedLabel from "@salesforce/label/c.JT_jtQueryViewer_findWhereConfigurationUsed";
 import runAsUserAdvancedLabel from "@salesforce/label/c.JT_jtQueryViewer_runAsUserAdvanced";
 import loadingPreviewLabel from "@salesforce/label/c.JT_jtQueryViewer_loadingPreview";
@@ -289,6 +290,7 @@ export default class JtQueryViewer extends LightningElement {
   @track runAsPersonaDevName = "";
   @track isLoadingPersonas = false;
   @track runAsMode = "user"; // "user" | "persona"
+  @track showPersonaManager = false;
   @track testJobId = "";
   @track testAssertMessage = "";
   @track showTestResults = false;
@@ -478,6 +480,7 @@ export default class JtQueryViewer extends LightningElement {
     securityWarning: securityWarningLabel,
     apiFeaturesToolingApi: apiFeaturesToolingApiLabel,
     toolingApiConsumptionWarning: toolingApiConsumptionWarningLabel,
+    runAsOwdNotice: runAsOwdNoticeLabel,
     findWhereConfigurationUsed: findWhereConfigurationUsedLabel,
     runAsUserAdvanced: runAsUserAdvancedLabel,
     loadingPreview: loadingPreviewLabel,
@@ -1029,6 +1032,29 @@ export default class JtQueryViewer extends LightningElement {
     this.runAsUserName = "";
   }
 
+  handleManagePersonas() {
+    this.showPersonaManager = true;
+  }
+
+  handlePersonaManagerClose() {
+    this.showPersonaManager = false;
+  }
+
+  handlePersonaConfigSaved() {
+    // Reload persona options after deploy enqueued
+    this.isLoadingPersonas = true;
+    getPersonaOptions()
+      .then((options) => {
+        this.personaOptions = options;
+      })
+      .catch((error) => {
+        console.error("Error reloading persona options:", error);
+      })
+      .finally(() => {
+        this.isLoadingPersonas = false;
+      });
+  }
+
   handleModeChange(event) {
     const { mode } = event.detail;
     this.runAsMode = mode;
@@ -1456,14 +1482,14 @@ export default class JtQueryViewer extends LightningElement {
       () => getTestResults({ executionId: this.testJobId }),
       // Check if complete
       (result) => {
-        // Check if test is still in progress (Queued or Running)
-        const isInProgress =
+        // Keep polling while server signals "please wait" (queued/running/enqueuing)
+        const isWaiting =
           result.message &&
-          (result.message.toLowerCase().includes("queued") ||
-            result.message.toLowerCase().includes("running"));
+          result.message.toLowerCase().includes("please wait");
+        if (isWaiting) return false;
 
-        // Complete if results are ready (success or failure) or not in progress
-        return result.success !== undefined || !isInProgress;
+        // Stop polling once success is explicitly true or false (terminal state)
+        return result.success === true || result.success === false;
       },
       // On complete
       (result) => {

@@ -93,10 +93,16 @@ A metadata-driven SOQL execution framework with built-in security, batch process
 
 ### 👤 Advanced Run As Feature
 
-- **Standard Mode** - USER_MODE execution with permission validation
-- **System.runAs Mode** - True impersonation using Apex test context
-- **User Dropdown** - Client-side filtered dropdown with all active users
-- **Results Comparison** - See exactly what another user would see
+Three execution modes for validating data visibility and permission models:
+
+| Mode                       | How it works                                              | Best for                                    |
+| -------------------------- | --------------------------------------------------------- | ------------------------------------------- |
+| **Specific User**          | `System.runAs()` with a real org user                     | Validating an individual user's access      |
+| **Persona (Profile + PS)** | Synthesizes a temporary user from `JT_PersonaConfig__mdt` | Testing role archetypes without a real user |
+
+- **Persona Manager** - Create and manage personas (`JT_PersonaConfig__mdt`) via built-in UI (`jtPersonaManager`)
+- **OWD Respected** - Org-Wide Defaults, sharing rules, and role hierarchy are fully enforced in both modes
+- **0 Records = Valid** - No records returned means the user has no access — not a bug
 
 ### 🎨 Modern UI/UX (v2.0 Enhanced)
 
@@ -150,19 +156,21 @@ A metadata-driven SOQL execution framework with built-in security, batch process
 | **jtUsageModal**         | Usage search results | No       | Apex + Flow results, resilient display           |
 | **jtQueryResults**       | Results viewer       | ✅ Yes   | Table/JSON/CSV toggle, mobile cards, export      |
 | **jtRunAsSection**       | User impersonation   | No       | User search, System.runAs() test execution       |
+| **jtPersonaManager**     | Persona CRUD modal   | No       | Create/list personas, dual-listbox PS/PSG, tabs  |
 | **jtProjectDocs**        | Documentation        | No       | Multi-language docs, responsive grid             |
 | **jtSupport**            | GitHub issues link   | ✅ Yes   | Localized support page                           |
 
 ### Apex Classes
 
-| Class                               | Purpose             | Key Features                                 |
-| ----------------------------------- | ------------------- | -------------------------------------------- |
-| **JT_DataSelector**                 | Query execution     | Singleton, cache, InvocableMethod, USER_MODE |
-| **JT_UsageFinder**                  | Find config usage   | Microservices pattern, Apex + Flow search    |
-| **JT_MetadataCreator**              | Deploy metadata     | Tooling API integration, async deployment    |
-| **JT_QueryViewerController**        | LWC backend         | Config management, environment detection     |
-| **JT_RunAsTestExecutor**            | User impersonation  | System.runAs() in test context, JSON results |
-| **JT_ProductionSettingsController** | Settings management | Audit logging, without sharing insertion     |
+| Class                               | Purpose             | Key Features                                      |
+| ----------------------------------- | ------------------- | ------------------------------------------------- |
+| **JT_DataSelector**                 | Query execution     | Singleton, cache, InvocableMethod, USER_MODE      |
+| **JT_UsageFinder**                  | Find config usage   | Microservices pattern, Apex + Flow search         |
+| **JT_MetadataCreator**              | Deploy metadata     | Tooling API integration, async deployment         |
+| **JT_QueryViewerController**        | LWC backend         | Config management, environment detection          |
+| **JT_RunAsTestExecutor**            | User impersonation  | System.runAs() in test context, JSON results      |
+| **JT_PersonaConfigController**      | Persona management  | CRUD for `JT_PersonaConfig__mdt` via Metadata API |
+| **JT_ProductionSettingsController** | Settings management | Audit logging, without sharing insertion          |
 
 ---
 

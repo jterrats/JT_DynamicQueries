@@ -181,31 +181,44 @@ Object Name: Contact
                     <li>Record type access</li>
                 </ul>
 
-                <h3>Two Execution Modes</h3>
+                <div class="alert-info">
+                    <p><strong>OWD Respected:</strong> Org-Wide Defaults, sharing rules, and role hierarchy are fully enforced. A result of 0 records means the user has no access — not an error.</p>
+                </div>
 
-                <h4>1. Execute Query (USER_MODE)</h4>
-                <p>Standard execution with USER_MODE security. This validates user permissions but doesn't use System.runAs().</p>
+                <h3>Two Modes</h3>
+
+                <h4>1. Specific User</h4>
+                <p>Execute as a real org user using System.runAs(). Search for any active user from the dropdown and run the query in their exact security context.</p>
                 <ul>
-                    <li><strong>Pros:</strong> Fast, synchronous execution</li>
-                    <li><strong>Cons:</strong> Limited to current user context with USER_MODE enforcement</li>
+                    <li><strong>Pros:</strong> Validates a specific user's real access</li>
+                    <li><strong>Use when:</strong> Debugging why a user sees fewer records than expected</li>
                 </ul>
 
-                <h4>2. Execute with System.runAs (Test)</h4>
-                <p>True impersonation using System.runAs() in a test context.</p>
+                <h4>2. Persona Mode</h4>
+                <p>Synthesizes a temporary user from a <strong>JT_PersonaConfig__mdt</strong> record — no real user required. A persona combines a Profile with one or more Permission Sets (or Permission Set Groups).</p>
                 <ul>
-                    <li><strong>Pros:</strong> Full impersonation, accurate permission testing</li>
-                    <li><strong>Cons:</strong> Asynchronous (uses Platform Cache), slower execution</li>
+                    <li><strong>Pros:</strong> Test role archetypes without needing a real user for each scenario</li>
+                    <li><strong>Use when:</strong> Validating your sharing model against a standard role (e.g. "Sales Rep with read-only PS")</li>
+                </ul>
+
+                <h3>Persona Manager</h3>
+                <p>Manage personas directly from the UI via the <strong>Manage Personas</strong> button in the Run As section:</p>
+                <ul>
+                    <li><strong>Existing Personas tab:</strong> Lists all JT_PersonaConfig__mdt records with pagination</li>
+                    <li><strong>Create New Persona tab:</strong> Define Label, Developer Name, Profile, and Permission Sets / PSGs</li>
+                    <li>Personas are deployed as Custom Metadata via the Metadata API</li>
                 </ul>
 
                 <h3>Architecture</h3>
                 <pre>
-1. LWC calls JT_RunAsTestExecutor.executeAsUser()
-2. Parameters stored in Platform Cache
-3. JT_GenericRunAsTest enqueued (Test.startTest)
-4. System.runAs() executes query
-5. Results serialized to JSON and cached
-6. LWC polls getTestResults() until ready
-7. Results displayed in datatable
+1. LWC calls JT_RunAsTestExecutor.executeAsUser() or executeAsPersona()
+2. Execution record created (JT_RunAsTest_Execution__c)
+3. JT_RunAsTestEnqueuer (Queueable) calls Tooling API runTestsSynchronous
+4. JT_GenericRunAsTest (@IsTest SeeAllData=true) runs System.runAs()
+5. Results written to Debug Log with unique markers
+6. Queueable extracts markers, persists to execution record
+7. LWC polls getTestResults() until status = Completed
+8. Results displayed in datatable
                 </pre>
 
                 <div class="alert-warning">
@@ -713,31 +726,44 @@ Nombre del Objeto: Contact
                     <li>Acceso a tipos de registro</li>
                 </ul>
 
-                <h3>Dos Modos de Ejecución</h3>
+                <div class="alert-info">
+                    <p><strong>OWD Respetados:</strong> Los Org-Wide Defaults, reglas de compartición y jerarquía de roles se aplican completamente. Un resultado de 0 registros indica que el usuario no tiene acceso — no es un error.</p>
+                </div>
 
-                <h4>1. Ejecutar Consulta (USER_MODE)</h4>
-                <p>Ejecución estándar con seguridad USER_MODE. Esto valida permisos de usuario pero no usa System.runAs().</p>
+                <h3>Dos Modos</h3>
+
+                <h4>1. Usuario Específico</h4>
+                <p>Ejecuta como un usuario real del org usando System.runAs(). Busca cualquier usuario activo desde el dropdown y ejecuta la consulta en su contexto de seguridad exacto.</p>
                 <ul>
-                    <li><strong>Pros:</strong> Rápido, ejecución síncrona</li>
-                    <li><strong>Contras:</strong> Limitado al contexto de usuario actual con aplicación USER_MODE</li>
+                    <li><strong>Pros:</strong> Valida el acceso real de un usuario específico</li>
+                    <li><strong>Usar cuando:</strong> Depurando por qué un usuario ve menos registros de lo esperado</li>
                 </ul>
 
-                <h4>2. Ejecutar con System.runAs (Prueba)</h4>
-                <p>Verdadera suplantación usando System.runAs() en un contexto de prueba.</p>
+                <h4>2. Modo Persona</h4>
+                <p>Sintetiza un usuario temporal a partir de un registro <strong>JT_PersonaConfig__mdt</strong> — sin necesidad de un usuario real. Una persona combina un Perfil con uno o más Permission Sets (o Permission Set Groups).</p>
                 <ul>
-                    <li><strong>Pros:</strong> Suplantación completa, prueba precisa de permisos</li>
-                    <li><strong>Contras:</strong> Asíncrono (usa Platform Cache), ejecución más lenta</li>
+                    <li><strong>Pros:</strong> Prueba arquetipos de roles sin necesitar un usuario real para cada escenario</li>
+                    <li><strong>Usar cuando:</strong> Validando el modelo de compartición contra un rol estándar (ej. "Sales Rep con PS de solo lectura")</li>
+                </ul>
+
+                <h3>Gestor de Personas</h3>
+                <p>Gestiona personas directamente desde la UI con el botón <strong>Gestionar Personas</strong> en la sección Run As:</p>
+                <ul>
+                    <li><strong>Pestaña Personas Existentes:</strong> Lista todos los registros JT_PersonaConfig__mdt con paginación</li>
+                    <li><strong>Pestaña Crear Nueva Persona:</strong> Define Etiqueta, Nombre de Desarrollador, Perfil y Permission Sets / PSGs</li>
+                    <li>Las personas se despliegan como Custom Metadata vía la Metadata API</li>
                 </ul>
 
                 <h3>Arquitectura</h3>
                 <pre>
-1. LWC llama JT_RunAsTestExecutor.executeAsUser()
-2. Parámetros almacenados en Platform Cache
-3. JT_GenericRunAsTest encolado (Test.startTest)
-4. System.runAs() ejecuta la consulta
-5. Resultados serializados a JSON y en caché
-6. LWC sondea getTestResults() hasta que esté listo
-7. Resultados mostrados en datatable
+1. LWC llama JT_RunAsTestExecutor.executeAsUser() o executeAsPersona()
+2. Se crea registro de ejecución (JT_RunAsTest_Execution__c)
+3. JT_RunAsTestEnqueuer (Queueable) llama Tooling API runTestsSynchronous
+4. JT_GenericRunAsTest (@IsTest SeeAllData=true) ejecuta System.runAs()
+5. Resultados escritos en Debug Log con marcadores únicos
+6. Queueable extrae marcadores, persiste en registro de ejecución
+7. LWC sondea getTestResults() hasta estado = Completed
+8. Resultados mostrados en datatable
                 </pre>
 
                 <div class="alert-warning">

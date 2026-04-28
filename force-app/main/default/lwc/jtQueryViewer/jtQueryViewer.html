@@ -324,6 +324,24 @@
           </div>
         </div>
 
+        <!-- Run As User / OWD notice -->
+        <div
+          class="slds-box slds-box_x-small slds-theme_info slds-m-bottom_small"
+        >
+          <div class="slds-media slds-media_center">
+            <div class="slds-media__figure">
+              <lightning-icon
+                icon-name="utility:shield"
+                size="small"
+                alternative-text="Info"
+              ></lightning-icon>
+            </div>
+            <div class="slds-media__body">
+              <p class="slds-text-body_small">{labels.runAsOwdNotice}</p>
+            </div>
+          </div>
+        </div>
+
         <!-- Usage Tracking Toggle -->
         <div class="slds-m-top_small">
           <lightning-input
@@ -411,6 +429,7 @@
                     onpersonaselect={handlePersonaSelect}
                     onpersonaclear={handlePersonaClear}
                     onmodechange={handleModeChange}
+                    onmanagepersonas={handleManagePersonas}
                     onclearselection={handleClearRunAs}
                     onexecuteasuser={handleExecuteAsUserTest}
                     onexecuteaspersona={handleExecuteAsPersonaTest}
@@ -831,5 +850,13 @@
       has-partial-results={hasPartialUsageResults}
       onclose={handleCloseUsageModal}
     ></c-jt-usage-modal>
+  </template>
+
+  <!-- Persona Manager Modal -->
+  <template if:true={showPersonaManager}>
+    <c-jt-persona-manager
+      onclose={handlePersonaManagerClose}
+      onpersonaconfigsaved={handlePersonaConfigSaved}
+    ></c-jt-persona-manager>
   </template>
 </template>

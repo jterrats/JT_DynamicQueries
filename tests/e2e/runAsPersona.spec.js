@@ -26,6 +26,56 @@ test.beforeAll(async () => {
   session = await getSFSession();
 });
 
+/**
+ * Expands the Run As accordion and returns the c-jt-run-as-section locator.
+ * Returns null if the section is not available (user lacks permissions).
+ */
+async function openRunAsSection(page) {
+  const accordionSection = page
+    .locator('lightning-accordion-section[name="run-as"]')
+    .first();
+
+  if ((await accordionSection.count()) === 0) {
+    console.log(
+      "ℹ️  Run As accordion not found — user may lack permissions, skipping."
+    );
+    return null;
+  }
+
+  const isExpanded = await accordionSection.getAttribute("aria-expanded");
+  if (isExpanded !== "true") {
+    await accordionSection.click();
+  }
+
+  const runAsSection = page.locator("c-jt-run-as-section").first();
+  const isVisible = await runAsSection
+    .isVisible({ timeout: TIMEOUTS.component })
+    .catch(() => false);
+
+  if (!isVisible) {
+    console.log(
+      "ℹ️  c-jt-run-as-section not visible after expanding — skipping."
+    );
+    return null;
+  }
+
+  return runAsSection;
+}
+
+/**
+ * Clicks the Persona mode button and waits for the persona selector to appear.
+ * Returns the persona selector locator.
+ */
+async function switchToPersonaMode(runAsSection) {
+  await runAsSection.locator('[data-testid="run-as-mode-persona"]').click();
+
+  const personaSelector = runAsSection.locator(
+    '[data-testid="persona-selector"]'
+  );
+  await expect(personaSelector).toBeVisible({ timeout: TIMEOUTS.component });
+  return personaSelector;
+}
+
 test.describe("Persona-Based Run As Tests", () => {
   test.beforeEach(async ({ page }) => {
     await setupTestContext(page, session, {
@@ -43,26 +93,15 @@ test.describe("Persona-Based Run As Tests", () => {
   }) => {
     console.log("🧪 Testing Run As mode toggle visibility...");
 
-    const runAsSection = page.locator("c-jt-run-as-section").first();
-    const sectionExists = (await runAsSection.count()) > 0;
+    const runAsSection = await openRunAsSection(page);
+    if (!runAsSection) return;
 
-    if (!sectionExists) {
-      console.log(
-        "ℹ️  Run As section not visible — user lacks permissions, skipping."
-      );
-      return;
-    }
-
-    const toggle = runAsSection.locator('[data-testid="run-as-mode-toggle"]');
-    await toggle.waitFor({ state: "visible", timeout: TIMEOUTS.component });
-
-    const userBtn = runAsSection.locator('[data-testid="run-as-mode-user"]');
-    const personaBtn = runAsSection.locator(
-      '[data-testid="run-as-mode-persona"]'
-    );
-
-    await expect(userBtn).toBeVisible();
-    await expect(personaBtn).toBeVisible();
+    await expect(
+      runAsSection.locator('[data-testid="run-as-mode-user"]')
+    ).toBeVisible();
+    await expect(
+      runAsSection.locator('[data-testid="run-as-mode-persona"]')
+    ).toBeVisible();
 
     console.log("✅ Mode toggle with both buttons is visible");
   });
@@ -72,18 +111,15 @@ test.describe("Persona-Based Run As Tests", () => {
   }) => {
     console.log("🧪 Testing default mode is Specific User...");
 
-    const runAsSection = page.locator("c-jt-run-as-section").first();
-    if ((await runAsSection.count()) === 0) return;
+    const runAsSection = await openRunAsSection(page);
+    if (!runAsSection) return;
 
-    const userSelector = runAsSection.locator(
-      '[data-testid="run-as-user-selector"]'
-    );
-    const personaSelector = runAsSection.locator(
-      '[data-testid="persona-selector"]'
-    );
-
-    await expect(userSelector).toBeVisible({ timeout: TIMEOUTS.component });
-    await expect(personaSelector).not.toBeVisible();
+    await expect(
+      runAsSection.locator('[data-testid="run-as-user-selector"]')
+    ).toBeVisible();
+    await expect(
+      runAsSection.locator('[data-testid="persona-selector"]')
+    ).not.toBeVisible();
 
     console.log("✅ Default mode shows user combobox, not persona combobox");
   });
@@ -93,24 +129,14 @@ test.describe("Persona-Based Run As Tests", () => {
   }) => {
     console.log("🧪 Testing switch to Persona mode...");
 
-    const runAsSection = page.locator("c-jt-run-as-section").first();
-    if ((await runAsSection.count()) === 0) return;
+    const runAsSection = await openRunAsSection(page);
+    if (!runAsSection) return;
 
-    const personaBtn = runAsSection.locator(
-      '[data-testid="run-as-mode-persona"]'
-    );
-    await personaBtn.waitFor({ state: "visible", timeout: TIMEOUTS.component });
-    await personaBtn.click();
+    await switchToPersonaMode(runAsSection);
 
-    const personaSelector = runAsSection.locator(
-      '[data-testid="persona-selector"]'
-    );
-    await expect(personaSelector).toBeVisible({ timeout: TIMEOUTS.component });
-
-    const userSelector = runAsSection.locator(
-      '[data-testid="run-as-user-selector"]'
-    );
-    await expect(userSelector).not.toBeVisible();
+    await expect(
+      runAsSection.locator('[data-testid="run-as-user-selector"]')
+    ).not.toBeVisible();
 
     console.log("✅ Switched to Persona mode — persona combobox visible");
   });
@@ -120,24 +146,16 @@ test.describe("Persona-Based Run As Tests", () => {
   }) => {
     console.log("🧪 Testing switch back to Specific User mode...");
 
-    const runAsSection = page.locator("c-jt-run-as-section").first();
-    if ((await runAsSection.count()) === 0) return;
+    const runAsSection = await openRunAsSection(page);
+    if (!runAsSection) return;
 
-    // Switch to Persona first
-    const personaBtn = runAsSection.locator(
-      '[data-testid="run-as-mode-persona"]'
-    );
-    await personaBtn.waitFor({ state: "visible", timeout: TIMEOUTS.component });
-    await personaBtn.click();
+    await switchToPersonaMode(runAsSection);
 
-    // Switch back to Specific User
-    const userBtn = runAsSection.locator('[data-testid="run-as-mode-user"]');
-    await userBtn.click();
+    await runAsSection.locator('[data-testid="run-as-mode-user"]').click();
 
-    const userSelector = runAsSection.locator(
-      '[data-testid="run-as-user-selector"]'
-    );
-    await expect(userSelector).toBeVisible({ timeout: TIMEOUTS.component });
+    await expect(
+      runAsSection.locator('[data-testid="run-as-user-selector"]')
+    ).toBeVisible({ timeout: TIMEOUTS.component });
 
     console.log("✅ Successfully switched back to Specific User mode");
   });
@@ -151,64 +169,40 @@ test.describe("Persona-Based Run As Tests", () => {
   }) => {
     console.log("🧪 Testing persona options load in combobox...");
 
-    const runAsSection = page.locator("c-jt-run-as-section").first();
-    if ((await runAsSection.count()) === 0) return;
+    const runAsSection = await openRunAsSection(page);
+    if (!runAsSection) return;
 
-    const personaBtn = runAsSection.locator(
-      '[data-testid="run-as-mode-persona"]'
-    );
-    await personaBtn.waitFor({ state: "visible", timeout: TIMEOUTS.component });
-    await personaBtn.click();
+    const personaSelector = await switchToPersonaMode(runAsSection);
 
-    const personaSelector = runAsSection.locator(
-      '[data-testid="persona-selector"]'
-    );
-    await expect(personaSelector).toBeVisible({ timeout: TIMEOUTS.component });
-
-    console.log("✅ Persona selector visible after mode switch");
-
-    // Click on combobox input to open dropdown
     const comboboxInput = personaSelector.locator("input").first();
-    const inputExists = (await comboboxInput.count()) > 0;
-
-    if (inputExists) {
+    if ((await comboboxInput.count()) > 0) {
       await comboboxInput.click();
-      // Give time for dropdown to appear
       await page.waitForTimeout(1000);
       console.log("✅ Persona combobox opened");
     }
+
+    console.log("✅ Persona selector visible after mode switch");
   });
 
   // ═══════════════════════════════════════════════════════════════
-  // Execution — Persona mode
+  // Execution — prefers PS persona, falls back to first available
   // ═══════════════════════════════════════════════════════════════
 
-  test("should display Persona label in result after persona execution", async ({
+  test("should execute query as persona and show Persona label in result", async ({
     page
   }) => {
     console.log("🧪 Testing persona execution flow...");
 
-    const runAsSection = page.locator("c-jt-run-as-section").first();
-    if ((await runAsSection.count()) === 0) {
+    const runAsSection = await openRunAsSection(page);
+    if (!runAsSection) {
       console.log("ℹ️  Run As section not visible — skipping execution test.");
       return;
     }
 
     await selectConfiguration(page, "Test_Record");
 
-    // Switch to Persona mode
-    const personaBtn = runAsSection.locator(
-      '[data-testid="run-as-mode-persona"]'
-    );
-    await personaBtn.waitFor({ state: "visible", timeout: TIMEOUTS.component });
-    await personaBtn.click();
+    const personaSelector = await switchToPersonaMode(runAsSection);
 
-    const personaSelector = runAsSection.locator(
-      '[data-testid="persona-selector"]'
-    );
-    await expect(personaSelector).toBeVisible({ timeout: TIMEOUTS.component });
-
-    // Try to select a persona — depends on CMT data deployed in org
     const comboboxInput = personaSelector.locator("input").first();
     if ((await comboboxInput.count()) === 0) {
       console.log("ℹ️  No combobox input found — skipping execution.");
@@ -218,111 +212,29 @@ test.describe("Persona-Based Run As Tests", () => {
     await comboboxInput.click();
     await page.waitForTimeout(1000);
 
-    const dropdownOptions = page.locator(
-      '[data-testid="persona-selector"] lightning-base-combobox-item, ' +
-        '[data-testid="persona-selector"] [role="option"]'
-    );
-    const optionCount = await dropdownOptions.count();
-
-    if (optionCount === 0) {
-      console.log(
-        "ℹ️  No persona options available in this org (CMT records may not be deployed). Skipping execution."
-      );
-      return;
-    }
-
-    // Select first available persona
-    await dropdownOptions.first().click();
-    console.log("✅ Persona selected from dropdown");
-
-    // Execute the query
-    const executeButton = page.locator(SELECTORS.executeButton).first();
-    await executeButton.waitFor({
-      state: "visible",
-      timeout: TIMEOUTS.component
-    });
-    await executeButton.click();
-
-    // Wait for execution to start
-    await page.waitForTimeout(2000);
-
-    // Look for "Persona:" in the result area
-    const resultArea = page.locator(SELECTORS.queryResults).first();
-    const resultVisible = await resultArea
-      .isVisible({ timeout: TIMEOUTS.long })
-      .catch(() => false);
-
-    if (resultVisible) {
-      const resultText = await resultArea.textContent();
-      const hasPersonaLabel = resultText && resultText.includes("Persona:");
-      if (hasPersonaLabel) {
-        console.log('✅ Result shows "Persona:" label as expected');
-      } else {
-        console.log(
-          "ℹ️  Result visible but Persona label not found — execution may still be pending."
-        );
-      }
-    }
-  });
-
-  test("should execute query using persona with Permission Sets and show Persona label", async ({
-    page
-  }) => {
-    console.log("🧪 Testing persona execution with Permission Set...");
-
-    const runAsSection = page.locator("c-jt-run-as-section").first();
-    if ((await runAsSection.count()) === 0) {
-      console.log("ℹ️  Run As section not visible — skipping.");
-      return;
-    }
-
-    await selectConfiguration(page, "Test_Record");
-
-    const personaBtn = runAsSection.locator(
-      '[data-testid="run-as-mode-persona"]'
-    );
-    await personaBtn.waitFor({ state: "visible", timeout: TIMEOUTS.component });
-    await personaBtn.click();
-
-    const personaSelector = runAsSection.locator(
-      '[data-testid="persona-selector"]'
-    );
-    await expect(personaSelector).toBeVisible({ timeout: TIMEOUTS.component });
-
-    const comboboxInput = personaSelector.locator("input").first();
-    if ((await comboboxInput.count()) === 0) {
-      console.log("ℹ️  No combobox input found — skipping.");
-      return;
-    }
-
-    await comboboxInput.click();
-    await page.waitForTimeout(1000);
-
-    // Look for the "Standard User + JT Dynamic Queries" persona specifically
     const allOptions = page.locator(
       '[data-testid="persona-selector"] [role="option"]'
     );
     const optionCount = await allOptions.count();
 
     if (optionCount === 0) {
-      console.log("ℹ️  No persona options available — skipping.");
+      console.log(
+        "ℹ️  No persona options available in this org. Skipping execution."
+      );
       return;
     }
 
-    // Find the PS persona option by text if available, else fall back to first
-    let targetOption = allOptions.filter({
-      hasText: /JT Dynamic Queries/i
-    }).first();
-    const psOptionCount = await targetOption.count();
-    if (psOptionCount === 0) {
-      console.log(
-        "ℹ️  PS persona not found in dropdown, using first available option."
-      );
+    // Prefer PS persona; fall back to first available
+    let targetOption = allOptions
+      .filter({ hasText: /JT Dynamic Queries/i })
+      .first();
+    if ((await targetOption.count()) === 0) {
+      console.log("ℹ️  PS persona not found, using first available option.");
       targetOption = allOptions.first();
     }
 
     await targetOption.click();
-    console.log("✅ Persona with Permission Set selected");
+    console.log("✅ Persona selected from dropdown");
 
     const executeButton = page.locator(SELECTORS.executeButton).first();
     await executeButton.waitFor({
@@ -340,16 +252,13 @@ test.describe("Persona-Based Run As Tests", () => {
 
     if (resultVisible) {
       const resultText = await resultArea.textContent();
-      const hasPersonaLabel = resultText && resultText.includes("Persona:");
-      if (hasPersonaLabel) {
-        console.log('✅ Result shows "Persona:" label with PS persona');
+      if (resultText && resultText.includes("Persona:")) {
+        console.log('✅ Result shows "Persona:" label as expected');
       } else {
         console.log(
           "ℹ️  Result visible but Persona label not yet populated — execution may be async."
         );
       }
-    } else {
-      console.log("ℹ️  Result area not visible — execution may still be pending.");
     }
   });
 
@@ -357,30 +266,19 @@ test.describe("Persona-Based Run As Tests", () => {
   // Clear button
   // ═══════════════════════════════════════════════════════════════
 
-  test("should show clear button when persona is selected and hide after clear", async ({
+  test("should not show clear button before a persona is selected", async ({
     page
   }) => {
     console.log("🧪 Testing clear button visibility in Persona mode...");
 
-    const runAsSection = page.locator("c-jt-run-as-section").first();
-    if ((await runAsSection.count()) === 0) return;
+    const runAsSection = await openRunAsSection(page);
+    if (!runAsSection) return;
 
-    const personaBtn = runAsSection.locator(
-      '[data-testid="run-as-mode-persona"]'
-    );
-    await personaBtn.waitFor({ state: "visible", timeout: TIMEOUTS.component });
-    await personaBtn.click();
+    await switchToPersonaMode(runAsSection);
 
-    const personaSelector = runAsSection.locator(
-      '[data-testid="persona-selector"]'
-    );
-    await expect(personaSelector).toBeVisible({ timeout: TIMEOUTS.component });
-
-    // Clear button should not be visible yet
-    const clearButton = runAsSection.locator(
-      '[data-testid="run-as-clear-button"]'
-    );
-    await expect(clearButton).not.toBeVisible();
+    await expect(
+      runAsSection.locator('[data-testid="run-as-clear-button"]')
+    ).not.toBeVisible();
 
     console.log("✅ Clear button not shown when no persona selected");
   });
@@ -394,68 +292,42 @@ test.describe("Persona-Based Run As Tests", () => {
   }) => {
     console.log("🧪 Testing persona state cleared on mode switch to User...");
 
-    const runAsSection = page.locator("c-jt-run-as-section").first();
-    if ((await runAsSection.count()) === 0) return;
+    const runAsSection = await openRunAsSection(page);
+    if (!runAsSection) return;
 
-    // Switch to Persona mode
-    const personaBtn = runAsSection.locator(
-      '[data-testid="run-as-mode-persona"]'
-    );
-    await personaBtn.waitFor({ state: "visible", timeout: TIMEOUTS.component });
-    await personaBtn.click();
+    await switchToPersonaMode(runAsSection);
 
-    const personaSelector = runAsSection.locator(
-      '[data-testid="persona-selector"]'
-    );
-    await expect(personaSelector).toBeVisible({ timeout: TIMEOUTS.component });
+    await runAsSection.locator('[data-testid="run-as-mode-user"]').click();
 
-    // Switch back to Specific User mode
-    const userBtn = runAsSection.locator('[data-testid="run-as-mode-user"]');
-    await userBtn.click();
-
-    // Persona selector must not be visible
-    await expect(personaSelector).not.toBeVisible();
-
-    // User selector must be visible again
-    const userSelector = runAsSection.locator(
-      '[data-testid="run-as-user-selector"]'
-    );
-    await expect(userSelector).toBeVisible({ timeout: TIMEOUTS.component });
+    await expect(
+      runAsSection.locator('[data-testid="persona-selector"]')
+    ).not.toBeVisible();
+    await expect(
+      runAsSection.locator('[data-testid="run-as-user-selector"]')
+    ).toBeVisible({ timeout: TIMEOUTS.component });
 
     console.log(
       "✅ Persona selector hidden and user selector restored after mode switch"
     );
   });
 
-  test("should clear user selector when switching to Persona mode", async ({
+  test("should hide user selector when switching to Persona mode", async ({
     page
   }) => {
     console.log("🧪 Testing user selector hidden when switching to Persona...");
 
-    const runAsSection = page.locator("c-jt-run-as-section").first();
-    if ((await runAsSection.count()) === 0) return;
+    const runAsSection = await openRunAsSection(page);
+    if (!runAsSection) return;
 
-    // Verify user selector visible in default mode
-    const userSelector = runAsSection.locator(
-      '[data-testid="run-as-user-selector"]'
-    );
-    await expect(userSelector).toBeVisible({ timeout: TIMEOUTS.component });
+    await expect(
+      runAsSection.locator('[data-testid="run-as-user-selector"]')
+    ).toBeVisible();
 
-    // Switch to Persona mode
-    const personaBtn = runAsSection.locator(
-      '[data-testid="run-as-mode-persona"]'
-    );
-    await personaBtn.waitFor({ state: "visible", timeout: TIMEOUTS.component });
-    await personaBtn.click();
+    await switchToPersonaMode(runAsSection);
 
-    // User selector must not be visible
-    await expect(userSelector).not.toBeVisible();
-
-    // Persona selector must be visible
-    const personaSelector = runAsSection.locator(
-      '[data-testid="persona-selector"]'
-    );
-    await expect(personaSelector).toBeVisible({ timeout: TIMEOUTS.component });
+    await expect(
+      runAsSection.locator('[data-testid="run-as-user-selector"]')
+    ).not.toBeVisible();
 
     console.log(
       "✅ User selector hidden and persona selector shown after switching to Persona mode"
@@ -469,11 +341,11 @@ test.describe("Persona-Based Run As Tests", () => {
   test("mode toggle should have correct aria-label", async ({ page }) => {
     console.log("🧪 Testing mode toggle accessibility...");
 
-    const runAsSection = page.locator("c-jt-run-as-section").first();
-    if ((await runAsSection.count()) === 0) return;
+    const runAsSection = await openRunAsSection(page);
+    if (!runAsSection) return;
 
     const toggle = runAsSection.locator('[data-testid="run-as-mode-toggle"]');
-    await toggle.waitFor({ state: "visible", timeout: TIMEOUTS.component });
+    await expect(toggle).toBeVisible();
 
     const ariaLabel = await toggle.getAttribute("aria-label");
     expect(ariaLabel).toBeTruthy();

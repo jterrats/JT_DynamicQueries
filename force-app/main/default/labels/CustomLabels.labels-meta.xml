@@ -2178,6 +2178,14 @@ Y bueno...&lt;br /&gt;&lt;br /&gt;</value>
         <value>Tooling API consumption warning</value>
     </labels>
     <labels>
+        <fullName>JT_jtQueryViewer_runAsOwdNotice</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>jtQueryViewer - runAsOwdNotice</shortDescription>
+        <value
+    >Run As User &amp; Sharing Model: When executing a query as a specific user or persona, Org-Wide Defaults (OWD), sharing rules, and role hierarchy are fully enforced. A result of 0 records does not indicate an error — it reflects the target user&apos;s actual data access.</value>
+    </labels>
+    <labels>
         <fullName>JT_jtQueryViewer_findWhereConfigurationUsed</fullName>
         <language>en_US</language>
         <protected>false</protected>

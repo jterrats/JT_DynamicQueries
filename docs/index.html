@@ -276,12 +276,56 @@ og_image: 01-query-execution.gif
       />
       <div class="placeholder-gif" style="display: none">GIF: Run As User</div>
       <div class="gif-card-content">
-        <h4>👤 Run As User</h4>
+        <h4>👤 Run As — Specific User</h4>
         <p>
-          Execute queries as different users using System.runAs() to test
-          permissions and data visibility. Expand the Run As User accordion,
-          select a user, and execute queries with their security context.
-          Perfect for admins validating security models.
+          Execute queries as a specific org user using System.runAs() to test
+          permissions and data visibility. Select any active user and see
+          exactly what they see — OWD, sharing rules, and FLS fully enforced.
+        </p>
+      </div>
+    </div>
+
+    <div class="gif-card">
+      <img
+        src="{{ site.baseurl }}/assets/gifs/07-run-as-persona.gif"
+        alt="Run As Persona Demo"
+        onerror="
+          this.style.display = 'none';
+          this.nextElementSibling.style.display = 'flex';
+        "
+      />
+      <div class="placeholder-gif" style="display: none">
+        GIF: Run As Persona
+      </div>
+      <div class="gif-card-content">
+        <h4>🎭 Run As — Persona Mode</h4>
+        <p>
+          Test queries as a synthetic user built from a Profile + Permission
+          Sets combination — no real user required. Define personas via the
+          built-in Persona Manager, then execute queries to validate your
+          sharing model against any role archetype.
+        </p>
+      </div>
+    </div>
+
+    <div class="gif-card">
+      <img
+        src="{{ site.baseurl }}/assets/gifs/08-manage-personas.gif"
+        alt="Manage Personas Demo"
+        onerror="
+          this.style.display = 'none';
+          this.nextElementSibling.style.display = 'flex';
+        "
+      />
+      <div class="placeholder-gif" style="display: none">
+        GIF: Manage Personas
+      </div>
+      <div class="gif-card-content">
+        <h4>🗂️ Manage Personas</h4>
+        <p>
+          Create and manage persona definitions directly from the UI. Combine
+          any Profile with one or more Permission Sets, save to metadata, and
+          reuse across your team — no code deployment required.
         </p>
       </div>
     </div>

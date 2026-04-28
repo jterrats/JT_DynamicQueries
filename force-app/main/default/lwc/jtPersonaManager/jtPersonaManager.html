@@ -1,0 +1,413 @@
+<template>
+  <section
+    role="dialog"
+    tabindex="-1"
+    aria-modal="true"
+    aria-labelledby="persona-manager-title"
+    class="slds-modal slds-fade-in-open slds-modal_large"
+    data-testid="persona-manager-modal"
+  >
+    <div class="slds-modal__container">
+      <!-- Modal Header -->
+      <header class="slds-modal__header">
+        <button
+          class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+          title={labels.close}
+          onclick={handleClose}
+          data-testid="close-button"
+        >
+          <lightning-icon
+            icon-name="utility:close"
+            alternative-text={labels.close}
+            size="small"
+          ></lightning-icon>
+          <span class="slds-assistive-text">{labels.close}</span>
+        </button>
+        <h2
+          id="persona-manager-title"
+          class="slds-text-heading_medium slds-hyphenate"
+        >
+          {labels.title}
+        </h2>
+      </header>
+
+      <!-- Modal Body -->
+      <div
+        class="slds-modal__content slds-p-around_medium"
+        data-testid="modal-body"
+      >
+        <!-- Loading State -->
+        <template if:true={_isLoading}>
+          <div
+            class="slds-align_absolute-center slds-p-around_large"
+            data-testid="loading-spinner"
+          >
+            <lightning-spinner
+              alternative-text={labels.loading}
+              size="medium"
+            ></lightning-spinner>
+          </div>
+        </template>
+
+        <!-- Tabs -->
+        <template if:false={_isLoading}>
+          <div class="slds-tabs_default" data-testid="persona-tabs">
+            <ul class="slds-tabs_default__nav" role="tablist">
+              <!-- Tab: Existing Personas -->
+              <li
+                class={tabListClass}
+                title={labels.existingPersonas}
+                role="presentation"
+              >
+                <a
+                  class="slds-tabs_default__link"
+                  href="javascript:void(0);"
+                  role="tab"
+                  tabindex={existingTabIndex}
+                  aria-selected={isExistingTabActive}
+                  aria-controls="tab-existing"
+                  id="tab-existing-link"
+                  onclick={handleTabExisting}
+                  data-testid="tab-existing"
+                  >{labels.existingPersonas}</a
+                >
+              </li>
+
+              <!-- Tab: Create Persona -->
+              <li
+                class={tabCreateClass}
+                title={labels.createPersona}
+                role="presentation"
+              >
+                <a
+                  class="slds-tabs_default__link"
+                  href="javascript:void(0);"
+                  role="tab"
+                  tabindex={createTabIndex}
+                  aria-selected={isCreateTabActive}
+                  aria-controls="tab-create"
+                  id="tab-create-link"
+                  onclick={handleTabCreate}
+                  data-testid="tab-create"
+                  >{labels.createPersona}</a
+                >
+              </li>
+            </ul>
+
+            <!-- Tab Panel: Existing Personas -->
+            <div
+              id="tab-existing"
+              class={tabExistingPanelClass}
+              role="tabpanel"
+              aria-labelledby="tab-existing-link"
+              data-testid="panel-existing"
+            >
+              <!-- Delete Error -->
+              <template if:true={_deleteError}>
+                <div
+                  class="slds-notify slds-notify_alert slds-alert_error slds-m-bottom_small"
+                  role="alert"
+                  data-testid="delete-error-banner"
+                >
+                  <span class="slds-assistive-text">{labels.errorLabel}</span>
+                  <lightning-icon
+                    icon-name="utility:error"
+                    size="xx-small"
+                    class="slds-m-right_x-small"
+                  ></lightning-icon>
+                  {_deleteError}
+                </div>
+              </template>
+
+              <!-- Empty State -->
+              <template if:false={hasPersonas}>
+                <div
+                  class="slds-illustration slds-illustration_small slds-p-around_medium slds-text-align_center"
+                  data-testid="empty-state"
+                >
+                  <lightning-icon
+                    icon-name="utility:people"
+                    size="large"
+                    class="slds-m-bottom_small"
+                  ></lightning-icon>
+                  <p class="slds-text-body_regular slds-text-color_weak">
+                    {labels.noPersonas}
+                  </p>
+                </div>
+              </template>
+
+              <!-- Personas Table -->
+              <template if:true={hasPersonas}>
+                <table
+                  class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped"
+                  role="grid"
+                  data-testid="personas-table"
+                >
+                  <thead>
+                    <tr class="slds-line-height_reset">
+                      <th scope="col">
+                        <div class="slds-truncate">{labels.colLabel}</div>
+                      </th>
+                      <th scope="col">
+                        <div class="slds-truncate">{labels.colProfile}</div>
+                      </th>
+                      <th scope="col">
+                        <div class="slds-truncate">{labels.colPermSets}</div>
+                      </th>
+                      <th scope="col" class="slds-text-align_center">
+                        <div class="slds-truncate">{labels.colSeeAllData}</div>
+                      </th>
+                      <th scope="col">
+                        <div class="slds-assistive-text">
+                          {labels.colActions}
+                        </div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <template for:each={pagedPersonas} for:item="persona">
+                      <tr key={persona.developerName} data-testid="persona-row">
+                        <td data-label={labels.colLabel}>
+                          <div class="slds-truncate" title={persona.label}>
+                            {persona.label}
+                          </div>
+                          <div
+                            class="slds-text-body_small slds-text-color_weak"
+                          >
+                            {persona.developerName}
+                          </div>
+                        </td>
+                        <td data-label={labels.colProfile}>
+                          <div
+                            class="slds-truncate"
+                            title={persona.profileApiName}
+                          >
+                            {persona.profileApiName}
+                          </div>
+                        </td>
+                        <td data-label={labels.colPermSets}>
+                          <div class="slds-truncate">
+                            {persona.permissionSetsDisplay}
+                          </div>
+                        </td>
+                        <td
+                          data-label={labels.colSeeAllData}
+                          class="slds-text-align_center"
+                        >
+                          <template if:true={persona.seeAllData}>
+                            <lightning-icon
+                              icon-name="utility:check"
+                              size="xx-small"
+                              alternative-text={labels.yes}
+                              variant="success"
+                            ></lightning-icon>
+                          </template>
+                          <template if:false={persona.seeAllData}>
+                            <lightning-icon
+                              icon-name="utility:close"
+                              size="xx-small"
+                              alternative-text={labels.no}
+                            ></lightning-icon>
+                          </template>
+                        </td>
+                        <td data-label={labels.colActions}>
+                          <lightning-button-icon
+                            icon-name="utility:delete"
+                            variant="bare"
+                            alternative-text={labels.deletePersona}
+                            title={labels.deletePersona}
+                            data-developer-name={persona.developerName}
+                            onclick={handleDelete}
+                            data-testid="delete-button"
+                          ></lightning-button-icon>
+                        </td>
+                      </tr>
+                    </template>
+                  </tbody>
+                </table>
+
+                <!-- Pagination -->
+                <template if:true={showPagination}>
+                  <div
+                    class="slds-grid slds-grid_align-spread slds-m-top_small pagination-bar"
+                  >
+                    <div class="slds-col slds-align-middle">
+                      <span class="slds-text-body_small slds-text-color_weak">
+                        {paginationInfo}
+                      </span>
+                    </div>
+                    <div class="slds-col">
+                      <lightning-button-icon
+                        icon-name="utility:chevronleft"
+                        variant="border-filled"
+                        size="small"
+                        alternative-text={labels.prevPage}
+                        title={labels.prevPage}
+                        disabled={isPrevDisabled}
+                        onclick={handlePrevPage}
+                        data-testid="btn-prev-page"
+                      ></lightning-button-icon>
+                      <lightning-button-icon
+                        icon-name="utility:chevronright"
+                        variant="border-filled"
+                        size="small"
+                        alternative-text={labels.nextPage}
+                        title={labels.nextPage}
+                        disabled={isNextDisabled}
+                        onclick={handleNextPage}
+                        class="slds-m-left_xx-small"
+                        data-testid="btn-next-page"
+                      ></lightning-button-icon>
+                    </div>
+                  </div>
+                </template>
+              </template>
+            </div>
+
+            <!-- Tab Panel: Create Persona -->
+            <div
+              id="tab-create"
+              class={tabCreatePanelClass}
+              role="tabpanel"
+              aria-labelledby="tab-create-link"
+              data-testid="panel-create"
+            >
+              <!-- Label -->
+              <div class="slds-form-element slds-m-bottom_small">
+                <lightning-input
+                  type="text"
+                  label={labels.labelField}
+                  value={_form.label}
+                  data-field="label"
+                  onchange={handleLabelChange}
+                  required
+                  maxlength="40"
+                  placeholder={labels.labelPlaceholder}
+                  data-testid="input-label"
+                ></lightning-input>
+              </div>
+
+              <!-- Developer Name -->
+              <div class="slds-form-element slds-m-bottom_small">
+                <lightning-input
+                  type="text"
+                  label={labels.developerNameField}
+                  value={_form.developerName}
+                  data-field="developerName"
+                  onchange={handleDeveloperNameChange}
+                  required
+                  maxlength="40"
+                  placeholder={labels.developerNamePlaceholder}
+                  data-testid="input-developer-name"
+                ></lightning-input>
+              </div>
+
+              <!-- Profile -->
+              <div class="slds-form-element slds-m-bottom_small">
+                <lightning-combobox
+                  label={labels.profileField}
+                  value={_form.profileApiName}
+                  options={_profiles}
+                  data-field="profileApiName"
+                  onchange={handleProfileChange}
+                  required
+                  placeholder={labels.profilePlaceholder}
+                  data-testid="combobox-profile"
+                ></lightning-combobox>
+              </div>
+
+              <!-- Permission Sets -->
+              <div class="slds-form-element slds-m-bottom_small">
+                <lightning-dual-listbox
+                  label={labels.permissionSetsField}
+                  source-label={labels.permSetsAvailable}
+                  selected-label={labels.permSetsSelected}
+                  options={_permissionSets}
+                  value={_form.permissionSets}
+                  data-field="permissionSets"
+                  onchange={handlePermissionSetsChange}
+                  data-testid="dual-listbox-permission-sets"
+                ></lightning-dual-listbox>
+              </div>
+
+              <!-- Description -->
+              <div class="slds-form-element slds-m-bottom_small">
+                <lightning-textarea
+                  label={labels.descriptionField}
+                  value={_form.description}
+                  data-field="description"
+                  onchange={handleDescriptionChange}
+                  maxlength="255"
+                  placeholder={labels.descriptionPlaceholder}
+                  data-testid="textarea-description"
+                ></lightning-textarea>
+              </div>
+
+              <!-- Error Banner -->
+              <template if:true={_error}>
+                <div
+                  class="slds-notify slds-notify_alert slds-alert_error slds-m-bottom_small"
+                  role="alert"
+                  data-testid="save-error-banner"
+                >
+                  <span class="slds-assistive-text">{labels.errorLabel}</span>
+                  <lightning-icon
+                    icon-name="utility:error"
+                    size="xx-small"
+                    class="slds-m-right_x-small"
+                  ></lightning-icon>
+                  {_error}
+                </div>
+              </template>
+
+              <!-- Save Button -->
+              <div class="slds-m-bottom_small">
+                <lightning-button
+                  variant="brand"
+                  label={labels.save}
+                  onclick={handleSave}
+                  disabled={saveDisabled}
+                  icon-name="utility:save"
+                  data-testid="save-button"
+                ></lightning-button>
+                <template if:true={_isSaving}>
+                  <lightning-spinner
+                    alternative-text={labels.saving}
+                    size="small"
+                    class="slds-m-left_small"
+                  ></lightning-spinner>
+                </template>
+              </div>
+
+              <!-- Deployment Pending Notice -->
+              <template if:true={_deploymentPending}>
+                <div
+                  class="pending-notice slds-m-top_small"
+                  role="status"
+                  data-testid="deployment-pending-notice"
+                >
+                  <lightning-icon
+                    icon-name="utility:info"
+                    size="xx-small"
+                    class="slds-m-right_x-small"
+                  ></lightning-icon>
+                  {labels.deploymentPending}
+                </div>
+              </template>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <!-- Modal Footer -->
+      <footer class="slds-modal__footer">
+        <lightning-button
+          label={labels.close}
+          onclick={handleClose}
+          data-testid="footer-close-button"
+        ></lightning-button>
+      </footer>
+    </div>
+  </section>
+  <div class="slds-backdrop slds-backdrop_open"></div>
+</template>

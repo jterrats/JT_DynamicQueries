@@ -927,7 +927,7 @@ async function captureHappyPaths() {
   // Show: Expand Run As accordion → Switch to Persona mode → Select persona
   //       with PS → Execute → Show "Persona: ..." label in results
   // ==================================================================
-  console.log("🎥 7/7: Capturing Run As Persona...");
+  console.log("🎥 7/8: Capturing Run As Persona...");
   const { context: context7, page: page7 } =
     await createRecordingContextAndNavigate(
       browser,
@@ -968,7 +968,9 @@ async function captureHappyPaths() {
     if ((await accordionSection.count()) > 0) {
       await accordionSection.scrollIntoViewIfNeeded();
       const accordionButton = accordionSection.locator("button").first();
-      if (await accordionButton.isVisible({ timeout: 5000 }).catch(() => false)) {
+      if (
+        await accordionButton.isVisible({ timeout: 5000 }).catch(() => false)
+      ) {
         await accordionButton.click();
       }
       await page7.waitForTimeout(3000);
@@ -1031,7 +1033,9 @@ async function captureHappyPaths() {
                 await executeButton.scrollIntoViewIfNeeded();
                 await page7.waitForTimeout(1000);
                 await executeButton.click();
-                console.log("   ▶️  Execute clicked — waiting for Persona results...");
+                console.log(
+                  "   ▶️  Execute clicked — waiting for Persona results..."
+                );
 
                 // Wait for spinner overlay then disappear
                 const spinnerOverlay = page7
@@ -1072,6 +1076,137 @@ async function captureHappyPaths() {
     }
   }
 
+  // ==================================================================
+  // GIF 8: Manage Personas Modal (25 seconds)
+  // Show: Expand Run As → Persona mode → Manage Personas → Create tab
+  //       → Fill form → Save → deployment pending notice
+  // ==================================================================
+  console.log("🎥 8/8: Capturing Manage Personas Modal...");
+  const { context: context8, page: page8 } =
+    await createRecordingContextAndNavigate(
+      browser,
+      componentURL,
+      storageState,
+      "08-manage-personas"
+    );
+
+  try {
+    await page8.waitForSelector("c-jt-query-viewer", { timeout: 30000 });
+    await page8.waitForTimeout(2000);
+
+    // Expand Run As accordion using label text (reliable Shadow DOM traversal)
+    const accordionLabel = page8.getByText("Run As User (Advanced)").first();
+    if (await accordionLabel.isVisible({ timeout: 10000 }).catch(() => false)) {
+      await accordionLabel.click({ force: true });
+      await page8.waitForTimeout(2000);
+      console.log("   📂 Accordion expanded");
+
+      const runAsSection = page8.locator("c-jt-run-as-section").first();
+      if (await runAsSection.isVisible({ timeout: 8000 }).catch(() => false)) {
+        // Switch to Persona mode
+        const personaBtn = runAsSection.locator(
+          '[data-testid="run-as-mode-persona"]'
+        );
+        if (await personaBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
+          await personaBtn.click();
+          await page8.waitForTimeout(1500);
+          console.log("   🎭 Switched to Persona mode");
+
+          // Click Manage Personas button
+          const manageBtn = runAsSection.locator(
+            '[data-testid="manage-personas-button"]'
+          );
+          if (await manageBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
+            await manageBtn.click();
+            await page8.waitForTimeout(1500);
+            console.log("   🗂️  Manage Personas modal opened");
+
+            const modal = page8.locator(
+              '[data-testid="persona-manager-modal"]'
+            );
+            if (await modal.isVisible({ timeout: 8000 }).catch(() => false)) {
+              // Wait for loading spinner
+              await modal
+                .locator('[data-testid="loading-spinner"]')
+                .waitFor({ state: "hidden", timeout: 10000 })
+                .catch(() => {});
+              await page8.waitForTimeout(1500);
+
+              // Switch to Create New Persona tab
+              const createTab = modal.locator('[data-testid="tab-create"]');
+              await createTab.click();
+              await page8.waitForTimeout(1500);
+              console.log("   ➕ Switched to Create tab");
+
+              const panel = modal.locator('[data-testid="panel-create"]');
+
+              // Fill Label
+              const timestamp = Date.now();
+              const labelValue = `Demo Persona ${timestamp}`;
+              await panel
+                .locator('[data-testid="input-label"] input')
+                .fill(labelValue);
+              await page8.waitForTimeout(1500);
+              console.log(`   ✏️  Label filled: ${labelValue}`);
+
+              // Select first Profile
+              await panel.locator('[data-testid="combobox-profile"]').click();
+              await page8.waitForTimeout(1500);
+              const firstProfile = page8
+                .locator('lightning-base-combobox-item[role="option"]')
+                .first();
+              if ((await firstProfile.count()) > 0) {
+                await firstProfile.click();
+                await page8.waitForTimeout(1500);
+                console.log("   👤 Profile selected");
+
+                // Save
+                const saveBtn = modal.locator(
+                  '[data-testid="save-button"] button'
+                );
+                if (
+                  await saveBtn.isEnabled({ timeout: 3000 }).catch(() => false)
+                ) {
+                  await saveBtn.click();
+                  console.log(
+                    "   💾 Save clicked — waiting for deployment notice..."
+                  );
+
+                  await modal
+                    .locator('[data-testid="deployment-pending-notice"]')
+                    .waitFor({ state: "visible", timeout: 15000 })
+                    .catch(() => {});
+                  await page8.waitForTimeout(3000);
+                  console.log("   ✅ Deployment pending notice shown");
+                }
+              } else {
+                console.log(
+                  "   ℹ️  No profiles available — recording form only"
+                );
+                await page8.waitForTimeout(3000);
+              }
+            }
+          }
+        }
+      }
+    } else {
+      console.log("   ℹ️  Run As accordion not visible — skipping GIF 8");
+    }
+
+    console.log("   ✅ Manage Personas captured");
+  } catch (error) {
+    console.error("   ❌ Error capturing Manage Personas:", error.message);
+  } finally {
+    const video = page8.video();
+    const videoPath = video ? await video.path() : null;
+    await context8.close();
+    if (videoPath) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      videoFilesMap.set("08-manage-personas.webm", videoPath);
+      console.log(`   📹 Video saved: ${path.basename(videoPath)}`);
+    }
+  }
+
   await browser.close();
 
   // ==================================================================
@@ -1091,7 +1226,8 @@ async function captureHappyPaths() {
     { video: "04-large-dataset.webm", gif: "04-large-dataset.gif" },
     { video: "05-create-config.webm", gif: "05-create-config.gif" },
     { video: "06-run-as-user.webm", gif: "06-run-as-user.gif" },
-    { video: "07-run-as-persona.webm", gif: "07-run-as-persona.gif" }
+    { video: "07-run-as-persona.webm", gif: "07-run-as-persona.gif" },
+    { video: "08-manage-personas.webm", gif: "08-manage-personas.gif" }
   ];
 
   for (const mapping of videoMappings) {
@@ -1128,6 +1264,9 @@ async function captureHappyPaths() {
   console.log("   6. 06-run-as-user.gif - Run queries as different users");
   console.log(
     "   7. 07-run-as-persona.gif - Run queries as persona (Profile + PS)"
+  );
+  console.log(
+    "   8. 08-manage-personas.gif - Manage Personas modal: create a persona"
   );
   console.log("");
 }

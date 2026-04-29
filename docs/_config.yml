@@ -3,8 +3,8 @@ title: Dynamic Query Framework
 description: Enterprise-grade SOQL configuration framework for Salesforce
 author: Jaime Terrats
 email: jaime.terrats@gmail.com
-url: https://jterrats.github.io
-baseurl: /JT_DynamicQueries
+url: https://dynamicqueries.jterrats.dev
+baseurl: ''
 
 # Build settings
 markdown: kramdown

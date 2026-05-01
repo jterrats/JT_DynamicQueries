@@ -80,23 +80,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
-      - name: Notify main site
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          PROJECT_SLUG: JT_DynamicQueries
-        run: |
-          if [ -z "${GH_TOKEN}" ]; then
-            echo "GH_TOKEN is not configured; skipping main site dispatch."
-            exit 0
-          fi
-
-          if gh api repos/jterrats/jterrats_dev/dispatches \
-            -f event_type=project-site-updated \
-            -F client_payload[project]="${PROJECT_SLUG}" \
-            -F client_payload[source_repo]="${{ github.repository }}" \
-            -F client_payload[source_sha]="${{ github.sha }}"; then
-            echo "Main site dispatch sent."
-          else
-            echo "::warning::Main site dispatch failed. Check GH_TOKEN permissions for jterrats_dev."
-          fi

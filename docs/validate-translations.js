@@ -1,21 +1,21 @@
 #!/usr/bin/env node
 /**
- * Validates that all translations in index.html have the same keys as English
+ * Validates that all translations have the same keys as English.
  */
 const fs = require("fs");
 const path = require("path");
 
-const indexPath = path.join(__dirname, "index.html");
-const content = fs.readFileSync(indexPath, "utf-8");
+const translationsPath = path.join(__dirname, "js", "translations.js");
+const content = fs.readFileSync(translationsPath, "utf-8");
 
-// Extract the content object from the HTML
-const contentMatch = content.match(/const content = \{([\s\S]*?)\n      \};/);
+// Extract the content object from the ES module.
+const contentMatch = content.match(/export\s+const\s+content\s*=\s*(\{[\s\S]*?\n\});/);
 if (!contentMatch) {
-  console.error("❌ Could not find content object in index.html");
+  console.error("❌ Could not find content object in docs/js/translations.js");
   process.exit(1);
 }
 
-const contentStr = `{${contentMatch[1]}}`;
+const contentStr = contentMatch[1];
 
 // Use eval to parse it (safe since we control the source)
 const contentObj = eval(`(${contentStr})`);

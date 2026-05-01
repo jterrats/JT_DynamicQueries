@@ -22,9 +22,7 @@ function changeLanguage(lang) {
     if (c.heroTitle) heroSection.querySelector("h2").textContent = c.heroTitle;
     if (c.heroIntro) heroSection.querySelector("p").textContent = c.heroIntro;
 
-    const heroCards = heroSection.querySelectorAll(
-      "div[style*='background: white']"
-    );
+    const heroCards = heroSection.querySelectorAll(".hero-card");
     if (heroCards.length >= 6) {
       if (c.heroCard1Title)
         heroCards[0].querySelector("h3").textContent = c.heroCard1Title;
@@ -53,7 +51,7 @@ function changeLanguage(lang) {
     }
 
     if (c.heroFooter) {
-      const footerP = heroSection.querySelector("p[style*='margin-top: 2rem']");
+      const footerP = heroSection.querySelector(".hero-note");
       if (footerP) {
         footerP.innerHTML = `<strong>💡 ${c.heroFooter.split(": ")[0]}:</strong> ${c.heroFooter.split(": ")[1]}`;
       }
@@ -143,9 +141,8 @@ function changeLanguage(lang) {
   const installationSection = document.querySelector("#installation");
   if (installationSection) {
     // Update intro paragraph
-    const installationIntro = installationSection.querySelector(
-      "p[style*='font-size: 1.1rem']"
-    );
+    const installationIntro =
+      installationSection.querySelector(".section-intro");
     if (installationIntro && c.deployIntro)
       installationIntro.textContent = c.deployIntro;
 
@@ -159,28 +156,26 @@ function changeLanguage(lang) {
     if (deployButton && c.deployButton)
       deployButton.textContent = c.deployButton;
 
-    const deploySubtext = installationSection.querySelector(
-      "p[style*='color: rgba(255, 255, 255, 0.9)']"
-    );
+    const deploySubtext = installationSection.querySelector(".deploy-panel p");
     if (deploySubtext && c.deploySubtext)
       deploySubtext.textContent = c.deploySubtext;
 
     // Update contributors section
     const contributorsTitle = installationSection.querySelector(
-      "div[style*='background: #f8f9fa'] h3"
+      ".contributor-panel h3"
     );
     if (contributorsTitle && c.forContributors)
       contributorsTitle.textContent = c.forContributors;
 
     const contributorsDesc = installationSection.querySelector(
-      "div[style*='background: #f8f9fa'] > p"
+      ".contributor-panel > p"
     );
     if (contributorsDesc && c.forContributorsDesc)
       contributorsDesc.textContent = c.forContributorsDesc;
 
     // Update prerequisites and installation in contributors section
     const contributorH4s = installationSection.querySelectorAll(
-      "div[style*='background: #f8f9fa'] h4"
+      ".contributor-panel h4"
     );
     if (contributorH4s.length >= 2) {
       if (c.contributorPrerequisites)
@@ -213,7 +208,7 @@ function changeLanguage(lang) {
   const footerPs = document.querySelectorAll("footer p");
   if (footerPs.length >= 2) {
     if (c.footerText) {
-      footerPs[0].innerHTML = `${c.footerText} <a href="https://github.com/jterrats" style="color: #667eea; text-decoration: none">Jaime Terrats</a>`;
+      footerPs[0].innerHTML = `${c.footerText} <a href="https://github.com/jterrats">Jaime Terrats</a>`;
     }
     if (c.license) footerPs[1].textContent = c.license;
   }

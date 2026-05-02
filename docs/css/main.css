@@ -62,6 +62,13 @@ select:focus-visible {
   font-weight: 600;
 }
 
+.site-nav-links {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
 .language-selector {
   display: flex;
   gap: 0.5rem;

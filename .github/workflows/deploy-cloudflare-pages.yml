@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'docs/**'
+      - 'site/**'
       - '.github/workflows/deploy-cloudflare-pages.yml'
   workflow_dispatch:
 
@@ -25,35 +26,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.2'
-          bundler-cache: false
-
-      - name: Generate Gemfile
-        working-directory: docs
-        run: |
-          cat > Gemfile << 'EOF'
-          source "https://rubygems.org"
-          gem "jekyll", "~> 4.3"
-          gem "webrick", "~> 1.8"
-          EOF
-
-      - name: Install dependencies
-        working-directory: docs
-        run: bundle install
-
-      - name: Build
-        working-directory: docs
-        run: bundle exec jekyll build --baseurl ""
-        env:
-          JEKYLL_ENV: production
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      - name: Install dependencies
+        working-directory: site
+        run: npm ci
+
+      - name: Build
+        working-directory: site
+        run: npm run build
 
       - name: Deploy production
         if: github.ref == 'refs/heads/main'
@@ -61,4 +47,4 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy docs/_site --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT_NAME || 'dynamic-soql' }} --branch=main
+          command: pages deploy site/dist --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT_NAME || 'dynamic-soql' }} --branch=main

@@ -49,6 +49,49 @@ const flows = [
   'Capture audit and troubleshooting evidence',
 ];
 
+const demos = [
+  {
+    title: 'Query Execution',
+    body: 'Run configured SOQL and inspect governed results from the Lightning UI.',
+    src: '/assets/gifs/01-query-execution.gif',
+  },
+  {
+    title: 'Multiple Views',
+    body: 'Switch between table, JSON, CSV-ready, and structured views without rerunning the query.',
+    src: '/assets/gifs/02-multiple-views.gif',
+  },
+  {
+    title: 'Tree View',
+    body: 'Traverse nested records and related data in an inspection-friendly layout.',
+    src: '/assets/gifs/03-tree-view.gif',
+  },
+  {
+    title: 'Large Dataset Navigation',
+    body: 'Move through larger datasets with cursor-style navigation and bounded rendering.',
+    src: '/assets/gifs/04-large-dataset.gif',
+  },
+  {
+    title: 'Create Configuration',
+    body: 'Create reusable named query configurations for admins and developers.',
+    src: '/assets/gifs/05-create-config.gif',
+  },
+  {
+    title: 'Run As User',
+    body: 'Validate CRUD, FLS, sharing, and row visibility from a specific user context.',
+    src: '/assets/gifs/06-run-as-user.gif',
+  },
+  {
+    title: 'Run As Persona',
+    body: 'Test access behavior through reusable personas instead of one-off manual user switching.',
+    src: '/assets/gifs/07-run-as-persona.gif',
+  },
+  {
+    title: 'Manage Personas',
+    body: 'Maintain persona definitions that make permission validation repeatable.',
+    src: '/assets/gifs/08-manage-personas.gif',
+  },
+];
+
 function Shell({ children }: { children: React.ReactNode }) {
   return (
     <div className="app-shell">
@@ -59,6 +102,7 @@ function Shell({ children }: { children: React.ReactNode }) {
         <nav className="nav-links" aria-label="Primary navigation">
           <NavLink to="/">Home</NavLink>
           <NavLink to="/architecture">Architecture</NavLink>
+          <a href="/#demos">Demos</a>
           <a href="https://github.com/jterrats/JT_DynamicQueries/tree/main/docs">Docs</a>
           <a href="https://jterrats.dev">Main site</a>
           <a href="https://github.com/jterrats/JT_DynamicQueries">GitHub</a>
@@ -118,6 +162,24 @@ function Home() {
               </li>
             ))}
           </ol>
+        </section>
+
+        <section className="section-grid" id="demos">
+          <div className="section-heading">
+            <p className="eyebrow">Demos</p>
+            <h2>See the query workflows in motion.</h2>
+          </div>
+          <div className="demo-grid">
+            {demos.map((demo) => (
+              <article className="demo-card" key={demo.src}>
+                <img src={demo.src} alt={`${demo.title} demo`} loading="lazy" />
+                <div>
+                  <h3>{demo.title}</h3>
+                  <p>{demo.body}</p>
+                </div>
+              </article>
+            ))}
+          </div>
         </section>
       </main>
     </Shell>

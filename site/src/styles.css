@@ -216,6 +216,7 @@ h1 {
 }
 
 .card-grid,
+.demo-grid,
 .timeline,
 .architecture-map {
   display: grid;
@@ -231,6 +232,7 @@ h1 {
 }
 
 .card,
+.demo-card,
 .layer-card,
 .split-panel article,
 .timeline li {
@@ -240,12 +242,31 @@ h1 {
 }
 
 .card,
+.demo-card div,
 .layer-card,
 .split-panel article {
   padding: 1.2rem;
 }
 
+.demo-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.demo-card {
+  overflow: hidden;
+}
+
+.demo-card img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  border-bottom: 1px solid var(--border);
+  background: var(--code-bg);
+}
+
 .card h3,
+.demo-card h3,
 .split-panel h3,
 .layer-card h2 {
   margin-bottom: 0.45rem;
@@ -253,6 +274,7 @@ h1 {
 }
 
 .card p,
+.demo-card p,
 .split-panel p,
 .layer-card p,
 .timeline li {
@@ -334,6 +356,7 @@ h1 {
   }
 
   .card-grid,
+  .demo-grid,
   .architecture-map,
   .split-panel,
   .flow-diagram {

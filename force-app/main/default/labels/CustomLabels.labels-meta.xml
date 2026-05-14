@@ -4385,7 +4385,7 @@ Y bueno...&lt;br /&gt;&lt;br /&gt;</value>
         <shortDescription
     >JT_DataSelector - insufficientPermissionsMetadata</shortDescription>
         <value
-    >Insufficient permissions to access DynamicSOQL__mdt object.</value>
+    >Insufficient permissions to access JT_DynamicQueryConfiguration__mdt object.</value>
     </labels>
     <labels>
         <fullName>JT_DataSelector_configurationNotFound</fullName>
